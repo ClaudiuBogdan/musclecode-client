@@ -5,6 +5,8 @@
 ### Core Technologies
 
 - **Framework**: React 18
+- **UI**: Shadcn/UI
+- **Package Manager**: yarn
 - **Routing**: @tanstack/react-router
 - **Language**: TypeScript
 - **State Management**: TanStack Query (server state) & Zustand (client state)
@@ -280,8 +282,8 @@ import { createRouter, RouterProvider } from '@tanstack/react-router'
 const routeTree = createRoutesFromElements(
   <Route path="/" element={<RootLayout />}>
     <Route path="algorithms" element={<AlgorithmsLayout />}>
-      <Route 
-        path=":id" 
+      <Route
+        path=":id"
         element={<AlgorithmDetail />}
         loader={({ params }) => algorithmLoader(params.id)}
       />
