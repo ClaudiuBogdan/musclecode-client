@@ -1,4 +1,4 @@
-import { Line } from 'react-chartjs-2'
+import { Line } from 'recharts'
 import { useQuery } from '@tanstack/react-query'
 import { Card } from '../common/Card'
 import { fetchUserProgress } from '../../services/api/progress'

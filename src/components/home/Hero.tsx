@@ -1,5 +1,4 @@
-import { motion } from 'framer-motion'
-import { Link } from '@tanstack/react-router'
+import {motion} from 'motion/react'
 
 export function Hero() {
   return (
@@ -19,18 +18,6 @@ export function Hero() {
             Practice algorithms, track your progress, and get AI-powered feedback.
           </p>
           <div className="space-x-4">
-            <Link
-              to="/signup"
-              className="bg-white text-indigo-600 px-8 py-3 rounded-lg font-semibold hover:bg-opacity-90 transition"
-            >
-              Get Started Free
-            </Link>
-            <Link
-              to="/algorithms"
-              className="border-2 border-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-indigo-600 transition"
-            >
-              Browse Algorithms
-            </Link>
           </div>
         </motion.div>
       </div>
