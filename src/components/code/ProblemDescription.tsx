@@ -35,7 +35,7 @@ Output: [1,2]
 
 export const ProblemDescription: FC = () => {
   return (
-    <div className="prose prose-invert max-w-none mb-4">
+    <div className="prose prose-sm dark:prose-invert max-w-none overflow-auto">
       <ReactMarkdown>{problemDescription}</ReactMarkdown>
     </div>
   )

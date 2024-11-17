@@ -6,9 +6,10 @@ import { vscodeDark } from '@uiw/codemirror-theme-vscode'
 interface CodeEditorProps {
   initialValue?: string
   onChange?: (value: string) => void
+  className?: string
 }
 
-export const CodeEditor = ({ initialValue = '', onChange }: CodeEditorProps) => {
+export const CodeEditor = ({ initialValue = '', onChange, className }: CodeEditorProps) => {
   const [value, setValue] = useState(initialValue)
 
   useEffect(() => {
@@ -26,11 +27,12 @@ export const CodeEditor = ({ initialValue = '', onChange }: CodeEditorProps) => 
   return (
     <CodeMirror
       value={value}
-      height="400px"
+      height='100%'
+      width='100%'
       theme={vscodeDark}
       extensions={[javascript()]}
       onChange={handleChange}
-      className="text-sm"
+      className={className}
     />
   )
 }
