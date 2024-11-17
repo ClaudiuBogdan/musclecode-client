@@ -7,7 +7,7 @@ export const Route = createRootRoute({
       <header>
         <nav>
           <Link to="/">Home</Link>
-          <Link to="/daily">Daily</Link>
+          <Link to="/algorithm">Algorithm</Link>
         </nav>
       </header>
       <main>

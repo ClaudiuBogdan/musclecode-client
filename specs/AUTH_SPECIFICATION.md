@@ -4,296 +4,175 @@
 
 This document outlines the authentication and authorization implementation for the algorithm training application, focusing on security, scalability, and user experience.
 
-## Authentication System
+## Core Principles
 
-### Technology Stack
+- Decoupled authentication layer
+- Provider-agnostic design
+- Type-safe implementation
+- Functional programming approach
+- Testable and mockable state
 
-- **Token Type**: JWT (JSON Web Tokens)
-- **Token Storage**: HttpOnly Cookies
-- **Refresh Token**: Secure HTTP-only cookie with rotation
-- **Session Management**: Server-side session validation
+## Architecture Components
 
-### Authentication Flow
+### 1. Auth Store Interface
 
-```typescript:src/lib/auth/types.ts
-interface AuthTokens {
-  accessToken: string;
-  refreshToken: string;
-}
+The auth store will be implemented using Zustand, exposing a minimal interface:
 
-interface AuthUser {
-  id: string;
-  email: string;
-  roles: UserRole[];
-  permissions: Permission[];
-}
-```
-
-```typescript:src/lib/auth/authStore.ts
-interface AuthState {
-  user: AuthUser | null;
-  isAuthenticated: boolean;
-  isLoading: boolean;
-  error: Error | null;
-}
-
-export const useAuthStore = create<AuthState & AuthActions>((set) => ({
-  user: null,
-  isAuthenticated: false,
-  isLoading: true,
-  error: null,
-
-  setUser: (user: AuthUser | null) =>
-    set({ user, isAuthenticated: !!user }),
-
-  clearAuth: () =>
-    set({ user: null, isAuthenticated: false }),
-}));
-```
-
-### Token Management
-
-```typescript:src/lib/auth/tokenManager.ts
-export class TokenManager {
-  private static readonly ACCESS_TOKEN_EXPIRY = 15 * 60; // 15 minutes
-  private static readonly REFRESH_TOKEN_EXPIRY = 7 * 24 * 60 * 60; // 7 days
-
-  static async refreshAccessToken(): Promise<AuthTokens | null> {
-    try {
-      const response = await apiClient.post('/auth/refresh');
-      return response.data;
-    } catch (error) {
-      // Handle token refresh failure
-      return null;
-    }
-  }
-
-  static isTokenExpired(token: string): boolean {
-    try {
-      const decoded = jwtDecode(token);
-      return decoded.exp! * 1000 < Date.now();
-    } catch {
-      return true;
-    }
-  }
+```typescript
+interface AuthStore {
+  // State
+  readonly user: User | null;
+  readonly isAuthenticated: boolean;
+  readonly isLoading: boolean;
+  
+  // Actions
+  signIn: (credentials: AuthCredentials) => Promise<void>;
+  signOut: () => Promise<void>;
+  refreshToken: () => Promise<void>;
+  hasPermission: (permission: Permission) => boolean;
+  validateAccess: (requirements: AccessRequirements) => Either<AuthError, true>;
 }
 ```
 
-### Authentication Provider
+### 2. Auth Provider Interface
 
-```typescript:src/lib/auth/AuthProvider.tsx
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
-  children
-}) => {
-  const { setUser, clearAuth } = useAuthStore();
+Abstract interface for implementing different auth providers:
 
-  useEffect(() => {
-    const initializeAuth = async () => {
-      try {
-        const session = await apiClient.get('/auth/session');
-        setUser(session.data.user);
-      } catch {
-        clearAuth();
-      }
-    };
-
-    initializeAuth();
-  }, []);
-
-  return (
-    <AuthContext.Provider value={authContextValue}>
-      {children}
-    </AuthContext.Provider>
-  );
-};
-```
-
-## Authorization System
-
-### Role-Based Access Control (RBAC)
-
-```typescript:src/lib/auth/rbac.ts
-export enum UserRole {
-  USER = 'USER',
-  PREMIUM = 'PREMIUM',
-  ADMIN = 'ADMIN'
-}
-
-export enum Permission {
-  READ_ALGORITHM = 'READ_ALGORITHM',
-  SUBMIT_SOLUTION = 'SUBMIT_SOLUTION',
-  ACCESS_PREMIUM_CONTENT = 'ACCESS_PREMIUM_CONTENT',
-  MANAGE_USERS = 'MANAGE_USERS'
-}
-
-const rolePermissions: Record<UserRole, Permission[]> = {
-  [UserRole.USER]: [
-    Permission.READ_ALGORITHM,
-    Permission.SUBMIT_SOLUTION
-  ],
-  [UserRole.PREMIUM]: [
-    Permission.READ_ALGORITHM,
-    Permission.SUBMIT_SOLUTION,
-    Permission.ACCESS_PREMIUM_CONTENT
-  ],
-  [UserRole.ADMIN]: [
-    Permission.READ_ALGORITHM,
-    Permission.SUBMIT_SOLUTION,
-    Permission.ACCESS_PREMIUM_CONTENT,
-    Permission.MANAGE_USERS
-  ]
-};
-```
-
-### Authorization Hooks
-
-```typescript:src/lib/auth/hooks.ts
-export function useAuthorization() {
-  const user = useAuthStore(state => state.user);
-
-  const hasPermission = useCallback((permission: Permission) => {
-    if (!user) return false;
-    return user.permissions.includes(permission);
-  }, [user]);
-
-  const hasRole = useCallback((role: UserRole) => {
-    if (!user) return false;
-    return user.roles.includes(role);
-  }, [user]);
-
-  return { hasPermission, hasRole };
+```typescript
+interface AuthProvider {
+  authenticate: (credentials: AuthCredentials) => Promise<User>;
+  deauthenticate: () => Promise<void>;
+  refreshSession: () => Promise<void>;
+  getCurrentUser: () => Promise<User | null>;
 }
 ```
 
-### Protected Route Components
+### 3. Route Protection
 
-```typescript:src/components/auth/ProtectedRoute.tsx
-interface ProtectedRouteProps {
-  children: React.ReactNode;
-  requiredPermission?: Permission;
-  requiredRole?: UserRole;
-}
+TanStack Router implementation will use:
 
-export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
-  children,
-  requiredPermission,
-  requiredRole
-}) => {
-  const { hasPermission, hasRole } = useAuthorization();
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    const isAuthorized =
-      (!requiredPermission || hasPermission(requiredPermission)) &&
-      (!requiredRole || hasRole(requiredRole));
-
-    if (!isAuthorized) {
-      navigate('/unauthorized');
-    }
-  }, [requiredPermission, requiredRole, hasPermission, hasRole]);
-
-  return <>{children}</>;
-};
-```
-
-## Security Measures
-
-### CSRF Protection
-
-```typescript:src/lib/auth/csrf.ts
-export const csrfMiddleware = {
-  getCsrfToken: async () => {
-    const response = await apiClient.get('/auth/csrf');
-    return response.data.token;
-  },
-
-  setRequestHeader: (token: string) => {
-    apiClient.defaults.headers['X-CSRF-Token'] = token;
-  }
-};
-```
-
-### Request Interceptors
-
-```typescript:src/lib/api/interceptors.ts
-apiClient.interceptors.response.use(
-  (response) => response,
-  async (error) => {
-    const originalRequest = error.config;
-
-    if (error.response.status === 401 && !originalRequest._retry) {
-      originalRequest._retry = true;
-
-      const newTokens = await TokenManager.refreshAccessToken();
-      if (newTokens) {
-        return apiClient(originalRequest);
-      }
-
-      // Redirect to login if refresh fails
-      useAuthStore.getState().clearAuth();
-      window.location.href = '/login';
-    }
-
-    return Promise.reject(error);
-  }
-);
-```
-
-## Session Management
-
-```typescript:src/lib/auth/session.ts
-export class SessionManager {
-  static async validateSession(): Promise<boolean> {
-    try {
-      await apiClient.get('/auth/validate');
-      return true;
-    } catch {
-      return false;
-    }
-  }
-
-  static async invalidateSession(): Promise<void> {
-    await apiClient.post('/auth/logout');
-    useAuthStore.getState().clearAuth();
-  }
-
-  static startSessionMonitor(): void {
-    // Periodically check session validity
-    setInterval(async () => {
-      const isValid = await this.validateSession();
-      if (!isValid) {
-        this.invalidateSession();
-      }
-    }, 5 * 60 * 1000); // Check every 5 minutes
-  }
-}
-```
+- Route-level middleware for protection
+- Higher-order function for wrapping protected routes
+- Redirect handling for unauthenticated access
 
 ## Implementation Guidelines
 
-1. **Token Storage**
+### Auth Store Creation
 
-   - Access tokens stored in memory only
-   - Refresh tokens in HTTP-only cookies
-   - No sensitive data in localStorage/sessionStorage
+1. Create a factory function for auth store initialization
+2. Accept auth provider as dependency injection
+3. Implement state persistence strategy
+4. Provide dev tools integration
 
-2. **Security Headers**
+### Route Protection Strategy
 
-   - Implement CSP (Content Security Policy)
-   - Use Strict-Transport-Security
-   - Enable X-Frame-Options
-   - Set X-XSS-Protection
+```typescript
+interface ProtectedRouteConfig {
+  redirectTo: string;
+  roles?: string[];
+  permissions?: string[];
+}
+```
 
-3. **Error Handling**
+### Component Integration
 
-   - Generic error messages to users
-   - Detailed logging server-side
-   - Rate limiting on auth endpoints
+1. Use hooks for accessing auth state
+2. Implement render-props pattern for protected content
+3. Provide HOCs for common auth patterns
 
-4. **Password Requirements**
-   - Minimum length: 12 characters
-   - Require mixture of characters
-   - Check against common password lists
-   - Implement password history
+## State Management
 
-This specification provides a secure, scalable authentication and authorization system that follows security best practices while maintaining a good user experience.
+### Core State
+
+- Authentication status
+- User information
+- Session tokens
+- Loading states
+- Error states
+
+### Side Effects
+
+- Token refresh mechanism
+- Session persistence
+- Network state synchronization
+
+## Testing Strategy
+
+### Mock Implementation
+
+1. Provide mock auth provider
+2. Implement test utilities
+3. Define common test scenarios
+
+### State Testing
+
+1. Store initialization
+2. State transitions
+3. Side effect handling
+4. Error scenarios
+
+## Error Handling
+
+1. Define auth-specific error types
+2. Implement error boundaries
+3. Provide error recovery mechanisms
+
+## Security Considerations
+
+1. Token storage strategy
+2. XSS protection
+3. CSRF protection
+4. Rate limiting
+5. Session management
+
+## Integration Points
+
+### Router Integration
+
+```typescript
+// Example route configuration
+const routes = {
+  private: {
+    path: '/private',
+    middleware: [requireAuth({
+      redirectTo: '/login',
+      roles: ['user']
+    })]
+  }
+}
+```
+
+### Store Integration
+
+```typescript
+// Example store usage
+const useAuth = create<AuthStore>((set) => ({
+  // Implementation will be provided by concrete auth provider
+}));
+```
+
+## Development Workflow
+
+1. Local development with mock provider
+2. Integration testing with test provider
+3. Production deployment with real provider
+
+## Migration Strategy
+
+1. Gradual adoption path
+2. Backwards compatibility
+3. Feature flags for new auth features
+
+## Performance Considerations
+
+1. Lazy loading of auth components
+2. Minimal bundle size
+3. Efficient state updates
+4. Caching strategies
+
+## Monitoring & Debugging
+
+1. Auth state logging
+2. Performance metrics
+3. Error tracking
+4. User session analytics
