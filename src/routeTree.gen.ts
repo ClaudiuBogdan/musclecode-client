@@ -16,22 +16,22 @@ import { Route as rootRoute } from './routes/__root'
 
 // Create Virtual Routes
 
-const AlgorithmLazyImport = createFileRoute('/algorithm')()
 const IndexLazyImport = createFileRoute('/')()
+const AlgorithmIdLazyImport = createFileRoute('/algorithm/$id')()
 
 // Create/Update Routes
-
-const AlgorithmLazyRoute = AlgorithmLazyImport.update({
-  id: '/algorithm',
-  path: '/algorithm',
-  getParentRoute: () => rootRoute,
-} as any).lazy(() => import('./routes/algorithm.lazy').then((d) => d.Route))
 
 const IndexLazyRoute = IndexLazyImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRoute,
 } as any).lazy(() => import('./routes/index.lazy').then((d) => d.Route))
+
+const AlgorithmIdLazyRoute = AlgorithmIdLazyImport.update({
+  id: '/algorithm/$id',
+  path: '/algorithm/$id',
+  getParentRoute: () => rootRoute,
+} as any).lazy(() => import('./routes/algorithm.$id.lazy').then((d) => d.Route))
 
 // Populate the FileRoutesByPath interface
 
@@ -44,11 +44,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexLazyImport
       parentRoute: typeof rootRoute
     }
-    '/algorithm': {
-      id: '/algorithm'
-      path: '/algorithm'
-      fullPath: '/algorithm'
-      preLoaderRoute: typeof AlgorithmLazyImport
+    '/algorithm/$id': {
+      id: '/algorithm/$id'
+      path: '/algorithm/$id'
+      fullPath: '/algorithm/$id'
+      preLoaderRoute: typeof AlgorithmIdLazyImport
       parentRoute: typeof rootRoute
     }
   }
@@ -58,37 +58,37 @@ declare module '@tanstack/react-router' {
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexLazyRoute
-  '/algorithm': typeof AlgorithmLazyRoute
+  '/algorithm/$id': typeof AlgorithmIdLazyRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexLazyRoute
-  '/algorithm': typeof AlgorithmLazyRoute
+  '/algorithm/$id': typeof AlgorithmIdLazyRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexLazyRoute
-  '/algorithm': typeof AlgorithmLazyRoute
+  '/algorithm/$id': typeof AlgorithmIdLazyRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/algorithm'
+  fullPaths: '/' | '/algorithm/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/algorithm'
-  id: '__root__' | '/' | '/algorithm'
+  to: '/' | '/algorithm/$id'
+  id: '__root__' | '/' | '/algorithm/$id'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexLazyRoute: typeof IndexLazyRoute
-  AlgorithmLazyRoute: typeof AlgorithmLazyRoute
+  AlgorithmIdLazyRoute: typeof AlgorithmIdLazyRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexLazyRoute: IndexLazyRoute,
-  AlgorithmLazyRoute: AlgorithmLazyRoute,
+  AlgorithmIdLazyRoute: AlgorithmIdLazyRoute,
 }
 
 export const routeTree = rootRoute
@@ -102,14 +102,14 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/",
-        "/algorithm"
+        "/algorithm/$id"
       ]
     },
     "/": {
       "filePath": "index.lazy.tsx"
     },
-    "/algorithm": {
-      "filePath": "algorithm.lazy.tsx"
+    "/algorithm/$id": {
+      "filePath": "algorithm.$id.lazy.tsx"
     }
   }
 }

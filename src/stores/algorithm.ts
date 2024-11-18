@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import type { CodeRunResponse } from "@/lib/api/code";
+import { AlgorithmFile } from "@/types/algorithm";
 
 export type CodeLanguage =
   | "typescript"
@@ -8,7 +9,7 @@ export type CodeLanguage =
   | "python"
   | "java"
   | "cpp";
-export type CodeTab = "solution" | "test";
+export type CodeTab = string;
 
 interface LayoutStore {
   sizes: number[];
@@ -22,8 +23,7 @@ type StoredCode = Record<
     // algorithmId
     [K in CodeLanguage]?: {
       // language
-      solution: string;
-      test: string;
+      [K in CodeTab]: string;
     };
   }
 >;
@@ -43,6 +43,10 @@ interface CodeStoreState {
   executionResult: CodeRunResponse | null;
   startTime: Record<string, number | null>;
   timerState: Record<string, TimerState>;
+  initializeCode: (
+    algorithmId: string,
+    files: Record<string, AlgorithmFile[]>
+  ) => void;
 }
 
 interface CodeStoreActions {
@@ -205,6 +209,24 @@ export const useCodeStore = create<CodeStoreState & CodeStoreActions>()(
         const code = get().getCode(algorithmId, language, activeTab);
         const response = await runCode({ algorithmId, language, code });
         set({ executionResult: response });
+      },
+
+      initializeCode: (algorithmId, files) => {
+        const codeState: Record<
+          string,
+          Record<string, Record<string, string>>
+        > = {};
+
+        Object.entries(files).forEach(([language, languageFiles]) => {
+          codeState[algorithmId] = codeState[algorithmId] || {};
+          codeState[algorithmId][language] = {};
+
+          languageFiles.forEach((file) => {
+            codeState[algorithmId][language][file.name] = file.content;
+          });
+        });
+
+        set({ storedCode: codeState });
       },
     }),
     {
