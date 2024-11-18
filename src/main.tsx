@@ -16,13 +16,22 @@ declare module '@tanstack/react-router' {
   }
 }
 
-// Render the app
-const rootElement = document.getElementById('root')!
-if (!rootElement.innerHTML) {
-  const root = ReactDOM.createRoot(rootElement)
-  root.render(
+async function enableMocking() {
+  if (process.env.NODE_ENV !== 'development') {
+    return
+  }
+
+  const { worker } = await import('./lib/mocks/browser')
+  return worker.start({
+    onUnhandledRequest: 'bypass', // Don't warn about unhandled requests
+  })
+}
+
+// Initialize MSW and then render the app
+enableMocking().then(() => {
+  ReactDOM.createRoot(document.getElementById('root')!).render(
     <StrictMode>
       <RouterProvider router={router} />
-    </StrictMode>,
+    </StrictMode>
   )
-}
+})
