@@ -1,5 +1,6 @@
 import { FC } from 'react'
 import ReactMarkdown from 'react-markdown'
+import { cn } from "@/lib/utils"
 
 const problemDescription = `
 # Two Sum
@@ -35,7 +36,14 @@ Output: [1,2]
 
 export const ProblemDescription: FC = () => {
   return (
-    <div className="prose prose-sm dark:prose-invert max-w-none overflow-auto">
+    <div className={cn(
+      "prose prose-sm max-w-none overflow-auto",
+      "prose-headings:text-foreground",
+      "prose-p:text-muted-foreground",
+      "prose-strong:text-foreground",
+      "prose-code:text-foreground",
+      "prose-ul:text-muted-foreground"
+    )}>
       <ReactMarkdown>{problemDescription}</ReactMarkdown>
     </div>
   )
