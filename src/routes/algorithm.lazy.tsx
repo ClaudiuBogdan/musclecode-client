@@ -6,7 +6,8 @@ import { useLayoutStore, useCodeStore } from '@/stores/algorithm'
 import { LanguageSelector } from '@/components/code/LanguageSelector'
 import { ExecutionResult } from '@/components/code/ExecutionResult'
 import { EditorTabs } from '@/components/code/EditorTabs'
-import { useEffect } from 'react'
+import { Timer } from '@/components/code/Timer'
+import { useEffect, useCallback } from 'react'
 
 export const Route = createLazyFileRoute('/algorithm')({
   component: Algorithm,
@@ -19,11 +20,16 @@ function Algorithm() {
     language,
     activeTab,
     executionResult,
+    timerState,
     setAlgorithmId,
     setLanguage,
     setActiveTab,
     setCode,
     getCode,
+    startTimer,
+    pauseTimer,
+    resumeTimer,
+    resetTimer,
   } = useCodeStore()
 
   useEffect(() => {
@@ -33,6 +39,12 @@ function Algorithm() {
   const currentCode = algorithmId 
     ? getCode(algorithmId, language, activeTab)
     : ''
+
+  const handleTimerStart = useCallback(() => {
+    if (algorithmId) {
+      startTimer(algorithmId)
+    }
+  }, [algorithmId, startTimer])
 
   return (
     <div className="h-[calc(100vh-2rem)] p-2">
@@ -54,10 +66,22 @@ function Algorithm() {
           className="h-full flex flex-col bg-gray-900"
         >
           {/* Top Controls */}
-          <div className="flex justify-between items-center border-b border-gray-700">
+          <div className="flex justify-between items-center border-b border-gray-700 overflow-auto">
             <EditorTabs activeTab={activeTab} onTabChange={setActiveTab} />
-            <div className="px-3 h-9 flex items-center border-l border-gray-700">
-              <LanguageSelector value={language} onChange={setLanguage} />
+            <div className="flex items-center">
+              {algorithmId && (
+                <Timer 
+                  algorithmId={algorithmId}
+                  timerState={timerState[algorithmId]}
+                  onStart={handleTimerStart}
+                  onPause={pauseTimer}
+                  onResume={resumeTimer}
+                  onReset={resetTimer}
+                />
+              )}
+              <div className="px-3 h-9 flex items-center border-l border-gray-700">
+                <LanguageSelector value={language} onChange={setLanguage} />
+              </div>
             </div>
           </div>
 

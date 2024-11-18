@@ -27,12 +27,21 @@ type StoredCode = Record<
   }
 >;
 
+interface TimerState {
+  startTime: number | null;
+  pausedAt: number | null;
+  totalPausedTime: number;
+  isRunning: boolean;
+}
+
 interface CodeStore {
   algorithmId: string | null;
   language: CodeLanguage;
   activeTab: CodeTab;
   storedCode: StoredCode;
   executionResult: string;
+  startTime: Record<string, number | null>;
+  timerState: Record<string, TimerState>;
   setAlgorithmId: (id: string) => void;
   setLanguage: (language: CodeLanguage) => void;
   setActiveTab: (tab: CodeTab) => void;
@@ -43,6 +52,11 @@ interface CodeStore {
     tab: CodeTab
   ) => string;
   setExecutionResult: (result: string) => void;
+  setStartTime: (algorithmId: string, time: number) => void;
+  startTimer: (algorithmId: string) => void;
+  pauseTimer: (algorithmId: string) => void;
+  resumeTimer: (algorithmId: string) => void;
+  resetTimer: (algorithmId: string) => void;
 }
 
 export const useLayoutStore = create<LayoutStore>()(
@@ -66,6 +80,8 @@ export const useCodeStore = create<CodeStore>()(
       activeTab: "solution",
       storedCode: {},
       executionResult: "",
+      startTime: {},
+      timerState: {},
 
       setAlgorithmId: (algorithmId) => set({ algorithmId }),
 
@@ -103,6 +119,79 @@ export const useCodeStore = create<CodeStore>()(
       },
 
       setExecutionResult: (executionResult) => set({ executionResult }),
+
+      setStartTime: (algorithmId, time) =>
+        set((state) => ({
+          startTime: {
+            ...state.startTime,
+            [algorithmId]: time,
+          },
+        })),
+
+      startTimer: (algorithmId) =>
+        set((state) => {
+          // Only start if there's no existing timer state
+          if (state.timerState[algorithmId]) {
+            return state;
+          }
+
+          return {
+            timerState: {
+              ...state.timerState,
+              [algorithmId]: {
+                startTime: Date.now(),
+                pausedAt: null,
+                totalPausedTime: 0,
+                isRunning: true,
+              },
+            },
+          };
+        }),
+
+      pauseTimer: (algorithmId) =>
+        set((state) => ({
+          timerState: {
+            ...state.timerState,
+            [algorithmId]: {
+              ...state.timerState[algorithmId],
+              pausedAt: Date.now(),
+              isRunning: false,
+            },
+          },
+        })),
+
+      resumeTimer: (algorithmId) =>
+        set((state) => {
+          const timer = state.timerState[algorithmId];
+          if (!timer || !timer.pausedAt) return state;
+
+          const additionalPausedTime = Date.now() - timer.pausedAt;
+
+          return {
+            timerState: {
+              ...state.timerState,
+              [algorithmId]: {
+                ...timer,
+                pausedAt: null,
+                totalPausedTime: timer.totalPausedTime + additionalPausedTime,
+                isRunning: true,
+              },
+            },
+          };
+        }),
+
+      resetTimer: (algorithmId) =>
+        set((state) => ({
+          timerState: {
+            ...state.timerState,
+            [algorithmId]: {
+              startTime: Date.now(),
+              pausedAt: null,
+              totalPausedTime: 0,
+              isRunning: true,
+            },
+          },
+        })),
     }),
     {
       name: "code-store",

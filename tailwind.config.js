@@ -51,6 +51,24 @@ export default {
           5: "hsl(var(--chart-5))",
         },
       },
+      animation: {
+        "pulse-attention":
+          "pulse-attention 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+      },
+      keyframes: {
+        "pulse-attention": {
+          "0%, 100%": {
+            transform: "scale(1)",
+            opacity: 1,
+            color: "rgb(248 113 113)", // text-red-400
+          },
+          "50%": {
+            transform: "scale(1.05)",
+            opacity: 0.85,
+            color: "rgb(239 68 68)", // text-red-500
+          },
+        },
+      },
     },
   },
   plugins: [require("tailwindcss-animate"), require("@tailwindcss/typography")],
