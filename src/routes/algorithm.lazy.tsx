@@ -8,6 +8,8 @@ import { ExecutionResult } from '@/components/code/ExecutionResult'
 import { EditorTabs } from '@/components/code/EditorTabs'
 import { Timer } from '@/components/code/Timer'
 import { useEffect, useCallback } from 'react'
+import { RunButton } from '@/components/code/RunButton'
+import { useRunCode } from '@/lib/api/code'
 
 export const Route = createLazyFileRoute('/algorithm')({
   component: Algorithm,
@@ -30,7 +32,9 @@ function Algorithm() {
     pauseTimer,
     resumeTimer,
     resetTimer,
+    setExecutionResult,
   } = useCodeStore()
+  const { runCode, isRunning } = useRunCode()
 
   useEffect(() => {
     setAlgorithmId('algorithm-1')
@@ -45,6 +49,19 @@ function Algorithm() {
       startTimer(algorithmId)
     }
   }, [algorithmId, startTimer])
+
+  const handleRunCode = useCallback(async () => {
+    if (!algorithmId) return
+    
+    const code = getCode(algorithmId, language, activeTab)
+    const result = await runCode({ 
+      algorithmId, 
+      language, 
+      code 
+    })
+    
+    setExecutionResult(result)
+  }, [algorithmId, language, activeTab, getCode, runCode, setExecutionResult])
 
   return (
     <div className="h-[calc(100vh-2rem)] p-2">
@@ -68,6 +85,9 @@ function Algorithm() {
           {/* Top Controls */}
           <div className="flex justify-between items-center border-b border-gray-700 overflow-auto">
             <EditorTabs activeTab={activeTab} onTabChange={setActiveTab} />
+            <div className="flex-1 flex justify-center">
+              <RunButton onRun={handleRunCode} isRunning={isRunning} />
+            </div>
             <div className="flex items-center">
               {algorithmId && (
                 <Timer 
@@ -96,7 +116,7 @@ function Algorithm() {
 
           {/* Execution Results */}
           <div className="h-48 border-t border-gray-700">
-            <ExecutionResult result={executionResult} />
+            {/* <ExecutionResult result={executionResult} /> */}
           </div>
         </div>
       </Split>

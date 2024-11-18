@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
+import type { CodeRunResponse } from "@/lib/api/code";
 
 export type CodeLanguage =
   | "typescript"
@@ -34,14 +35,17 @@ interface TimerState {
   isRunning: boolean;
 }
 
-interface CodeStore {
+interface CodeStoreState {
   algorithmId: string | null;
   language: CodeLanguage;
   activeTab: CodeTab;
   storedCode: StoredCode;
-  executionResult: string;
+  executionResult: CodeRunResponse | null;
   startTime: Record<string, number | null>;
   timerState: Record<string, TimerState>;
+}
+
+interface CodeStoreActions {
   setAlgorithmId: (id: string) => void;
   setLanguage: (language: CodeLanguage) => void;
   setActiveTab: (tab: CodeTab) => void;
@@ -51,12 +55,13 @@ interface CodeStore {
     language: CodeLanguage,
     tab: CodeTab
   ) => string;
-  setExecutionResult: (result: string) => void;
+  setExecutionResult: (result: CodeRunResponse) => void;
   setStartTime: (algorithmId: string, time: number) => void;
   startTimer: (algorithmId: string) => void;
   pauseTimer: (algorithmId: string) => void;
   resumeTimer: (algorithmId: string) => void;
   resetTimer: (algorithmId: string) => void;
+  runCode: () => Promise<void>;
 }
 
 export const useLayoutStore = create<LayoutStore>()(
@@ -72,14 +77,14 @@ export const useLayoutStore = create<LayoutStore>()(
   )
 );
 
-export const useCodeStore = create<CodeStore>()(
+export const useCodeStore = create<CodeStoreState & CodeStoreActions>()(
   persist(
     (set, get) => ({
       algorithmId: null,
       language: "typescript",
       activeTab: "solution",
       storedCode: {},
-      executionResult: "",
+      executionResult: null,
       startTime: {},
       timerState: {},
 
@@ -192,6 +197,15 @@ export const useCodeStore = create<CodeStore>()(
             },
           },
         })),
+
+      runCode: async () => {
+        const { algorithmId, language, activeTab } = get();
+        if (!algorithmId) return;
+
+        const code = get().getCode(algorithmId, language, activeTab);
+        const response = await runCode({ algorithmId, language, code });
+        set({ executionResult: response });
+      },
     }),
     {
       name: "code-store",
