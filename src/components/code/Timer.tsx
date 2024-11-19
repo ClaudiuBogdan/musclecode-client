@@ -116,7 +116,7 @@ export function Timer({
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent 
-            className="w-56" 
+            className="w-56 bg-gray-800 border-gray-700 text-gray-200" 
             align="end"
             alignOffset={-4}
           >

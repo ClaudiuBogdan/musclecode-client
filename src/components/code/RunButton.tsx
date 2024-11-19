@@ -11,11 +11,17 @@ export function RunButton({ onRun, isRunning }: RunButtonProps) {
     <Button 
       onClick={onRun} 
       disabled={isRunning}
-      className="gap-2 min-w-[120px] text-gray-200 hover:text-green-400 border-gray-700 hover:border-gray-600 bg-gray-800/50 hover:bg-gray-700/50"
+      className={`
+        gap-2 min-w-[120px] font-medium
+        ${isRunning
+          ? 'text-green-400 border-green-700 bg-green-900/20'
+          : 'text-green-400 hover:text-green-300 border-green-800/40 hover:border-green-700 bg-green-900/10 hover:bg-green-900/20'
+        }
+      `}
       variant="outline"
     >
-      <PlayIcon className="h-4 w-4" />
-      {isRunning ? 'Running...' : 'Run Code'}
+      <PlayIcon className={`h-4 w-4 ${isRunning ? 'animate-pulse' : ''}`} />
+      {isRunning ? 'Running...' : 'Run'}
     </Button>
   )
 }
