@@ -83,8 +83,21 @@ export const useLayoutStore = create<LayoutState>()(
     (set) => ({
       sizes: [40, 60],
       editorSizes: [70, 30],
-      setSizes: (sizes: [number, number]) => set({ sizes }),
-      setEditorSizes: (sizes: [number, number]) => set({ editorSizes: sizes }),
+      setSizes: (sizes: [number, number]) => {
+        if (Math.abs(sizes[0] + sizes[1] - 100) > 1) {
+          console.error("Invalid sizes", sizes);
+          return;
+        }
+        set({ sizes });
+      },
+      setEditorSizes: (sizes: [number, number]) => {
+        console.log("setEditorSizes", sizes);
+        if (Math.abs(sizes[0] + sizes[1] - 100) > 1) {
+          console.error("Invalid sizes", sizes);
+          return;
+        }
+        set({ editorSizes: sizes });
+      },
     }),
     {
       name: "layout-store",
