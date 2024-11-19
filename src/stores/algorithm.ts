@@ -42,7 +42,8 @@ interface TimerState {
 
 interface CodeStoreState {
   algorithmId: string | null;
-  language: CodeLanguage;
+  activeLanguage: CodeLanguage;
+  languages: CodeLanguage[];
   activeTab: CodeFile;
   storedCode: StoredCode;
   isRunning: boolean;
@@ -50,15 +51,15 @@ interface CodeStoreState {
   startTime: Record<string, number | null>;
   timerState: Record<string, TimerState>;
   isInitialized: boolean;
+}
+
+interface CodeStoreActions {
   initializeCode: (
     algorithmId: string,
     files: Record<string, AlgorithmFile[]>
   ) => void;
-}
-
-interface CodeStoreActions {
   setAlgorithmId: (id: string) => void;
-  setLanguage: (language: CodeLanguage) => void;
+  setActiveLanguage: (language: CodeLanguage) => void;
   setActiveTab: (tab: CodeFile) => void;
   setCode: (code: string) => void;
   getCode: (
@@ -110,7 +111,9 @@ export const useCodeStore = create<CodeStoreState & CodeStoreActions>()(
   persist(
     (set, get) => ({
       algorithmId: null,
-      language: "typescript",
+      activeLanguage: "typescript",
+      languages: [],
+      supportedLanguages: [],
       activeTab: "solution",
       storedCode: {},
       isRunning: false,
@@ -120,7 +123,7 @@ export const useCodeStore = create<CodeStoreState & CodeStoreActions>()(
       isInitialized: false,
       setAlgorithmId: (algorithmId) => set({ algorithmId }),
 
-      setLanguage: (language) => set({ language }),
+      setActiveLanguage: (language) => set({ activeLanguage: language }),
 
       setActiveTab: (activeTab) => set({ activeTab }),
 
@@ -135,16 +138,17 @@ export const useCodeStore = create<CodeStoreState & CodeStoreActions>()(
           if (!newStoredCode[state.algorithmId]) {
             newStoredCode[state.algorithmId] = {};
           }
-          if (!newStoredCode[state.algorithmId][state.language]) {
-            newStoredCode[state.algorithmId][state.language] = {
+          if (!newStoredCode[state.algorithmId][state.activeLanguage]) {
+            newStoredCode[state.algorithmId][state.activeLanguage] = {
               solution: "",
               test: "",
             };
           }
 
           // Update the code for the current algorithm, language, and tab
-          newStoredCode[state.algorithmId][state.language]![state.activeTab] =
-            code;
+          newStoredCode[state.algorithmId][state.activeLanguage]![
+            state.activeTab
+          ] = code;
 
           return { storedCode: newStoredCode };
         }),
@@ -236,7 +240,7 @@ export const useCodeStore = create<CodeStoreState & CodeStoreActions>()(
 
       runCode: async () => {
         console.log("runCode");
-        const { algorithmId, language, activeTab } = get();
+        const { algorithmId, activeLanguage: language, activeTab } = get();
         if (!algorithmId) return;
 
         const code = get().getCode(algorithmId, language, activeTab);
@@ -257,8 +261,6 @@ export const useCodeStore = create<CodeStoreState & CodeStoreActions>()(
           Record<string, Record<string, string>>
         > = {};
 
-        console.log(files);
-
         Object.entries(files).forEach(([language, languageFiles]) => {
           console.log(language, languageFiles);
           codeState[algorithmId] = codeState[algorithmId] || {};
@@ -269,7 +271,11 @@ export const useCodeStore = create<CodeStoreState & CodeStoreActions>()(
           });
         });
 
-        set({ storedCode: codeState, isInitialized: true });
+        const languages = Object.keys(
+          codeState[algorithmId] ?? {}
+        ) as CodeLanguage[];
+
+        set({ storedCode: codeState, isInitialized: true, languages });
       },
     }),
     {
@@ -278,3 +284,4 @@ export const useCodeStore = create<CodeStoreState & CodeStoreActions>()(
     }
   )
 );
+

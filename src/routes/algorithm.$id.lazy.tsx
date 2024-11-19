@@ -2,7 +2,7 @@ import Split from '@uiw/react-split'
 import { CodeEditor } from '@/components/code/CodeEditor'
 import { ProblemDescription } from '@/components/code/ProblemDescription'
 import { createLazyFileRoute, useParams } from '@tanstack/react-router'
-import { useLayoutStore, useCodeStore } from '@/stores/algorithm'
+import { useLayoutStore, useCodeStore, useAlgorithmStore, CodeLanguage } from '@/stores/algorithm'
 import { LanguageSelector } from '@/components/code/LanguageSelector'
 import { ExecutionResult } from '@/components/code/ExecutionResult'
 import { EditorTabs } from '@/components/code/EditorTabs'
@@ -20,14 +20,13 @@ function Algorithm() {
   const { data, isLoading } = useAlgorithmData(algorithmId)
   const { sizes, editorSizes, setSizes, setEditorSizes } = useLayoutStore()
   const {
-    language,
+    activeLanguage: language,
     activeTab,
     executionResult,
     timerState,
     isInitialized,
     isRunning,
     setAlgorithmId,
-    setLanguage,
     setActiveTab,
     setCode,
     getCode,
@@ -64,6 +63,10 @@ function Algorithm() {
     await runCode()
   }
 
+  const handleLanguageChange = (language: CodeLanguage) => {
+    setActiveTab(getFiles(algorithmId, language)[0].name)
+  }
+
   if (isLoading) {
     return <div>Loading...</div>
   }
@@ -98,7 +101,6 @@ function Algorithm() {
               <RunButton onRun={handleRunCode} isRunning={isRunning} />
             </div>
             <div className="flex items-center">
-              {algorithmId && (
                 <Timer
                   algorithmId={algorithmId}
                   timerState={timerState[algorithmId]}
@@ -107,15 +109,7 @@ function Algorithm() {
                   onResume={resumeTimer}
                   onReset={resetTimer}
                 />
-              )}
-              <div className="px-3 h-9 flex items-center border-l border-gray-700">
-                <LanguageSelector value={language} onChange={
-                    (language) => {
-                    setLanguage(language)
-                    setActiveTab(getFiles(algorithmId, language)[0].name)
-                  }}
-                />
-              </div>
+                <LanguageSelector className="px-3 h-9 flex items-center border-l border-gray-700 min-w-[12rem]" onLanguageChange={handleLanguageChange} />
             </div>
           </div>
 
