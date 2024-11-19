@@ -44,8 +44,9 @@ function Algorithm() {
     if (data && !isInitialized) {
       setAlgorithmId(algorithmId)
       initializeCode(algorithmId, data.files)
+      setActiveTab(getFiles(algorithmId, language)[0].name)
     }
-  }, [algorithmId, data, setAlgorithmId, initializeCode, isInitialized])
+  }, [algorithmId, data, language, isInitialized, getFiles, setAlgorithmId, initializeCode, setActiveTab])
 
   const currentCode = algorithmId
     ? getCode(algorithmId, language, activeTab)
@@ -128,14 +129,14 @@ function Algorithm() {
               setEditorSizes([preSize, nextSize])
             }}
           >
-            <div style={{ height: `${editorSizes[0]}%` }} className="overflow-hidden">
+            <div style={{ height: `${editorSizes[0]}%`, minHeight: '100px' }} className="overflow-hidden">
               <CodeEditor
                 className="h-full overflow-auto"
                 initialValue={currentCode}
                 onChange={setCode}
               />
             </div>
-            <div style={{ height: `${editorSizes[1]}%` }} className="border-t border-gray-700">
+            <div style={{ height: `${editorSizes[1]}%`, minHeight: '100px' }} className="border-t border-gray-700">
               <ExecutionResult result={executionResult} />
             </div>
           </Split>
