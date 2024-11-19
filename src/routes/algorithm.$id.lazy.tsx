@@ -9,7 +9,6 @@ import { EditorTabs } from '@/components/code/EditorTabs'
 import { Timer } from '@/components/code/Timer'
 import { useCallback, useEffect } from 'react'
 import { RunButton } from '@/components/code/RunButton'
-import { useRunCode } from '@/lib/api/code'
 import { useAlgorithmData } from '@/lib/api/algorithm'
 
 export const Route = createLazyFileRoute('/algorithm/$id')({
@@ -25,26 +24,28 @@ function Algorithm() {
     activeTab,
     executionResult,
     timerState,
+    isInitialized,
+    isRunning,
     setAlgorithmId,
     setLanguage,
     setActiveTab,
     setCode,
     getCode,
+    getFiles,
     startTimer,
     pauseTimer,
     resumeTimer,
     resetTimer,
-    setExecutionResult,
+    runCode,
     initializeCode,
   } = useCodeStore()
-  const { runCode, isRunning } = useRunCode()
 
   useEffect(() => {
-    if (data) {
+    if (data && !isInitialized) {
       setAlgorithmId(algorithmId)
       initializeCode(algorithmId, data.files)
     }
-  }, [algorithmId, data, setAlgorithmId, initializeCode])
+  }, [algorithmId, data, setAlgorithmId, initializeCode, isInitialized])
 
   const currentCode = algorithmId
     ? getCode(algorithmId, language, activeTab)
@@ -56,18 +57,11 @@ function Algorithm() {
     }
   }, [algorithmId, startTimer])
 
-  const handleRunCode = useCallback(async () => {
+  const handleRunCode = async () => {
     if (!algorithmId) return
 
-    const code = getCode(algorithmId, language, activeTab)
-    const result = await runCode({
-      algorithmId,
-      language,
-      code,
-    })
-
-    setExecutionResult(result)
-  }, [algorithmId, language, activeTab, getCode, runCode, setExecutionResult])
+    await runCode()
+  }
 
   if (isLoading) {
     return <div>Loading...</div>
@@ -97,9 +91,7 @@ function Algorithm() {
             <EditorTabs
               activeTab={activeTab}
               onTabChange={(tab: string) => setActiveTab(tab)}
-              files={Object.entries(data?.files || {}).map(([name]) => ({
-                name,
-              }))}
+              files={getFiles(algorithmId, language)}
             />
             <div className="flex-1 flex justify-center">
               <RunButton onRun={handleRunCode} isRunning={isRunning} />
@@ -116,7 +108,12 @@ function Algorithm() {
                 />
               )}
               <div className="px-3 h-9 flex items-center border-l border-gray-700">
-                <LanguageSelector value={language} onChange={setLanguage} />
+                <LanguageSelector value={language} onChange={
+                    (language) => {
+                    setLanguage(language)
+                    setActiveTab(getFiles(algorithmId, language)[0].name)
+                  }}
+                />
               </div>
             </div>
           </div>

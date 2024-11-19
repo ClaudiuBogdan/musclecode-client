@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
-import type { CodeRunResponse } from "@/lib/api/code";
+import { runCode, type CodeRunResponse } from "@/lib/api/code";
 import { AlgorithmFile } from "@/types/algorithm";
 
 export type CodeLanguage =
@@ -9,7 +9,8 @@ export type CodeLanguage =
   | "python"
   | "java"
   | "cpp";
-export type CodeTab = string;
+
+export type CodeFile = string;
 
 interface LayoutStore {
   sizes: number[];
@@ -18,12 +19,13 @@ interface LayoutStore {
 
 // Type to represent the structure of stored code
 type StoredCode = Record<
+  // algorithmId
   string,
   {
-    // algorithmId
+    // language
     [K in CodeLanguage]?: {
-      // language
-      [K in CodeTab]: string;
+      // tab
+      [K in CodeFile]: string;
     };
   }
 >;
@@ -38,11 +40,13 @@ interface TimerState {
 interface CodeStoreState {
   algorithmId: string | null;
   language: CodeLanguage;
-  activeTab: CodeTab;
+  activeTab: CodeFile;
   storedCode: StoredCode;
+  isRunning: boolean;
   executionResult: CodeRunResponse | null;
   startTime: Record<string, number | null>;
   timerState: Record<string, TimerState>;
+  isInitialized: boolean;
   initializeCode: (
     algorithmId: string,
     files: Record<string, AlgorithmFile[]>
@@ -52,14 +56,17 @@ interface CodeStoreState {
 interface CodeStoreActions {
   setAlgorithmId: (id: string) => void;
   setLanguage: (language: CodeLanguage) => void;
-  setActiveTab: (tab: CodeTab) => void;
+  setActiveTab: (tab: CodeFile) => void;
   setCode: (code: string) => void;
   getCode: (
     algorithmId: string,
     language: CodeLanguage,
-    tab: CodeTab
+    tab: CodeFile
   ) => string;
-  setExecutionResult: (result: CodeRunResponse) => void;
+  getFiles: (
+    algorithmId: string,
+    language: CodeLanguage
+  ) => Array<{ name: string; readOnly?: boolean }>;
   setStartTime: (algorithmId: string, time: number) => void;
   startTimer: (algorithmId: string) => void;
   pauseTimer: (algorithmId: string) => void;
@@ -88,10 +95,11 @@ export const useCodeStore = create<CodeStoreState & CodeStoreActions>()(
       language: "typescript",
       activeTab: "solution",
       storedCode: {},
+      isRunning: false,
       executionResult: null,
       startTime: {},
       timerState: {},
-
+      isInitialized: false,
       setAlgorithmId: (algorithmId) => set({ algorithmId }),
 
       setLanguage: (language) => set({ language }),
@@ -104,6 +112,7 @@ export const useCodeStore = create<CodeStoreState & CodeStoreActions>()(
 
           const newStoredCode = { ...state.storedCode };
 
+          // TODO: Remove this once we have a better way to initialize the code
           // Initialize nested structure if it doesn't exist
           if (!newStoredCode[state.algorithmId]) {
             newStoredCode[state.algorithmId] = {};
@@ -127,7 +136,12 @@ export const useCodeStore = create<CodeStoreState & CodeStoreActions>()(
         return state.storedCode[algorithmId]?.[language]?.[tab] ?? "";
       },
 
-      setExecutionResult: (executionResult) => set({ executionResult }),
+      getFiles: (algorithmId, language) => {
+        const state = get();
+        return Object.keys(state.storedCode[algorithmId]?.[language] ?? {}).map(
+          (name) => ({ name, readOnly: false })
+        );
+      },
 
       setStartTime: (algorithmId, time) =>
         set((state) => ({
@@ -203,12 +217,20 @@ export const useCodeStore = create<CodeStoreState & CodeStoreActions>()(
         })),
 
       runCode: async () => {
+        console.log("runCode");
         const { algorithmId, language, activeTab } = get();
         if (!algorithmId) return;
 
         const code = get().getCode(algorithmId, language, activeTab);
-        const response = await runCode({ algorithmId, language, code });
-        set({ executionResult: response });
+        try {
+          set({ isRunning: true });
+          const response = await runCode({ algorithmId, language, code });
+          set({ executionResult: response });
+        } catch (error) {
+          console.error("Failed to run code:", error);
+        } finally {
+          set({ isRunning: false });
+        }
       },
 
       initializeCode: (algorithmId, files) => {
@@ -217,7 +239,10 @@ export const useCodeStore = create<CodeStoreState & CodeStoreActions>()(
           Record<string, Record<string, string>>
         > = {};
 
+        console.log(files);
+
         Object.entries(files).forEach(([language, languageFiles]) => {
+          console.log(language, languageFiles);
           codeState[algorithmId] = codeState[algorithmId] || {};
           codeState[algorithmId][language] = {};
 
@@ -226,7 +251,7 @@ export const useCodeStore = create<CodeStoreState & CodeStoreActions>()(
           });
         });
 
-        set({ storedCode: codeState });
+        set({ storedCode: codeState, isInitialized: true });
       },
     }),
     {
