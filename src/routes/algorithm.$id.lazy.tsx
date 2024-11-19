@@ -18,7 +18,7 @@ export const Route = createLazyFileRoute('/algorithm/$id')({
 function Algorithm() {
   const { id: algorithmId } = useParams({ from: '/algorithm/$id' })
   const { data, isLoading } = useAlgorithmData(algorithmId)
-  const { sizes, setSizes } = useLayoutStore()
+  const { sizes, editorSizes, setSizes, setEditorSizes } = useLayoutStore()
   const {
     language,
     activeTab,
@@ -118,19 +118,27 @@ function Algorithm() {
             </div>
           </div>
 
-          {/* Code Editor */}
-          <div className="flex-1 overflow-hidden">
-            <CodeEditor
-              className="h-full overflow-auto"
-              initialValue={currentCode}
-              onChange={setCode}
-            />
-          </div>
-
-          {/* Execution Results */}
-          <div className="h-48 border-t border-gray-700">
-            <ExecutionResult result={executionResult} />
-          </div>
+          {/* Vertical Split for Editor and Results */}
+          <Split
+            className="flex-1"
+            style={{ height: 'calc(100% - 37px)' }} // Subtract the height of the top controls
+            lineBar
+            mode="vertical"
+            onDragEnd={(preSize, nextSize) => {
+              setEditorSizes([preSize, nextSize])
+            }}
+          >
+            <div style={{ height: `${editorSizes[0]}%` }} className="overflow-hidden">
+              <CodeEditor
+                className="h-full overflow-auto"
+                initialValue={currentCode}
+                onChange={setCode}
+              />
+            </div>
+            <div style={{ height: `${editorSizes[1]}%` }} className="border-t border-gray-700">
+              <ExecutionResult result={executionResult} />
+            </div>
+          </Split>
         </div>
       </Split>
     </div>

@@ -1,7 +1,8 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
-import { runCode, type CodeRunResponse } from "@/lib/api/code";
+import { runCode } from "@/lib/api/code";
 import { AlgorithmFile } from "@/types/algorithm";
+import { CodeExecutionResponse } from "@/types/testRunner";
 
 export type CodeLanguage =
   | "typescript"
@@ -12,9 +13,11 @@ export type CodeLanguage =
 
 export type CodeFile = string;
 
-interface LayoutStore {
-  sizes: number[];
-  setSizes: (sizes: number[]) => void;
+interface LayoutState {
+  sizes: [number, number];
+  editorSizes: [number, number];
+  setSizes: (sizes: [number, number]) => void;
+  setEditorSizes: (sizes: [number, number]) => void;
 }
 
 // Type to represent the structure of stored code
@@ -43,7 +46,7 @@ interface CodeStoreState {
   activeTab: CodeFile;
   storedCode: StoredCode;
   isRunning: boolean;
-  executionResult: CodeRunResponse | null;
+  executionResult: CodeExecutionResponse | null;
   startTime: Record<string, number | null>;
   timerState: Record<string, TimerState>;
   isInitialized: boolean;
@@ -75,11 +78,13 @@ interface CodeStoreActions {
   runCode: () => Promise<void>;
 }
 
-export const useLayoutStore = create<LayoutStore>()(
+export const useLayoutStore = create<LayoutState>()(
   persist(
     (set) => ({
-      sizes: [50, 50],
-      setSizes: (sizes) => set({ sizes }),
+      sizes: [40, 60],
+      editorSizes: [70, 30],
+      setSizes: (sizes: [number, number]) => set({ sizes }),
+      setEditorSizes: (sizes: [number, number]) => set({ editorSizes: sizes }),
     }),
     {
       name: "layout-store",

@@ -131,7 +131,7 @@ function runTests(
         const passed = hasLoop && hasReturn ? 2 : 0;
         const failed = hasLoop && hasReturn ? 0 : 2;
 
-        const shouldThrow = true;
+        const shouldThrow = false;
         if (shouldThrow) {
           throw new Error("Syntax error");
         }
