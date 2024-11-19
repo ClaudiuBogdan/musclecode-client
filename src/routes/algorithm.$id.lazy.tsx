@@ -10,6 +10,7 @@ import { Timer } from '@/components/code/Timer'
 import { useCallback, useEffect } from 'react'
 import { RunButton } from '@/components/code/RunButton'
 import { useAlgorithmData } from '@/lib/api/algorithm'
+import { SkipButton } from '@/components/code/SkipButton'
 
 export const Route = createLazyFileRoute('/algorithm/$id')({
   component: Algorithm,
@@ -63,6 +64,11 @@ function Algorithm() {
     await runCode()
   }
 
+  const handleSkip = () => {
+    if (!algorithmId) return
+    // TODO: Implement skip
+  }
+
   const handleLanguageChange = (language: CodeLanguage) => {
     setActiveTab(getFiles(algorithmId, language)[0].name)
   }
@@ -97,12 +103,11 @@ function Algorithm() {
               onTabChange={(tab: string) => setActiveTab(tab)}
               files={getFiles(algorithmId, language)}
             />
-            <div className="flex-1 flex justify-center">
-              <RunButton onRun={handleRunCode} isRunning={isRunning} />
-            </div>
             <div className="flex items-center">
-                <Timer
-                  algorithmId={algorithmId}
+              <RunButton onRun={handleRunCode} isRunning={isRunning} />
+              <SkipButton onSkip={handleSkip} disabled={isRunning} />
+              <Timer
+                algorithmId={algorithmId}
                   timerState={timerState[algorithmId]}
                   onStart={handleTimerStart}
                   onPause={pauseTimer}
