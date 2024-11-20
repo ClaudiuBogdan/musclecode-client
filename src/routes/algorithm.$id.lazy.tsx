@@ -2,7 +2,7 @@ import Split from '@uiw/react-split'
 import { CodeEditor } from '@/components/code/CodeEditor'
 import { ProblemDescription } from '@/components/code/ProblemDescription'
 import { createLazyFileRoute, useParams } from '@tanstack/react-router'
-import { useLayoutStore, useCodeStore, useAlgorithmStore, CodeLanguage } from '@/stores/algorithm'
+import { useLayoutStore, useCodeStore, CodeLanguage } from '@/stores/algorithm'
 import { LanguageSelector } from '@/components/code/LanguageSelector'
 import { ExecutionResult } from '@/components/code/ExecutionResult'
 import { EditorTabs } from '@/components/code/EditorTabs'
@@ -132,6 +132,7 @@ function Algorithm() {
               <CodeEditor
                 className="h-full overflow-auto"
                 initialValue={currentCode}
+                lang={language}
                 onChange={setCode}
               />
             </div>

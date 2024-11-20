@@ -2,14 +2,16 @@ import { useCallback, useEffect, useState } from 'react'
 import CodeMirror from '@uiw/react-codemirror'
 import { javascript } from '@codemirror/lang-javascript'
 import { vscodeDark } from '@uiw/codemirror-theme-vscode'
+import { python } from '@codemirror/lang-python'
 
 interface CodeEditorProps {
   initialValue?: string
+  lang?: string
   onChange?: (value: string) => void
   className?: string
 }
 
-export const CodeEditor = ({ initialValue = '', onChange, className }: CodeEditorProps) => {
+export const CodeEditor = ({ initialValue = '', lang, onChange, className }: CodeEditorProps) => {
   const [value, setValue] = useState(initialValue)
 
   useEffect(() => {
@@ -24,13 +26,30 @@ export const CodeEditor = ({ initialValue = '', onChange, className }: CodeEdito
     [onChange]
   )
 
+  const getLanguageExtension = useCallback(() => {
+    switch (lang?.toLowerCase()) {
+      case 'typescript':
+        return javascript({ jsx: false, typescript: true })
+      case 'javascript':
+        return javascript({ jsx: false, typescript: false })
+      case 'python':
+        return python()
+      default:
+        return python() // Default to Python if no language specified
+    }
+  }, [lang])
+
   return (
     <CodeMirror
       value={value}
       height='100%'
       width='100%'
       theme={vscodeDark}
-      extensions={[javascript()]}
+      extensions={[getLanguageExtension()]}
+      basicSetup={{
+        autocompletion: false,
+        allowMultipleSelections: false,
+      }}
       onChange={handleChange}
       className={className}
     />
