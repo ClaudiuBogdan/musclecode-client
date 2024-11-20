@@ -1,4 +1,6 @@
 /** @type {import('tailwindcss').Config} */
+import defaultTheme from "tailwindcss/defaultTheme";
+
 export default {
   darkMode: ["class"],
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
@@ -10,6 +12,7 @@ export default {
         sm: "calc(var(--radius) - 4px)",
       },
       colors: {
+        ...defaultTheme.colors,
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         card: {
