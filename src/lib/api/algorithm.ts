@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { Algorithm } from "@/types/algorithm";
+import { Algorithm, AlgorithmPreview } from "@/types/algorithm";
 
 export const algorithmKeys = {
   all: ["algorithms"] as const,
@@ -21,7 +21,7 @@ export function useAlgorithmData(id: string) {
 }
 
 export function useAlgorithms() {
-  return useQuery<Algorithm[]>({
+  return useQuery<AlgorithmPreview[]>({
     queryKey: algorithmKeys.all,
     queryFn: async () => {
       const res = await fetch("/api/algorithms");

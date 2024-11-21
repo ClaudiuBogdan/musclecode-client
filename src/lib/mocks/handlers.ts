@@ -1,6 +1,7 @@
 import { http, HttpResponse } from "msw";
 import { Algorithm } from "@/types/algorithm";
 import { CodeExecutionResponse, TestItem } from "@/types/testRunner";
+import { seedAlgorithms } from "./api/algorithms/seed";
 
 interface RunCodeRequest {
   code: string;
@@ -12,6 +13,7 @@ const mockAlgorithms: Algorithm[] = [
   {
     id: "1234",
     title: "Two Sum",
+    category: "Array",
     description:
       "Given an array of integers nums and an integer target, return indices of the two numbers such that they add up to target.",
     difficulty: "easy",
@@ -264,7 +266,7 @@ export const handlers = [
   }),
 
   http.get("/api/algorithms", () => {
-    return HttpResponse.json(mockAlgorithms);
+    return HttpResponse.json(seedAlgorithms());
   }),
 
   http.post("/api/code/run", async ({ request }) => {
