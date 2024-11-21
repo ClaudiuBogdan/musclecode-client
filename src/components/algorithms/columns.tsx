@@ -13,18 +13,13 @@ export const columns: ColumnDef<AlgorithmPreview>[] = [
       <DataTableColumnHeader column={column} title="Algorithm" />
     ),
     cell: ({ row }) => {
-      const category = categories.find(
-        (category) => category.value === row.original.category
-      )
-
       return (
         <div className="flex space-x-2">
-          {category && <Badge variant="outline">{category.label}</Badge>}
           <span className="max-w-[500px] truncate font-medium">
             {row.getValue("title")}
           </span>
         </div>
-      )
+      );
     },
   },
   {
@@ -35,10 +30,10 @@ export const columns: ColumnDef<AlgorithmPreview>[] = [
     cell: ({ row }) => {
       const difficulty = difficulties.find(
         (d) => d.value === row.getValue("difficulty")
-      )
+      );
 
       if (!difficulty) {
-        return null
+        return null;
       }
 
       return (
@@ -48,10 +43,10 @@ export const columns: ColumnDef<AlgorithmPreview>[] = [
           )}
           <span>{difficulty.label}</span>
         </div>
-      )
+      );
     },
     filterFn: (row, id, value) => {
-      return value.includes(row.getValue(id))
+      return value.includes(row.getValue(id));
     },
   },
   {
@@ -62,27 +57,30 @@ export const columns: ColumnDef<AlgorithmPreview>[] = [
     cell: ({ row }) => {
       const category = categories.find(
         (category) => category.value === row.getValue("category")
-      )
+      );
 
       if (!category) {
-        return null
+        return null;
       }
 
       return (
         <div className="flex w-[100px] items-center">
-          {category.icon && (
-            <category.icon className="mr-2 h-4 w-4 text-muted-foreground" />
-          )}
-          <span>{category.label}</span>
+          <Badge variant="outline">
+            {category.icon && (
+              <category.icon className="mr-2 h-4 w-4 text-muted-foreground" />
+            )}
+            {category.label}
+          </Badge>
         </div>
-      )
+      );
     },
     filterFn: (row, id, value) => {
-      return value.includes(row.getValue(id))
+      return value.includes(row.getValue(id));
     },
   },
   {
     id: "actions",
+    header: () => <span className="sr-only">Actions</span>,
     cell: ({ row }) => <DataTableRowActions row={row} />,
   },
-]
+];

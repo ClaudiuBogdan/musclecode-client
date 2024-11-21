@@ -10,8 +10,8 @@ import {
 
 export const categories = [
   {
-    value: "sorting",
-    label: "Sorting",
+    value: "Graph Algorithms",
+    label: "Graph Algorithms",
     icon: Code2,
   },
   {
