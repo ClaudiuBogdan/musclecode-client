@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
-import { runCode } from "@/lib/api/code";
-import { AlgorithmFile } from "@/types/algorithm";
+import { immer } from "zustand/middleware/immer";
+import { runCode, getAlgorithm } from "@/lib/api/code";
 import { CodeExecutionResponse } from "@/types/testRunner";
 
 export type CodeLanguage =
@@ -13,6 +13,8 @@ export type CodeLanguage =
 
 export type CodeFile = string;
 
+export type AlgorithmId = string;
+
 interface LayoutState {
   sizes: [number, number];
   editorSizes: [number, number];
@@ -22,14 +24,9 @@ interface LayoutState {
 
 // Type to represent the structure of stored code
 type StoredCode = Record<
-  // algorithmId
-  string,
+  CodeLanguage,
   {
-    // language
-    [K in CodeLanguage]?: {
-      // tab
-      [K in CodeFile]: string;
-    };
+    [K in CodeFile]: string;
   }
 >;
 
@@ -41,27 +38,27 @@ interface TimerState {
 }
 
 interface CodeStoreState {
-  algorithmId: string | null;
-  activeLanguage: CodeLanguage;
-  languages: CodeLanguage[];
-  activeTab: CodeFile;
-  storedCode: StoredCode;
-  isRunning: boolean;
-  executionResult: CodeExecutionResponse | null;
-  startTime: Record<string, number | null>;
-  timerState: Record<string, TimerState>;
-  isInitialized: boolean;
+  isLoading: boolean;
+  algorithms: {
+    [key: AlgorithmId]: {
+      algorithmId: string;
+      isRunning: boolean;
+      activeLanguage: CodeLanguage;
+      languages: CodeLanguage[];
+      activeTab: CodeFile;
+      storedCode: StoredCode;
+      executionResult: CodeExecutionResponse | null;
+      startTime: number | null;
+      timerState: TimerState;
+    };
+  };
 }
 
 interface CodeStoreActions {
-  initializeCode: (
-    algorithmId: string,
-    files: Record<string, AlgorithmFile[]>
-  ) => void;
-  setAlgorithmId: (id: string) => void;
-  setActiveLanguage: (language: CodeLanguage) => void;
-  setActiveTab: (tab: CodeFile) => void;
-  setCode: (code: string) => void;
+  initializeAlgorithm: (algorithmId: string) => void;
+  setActiveLanguage: (algorithmId: string, language: CodeLanguage) => void;
+  setActiveTab: (algorithmId: string, tab: CodeFile) => void;
+  setCode: (algorithmId: string, code: string) => void;
   getCode: (
     algorithmId: string,
     language: CodeLanguage,
@@ -76,7 +73,7 @@ interface CodeStoreActions {
   pauseTimer: (algorithmId: string) => void;
   resumeTimer: (algorithmId: string) => void;
   resetTimer: (algorithmId: string) => void;
-  runCode: () => Promise<void>;
+  runCode: (algorithmId: string) => Promise<void>;
 }
 
 export const useLayoutStore = create<LayoutState>()(
@@ -109,85 +106,76 @@ export const useLayoutStore = create<LayoutState>()(
 
 export const useCodeStore = create<CodeStoreState & CodeStoreActions>()(
   persist(
-    (set, get) => ({
-      algorithmId: null,
-      activeLanguage: "typescript",
-      languages: [],
-      supportedLanguages: [],
-      activeTab: "solution",
-      storedCode: {},
-      isRunning: false,
-      executionResult: null,
-      startTime: {},
-      timerState: {},
-      isInitialized: false,
-      setAlgorithmId: (algorithmId) => set({ algorithmId }),
-
-      setActiveLanguage: (language) => set({ activeLanguage: language }),
-
-      setActiveTab: (activeTab) => set({ activeTab }),
-
-      setCode: (code) =>
+    immer((set, get) => ({
+      isLoading: false,
+      algorithms: {},
+      setActiveLanguage: (algorithmId, language) => {
         set((state) => {
-          if (!state.algorithmId) return {};
+          if (!state.algorithms[algorithmId]) return;
+          state.algorithms[algorithmId].activeLanguage = language;
+        });
+      },
 
-          const newStoredCode = { ...state.storedCode };
+      setActiveTab: (algorithmId, tab) =>
+        set((state) => {
+          if (!state.algorithms[algorithmId]) return;
+          state.algorithms[algorithmId].activeTab = tab;
+        }),
 
-          // TODO: Remove this once we have a better way to initialize the code
-          // Initialize nested structure if it doesn't exist
-          if (!newStoredCode[state.algorithmId]) {
-            newStoredCode[state.algorithmId] = {};
-          }
-          if (!newStoredCode[state.algorithmId][state.activeLanguage]) {
-            newStoredCode[state.algorithmId][state.activeLanguage] = {
-              solution: "",
-              test: "",
-            };
-          }
+      setCode: (algorithmId, code) =>
+        set((state) => {
+          const algorithm = state.algorithms[algorithmId];
+          if (!algorithm) return;
 
-          // Update the code for the current algorithm, language, and tab
-          newStoredCode[state.algorithmId][state.activeLanguage]![
-            state.activeTab
-          ] = code;
-
-          return { storedCode: newStoredCode };
+          algorithm.storedCode[algorithm.activeLanguage][algorithm.activeTab] =
+            code;
         }),
 
       getCode: (algorithmId, language, tab) => {
-        const state = get();
-        return state.storedCode[algorithmId]?.[language]?.[tab] ?? "";
+        const algorithm = get().algorithms[algorithmId];
+
+        return algorithm.storedCode[language][tab] ?? "";
       },
 
       getFiles: (algorithmId, language) => {
-        const state = get();
-        return Object.keys(state.storedCode[algorithmId]?.[language] ?? {}).map(
+        const algorithm = get().algorithms[algorithmId];
+        if (!algorithm) return [];
+
+        return Object.keys(algorithm.storedCode[language] ?? {}).map(
           (name) => ({ name, readOnly: false })
         );
       },
 
       setStartTime: (algorithmId, time) =>
         set((state) => ({
-          startTime: {
-            ...state.startTime,
-            [algorithmId]: time,
+          ...state,
+          algorithms: {
+            ...state.algorithms,
+            [algorithmId]: {
+              ...state.algorithms[algorithmId],
+              startTime: time,
+            },
           },
         })),
 
       startTimer: (algorithmId) =>
         set((state) => {
           // Only start if there's no existing timer state
-          if (state.timerState[algorithmId]) {
+          if (state.algorithms[algorithmId].timerState) {
             return state;
           }
 
           return {
-            timerState: {
-              ...state.timerState,
+            algorithms: {
+              ...state.algorithms,
               [algorithmId]: {
-                startTime: Date.now(),
-                pausedAt: null,
-                totalPausedTime: 0,
-                isRunning: true,
+                ...state.algorithms[algorithmId],
+                timerState: {
+                  startTime: Date.now(),
+                  pausedAt: null,
+                  totalPausedTime: 0,
+                  isRunning: true,
+                },
               },
             },
           };
@@ -195,31 +183,37 @@ export const useCodeStore = create<CodeStoreState & CodeStoreActions>()(
 
       pauseTimer: (algorithmId) =>
         set((state) => ({
-          timerState: {
-            ...state.timerState,
+          algorithms: {
+            ...state.algorithms,
             [algorithmId]: {
-              ...state.timerState[algorithmId],
-              pausedAt: Date.now(),
-              isRunning: false,
+              ...state.algorithms[algorithmId],
+              timerState: {
+                ...state.algorithms[algorithmId].timerState,
+                pausedAt: Date.now(),
+                isRunning: false,
+              },
             },
           },
         })),
 
       resumeTimer: (algorithmId) =>
         set((state) => {
-          const timer = state.timerState[algorithmId];
+          const timer = state.algorithms[algorithmId].timerState;
           if (!timer || !timer.pausedAt) return state;
 
           const additionalPausedTime = Date.now() - timer.pausedAt;
 
           return {
-            timerState: {
-              ...state.timerState,
+            algorithms: {
+              ...state.algorithms,
               [algorithmId]: {
-                ...timer,
-                pausedAt: null,
-                totalPausedTime: timer.totalPausedTime + additionalPausedTime,
-                isRunning: true,
+                ...state.algorithms[algorithmId],
+                timerState: {
+                  ...timer,
+                  pausedAt: null,
+                  totalPausedTime: timer.totalPausedTime + additionalPausedTime,
+                  isRunning: true,
+                },
               },
             },
           };
@@ -227,57 +221,120 @@ export const useCodeStore = create<CodeStoreState & CodeStoreActions>()(
 
       resetTimer: (algorithmId) =>
         set((state) => ({
-          timerState: {
-            ...state.timerState,
+          algorithms: {
+            ...state.algorithms,
             [algorithmId]: {
-              startTime: Date.now(),
-              pausedAt: null,
-              totalPausedTime: 0,
-              isRunning: true,
+              ...state.algorithms[algorithmId],
+              timerState: {
+                startTime: Date.now(),
+                pausedAt: null,
+                totalPausedTime: 0,
+                isRunning: true,
+              },
             },
           },
         })),
-
-      runCode: async () => {
-        console.log("runCode");
-        const { algorithmId, activeLanguage: language, activeTab } = get();
-        if (!algorithmId) return;
+      runCode: async (algorithmId: string) => {
+        const { algorithms } = get();
+        const {
+          activeLanguage: language,
+          activeTab,
+          isRunning,
+        } = algorithms[algorithmId];
+        if (!algorithmId || isRunning) return;
 
         const code = get().getCode(algorithmId, language, activeTab);
         try {
-          set({ isRunning: true });
+          set((state) => ({
+            algorithms: {
+              ...state.algorithms,
+              [algorithmId]: {
+                ...state.algorithms[algorithmId],
+                isRunning: true,
+              },
+            },
+          }));
           const response = await runCode({ algorithmId, language, code });
-          set({ executionResult: response });
+          set((state) => ({
+            algorithms: {
+              ...state.algorithms,
+              [algorithmId]: {
+                ...state.algorithms[algorithmId],
+                executionResult: response,
+                isRunning: false,
+              },
+            },
+          }));
         } catch (error) {
           console.error("Failed to run code:", error);
-        } finally {
-          set({ isRunning: false });
+          set((state) => ({
+            algorithms: {
+              ...state.algorithms,
+              [algorithmId]: {
+                ...state.algorithms[algorithmId],
+                isRunning: false,
+              },
+            },
+          }));
         }
       },
 
-      initializeCode: (algorithmId, files) => {
-        const codeState: Record<
-          string,
-          Record<string, Record<string, string>>
-        > = {};
+      initializeAlgorithm: async (algorithmId) => {
+        const algorithm = get().algorithms[algorithmId];
 
-        Object.entries(files).forEach(([language, languageFiles]) => {
-          console.log(language, languageFiles);
-          codeState[algorithmId] = codeState[algorithmId] || {};
-          codeState[algorithmId][language] = {};
+        if (algorithm) return;
 
-          languageFiles.forEach((file) => {
-            codeState[algorithmId][language][file.name] = file.content;
+        try {
+          set((state) => ({
+            ...state,
+            isLoading: true,
+          }));
+          const algorithmData = await getAlgorithm(algorithmId);
+          const codeState: StoredCode = {} as StoredCode;
+
+          // Initialize code state from API response
+          Object.entries(algorithmData.files).forEach(
+            ([language, languageFiles]) => {
+              codeState[language as CodeLanguage] = {};
+              languageFiles.forEach((file) => {
+                codeState[language as CodeLanguage]![file.name] = file.content;
+              });
+            }
+          );
+
+          const languages = Object.keys(codeState) as CodeLanguage[];
+          const firstLanguage = languages[0];
+          const firstFile = Object.keys(codeState[firstLanguage])[0];
+
+          set((state) => {
+            state.algorithms[algorithmId] = {
+              algorithmId,
+              activeLanguage: firstLanguage,
+              languages,
+              activeTab: firstFile,
+              storedCode: codeState,
+              isRunning: false,
+              executionResult: null,
+              startTime: null,
+              timerState: {
+                startTime: null,
+                pausedAt: null,
+                totalPausedTime: 0,
+                isRunning: false,
+              },
+            };
           });
-        });
-
-        const languages = Object.keys(
-          codeState[algorithmId] ?? {}
-        ) as CodeLanguage[];
-
-        set({ storedCode: codeState, isInitialized: true, languages });
+        } catch (error) {
+          console.error("Failed to initialize algorithm:", error);
+          // Optionally set an error state here
+        } finally {
+          set((state) => ({
+            ...state,
+            isLoading: false,
+          }));
+        }
       },
-    }),
+    })),
     {
       name: "code-store",
       storage: createJSONStorage(() => localStorage),

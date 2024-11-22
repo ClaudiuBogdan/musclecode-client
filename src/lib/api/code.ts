@@ -1,5 +1,7 @@
 import { CodeExecutionResponse } from "@/types/testRunner";
 import { apiClient } from "./client";
+import { Algorithm } from "@/types/algorithm";
+
 export interface CodeRunRequest {
   algorithmId: string;
   language: string;
@@ -23,3 +25,10 @@ export async function runCode(
   );
   return data;
 }
+
+export const getAlgorithm = async (algorithmId: string): Promise<Algorithm> => {
+  const { data } = await apiClient.get<Algorithm>(
+    `/api/algorithms/${algorithmId}`
+  );
+  return data;
+};

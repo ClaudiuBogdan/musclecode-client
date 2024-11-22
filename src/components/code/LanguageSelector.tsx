@@ -10,26 +10,38 @@ import {
 import { cn } from "@/lib/utils";
 
 interface LanguageSelectorProps {
+  algorithmId: string;
   className?: string;
   onLanguageChange?: (language: CodeLanguage) => void;
 }
 
+export function LanguageSelector({
+  algorithmId,
+  className,
+  onLanguageChange,
+}: LanguageSelectorProps) {
+  const algorithm = useCodeStore((state) => state.algorithms[algorithmId]);
+  const { setActiveLanguage } = useCodeStore();
 
-export function LanguageSelector({ className, onLanguageChange }: LanguageSelectorProps) {
-  const { activeLanguage, languages, setActiveLanguage } = useCodeStore();
+  const { activeLanguage, languages } = algorithm || {};
 
   const handleLanguageChange = (language: CodeLanguage) => {
-    setActiveLanguage(language);
+    setActiveLanguage(algorithmId, language);
     onLanguageChange?.(language);
   };
 
-  if (languages.length === 0) {
+  if (!languages || languages.length === 0) {
     return null;
   }
 
   return (
-    <Select value={activeLanguage} onValueChange={handleLanguageChange} >
-      <SelectTrigger className={cn("bg-gray-800 border-gray-700 text-gray-200 hover:bg-gray-750 focus:ring-offset-gray-900", className)}>
+    <Select value={activeLanguage} onValueChange={handleLanguageChange}>
+      <SelectTrigger
+        className={cn(
+          "bg-gray-800 border-gray-700 text-gray-200 hover:bg-gray-750 focus:ring-offset-gray-900",
+          className
+        )}
+      >
         <div className="flex items-center gap-2">
           <Code2 className="h-4 w-4" />
           <SelectValue />
@@ -37,8 +49,8 @@ export function LanguageSelector({ className, onLanguageChange }: LanguageSelect
       </SelectTrigger>
       <SelectContent className="bg-gray-800 border-gray-700 text-gray-200">
         {languages.map((lang) => (
-          <SelectItem 
-            key={lang} 
+          <SelectItem
+            key={lang}
             value={lang}
             className="hover:bg-gray-750 focus:bg-gray-750"
           >

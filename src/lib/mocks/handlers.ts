@@ -254,28 +254,27 @@ function runTests(
 }
 
 export const handlers = [
-  http.get("/api/algorithm/:id", ({ params }) => {
-    const { id } = params;
-    const algorithm = mockAlgorithms.find((algo) => algo.id === id);
-
-    if (!algorithm) {
-      return new HttpResponse(null, { status: 404 });
-    }
-
-    return HttpResponse.json(algorithm);
+  http.get("/api/algorithms/daily", () => {
+    return HttpResponse.json(seedAlgorithms().slice(0, 6));
   }),
-
   http.get("/api/algorithms", () => {
     return HttpResponse.json(seedAlgorithms());
   }),
-
+  http.get("/api/algorithms/:id", ({ params }) => {
+    const { id } = params;
+    const algorithms = seedAlgorithms();
+    const algorithm = algorithms.find((algo) => algo.id === id) as Algorithm;
+    if (!algorithm) {
+      return new HttpResponse(null, { status: 404 });
+    }
+    algorithm.files = mockAlgorithms[0].files;
+    return HttpResponse.json(algorithm);
+  }),
   http.post("/api/code/run", async ({ request }) => {
     const { code, language, algorithmId } =
       (await request.json()) as RunCodeRequest;
-
     // Simulate network delay
     await new Promise((resolve) => setTimeout(resolve, 1000));
-
     const result = runTests(code, language, algorithmId);
     return HttpResponse.json(result);
   }),
