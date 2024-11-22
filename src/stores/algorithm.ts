@@ -317,7 +317,7 @@ export const useCodeStore = create<CodeStoreState & CodeStoreActions>()(
               executionResult: null,
               startTime: null,
               timerState: {
-                startTime: new Date(),
+                startTime: Date.now(),
                 pausedAt: null,
                 totalPausedTime: 0,
                 isRunning: true,
