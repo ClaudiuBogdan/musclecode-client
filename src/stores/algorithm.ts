@@ -317,10 +317,10 @@ export const useCodeStore = create<CodeStoreState & CodeStoreActions>()(
               executionResult: null,
               startTime: null,
               timerState: {
-                startTime: null,
+                startTime: new Date(),
                 pausedAt: null,
                 totalPausedTime: 0,
-                isRunning: false,
+                isRunning: true,
               },
             };
           });
