@@ -53,6 +53,16 @@ export default {
           4: "hsl(var(--chart-4))",
           5: "hsl(var(--chart-5))",
         },
+        sidebar: {
+          DEFAULT: "hsl(var(--sidebar-background))",
+          foreground: "hsl(var(--sidebar-foreground))",
+          primary: "hsl(var(--sidebar-primary))",
+          "primary-foreground": "hsl(var(--sidebar-primary-foreground))",
+          accent: "hsl(var(--sidebar-accent))",
+          "accent-foreground": "hsl(var(--sidebar-accent-foreground))",
+          border: "hsl(var(--sidebar-border))",
+          ring: "hsl(var(--sidebar-ring))",
+        },
       },
       animation: {
         "pulse-attention":
@@ -62,13 +72,13 @@ export default {
         "pulse-attention": {
           "0%, 100%": {
             transform: "scale(1)",
-            opacity: 1,
-            color: "rgb(248 113 113)", // text-red-400
+            opacity: "1",
+            color: "rgb(248 113 113)",
           },
           "50%": {
             transform: "scale(1.05)",
-            opacity: 0.85,
-            color: "rgb(239 68 68)", // text-red-500
+            opacity: "0.85",
+            color: "rgb(239 68 68)",
           },
         },
       },
