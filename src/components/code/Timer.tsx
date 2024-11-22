@@ -54,7 +54,9 @@ export function Timer({
     const interval = setInterval(() => {
       if (timerState.startTime) {
         const now = Date.now();
-        setElapsed(now - timerState.startTime - timerState.totalPausedTime);
+        const elapsed = now - timerState.startTime - timerState.totalPausedTime;
+
+        setElapsed(elapsed);
       }
     }, 1000);
 
