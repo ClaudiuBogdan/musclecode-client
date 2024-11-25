@@ -1,15 +1,16 @@
 import Split from '@uiw/react-split'
 import { CodeEditor } from '@/components/code/CodeEditor'
 import { ProblemDescription } from '@/components/code/ProblemDescription'
-import { createLazyFileRoute, useParams } from '@tanstack/react-router'
-import { useLayoutStore, useCodeStore, CodeLanguage } from '@/stores/algorithm'
-import { LanguageSelector } from '@/components/code/LanguageSelector'
-import { ExecutionResult } from '@/components/code/ExecutionResult'
-import { EditorTabs } from '@/components/code/EditorTabs'
-import { Timer } from '@/components/code/Timer'
+import { createLazyFileRoute, Link, useParams } from "@tanstack/react-router";
+import { useLayoutStore, useCodeStore, CodeLanguage } from "@/stores/algorithm";
+import { LanguageSelector } from "@/components/code/LanguageSelector";
+import { ExecutionResult } from "@/components/code/ExecutionResult";
+import { EditorTabs } from "@/components/code/EditorTabs";
+import { Timer } from "@/components/code/Timer";
 import { useCallback, useEffect } from "react";
 import { RunButton } from "@/components/code/RunButton";
 import { SkipButton } from "@/components/code/SkipButton";
+import NextButton from "@/components/code/NextButton";
 
 export const Route = createLazyFileRoute("/algorithm/$id")({
   component: Algorithm,
@@ -20,6 +21,9 @@ function Algorithm() {
   const { sizes, editorSizes, setSizes, setEditorSizes } = useLayoutStore();
 
   const algorithm = useCodeStore((state) => state.algorithms[algorithmId]);
+
+  const hasPassed = algorithm?.executionResult?.result.completed;
+  const nextAlgorithmId = algorithm?.nextAlgorithm?.id;
 
   const {
     isLoading,
@@ -49,11 +53,6 @@ function Algorithm() {
     if (!algorithmId) return;
 
     await runCode(algorithmId);
-  };
-
-  const handleSkip = () => {
-    if (!algorithmId) return;
-    // TODO: Implement skip
   };
 
   const handleLanguageChange = (language: CodeLanguage) => {
@@ -105,7 +104,17 @@ function Algorithm() {
                 onRun={handleRunCode}
                 isRunning={algorithm.isRunning}
               />
-              <SkipButton onSkip={handleSkip} disabled={algorithm.isRunning} />
+              {!hasPassed && !!nextAlgorithmId && (
+                <Link to="/algorithm/$id" params={{ id: nextAlgorithmId }}>
+                  <SkipButton disabled={algorithm.isRunning} />
+                </Link>
+              )}
+              {hasPassed && nextAlgorithmId && (
+                <Link to="/algorithm/$id" params={{ id: nextAlgorithmId }}>
+                  <NextButton disabled={algorithm.isRunning} />
+                </Link>
+              )}
+
               <Timer
                 algorithmId={algorithmId}
                 timerState={algorithm.timerState}

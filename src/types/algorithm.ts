@@ -12,6 +12,10 @@ export interface Algorithm {
   category: string;
   description: string;
   difficulty: "easy" | "medium" | "hard";
+  nextAlgorithm: {
+    id: string;
+    title: string;
+  } | null;
   files: Record<string, AlgorithmFile[]>; // keyed by language
 }
 

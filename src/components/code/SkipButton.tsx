@@ -9,28 +9,29 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 interface SkipButtonProps {
-  disabled?: boolean
-  onSkip: () => void
+  disabled?: boolean;
+  onClick?: () => void;
 }
 
-export function SkipButton({ onSkip, disabled }: SkipButtonProps) {
+export function SkipButton({ onClick, disabled }: SkipButtonProps) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
   const handleSkip = () => {
-    onSkip();
+    onClick?.();
     setDropdownOpen(false);
   };
 
   return (
     <DropdownMenu open={dropdownOpen} onOpenChange={setDropdownOpen}>
       <DropdownMenuTrigger asChild>
-        <Button 
+        <Button
           disabled={disabled}
           className={`
             gap-2 min-w-[120px] font-medium
-            ${disabled
-              ? 'text-gray-500 border-gray-800'
-              : 'text-yellow-400 hover:text-yellow-300 border-yellow-800/40 hover:border-yellow-700 bg-yellow-900/10 hover:bg-yellow-900/20'
+            ${
+              disabled
+                ? "text-gray-500 border-gray-800"
+                : "text-yellow-400 hover:text-yellow-300 border-yellow-800/40 hover:border-yellow-700 bg-yellow-900/10 hover:bg-yellow-900/20"
             }
           `}
           variant="outline"
@@ -39,8 +40,8 @@ export function SkipButton({ onSkip, disabled }: SkipButtonProps) {
           Skip
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent 
-        className="w-56 bg-gray-800 border-gray-700 text-gray-200" 
+      <DropdownMenuContent
+        className="w-56 bg-gray-800 border-gray-700 text-gray-200"
         align="end"
         alignOffset={-4}
       >
@@ -64,5 +65,5 @@ export function SkipButton({ onSkip, disabled }: SkipButtonProps) {
         </div>
       </DropdownMenuContent>
     </DropdownMenu>
-  )
+  );
 }

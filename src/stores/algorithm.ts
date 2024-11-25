@@ -50,6 +50,11 @@ interface CodeStoreState {
       executionResult: CodeExecutionResponse | null;
       startTime: number | null;
       timerState: TimerState;
+      // The next algorithm to be run if available
+      nextAlgorithm: {
+        id: string;
+        title: string;
+      } | null;
     };
   };
 }
@@ -322,6 +327,7 @@ export const useCodeStore = create<CodeStoreState & CodeStoreActions>()(
                 totalPausedTime: 0,
                 isRunning: true,
               },
+              nextAlgorithm: algorithmData.nextAlgorithm,
             };
           });
         } catch (error) {

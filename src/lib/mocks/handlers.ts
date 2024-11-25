@@ -62,7 +62,7 @@ function runTests(
   language: string,
   algorithmId: string
 ): CodeExecutionResponse {
-  if (algorithmId === "1234") {
+  if (algorithmId === "1") {
     if (language === "typescript") {
       try {
         const hasLoop = code.includes("for") || code.includes("while");
