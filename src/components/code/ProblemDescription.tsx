@@ -36,15 +36,21 @@ Output: [1,2]
 
 export const ProblemDescription: FC = () => {
   return (
-    <div className={cn(
-      "prose prose-sm max-w-none overflow-auto",
-      "prose-headings:text-foreground",
-      "prose-p:text-muted-foreground",
-      "prose-strong:text-foreground",
-      "prose-code:text-foreground",
-      "prose-ul:text-muted-foreground"
-    )}>
+    <div
+      className={cn(
+        "prose prose-sm dark:prose-invert max-w-none overflow-auto",
+        "prose-headings:text-foreground dark:prose-headings:text-zinc-200",
+        "prose-p:text-muted-foreground dark:prose-p:text-zinc-400",
+        "prose-strong:text-foreground dark:prose-strong:text-zinc-200",
+        "prose-code:text-foreground dark:prose-code:text-zinc-200",
+        "prose-pre:bg-zinc-100 dark:prose-pre:bg-zinc-800",
+        "prose-ul:text-muted-foreground dark:prose-ul:text-zinc-400",
+        "prose-li:text-muted-foreground dark:prose-li:text-zinc-400",
+        "prose-blockquote:text-muted-foreground dark:prose-blockquote:text-zinc-400",
+        "prose-a:text-muted-foreground dark:prose-a:text-zinc-400 hover:prose-a:text-foreground dark:hover:prose-a:text-zinc-300"
+      )}
+    >
       <ReactMarkdown>{problemDescription}</ReactMarkdown>
     </div>
-  )
+  );
 }

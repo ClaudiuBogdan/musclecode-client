@@ -38,7 +38,7 @@ export function LanguageSelector({
     <Select value={activeLanguage} onValueChange={handleLanguageChange}>
       <SelectTrigger
         className={cn(
-          "bg-gray-800 border-gray-700 text-gray-200 hover:bg-gray-750 focus:ring-offset-gray-900",
+          "bg-zinc-900 border-zinc-800 text-zinc-100 hover:bg-zinc-800 hover:text-zinc-100 focus:ring-offset-zinc-900",
           className
         )}
       >
@@ -47,12 +47,12 @@ export function LanguageSelector({
           <SelectValue />
         </div>
       </SelectTrigger>
-      <SelectContent className="bg-gray-800 border-gray-700 text-gray-200">
+      <SelectContent className="bg-zinc-900 border-zinc-800 text-zinc-200">
         {languages.map((lang) => (
           <SelectItem
             key={lang}
             value={lang}
-            className="hover:bg-gray-750 focus:bg-gray-750"
+            className="hover:bg-zinc-800 hover:text-zinc-100 focus:bg-zinc-800 focus:text-zinc-100"
           >
             <div className="flex items-center gap-2">
               <span>{mapLanguageLabel(lang)}</span>
