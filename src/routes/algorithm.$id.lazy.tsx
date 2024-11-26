@@ -2,7 +2,7 @@ import Split from '@uiw/react-split'
 import { CodeEditor } from '@/components/code/CodeEditor'
 import { ProblemDescription } from '@/components/code/ProblemDescription'
 import { createLazyFileRoute, Link, useParams } from "@tanstack/react-router";
-import { useLayoutStore, useCodeStore, CodeLanguage } from "@/stores/algorithm";
+import { useCodeStore, CodeLanguage } from "@/stores/algorithm";
 import { LanguageSelector } from "@/components/code/LanguageSelector";
 import { ExecutionResult } from "@/components/code/ExecutionResult";
 import { EditorTabs } from "@/components/code/EditorTabs";
@@ -11,6 +11,7 @@ import { useCallback, useEffect } from "react";
 import { RunButton } from "@/components/code/RunButton";
 import { SkipButton } from "@/components/code/SkipButton";
 import NextButton from "@/components/code/NextButton";
+import { useLayoutStore } from "@/stores/layout";
 
 export const Route = createLazyFileRoute("/algorithm/$id")({
   component: Algorithm,

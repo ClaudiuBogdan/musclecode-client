@@ -15,11 +15,11 @@ export type CodeFile = string;
 
 export type AlgorithmId = string;
 
-interface LayoutState {
-  sizes: [number, number];
-  editorSizes: [number, number];
-  setSizes: (sizes: [number, number]) => void;
-  setEditorSizes: (sizes: [number, number]) => void;
+interface TimerState {
+  startTime: number | null;
+  pausedAt: number | null;
+  totalPausedTime: number;
+  isRunning: boolean;
 }
 
 // Type to represent the structure of stored code
@@ -29,13 +29,6 @@ type StoredCode = Record<
     [K in CodeFile]: string;
   }
 >;
-
-interface TimerState {
-  startTime: number | null;
-  pausedAt: number | null;
-  totalPausedTime: number;
-  isRunning: boolean;
-}
 
 interface CodeStoreState {
   isLoading: boolean;
@@ -80,34 +73,6 @@ interface CodeStoreActions {
   resetTimer: (algorithmId: string) => void;
   runCode: (algorithmId: string) => Promise<void>;
 }
-
-export const useLayoutStore = create<LayoutState>()(
-  persist(
-    (set) => ({
-      sizes: [40, 60],
-      editorSizes: [70, 30],
-      setSizes: (sizes: [number, number]) => {
-        if (Math.abs(sizes[0] + sizes[1] - 100) > 1) {
-          console.error("Invalid sizes", sizes);
-          return;
-        }
-        set({ sizes });
-      },
-      setEditorSizes: (sizes: [number, number]) => {
-        console.log("setEditorSizes", sizes);
-        if (Math.abs(sizes[0] + sizes[1] - 100) > 1) {
-          console.error("Invalid sizes", sizes);
-          return;
-        }
-        set({ editorSizes: sizes });
-      },
-    }),
-    {
-      name: "layout-store",
-      storage: createJSONStorage(() => localStorage),
-    }
-  )
-);
 
 export const useCodeStore = create<CodeStoreState & CodeStoreActions>()(
   persist(

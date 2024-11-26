@@ -16,6 +16,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
+import { useLayoutStore } from "@/stores/layout";
 
 const SIDEBAR_WIDTH = "16rem";
 const SIDEBAR_WIDTH_MOBILE = "18rem";
@@ -64,31 +65,36 @@ const SidebarProvider = React.forwardRef<
     ref
   ) => {
     const isMobile = useIsMobile();
-    const [openMobile, setOpenMobile] = React.useState(false);
-
-    // This is the internal state of the sidebar.
-    // We use openProp and setOpenProp for control from outside the component.
+    const { sidebarState, setSidebarState } = useLayoutStore();
     const [_open, _setOpen] = React.useState(defaultOpen);
-    const open = openProp ?? _open;
+
+    // Use the stored state or prop
+    const open = openProp ?? sidebarState.open;
+    const openMobile = sidebarState.openMobile;
+
     const setOpen = React.useCallback(
       (value: boolean | ((value: boolean) => boolean)) => {
         const openState = typeof value === "function" ? value(open) : value;
         if (setOpenProp) {
           setOpenProp(openState);
         } else {
-          _setOpen(openState);
+          setSidebarState({ open: openState });
         }
       },
-      // TODO: save state
-      [setOpenProp, open]
+      [setOpenProp, open, setSidebarState]
     );
 
-    // Helper to toggle the sidebar.
+    const setOpenMobile = React.useCallback(
+      (value: boolean) => {
+        setSidebarState({ openMobile: value });
+      },
+      [setSidebarState]
+    );
+
+    // Helper to toggle the sidebar
     const toggleSidebar = React.useCallback(() => {
-      return isMobile
-        ? setOpenMobile((open) => !open)
-        : setOpen((open) => !open);
-    }, [isMobile, setOpen, setOpenMobile]);
+      return isMobile ? setOpenMobile(!openMobile) : setOpen((open) => !open);
+    }, [isMobile, setOpen, setOpenMobile, openMobile]);
 
     // Adds a keyboard shortcut to toggle the sidebar.
     React.useEffect(() => {
