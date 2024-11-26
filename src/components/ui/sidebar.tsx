@@ -54,7 +54,6 @@ const SidebarProvider = React.forwardRef<
 >(
   (
     {
-      defaultOpen = true,
       open: openProp,
       onOpenChange: setOpenProp,
       className,
@@ -66,7 +65,6 @@ const SidebarProvider = React.forwardRef<
   ) => {
     const isMobile = useIsMobile();
     const { sidebarState, setSidebarState } = useLayoutStore();
-    const [_open, _setOpen] = React.useState(defaultOpen);
 
     // Use the stored state or prop
     const open = openProp ?? sidebarState.open;
