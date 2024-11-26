@@ -22,8 +22,6 @@ interface TimerState {
   pausedAt: number | null;
   // Total accumulated time from previous pause periods
   totalPausedTime: number;
-  // Whether timer is currently running
-  isRunning: boolean;
 }
 
 // Type to represent the structure of stored code
@@ -39,7 +37,7 @@ interface CodeStoreState {
   algorithms: {
     [key: AlgorithmId]: {
       algorithmId: string;
-      isRunning: boolean;
+      isExecuting: boolean;
       activeLanguage: CodeLanguage;
       languages: CodeLanguage[];
       activeTab: CodeFile;
@@ -82,7 +80,7 @@ interface CodeStoreActions {
 export const useCodeStore = create<CodeStoreState & CodeStoreActions>()(
   persist(
     immer((set, get) => ({
-      isLoading: false,
+      isLoading: false as boolean,
       algorithms: {},
       setActiveLanguage: (algorithmId, language) => {
         set((state) => {
@@ -112,7 +110,10 @@ export const useCodeStore = create<CodeStoreState & CodeStoreActions>()(
         return algorithm.storedCode[language][tab] ?? "";
       },
 
-      getFiles: (algorithmId, language) => {
+      getFiles: (
+        algorithmId,
+        language
+      ): { name: string; readOnly?: boolean }[] => {
         const algorithm = get().algorithms[algorithmId];
         if (!algorithm) return [];
 
@@ -150,7 +151,6 @@ export const useCodeStore = create<CodeStoreState & CodeStoreActions>()(
                   initialStartTime: now,
                   pausedAt: null,
                   totalPausedTime: 0,
-                  isRunning: true,
                 },
               },
             },
@@ -159,7 +159,7 @@ export const useCodeStore = create<CodeStoreState & CodeStoreActions>()(
 
       pauseTimer: (algorithmId) => {
         if (!get().algorithms[algorithmId]?.timerState) return;
-        if (!get().algorithms[algorithmId].timerState.isRunning) {
+        if (get().algorithms[algorithmId].timerState.pausedAt) {
           return;
         }
         set((state) => ({
@@ -170,7 +170,6 @@ export const useCodeStore = create<CodeStoreState & CodeStoreActions>()(
               timerState: {
                 ...state.algorithms[algorithmId].timerState,
                 pausedAt: Date.now(),
-                isRunning: false,
               },
             },
           },
@@ -193,7 +192,6 @@ export const useCodeStore = create<CodeStoreState & CodeStoreActions>()(
                   ...timer,
                   pausedAt: null,
                   totalPausedTime: timer.totalPausedTime + additionalPausedTime,
-                  isRunning: true,
                 },
               },
             },
@@ -210,7 +208,6 @@ export const useCodeStore = create<CodeStoreState & CodeStoreActions>()(
                 initialStartTime: Date.now(),
                 pausedAt: null,
                 totalPausedTime: 0,
-                isRunning: true,
               },
             },
           },
@@ -220,7 +217,7 @@ export const useCodeStore = create<CodeStoreState & CodeStoreActions>()(
         const timer = get().algorithms[algorithmId].timerState;
         if (!timer) return 0;
 
-        if (!timer.isRunning) {
+        if (timer.pausedAt) {
           const now = Date.now();
           const currentPausedTime = Date.now() - timer.pausedAt;
           return (
@@ -240,9 +237,9 @@ export const useCodeStore = create<CodeStoreState & CodeStoreActions>()(
         const {
           activeLanguage: language,
           activeTab,
-          isRunning,
+          isExecuting,
         } = algorithms[algorithmId];
-        if (!algorithmId || isRunning) return;
+        if (!algorithmId || isExecuting) return;
 
         const code = get().getCode(algorithmId, language, activeTab);
         try {
@@ -251,7 +248,7 @@ export const useCodeStore = create<CodeStoreState & CodeStoreActions>()(
               ...state.algorithms,
               [algorithmId]: {
                 ...state.algorithms[algorithmId],
-                isRunning: true,
+                isExecuting: true,
               },
             },
           }));
@@ -262,7 +259,7 @@ export const useCodeStore = create<CodeStoreState & CodeStoreActions>()(
               [algorithmId]: {
                 ...state.algorithms[algorithmId],
                 executionResult: response,
-                isRunning: false,
+                isExecuting: false,
               },
             },
           }));
@@ -273,7 +270,7 @@ export const useCodeStore = create<CodeStoreState & CodeStoreActions>()(
               ...state.algorithms,
               [algorithmId]: {
                 ...state.algorithms[algorithmId],
-                isRunning: false,
+                isExecuting: false,
               },
             },
           }));
@@ -315,15 +312,13 @@ export const useCodeStore = create<CodeStoreState & CodeStoreActions>()(
               languages,
               activeTab: firstFile,
               storedCode: codeState,
-              isRunning: false,
+              isExecuting: false,
               executionResult: null,
               startTime: null,
               timerState: {
                 initialStartTime: now,
                 pausedAt: null,
                 totalPausedTime: 0,
-                totalRunningTime: 0,
-                isRunning: true,
               },
               nextAlgorithm: algorithmData.nextAlgorithm,
             };

@@ -31,15 +31,13 @@ export function Timer({ algorithmId }: TimerProps) {
     getTotalRunningTime(algorithmId)
   );
 
-  console.log(elapsed);
-
   useEffect(() => {
     if (!timerState) {
       startTimer(algorithmId);
       return;
     }
 
-    if (!timerState.isRunning) {
+    if (timerState.pausedAt != null) {
       return;
     }
 
@@ -56,7 +54,7 @@ export function Timer({ algorithmId }: TimerProps) {
     setDropdownOpen(false);
   };
 
-  const isPaused = timerState && !timerState.isRunning;
+  const isPaused = timerState && !!timerState.pausedAt;
 
   return (
     <div className="flex items-center gap-2 px-3 h-9 border-l border-gray-700">
@@ -79,7 +77,7 @@ export function Timer({ algorithmId }: TimerProps) {
         </span>
       </div>
       <div className="flex gap-0.5">
-        {timerState?.isRunning ? (
+        {timerState?.pausedAt === null ? (
           <button
             onClick={() => pauseTimer(algorithmId)}
             className="p-1.5 text-gray-400 hover:text-gray-200 hover:bg-gray-700/50 rounded-md transition-colors"
