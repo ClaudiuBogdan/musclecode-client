@@ -35,24 +35,57 @@ function Algorithm() {
     startTimer,
     pauseTimer,
     resumeTimer,
-    resetTimer,
     runCode,
     initializeAlgorithm,
   } = useCodeStore();
 
+  // Handle timer cleanup on unmount
   useEffect(() => {
     initializeAlgorithm(algorithmId);
-  }, [algorithmId, initializeAlgorithm]);
+    return () => {
+      if (algorithmId) {
+        pauseTimer(algorithmId);
+      }
+    };
+  }, [algorithmId, initializeAlgorithm, pauseTimer]);
 
+  // Timer management functions
   const handleTimerStart = useCallback(() => {
-    if (algorithmId) {
-      startTimer(algorithmId);
-    }
+    if (!algorithmId) return;
+    startTimer(algorithmId);
   }, [algorithmId, startTimer]);
+
+  const handleTimerResume = useCallback(() => {
+    if (!algorithmId) return;
+    resumeTimer(algorithmId);
+  }, [algorithmId, resumeTimer]);
+
+  const handleTimerManagement = useCallback(() => {
+    if (!algorithmId) return;
+
+    const timerState = algorithm?.timerState;
+    if (!timerState) {
+      handleTimerStart();
+      return;
+    }
+
+    if (!timerState.isRunning) {
+      handleTimerResume();
+    }
+  }, [algorithmId, algorithm?.timerState, handleTimerStart, handleTimerResume]);
+
+  const handleCodeChange = useCallback(
+    (value: string) => {
+      if (!algorithmId) return;
+
+      setCode(algorithmId, value);
+      handleTimerManagement();
+    },
+    [algorithmId, setCode, handleTimerManagement]
+  );
 
   const handleRunCode = async () => {
     if (!algorithmId) return;
-
     await runCode(algorithmId);
   };
 
@@ -116,14 +149,7 @@ function Algorithm() {
                 </Link>
               )}
 
-              <Timer
-                algorithmId={algorithmId}
-                timerState={algorithm.timerState}
-                onStart={handleTimerStart}
-                onPause={pauseTimer}
-                onResume={resumeTimer}
-                onReset={resetTimer}
-              />
+              <Timer algorithmId={algorithmId} />
               <LanguageSelector
                 algorithmId={algorithmId}
                 className="px-3 h-9 flex items-center border-l border-gray-700 min-w-[12rem]"
@@ -150,7 +176,8 @@ function Algorithm() {
                 className="h-full overflow-auto"
                 initialValue={currentCode}
                 lang={algorithm.activeLanguage}
-                onChange={(value) => setCode(algorithmId, value)}
+                onChange={handleCodeChange}
+                onFocus={handleTimerManagement}
               />
             </div>
             <div

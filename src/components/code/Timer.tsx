@@ -8,43 +8,35 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
+import { useCodeStore } from "@/stores/algorithm";
 
 interface TimerProps {
   algorithmId: string;
-  timerState: {
-    startTime: number | null;
-    pausedAt: number | null;
-    totalPausedTime: number;
-    isRunning: boolean;
-  } | null;
-  onStart: (algorithmId: string) => void;
-  onPause: (algorithmId: string) => void;
-  onResume: (algorithmId: string) => void;
-  onReset: (algorithmId: string) => void;
 }
 
-export function Timer({ 
-  algorithmId,
-  timerState,
-  onStart,
-  onPause,
-  onResume,
-  onReset,
-}: TimerProps) {
-  const [elapsed, setElapsed] = useState<number>(0);
+export function Timer({ algorithmId }: TimerProps) {
+  const timerState = useCodeStore(
+    (state) => state.algorithms[algorithmId]?.timerState
+  );
+  const startTimer = useCodeStore((state) => state.startTimer);
+  const resumeTimer = useCodeStore((state) => state.resumeTimer);
+  const pauseTimer = useCodeStore((state) => state.pauseTimer);
+  const resetTimer = useCodeStore((state) => state.resetTimer);
+  const getTotalRunningTime = useCodeStore(
+    (state) => state.getTotalRunningTime
+  );
+
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [elapsed, setElapsed] = useState<number>(
+    getTotalRunningTime(algorithmId)
+  );
+
+  console.log(elapsed);
 
   useEffect(() => {
-    if (!timerState?.startTime) {
-      onStart(algorithmId);
+    if (!timerState) {
+      startTimer(algorithmId);
       return;
-    }
-
-    if (timerState.startTime) {
-      const initialElapsed = timerState.isRunning
-        ? Date.now() - timerState.startTime - timerState.totalPausedTime
-        : timerState.pausedAt! - timerState.startTime - timerState.totalPausedTime;
-      setElapsed(initialElapsed);
     }
 
     if (!timerState.isRunning) {
@@ -52,19 +44,15 @@ export function Timer({
     }
 
     const interval = setInterval(() => {
-      if (timerState.startTime) {
-        const now = Date.now();
-        const elapsed = now - timerState.startTime - timerState.totalPausedTime;
-
-        setElapsed(elapsed);
-      }
+      const time = getTotalRunningTime(algorithmId);
+      setElapsed(time);
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [timerState, algorithmId, onStart]);
+  }, [timerState, algorithmId, startTimer, getTotalRunningTime]);
 
   const handleReset = () => {
-    onReset(algorithmId);
+    resetTimer(algorithmId);
     setDropdownOpen(false);
   };
 
@@ -72,25 +60,28 @@ export function Timer({
 
   return (
     <div className="flex items-center gap-2 px-3 h-9 border-l border-gray-700">
-      <div className={cn(
-        "flex items-center gap-1.5 transition-colors",
-        isPaused && "animate-pulse-attention"
-      )}>
-        <TimerIcon className={cn(
-          "w-4 h-4",
-          isPaused ? "text-red-400" : "text-gray-400"
-        )} />
-        <span className={cn(
-          "w-20 font-mono text-sm",
-          isPaused ? "text-red-400" : "text-gray-200"
-        )}>
+      <div
+        className={cn(
+          "flex items-center gap-1.5 transition-colors",
+          isPaused && "animate-pulse-attention"
+        )}
+      >
+        <TimerIcon
+          className={cn("w-4 h-4", isPaused ? "text-red-400" : "text-gray-400")}
+        />
+        <span
+          className={cn(
+            "w-20 font-mono text-sm",
+            isPaused ? "text-red-400" : "text-gray-200"
+          )}
+        >
           {formatTime(elapsed)}
         </span>
       </div>
       <div className="flex gap-0.5">
         {timerState?.isRunning ? (
           <button
-            onClick={() => onPause(algorithmId)}
+            onClick={() => pauseTimer(algorithmId)}
             className="p-1.5 text-gray-400 hover:text-gray-200 hover:bg-gray-700/50 rounded-md transition-colors"
             title="Pause"
           >
@@ -98,10 +89,12 @@ export function Timer({
           </button>
         ) : (
           <button
-            onClick={() => onResume(algorithmId)}
+            onClick={() => resumeTimer(algorithmId)}
             className={cn(
               "p-1.5 hover:bg-gray-700/50 rounded-md transition-colors",
-              isPaused ? "text-red-400 hover:text-red-300" : "text-gray-400 hover:text-gray-200"
+              isPaused
+                ? "text-red-400 hover:text-red-300"
+                : "text-gray-400 hover:text-gray-200"
             )}
             title="Resume"
           >
@@ -117,8 +110,8 @@ export function Timer({
               <RotateCcw className="w-4 h-4" />
             </button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent 
-            className="w-56 bg-gray-800 border-gray-700 text-gray-200" 
+          <DropdownMenuContent
+            className="w-56 bg-gray-800 border-gray-700 text-gray-200"
             align="end"
             alignOffset={-4}
           >

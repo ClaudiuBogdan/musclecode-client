@@ -5,53 +5,61 @@ import { vscodeDark } from '@uiw/codemirror-theme-vscode'
 import { python } from '@codemirror/lang-python'
 
 interface CodeEditorProps {
-  initialValue?: string
-  lang?: string
-  onChange?: (value: string) => void
-  className?: string
+  initialValue?: string;
+  lang?: string;
+  onChange?: (value: string) => void;
+  onFocus?: () => void;
+  className?: string;
 }
 
-export const CodeEditor = ({ initialValue = '', lang, onChange, className }: CodeEditorProps) => {
-  const [value, setValue] = useState(initialValue)
+export const CodeEditor = ({
+  initialValue = "",
+  lang,
+  onChange,
+  onFocus,
+  className,
+}: CodeEditorProps) => {
+  const [value, setValue] = useState(initialValue);
 
   useEffect(() => {
-    setValue(initialValue)
-  }, [initialValue])
+    setValue(initialValue);
+  }, [initialValue]);
 
   const handleChange = useCallback(
     (val: string) => {
-      setValue(val)
-      onChange?.(val)
+      setValue(val);
+      onChange?.(val);
     },
     [onChange]
-  )
+  );
 
   const getLanguageExtension = useCallback(() => {
     switch (lang?.toLowerCase()) {
-      case 'typescript':
-        return javascript({ jsx: false, typescript: true })
-      case 'javascript':
-        return javascript({ jsx: false, typescript: false })
-      case 'python':
-        return python()
+      case "typescript":
+        return javascript({ jsx: false, typescript: true });
+      case "javascript":
+        return javascript({ jsx: false, typescript: false });
+      case "python":
+        return python();
       default:
-        return python() // Default to Python if no language specified
+        return python(); // Default to Python if no language specified
     }
-  }, [lang])
+  }, [lang]);
 
   return (
     <CodeMirror
       value={value}
-      height='100%'
-      width='100%'
+      height="100%"
+      width="100%"
       theme={vscodeDark}
       extensions={[getLanguageExtension()]}
       basicSetup={{
         autocompletion: false,
         allowMultipleSelections: false,
       }}
+      onFocus={onFocus}
       onChange={handleChange}
       className={className}
     />
-  )
-}
+  );
+};

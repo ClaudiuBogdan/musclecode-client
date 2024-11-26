@@ -16,9 +16,13 @@ export type CodeFile = string;
 export type AlgorithmId = string;
 
 interface TimerState {
-  startTime: number | null;
+  // When timer was first started
+  initialStartTime: number;
+  // Current pause start time if paused, null if running
   pausedAt: number | null;
+  // Total accumulated time from previous pause periods
   totalPausedTime: number;
+  // Whether timer is currently running
   isRunning: boolean;
 }
 
@@ -71,6 +75,7 @@ interface CodeStoreActions {
   pauseTimer: (algorithmId: string) => void;
   resumeTimer: (algorithmId: string) => void;
   resetTimer: (algorithmId: string) => void;
+  getTotalRunningTime: (algorithmId: string) => number;
   runCode: (algorithmId: string) => Promise<void>;
 }
 
@@ -135,13 +140,14 @@ export const useCodeStore = create<CodeStoreState & CodeStoreActions>()(
             return state;
           }
 
+          const now = Date.now();
           return {
             algorithms: {
               ...state.algorithms,
               [algorithmId]: {
                 ...state.algorithms[algorithmId],
                 timerState: {
-                  startTime: Date.now(),
+                  initialStartTime: now,
                   pausedAt: null,
                   totalPausedTime: 0,
                   isRunning: true,
@@ -151,7 +157,11 @@ export const useCodeStore = create<CodeStoreState & CodeStoreActions>()(
           };
         }),
 
-      pauseTimer: (algorithmId) =>
+      pauseTimer: (algorithmId) => {
+        if (!get().algorithms[algorithmId]?.timerState) return;
+        if (!get().algorithms[algorithmId].timerState.isRunning) {
+          return;
+        }
         set((state) => ({
           algorithms: {
             ...state.algorithms,
@@ -164,7 +174,8 @@ export const useCodeStore = create<CodeStoreState & CodeStoreActions>()(
               },
             },
           },
-        })),
+        }));
+      },
 
       resumeTimer: (algorithmId) =>
         set((state) => {
@@ -196,7 +207,7 @@ export const useCodeStore = create<CodeStoreState & CodeStoreActions>()(
             [algorithmId]: {
               ...state.algorithms[algorithmId],
               timerState: {
-                startTime: Date.now(),
+                initialStartTime: Date.now(),
                 pausedAt: null,
                 totalPausedTime: 0,
                 isRunning: true,
@@ -204,6 +215,26 @@ export const useCodeStore = create<CodeStoreState & CodeStoreActions>()(
             },
           },
         })),
+
+      getTotalRunningTime: (algorithmId) => {
+        const timer = get().algorithms[algorithmId].timerState;
+        if (!timer) return 0;
+
+        if (!timer.isRunning) {
+          const now = Date.now();
+          const currentPausedTime = Date.now() - timer.pausedAt;
+          return (
+            now -
+            timer.initialStartTime -
+            timer.totalPausedTime -
+            currentPausedTime
+          );
+        }
+
+        const now = Date.now();
+        return now - timer.initialStartTime - timer.totalPausedTime;
+      },
+
       runCode: async (algorithmId: string) => {
         const { algorithms } = get();
         const {
@@ -276,6 +307,7 @@ export const useCodeStore = create<CodeStoreState & CodeStoreActions>()(
           const firstLanguage = languages[0];
           const firstFile = Object.keys(codeState[firstLanguage])[0];
 
+          const now = Date.now();
           set((state) => {
             state.algorithms[algorithmId] = {
               algorithmId,
@@ -287,9 +319,10 @@ export const useCodeStore = create<CodeStoreState & CodeStoreActions>()(
               executionResult: null,
               startTime: null,
               timerState: {
-                startTime: Date.now(),
+                initialStartTime: now,
                 pausedAt: null,
                 totalPausedTime: 0,
+                totalRunningTime: 0,
                 isRunning: true,
               },
               nextAlgorithm: algorithmData.nextAlgorithm,
@@ -312,4 +345,3 @@ export const useCodeStore = create<CodeStoreState & CodeStoreActions>()(
     }
   )
 );
-
