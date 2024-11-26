@@ -8,14 +8,14 @@ import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Separator } from "@/components/ui/separator"
-import { Sheet, SheetContent } from "@/components/ui/sheet"
-import { Skeleton } from "@/components/ui/skeleton"
+import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@/components/ui/tooltip"
+} from "@/components/ui/tooltip";
 import { useLayoutStore } from "@/stores/layout";
 
 const SIDEBAR_WIDTH = "16rem";
@@ -152,14 +152,14 @@ const SidebarProvider = React.forwardRef<
     );
   }
 );
-SidebarProvider.displayName = "SidebarProvider"
+SidebarProvider.displayName = "SidebarProvider";
 
 const Sidebar = React.forwardRef<
   HTMLDivElement,
   React.ComponentProps<"div"> & {
-    side?: "left" | "right"
-    variant?: "sidebar" | "floating" | "inset"
-    collapsible?: "offcanvas" | "icon" | "none"
+    side?: "left" | "right";
+    variant?: "sidebar" | "floating" | "inset";
+    collapsible?: "offcanvas" | "icon" | "none";
   }
 >(
   (
@@ -173,7 +173,7 @@ const Sidebar = React.forwardRef<
     },
     ref
   ) => {
-    const { isMobile, state, openMobile, setOpenMobile } = useSidebar()
+    const { isMobile, state, openMobile, setOpenMobile } = useSidebar();
 
     if (collapsible === "none") {
       return (
@@ -187,12 +187,13 @@ const Sidebar = React.forwardRef<
         >
           {children}
         </div>
-      )
+      );
     }
 
     if (isMobile) {
       return (
         <Sheet open={openMobile} onOpenChange={setOpenMobile} {...props}>
+          <SheetTitle className="sr-only">Sidebar</SheetTitle>
           <SheetContent
             data-sidebar="sidebar"
             data-mobile="true"
@@ -207,7 +208,7 @@ const Sidebar = React.forwardRef<
             <div className="flex h-full w-full flex-col">{children}</div>
           </SheetContent>
         </Sheet>
-      )
+      );
     }
 
     return (
@@ -252,9 +253,9 @@ const Sidebar = React.forwardRef<
           </div>
         </div>
       </div>
-    )
+    );
   }
-)
+);
 Sidebar.displayName = "Sidebar"
 
 const SidebarTrigger = React.forwardRef<
