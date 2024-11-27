@@ -67,6 +67,8 @@ export default {
       animation: {
         "pulse-attention":
           "pulse-attention 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+        "accordion-down": "accordion-down 0.2s ease-out",
+        "accordion-up": "accordion-up 0.2s ease-out",
       },
       keyframes: {
         "pulse-attention": {
@@ -79,6 +81,22 @@ export default {
             transform: "scale(1.05)",
             opacity: "0.85",
             color: "rgb(239 68 68)",
+          },
+        },
+        "accordion-down": {
+          from: {
+            height: "0",
+          },
+          to: {
+            height: "var(--radix-accordion-content-height)",
+          },
+        },
+        "accordion-up": {
+          from: {
+            height: "var(--radix-accordion-content-height)",
+          },
+          to: {
+            height: "0",
           },
         },
       },
