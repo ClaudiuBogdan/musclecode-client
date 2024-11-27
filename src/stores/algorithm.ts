@@ -45,6 +45,7 @@ interface CodeStoreState {
       executionResult: CodeExecutionResponse | null;
       startTime: number | null;
       timerState: TimerState;
+      notes: string;
       // The next algorithm to be run if available
       nextAlgorithm: {
         id: string;
@@ -55,7 +56,8 @@ interface CodeStoreState {
 }
 
 interface CodeStoreActions {
-  initializeAlgorithm: (algorithmId: string) => void;
+  initializeAlgorithm: (algorithmId: string) => Promise<void>;
+  setNotes: (algorithmId: string, notes: string) => void;
   setActiveLanguage: (algorithmId: string, language: CodeLanguage) => void;
   setActiveTab: (algorithmId: string, tab: CodeFile) => void;
   setCode: (algorithmId: string, code: string) => void;
@@ -277,6 +279,11 @@ export const useCodeStore = create<CodeStoreState & CodeStoreActions>()(
         }
       },
 
+      setNotes: (algorithmId, notes) =>
+        set((state) => {
+          state.algorithms[algorithmId].notes = notes;
+        }),
+
       initializeAlgorithm: async (algorithmId) => {
         const algorithm = get().algorithms[algorithmId];
 
@@ -315,6 +322,7 @@ export const useCodeStore = create<CodeStoreState & CodeStoreActions>()(
               isExecuting: false,
               executionResult: null,
               startTime: null,
+              notes: algorithmData.notes,
               timerState: {
                 initialStartTime: now,
                 pausedAt: null,

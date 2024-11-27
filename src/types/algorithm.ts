@@ -12,6 +12,7 @@ export interface Algorithm {
   category: string;
   description: string;
   difficulty: "easy" | "medium" | "hard";
+  notes: string;
   nextAlgorithm: {
     id: string;
     title: string;

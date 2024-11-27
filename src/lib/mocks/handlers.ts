@@ -14,6 +14,8 @@ const mockAlgorithms: Algorithm[] = [
     id: "1234",
     title: "Two Sum",
     category: "Array",
+    notes: "",
+    nextAlgorithm: null,
     description:
       "Given an array of integers nums and an integer target, return indices of the two numbers such that they add up to target.",
     difficulty: "easy",

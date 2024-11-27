@@ -38,6 +38,7 @@ export const ProblemDescription: FC = () => {
   return (
     <div
       className={cn(
+        "p-4",
         "prose prose-sm dark:prose-invert max-w-none overflow-auto",
         "prose-headings:text-foreground dark:prose-headings:text-zinc-200",
         "prose-p:text-muted-foreground dark:prose-p:text-zinc-400",

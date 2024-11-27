@@ -1,6 +1,5 @@
 import Split from '@uiw/react-split'
-import { CodeEditor } from '@/components/code/CodeEditor'
-import { ProblemDescription } from '@/components/code/ProblemDescription'
+import { CodeEditor } from "@/components/code/CodeEditor";
 import { createLazyFileRoute, Link, useParams } from "@tanstack/react-router";
 import { useCodeStore, CodeLanguage } from "@/stores/algorithm";
 import { LanguageSelector } from "@/components/code/LanguageSelector";
@@ -12,6 +11,7 @@ import { RunButton } from "@/components/code/RunButton";
 import { SkipButton } from "@/components/code/SkipButton";
 import NextButton from "@/components/code/NextButton";
 import { useLayoutStore } from "@/stores/layout";
+import { InfoPanel } from "@/components/code/InfoPanel";
 
 export const Route = createLazyFileRoute("/algorithm/$id")({
   component: Algorithm,
@@ -69,7 +69,7 @@ function Algorithm() {
       return;
     }
 
-    if (!timerState.isRunning) {
+    if (timerState.pausedAt !== null) {
       handleTimerResume();
     }
   }, [algorithmId, algorithm?.timerState, handleTimerStart, handleTimerResume]);
@@ -117,13 +117,13 @@ function Algorithm() {
         }}
       >
         <div
-          style={{ width: `${sizes[0]}%`, minWidth: "400px" }}
-          className="h-full p-4"
+          style={{ width: `${sizes[0]}%`, minWidth: "200px" }}
+          className="h-full"
         >
-          <ProblemDescription />
+          <InfoPanel algorithmId={algorithmId} />
         </div>
         <div
-          style={{ width: `${sizes[1]}%`, minWidth: "400px" }}
+          style={{ width: `${sizes[1]}%`, minWidth: "200px" }}
           className="h-full flex flex-col bg-gray-900"
         >
           {/* Top Controls */}
@@ -136,16 +136,16 @@ function Algorithm() {
             <div className="flex items-center">
               <RunButton
                 onRun={handleRunCode}
-                isRunning={algorithm.isRunning}
+                isRunning={algorithm.isExecuting}
               />
               {!hasPassed && !!nextAlgorithmId && (
                 <Link to="/algorithm/$id" params={{ id: nextAlgorithmId }}>
-                  <SkipButton disabled={algorithm.isRunning} />
+                  <SkipButton disabled={algorithm.isExecuting} />
                 </Link>
               )}
               {hasPassed && nextAlgorithmId && (
                 <Link to="/algorithm/$id" params={{ id: nextAlgorithmId }}>
-                  <NextButton disabled={algorithm.isRunning} />
+                  <NextButton disabled={algorithm.isExecuting} />
                 </Link>
               )}
 
