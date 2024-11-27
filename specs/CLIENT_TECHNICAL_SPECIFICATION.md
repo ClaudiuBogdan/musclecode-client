@@ -118,7 +118,7 @@ export const useEditorStore = create<EditorStore>((set) => ({
 import { createClient } from "@tanstack/react-query";
 
 export const apiClient = {
-  baseURL: process.env.NEXT_PUBLIC_API_URL,
+  baseURL: process.env.API_URL,
   headers: {
     "Content-Type": "application/json",
   },
@@ -245,20 +245,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 ```
 
 ## Build & Deployment
-
-### Environment Configuration
-
-```typescript
-// env.d.ts
-declare namespace NodeJS {
-  interface ProcessEnv {
-    NEXT_PUBLIC_API_URL: string;
-    NEXT_PUBLIC_WS_URL: string;
-    NEXT_PUBLIC_SENTRY_DSN: string;
-    // Other environment variables
-  }
-}
-```
 
 ### Performance Monitoring
 

@@ -15,6 +15,33 @@ export type CodeFile = string;
 
 export type AlgorithmId = string;
 
+export type Difficulty = "again" | "hard" | "good" | "easy";
+
+export interface TestResult {
+  name: string;
+  passed: boolean;
+  message?: string;
+}
+
+export interface TestResults {
+  passed: boolean;
+  totalTests: number;
+  testResults: TestResult[];
+}
+
+export interface SubmissionData {
+  timeSpent: number;
+  code: string;
+}
+
+export interface SubmissionNote {
+  id: string;
+  notes: string;
+  difficulty: Difficulty;
+  timestamp: number;
+  data: SubmissionData;
+}
+
 interface TimerState {
   // When timer was first started
   initialStartTime: number;
@@ -45,7 +72,8 @@ interface CodeStoreState {
       executionResult: CodeExecutionResponse | null;
       startTime: number | null;
       timerState: TimerState;
-      notes: string;
+      globalNotes: string;
+      submissionNotes: SubmissionNote[];
       // The next algorithm to be run if available
       nextAlgorithm: {
         id: string;
@@ -57,7 +85,13 @@ interface CodeStoreState {
 
 interface CodeStoreActions {
   initializeAlgorithm: (algorithmId: string) => Promise<void>;
-  setNotes: (algorithmId: string, notes: string) => void;
+  setGlobalNotes: (algorithmId: string, notes: string) => void;
+  addSubmissionNote: (
+    algorithmId: string,
+    difficulty: Difficulty,
+    notes: string,
+    data: SubmissionData
+  ) => Promise<void>;
   setActiveLanguage: (algorithmId: string, language: CodeLanguage) => void;
   setActiveTab: (algorithmId: string, tab: CodeFile) => void;
   setCode: (algorithmId: string, code: string) => void;
@@ -84,6 +118,41 @@ export const useCodeStore = create<CodeStoreState & CodeStoreActions>()(
     immer((set, get) => ({
       isLoading: false as boolean,
       algorithms: {},
+
+      setGlobalNotes: (algorithmId, notes) =>
+        set((state) => {
+          if (!state.algorithms[algorithmId]) return;
+          state.algorithms[algorithmId].globalNotes = notes;
+        }),
+
+      addSubmissionNote: async (algorithmId, difficulty, notes, data) => {
+        const submissionNote: SubmissionNote = {
+          id: crypto.randomUUID(),
+          notes,
+          difficulty,
+          timestamp: Date.now(),
+          data,
+        };
+
+        set((state) => {
+          if (!state.algorithms[algorithmId]) return;
+          state.algorithms[algorithmId].submissionNotes = [
+            ...state.algorithms[algorithmId].submissionNotes,
+            submissionNote,
+          ];
+        });
+
+        // Here you would send the submission note to the server
+        try {
+          // TODO: Implement API call to save submission
+          // await saveSubmission(algorithmId, submissionNote);
+          console.log("Submission saved:", { algorithmId, submissionNote });
+        } catch (error) {
+          console.error("Failed to save submission:", error);
+          // Optionally rollback the state update on error
+        }
+      },
+
       setActiveLanguage: (algorithmId, language) => {
         set((state) => {
           if (!state.algorithms[algorithmId]) return;
@@ -279,11 +348,6 @@ export const useCodeStore = create<CodeStoreState & CodeStoreActions>()(
         }
       },
 
-      setNotes: (algorithmId, notes) =>
-        set((state) => {
-          state.algorithms[algorithmId].notes = notes;
-        }),
-
       initializeAlgorithm: async (algorithmId) => {
         const algorithm = get().algorithms[algorithmId];
 
@@ -322,7 +386,8 @@ export const useCodeStore = create<CodeStoreState & CodeStoreActions>()(
               isExecuting: false,
               executionResult: null,
               startTime: null,
-              notes: algorithmData.notes,
+              globalNotes: algorithmData.notes || "",
+              submissionNotes: [],
               timerState: {
                 initialStartTime: now,
                 pausedAt: null,
@@ -333,7 +398,6 @@ export const useCodeStore = create<CodeStoreState & CodeStoreActions>()(
           });
         } catch (error) {
           console.error("Failed to initialize algorithm:", error);
-          // Optionally set an error state here
         } finally {
           set((state) => ({
             ...state,

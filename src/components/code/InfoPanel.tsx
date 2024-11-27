@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ProblemDescription } from "@/components/code/ProblemDescription";
 import { NotesEditor } from "@/components/code/NotesEditor";
@@ -11,16 +11,24 @@ interface InfoPanelProps {
 }
 
 export const InfoPanel: React.FC<InfoPanelProps> = ({ algorithmId }) => {
-  const { setNotes } = useCodeStore();
+  const { setGlobalNotes } = useCodeStore();
   const algorithm = useCodeStore((state) => state.algorithms[algorithmId]);
+  const [activeTab, setActiveTab] = useState("problem");
 
   const handleNotesChange = useCallback(
     (value: string) => {
       if (!algorithmId) return;
-      setNotes(algorithmId, value);
+      setGlobalNotes(algorithmId, value);
     },
-    [algorithmId, setNotes]
+    [algorithmId, setGlobalNotes]
   );
+
+  // Switch to submission tab when tests pass
+  useEffect(() => {
+    if (algorithm?.executionResult?.result.passed) {
+      setActiveTab("submission");
+    }
+  }, [algorithm?.executionResult?.result.passed]);
 
   const tabClassName = cn(
     "h-10 rounded-none border-0 px-4 data-[state=active]:bg-muted/50",
@@ -32,7 +40,11 @@ export const InfoPanel: React.FC<InfoPanelProps> = ({ algorithmId }) => {
 
   return (
     <div className="h-full flex flex-col bg-background">
-      <Tabs defaultValue="problem" className="w-full h-full flex flex-col ">
+      <Tabs
+        value={activeTab}
+        onValueChange={setActiveTab}
+        className="w-full h-full flex flex-col"
+      >
         <TabsList className="h-10 w-full flex justify-start shrink-0 bg-background border-b border-border rounded-none p-0">
           <TabsTrigger value="problem" className={tabClassName}>
             Description
@@ -54,13 +66,16 @@ export const InfoPanel: React.FC<InfoPanelProps> = ({ algorithmId }) => {
           value="notes"
           className="flex-grow m-0 overflow-auto border-none outline-none"
         >
-          <NotesEditor value={algorithm.notes} onChange={handleNotesChange} />
+          <NotesEditor
+            value={algorithm?.globalNotes ?? ""}
+            onChange={handleNotesChange}
+          />
         </TabsContent>
         <TabsContent
           value="submission"
           className="flex-grow mt-4 p-4 overflow-auto border-none outline-none"
         >
-          <SubmissionForm />
+          <SubmissionForm algorithmId={algorithmId} />
         </TabsContent>
       </Tabs>
     </div>
