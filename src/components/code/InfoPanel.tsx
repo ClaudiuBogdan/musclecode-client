@@ -1,10 +1,9 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ProblemDescription } from "@/components/code/ProblemDescription";
 import { NotesEditor } from "@/components/code/NotesEditor";
 import { useCodeStore } from "@/stores/algorithm";
 import { cn } from "@/lib/utils";
-import { SubmissionForm } from "./SubmissionForm";
 
 interface InfoPanelProps {
   algorithmId: string;
@@ -13,9 +12,6 @@ interface InfoPanelProps {
 export const InfoPanel: React.FC<InfoPanelProps> = ({ algorithmId }) => {
   const { setGlobalNotes } = useCodeStore();
   const algorithm = useCodeStore((state) => state.algorithms[algorithmId]);
-  const [activeTab, setActiveTab] = useState("problem");
-
-  const hasTestsPassed = algorithm?.executionResult?.result.completed;
 
   const handleNotesChange = useCallback(
     (value: string) => {
@@ -24,13 +20,6 @@ export const InfoPanel: React.FC<InfoPanelProps> = ({ algorithmId }) => {
     },
     [algorithmId, setGlobalNotes]
   );
-
-  // Switch to submission tab when tests pass
-  useEffect(() => {
-    if (hasTestsPassed) {
-      setActiveTab("submission");
-    }
-  }, [hasTestsPassed]);
 
   const tabClassName = cn(
     "h-10 rounded-none border-0 px-4 data-[state=active]:bg-muted/50",
@@ -42,20 +31,13 @@ export const InfoPanel: React.FC<InfoPanelProps> = ({ algorithmId }) => {
 
   return (
     <div className="h-full flex flex-col bg-background">
-      <Tabs
-        value={activeTab}
-        onValueChange={setActiveTab}
-        className="w-full h-full flex flex-col"
-      >
+      <Tabs defaultValue="problem" className="w-full h-full flex flex-col">
         <TabsList className="h-10 w-full flex justify-start shrink-0 bg-background border-b border-border rounded-none p-0">
           <TabsTrigger value="problem" className={tabClassName}>
             Description
           </TabsTrigger>
           <TabsTrigger value="notes" className={tabClassName}>
             Notes
-          </TabsTrigger>
-          <TabsTrigger value="submission" className={tabClassName}>
-            Submission
           </TabsTrigger>
         </TabsList>
         <TabsContent
@@ -72,12 +54,6 @@ export const InfoPanel: React.FC<InfoPanelProps> = ({ algorithmId }) => {
             value={algorithm?.globalNotes ?? ""}
             onChange={handleNotesChange}
           />
-        </TabsContent>
-        <TabsContent
-          value="submission"
-          className="flex-grow mt-4 p-4 overflow-auto border-none outline-none"
-        >
-          <SubmissionForm algorithmId={algorithmId} />
         </TabsContent>
       </Tabs>
     </div>
