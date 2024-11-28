@@ -1,8 +1,10 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
-import { runCode, getAlgorithm } from "@/lib/api/code";
+import { runCode, getAlgorithm, saveSubmission } from "@/lib/api/code";
 import { CodeExecutionResponse } from "@/types/testRunner";
+import { useNotificationStore } from "./notifications";
+import { Difficulty } from "@/types/algorithm";
 
 export type CodeLanguage =
   | "typescript"
@@ -15,8 +17,6 @@ export type CodeFile = string;
 
 export type AlgorithmId = string;
 
-export type Difficulty = "again" | "hard" | "good" | "easy";
-
 export interface TestResult {
   name: string;
   passed: boolean;
@@ -27,19 +27,6 @@ export interface TestResults {
   passed: boolean;
   totalTests: number;
   testResults: TestResult[];
-}
-
-export interface SubmissionData {
-  timeSpent: number;
-  code: string;
-}
-
-export interface SubmissionNote {
-  id: string;
-  notes: string;
-  difficulty: Difficulty;
-  timestamp: number;
-  data: SubmissionData;
 }
 
 interface TimerState {
@@ -73,12 +60,13 @@ interface CodeStoreState {
       startTime: number | null;
       timerState: TimerState;
       globalNotes: string;
-      submissionNotes: SubmissionNote[];
       // The next algorithm to be run if available
       nextAlgorithm: {
         id: string;
         title: string;
       } | null;
+      isSubmitting: boolean;
+      submissionNotes: string;
     };
   };
 }
@@ -86,12 +74,8 @@ interface CodeStoreState {
 interface CodeStoreActions {
   initializeAlgorithm: (algorithmId: string) => Promise<void>;
   setGlobalNotes: (algorithmId: string, notes: string) => void;
-  addSubmissionNote: (
-    algorithmId: string,
-    difficulty: Difficulty,
-    notes: string,
-    data: SubmissionData
-  ) => Promise<void>;
+  setSubmissionNotes: (algorithmId: string, notes: string) => void;
+  submit: (algorithmId: string, difficulty: Difficulty) => Promise<boolean>;
   setActiveLanguage: (algorithmId: string, language: CodeLanguage) => void;
   setActiveTab: (algorithmId: string, tab: CodeFile) => void;
   setCode: (algorithmId: string, code: string) => void;
@@ -125,31 +109,43 @@ export const useCodeStore = create<CodeStoreState & CodeStoreActions>()(
           state.algorithms[algorithmId].globalNotes = notes;
         }),
 
-      addSubmissionNote: async (algorithmId, difficulty, notes, data) => {
-        const submissionNote: SubmissionNote = {
-          id: crypto.randomUUID(),
-          notes,
-          difficulty,
-          timestamp: Date.now(),
-          data,
-        };
-
+      setSubmissionNotes: (algorithmId, notes) =>
         set((state) => {
           if (!state.algorithms[algorithmId]) return;
-          state.algorithms[algorithmId].submissionNotes = [
-            ...state.algorithms[algorithmId].submissionNotes,
-            submissionNote,
-          ];
+          state.algorithms[algorithmId].submissionNotes = notes;
+        }),
+
+      submit: async (algorithmId, difficulty) => {
+        if (!get().algorithms[algorithmId]) return false;
+
+        set((state) => {
+          state.algorithms[algorithmId].isSubmitting = true;
         });
 
-        // Here you would send the submission note to the server
+        const submission = {
+          timeSpent: get().getTotalRunningTime(algorithmId),
+          code: get().getCode(
+            algorithmId,
+            get().algorithms[algorithmId].activeLanguage,
+            get().algorithms[algorithmId].activeTab
+          ),
+          difficulty,
+          notes: get().algorithms[algorithmId].globalNotes,
+        };
+
         try {
-          // TODO: Implement API call to save submission
-          // await saveSubmission(algorithmId, submissionNote);
-          console.log("Submission saved:", { algorithmId, submissionNote });
+          await saveSubmission(algorithmId, submission);
+
+          set((state) => {
+            state.algorithms[algorithmId].isSubmitting = false;
+          });
+          return true;
         } catch (error) {
           console.error("Failed to save submission:", error);
-          // Optionally rollback the state update on error
+          set((state) => {
+            state.algorithms[algorithmId].isSubmitting = false;
+          });
+          return false;
         }
       },
 
@@ -387,13 +383,14 @@ export const useCodeStore = create<CodeStoreState & CodeStoreActions>()(
               executionResult: null,
               startTime: null,
               globalNotes: algorithmData.notes || "",
-              submissionNotes: [],
               timerState: {
                 initialStartTime: now,
                 pausedAt: null,
                 totalPausedTime: 0,
               },
               nextAlgorithm: algorithmData.nextAlgorithm,
+              isSubmitting: false,
+              submissionNotes: "",
             };
           });
         } catch (error) {

@@ -8,16 +8,17 @@ interface ButtonBarProps {
   nextAlgorithmId?: string;
   hasPassed: boolean;
   isExecuting: boolean;
+  isSubmitting: boolean;
   onRun: () => void;
-  onSubmitDifficulty: (difficulty: number, notes?: string) => Promise<void>;
 }
 
 export const ButtonBar: React.FC<ButtonBarProps> = ({
+  algorithmId,
   nextAlgorithmId,
   hasPassed,
   isExecuting,
+  isSubmitting,
   onRun,
-  onSubmitDifficulty,
 }) => {
   const router = useRouter();
 
@@ -36,6 +37,7 @@ export const ButtonBar: React.FC<ButtonBarProps> = ({
         <RunButton
           onRun={onRun}
           isRunning={isExecuting}
+          disabled={isExecuting || isSubmitting}
           className="hover:bg-[#2D2D2D] transition-colors duration-150"
         />
         {!hasPassed && !!nextAlgorithmId && (
@@ -49,8 +51,8 @@ export const ButtonBar: React.FC<ButtonBarProps> = ({
 
       {hasPassed && (
         <DifficultySelector
+          algorithmId={algorithmId}
           nextAlgorithmId={nextAlgorithmId}
-          onSubmit={onSubmitDifficulty}
         />
       )}
     </div>

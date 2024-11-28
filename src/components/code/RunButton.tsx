@@ -1,19 +1,26 @@
-import { PlayIcon } from '@radix-ui/react-icons'
-import { Button } from '@/components/ui/button'
+import { PlayIcon } from "@radix-ui/react-icons";
+import { Button } from "@/components/ui/button";
+import { Loader2Icon } from "lucide-react";
 
 interface RunButtonProps {
   onRun: () => void;
-  isRunning: boolean;
+  disabled: boolean;
+  isRunning?: boolean;
   className?: string;
 }
 
-export function RunButton({ onRun, isRunning, className }: RunButtonProps) {
+export function RunButton({
+  onRun,
+  disabled,
+  isRunning,
+  className,
+}: RunButtonProps) {
   return (
     <Button
       onClick={onRun}
-      disabled={isRunning}
+      disabled={disabled}
       className={`
-        gap-2 min-w-[120px] font-medium
+        gap-2 min-w-[120px] font-medium relative
         ${className}
         ${
           isRunning
@@ -24,7 +31,10 @@ export function RunButton({ onRun, isRunning, className }: RunButtonProps) {
       variant="outline"
     >
       <PlayIcon className={`h-4 w-4 ${isRunning ? "animate-pulse" : ""}`} />
-      {isRunning ? "Running..." : "Run"}
+      Run
+      {isRunning && (
+        <Loader2Icon className="h-4 w-4 animate-spin text-gray-400 absolute right-2" />
+      )}
     </Button>
   );
 }

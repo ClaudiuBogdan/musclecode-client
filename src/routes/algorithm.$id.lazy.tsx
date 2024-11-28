@@ -8,7 +8,7 @@ import { useLayoutStore } from "@/stores/layout";
 import { InfoPanel } from "@/components/code/InfoPanel";
 import { TopBar } from "@/components/code/layout/TopBar";
 import { ButtonBar } from "@/components/code/layout/ButtonBar";
-
+import { Toaster } from "@/components/ui/Toaster";
 export const Route = createLazyFileRoute("/algorithm/$id")({
   component: Algorithm,
 });
@@ -89,11 +89,6 @@ function Algorithm() {
     setActiveTab(algorithmId, getFiles(algorithmId, language)[0].name);
   };
 
-  const handleSubmitDifficulty = async (difficulty: number, notes?: string) => {
-    // TODO: Implement the API call to submit difficulty and notes
-    console.log("Submitting difficulty:", difficulty, "notes:", notes);
-  };
-
   if (isLoading) {
     return <div>Loading...</div>;
   }
@@ -109,73 +104,76 @@ function Algorithm() {
   );
 
   return (
-    <div className="h-[calc(100vh-2rem)] p-2">
-      <Split
-        className="h-[calc(100%-3rem)]"
-        style={{ border: "1px solid #d5d5d5", borderRadius: 3 }}
-        onDragEnd={(preSize, nextSize) => {
-          setSizes([preSize, nextSize]);
-        }}
-      >
-        <div
-          style={{ width: `${sizes[0]}%`, minWidth: "200px" }}
-          className="h-full"
+    <>
+      <div className="h-[calc(100vh-2rem)] p-2">
+        <Split
+          className="h-[calc(100%-3rem)]"
+          style={{ border: "1px solid #d5d5d5", borderRadius: 3 }}
+          onDragEnd={(preSize, nextSize) => {
+            setSizes([preSize, nextSize]);
+          }}
         >
-          <InfoPanel algorithmId={algorithmId} />
-        </div>
-        <div
-          style={{ width: `${sizes[1]}%`, minWidth: "200px" }}
-          className="h-full flex flex-col bg-gray-900"
-        >
-          <TopBar
-            algorithmId={algorithmId}
-            activeTab={algorithm.activeTab}
-            activeLanguage={algorithm.activeLanguage}
-            onTabChange={(tab: string) => setActiveTab(algorithmId, tab)}
-            onLanguageChange={handleLanguageChange}
-            getFiles={getFiles}
-          />
-
-          {/* Vertical Split for Editor and Results */}
-          <Split
-            className="flex-1"
-            style={{ height: "calc(100% - 37px - 48px)" }} // Subtract the height of the top controls and button bar
-            lineBar
-            mode="vertical"
-            onDragEnd={(preSize, nextSize) => {
-              setEditorSizes([preSize, nextSize]);
-            }}
+          <div
+            style={{ width: `${sizes[0]}%`, minWidth: "200px" }}
+            className="h-full"
           >
-            <div
-              style={{ height: `${editorSizes[0]}%`, minHeight: "100px" }}
-              className="flex flex-col"
-            >
-              <CodeEditor
-                className="h-full overflow-auto"
-                initialValue={currentCode}
-                lang={algorithm.activeLanguage}
-                onChange={handleCodeChange}
-                onFocus={handleTimerManagement}
-              />
+            <InfoPanel algorithmId={algorithmId} />
+          </div>
+          <div
+            style={{ width: `${sizes[1]}%`, minWidth: "200px" }}
+            className="h-full flex flex-col bg-gray-900"
+          >
+            <TopBar
+              algorithmId={algorithmId}
+              activeTab={algorithm.activeTab}
+              activeLanguage={algorithm.activeLanguage}
+              onTabChange={(tab: string) => setActiveTab(algorithmId, tab)}
+              onLanguageChange={handleLanguageChange}
+              getFiles={getFiles}
+            />
 
-              <ButtonBar
-                algorithmId={algorithmId}
-                nextAlgorithmId={nextAlgorithmId}
-                hasPassed={hasPassed}
-                isExecuting={algorithm.isExecuting}
-                onRun={handleRunCode}
-                onSubmitDifficulty={handleSubmitDifficulty}
-              />
-            </div>
-            <div
-              style={{ height: `${editorSizes[1]}%`, minHeight: "100px" }}
-              className="border-t border-gray-700"
+            {/* Vertical Split for Editor and Results */}
+            <Split
+              className="flex-1"
+              style={{ height: "calc(100% - 37px - 48px)" }} // Subtract the height of the top controls and button bar
+              lineBar
+              mode="vertical"
+              onDragEnd={(preSize, nextSize) => {
+                setEditorSizes([preSize, nextSize]);
+              }}
             >
-              <ExecutionResult result={algorithm.executionResult} />
-            </div>
-          </Split>
-        </div>
-      </Split>
-    </div>
+              <div
+                style={{ height: `${editorSizes[0]}%`, minHeight: "100px" }}
+                className="flex flex-col"
+              >
+                <CodeEditor
+                  className="h-full overflow-auto"
+                  initialValue={currentCode}
+                  lang={algorithm.activeLanguage}
+                  onChange={handleCodeChange}
+                  onFocus={handleTimerManagement}
+                />
+
+                <ButtonBar
+                  algorithmId={algorithmId}
+                  nextAlgorithmId={nextAlgorithmId}
+                  hasPassed={hasPassed}
+                  isExecuting={algorithm.isExecuting}
+                  isSubmitting={algorithm.isSubmitting}
+                  onRun={handleRunCode}
+                />
+              </div>
+              <div
+                style={{ height: `${editorSizes[1]}%`, minHeight: "100px" }}
+                className="border-t border-gray-700"
+              >
+                <ExecutionResult result={algorithm.executionResult} />
+              </div>
+            </Split>
+          </div>
+        </Split>
+      </div>
+      <Toaster />
+    </>
   );
 }

@@ -6,6 +6,8 @@ export interface AlgorithmFile {
   readOnly?: boolean;
 }
 
+export type Difficulty = "again" | "hard" | "good" | "easy";
+
 export interface Algorithm {
   id: string;
   title: string;

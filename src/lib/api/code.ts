@@ -8,6 +8,13 @@ export interface CodeRunRequest {
   code: string;
 }
 
+export interface SubmissionRequest {
+  timeSpent: number;
+  code: string;
+  difficulty: Difficulty;
+  notes: string;
+}
+
 export interface TestResult {
   passed: boolean;
   message: string;
@@ -31,4 +38,21 @@ export const getAlgorithm = async (algorithmId: string): Promise<Algorithm> => {
     `/api/algorithms/${algorithmId}`
   );
   return data;
+};
+
+export const saveSubmission = async (
+  algorithmId: string,
+  submission: SubmissionRequest
+): Promise<void> => {
+  const response = await fetch(`/api/algorithms/${algorithmId}/submissions`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(submission),
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to save submission");
+  }
 };
