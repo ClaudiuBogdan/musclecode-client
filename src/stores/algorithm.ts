@@ -51,6 +51,7 @@ interface CodeStoreState {
   algorithms: {
     [key: AlgorithmId]: {
       algorithmId: string;
+      description: string;
       isExecuting: boolean;
       activeLanguage: CodeLanguage;
       languages: CodeLanguage[];
@@ -375,6 +376,7 @@ export const useCodeStore = create<CodeStoreState & CodeStoreActions>()(
           set((state) => {
             state.algorithms[algorithmId] = {
               algorithmId,
+              description: algorithmData.description,
               activeLanguage: firstLanguage,
               languages,
               activeTab: firstFile,

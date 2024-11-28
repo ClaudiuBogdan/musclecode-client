@@ -44,7 +44,9 @@ export const InfoPanel: React.FC<InfoPanelProps> = ({ algorithmId }) => {
           value="problem"
           className="flex-grow m-0 overflow-auto border-none outline-none"
         >
-          <ProblemDescription />
+          <ProblemDescription
+            problemDescription={algorithm?.description ?? ""}
+          />
         </TabsContent>
         <TabsContent
           value="notes"
