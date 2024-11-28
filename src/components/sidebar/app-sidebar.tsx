@@ -9,6 +9,7 @@ import {
   SidebarFooter,
   SidebarHeader,
   SidebarRail,
+  SidebarTrigger,
 } from "@/components/ui/sidebar";
 import Logo from "./logo";
 
@@ -53,6 +54,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavMain items={data.navMain} />
       </SidebarContent>
       <SidebarFooter>
+        <div className="group-data-[state=collapsed]:visible invisible">
+          <SidebarTrigger />
+        </div>
         <NavUser user={data.user} />
       </SidebarFooter>
       <SidebarRail />
