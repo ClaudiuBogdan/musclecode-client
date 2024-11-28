@@ -23,6 +23,7 @@ import {
   RotateCcw,
   Timer,
   CheckCircle2,
+  XCircle,
 } from "lucide-react";
 import { useCodeStore, Difficulty } from "@/stores/algorithm";
 import { useRouter } from "@tanstack/react-router";
@@ -73,6 +74,8 @@ export const SubmissionForm: React.FC<SubmissionFormProps> = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const totalTime = getTotalRunningTime(algorithmId);
 
+  const hasTestsPassed = algorithm?.executionResult?.result.completed;
+
   const formatTime = (ms: number): string => {
     const minutes = Math.floor(ms / 60000);
     const seconds = Math.floor((ms % 60000) / 1000);
@@ -109,19 +112,30 @@ export const SubmissionForm: React.FC<SubmissionFormProps> = ({
   return (
     <Card className="w-full max-w-3xl mx-auto bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 shadow-2xl rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700">
       <CardHeader className=" text-black p-6">
-        <CardTitle className="text-3xl font-bold text-center">
-          Great job! All tests passed!
-        </CardTitle>
+        {hasTestsPassed && (
+          <CardTitle className="text-3xl font-bold text-center">
+            Great job! All tests passed!
+          </CardTitle>
+        )}
       </CardHeader>
       <form onSubmit={handleSubmit}>
         <CardContent className="p-6 space-y-8">
           {/* Test Results Summary */}
           <div className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm space-y-4">
             <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-2">
-                <CheckCircle2 className="w-5 h-5 text-green-500" />
-                <span className="text-sm font-medium">Tests Passed</span>
-              </div>
+              {hasTestsPassed && (
+                <div className="flex items-center space-x-2">
+                  <CheckCircle2 className="w-5 h-5 text-green-500" />
+                  <span className="text-sm font-medium">Tests Passed</span>
+                </div>
+              )}
+              {!hasTestsPassed && (
+                <div className="flex items-center space-x-2">
+                  <XCircle className="w-5 h-5 text-red-500" />
+                  <span className="text-sm font-medium">Tests Failed</span>
+                </div>
+              )}
+
               <div className="flex items-center space-x-2">
                 <Timer className="w-5 h-5 text-blue-500" />
                 <span className="text-sm font-medium">

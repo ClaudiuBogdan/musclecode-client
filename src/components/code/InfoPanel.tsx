@@ -15,6 +15,8 @@ export const InfoPanel: React.FC<InfoPanelProps> = ({ algorithmId }) => {
   const algorithm = useCodeStore((state) => state.algorithms[algorithmId]);
   const [activeTab, setActiveTab] = useState("problem");
 
+  const hasTestsPassed = algorithm?.executionResult?.result.completed;
+
   const handleNotesChange = useCallback(
     (value: string) => {
       if (!algorithmId) return;
@@ -25,10 +27,10 @@ export const InfoPanel: React.FC<InfoPanelProps> = ({ algorithmId }) => {
 
   // Switch to submission tab when tests pass
   useEffect(() => {
-    if (algorithm?.executionResult?.result.passed) {
+    if (hasTestsPassed) {
       setActiveTab("submission");
     }
-  }, [algorithm?.executionResult?.result.passed]);
+  }, [hasTestsPassed]);
 
   const tabClassName = cn(
     "h-10 rounded-none border-0 px-4 data-[state=active]:bg-muted/50",
