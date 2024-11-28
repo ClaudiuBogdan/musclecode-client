@@ -19,7 +19,7 @@ function Algorithm() {
 
   const algorithm = useCodeStore((state) => state.algorithms[algorithmId]);
 
-  const hasPassed = !!algorithm?.executionResult?.result.passed;
+  const hasPassed = !!algorithm?.executionResult?.result.completed;
   const nextAlgorithmId = algorithm?.nextAlgorithm?.id;
 
   const {
