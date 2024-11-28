@@ -12,9 +12,10 @@ import { useCodeStore } from "@/stores/algorithm";
 
 interface TimerProps {
   algorithmId: string;
+  className?: string;
 }
 
-export function Timer({ algorithmId }: TimerProps) {
+export function Timer({ algorithmId, className }: TimerProps) {
   const timerState = useCodeStore(
     (state) => state.algorithms[algorithmId]?.timerState
   );
@@ -57,7 +58,12 @@ export function Timer({ algorithmId }: TimerProps) {
   const isPaused = timerState && !!timerState.pausedAt;
 
   return (
-    <div className="flex items-center gap-2 px-3 h-9 border-l border-gray-700">
+    <div
+      className={cn(
+        "flex items-center gap-2 px-3 h-9 border-l border-gray-700",
+        className
+      )}
+    >
       <div
         className={cn(
           "flex items-center gap-1.5 transition-colors",

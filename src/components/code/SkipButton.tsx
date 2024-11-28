@@ -11,9 +11,10 @@ import {
 interface SkipButtonProps {
   disabled?: boolean;
   onClick?: () => void;
+  className?: string;
 }
 
-export function SkipButton({ onClick, disabled }: SkipButtonProps) {
+export function SkipButton({ onClick, disabled, className }: SkipButtonProps) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
   const handleSkip = () => {
@@ -28,6 +29,7 @@ export function SkipButton({ onClick, disabled }: SkipButtonProps) {
           disabled={disabled}
           className={`
             gap-2 min-w-[120px] font-medium
+            ${className}
             ${
               disabled
                 ? "text-gray-500 border-gray-800"

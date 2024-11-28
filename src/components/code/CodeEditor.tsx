@@ -51,6 +51,7 @@ export const CodeEditor = ({
       value={value}
       height="100%"
       width="100%"
+      style={{ fontSize: "1rem" }}
       theme={vscodeDark}
       extensions={[getLanguageExtension()]}
       basicSetup={{

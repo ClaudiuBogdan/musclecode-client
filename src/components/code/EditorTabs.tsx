@@ -1,30 +1,42 @@
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import React from "react";
+import clsx from "clsx";
+import { FileIcon } from "lucide-react";
 
 interface EditorTabsProps {
-  activeTab: string
-  onTabChange: (tab: string) => void
-  files: Array<{ name: string; readOnly?: boolean }>
+  activeTab: string;
+  files: Array<{ name: string }>;
+  onTabChange: (tab: string) => void;
+  className?: string;
+  tabClassName?: string;
+  activeTabClassName?: string;
+  inactiveTabClassName?: string;
 }
 
-export function EditorTabs({ activeTab, onTabChange, files }: EditorTabsProps) {
+export const EditorTabs: React.FC<EditorTabsProps> = ({
+  activeTab,
+  files,
+  onTabChange,
+  className,
+  tabClassName,
+  activeTabClassName,
+  inactiveTabClassName,
+}) => {
   return (
-    <Tabs value={activeTab} onValueChange={onTabChange} className="border-r border-gray-700">
-      <TabsList className="bg-transparent border-none">
-        {files.map(file => (
-          <TabsTrigger
-            key={file.name}
-            value={file.name}
-            className={`
-              px-4 py-2 text-sm font-medium border-r border-gray-700 data-[state=active]:bg-gray-800 
-              data-[state=active]:text-white data-[state=inactive]:text-gray-400 
-              hover:data-[state=inactive]:text-gray-300
-              ${file.readOnly ? 'italic' : ''}
-            `}
-          >
-            {file.name}
-          </TabsTrigger>
-        ))}
-      </TabsList>
-    </Tabs>
-  )
-}
+    <div className={clsx("flex", className)}>
+      {files.map((file) => (
+        <button
+          key={file.name}
+          onClick={() => onTabChange(file.name)}
+          className={clsx(
+            tabClassName,
+            "focus:outline-none",
+            activeTab === file.name ? activeTabClassName : inactiveTabClassName
+          )}
+        >
+          <FileIcon size={16} />
+          {file.name}
+        </button>
+      ))}
+    </div>
+  );
+};

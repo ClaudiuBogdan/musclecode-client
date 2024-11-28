@@ -199,16 +199,10 @@ export const SubmissionForm: React.FC<SubmissionFormProps> = ({
                 onClick={() => setShowNotes(!showNotes)}
                 className="text-gray-700 dark:text-gray-200 hover:text-gray-900 dark:hover:text-gray-100 bg-white dark:bg-gray-800 rounded-t-lg px-4 py-2 shadow-sm"
               >
-                Add Submission Notes (Optional)
+                Submission Notes (Optional)
               </AccordionTrigger>
               <AccordionContent className="bg-white dark:bg-gray-800 rounded-b-lg px-4 py-2 shadow-sm">
                 <div className="space-y-2">
-                  <Label
-                    htmlFor="notes"
-                    className="text-gray-700 dark:text-gray-200"
-                  >
-                    Your thoughts on this submission:
-                  </Label>
                   <Textarea
                     id="notes"
                     value={notes}
