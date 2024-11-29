@@ -16,11 +16,13 @@ export interface Algorithm {
   description: string;
   difficulty: "easy" | "medium" | "hard";
   notes: string;
+  files: Record<string, AlgorithmFile[]>; // keyed by language
+  // Daily challenge
+  completed: boolean;
   nextAlgorithm: {
     id: string;
     title: string;
   } | null;
-  files: Record<string, AlgorithmFile[]>; // keyed by language
 }
 
 export type AlgorithmPreview = Omit<Algorithm, "files">;

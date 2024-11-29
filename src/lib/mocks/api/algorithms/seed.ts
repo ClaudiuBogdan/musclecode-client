@@ -6,7 +6,12 @@ export const seedAlgorithms = (): Algorithm[] => {
       id: "1",
       title: "Bubble Sort",
       category: "Sorting",
-      notes: "",
+      notes: `
+# Bubble Sort
+
+Bubble Sort is a simple sorting algorithm that repeatedly steps through the list, compares adjacent elements and swaps them if they are in the wrong order. The pass through the list is repeated until the list is sorted.
+      `,
+      completed: true,
       nextAlgorithm: {
         id: "2",
         title: "Selection Sort",
@@ -90,7 +95,12 @@ Sorted array: [11, 12, 22, 25, 34, 64, 90]
       id: "2",
       title: "Selection Sort",
       category: "Sorting",
-      notes: "",
+      notes: `
+# Selection Sort
+
+Selection Sort is a simple sorting algorithm that divides the input list into two parts: a sorted portion at the left end and an unsorted portion at the right end. Initially, the sorted portion is empty and the unsorted portion is the entire list.
+      `,
+      completed: false,
       nextAlgorithm: {
         id: "3",
         title: "Insertion Sort",
@@ -213,6 +223,7 @@ Sorted array: [1, 2, 3, 4, 5, 6]
 
 `,
       difficulty: "easy",
+      completed: false,
       files: {
         typescript: [
           {
@@ -255,6 +266,7 @@ Sorted array: [1, 2, 3, 4, 5, 6]
       title: "Merge Sort",
       category: "Sorting",
       notes: "",
+      completed: false,
       nextAlgorithm: {
         id: "5",
         title: "Quick Sort",
@@ -337,6 +349,7 @@ Sorted array: [3, 9, 10, 27, 38, 43, 82]
       title: "Binary Search",
       category: "Searching",
       notes: "",
+      completed: false,
       nextAlgorithm: {
         id: "7",
         title: "Depth-First Search",
@@ -423,6 +436,7 @@ Step 3: Middle element is 1. Target found!
       title: "Depth-First Search",
       category: "Graph Traversal",
       notes: "",
+      completed: false,
       nextAlgorithm: {
         id: "8",
         title: "Breadth-First Search",
@@ -506,6 +520,7 @@ A -> B -> D -> E -> C -> F
       title: "Breadth-First Search",
       category: "Graph Traversal",
       notes: "",
+      completed: false,
       nextAlgorithm: {
         id: "9",
         title: "Dijkstra's Algorithm",

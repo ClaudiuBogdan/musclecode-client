@@ -1,6 +1,5 @@
 import StartTraining from "@/components/training/StartTraining";
 import { createLazyFileRoute } from "@tanstack/react-router";
-import {AlgorithmsTable} from "@/components/algorithms/index";
 
 export const Route = createLazyFileRoute("/")({
   component: Index,
@@ -8,9 +7,8 @@ export const Route = createLazyFileRoute("/")({
 
 function Index() {
   return (
-    <div className="p-2 flex flex-col gap-4">
+    <div className="mt-12 p-2 flex flex-col gap-4">
       <StartTraining />
-      <AlgorithmsTable />
     </div>
   );
 }
