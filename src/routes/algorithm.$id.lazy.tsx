@@ -103,6 +103,7 @@ function Algorithm() {
     algorithm.activeTab
   );
 
+
   return (
     <>
       <div className="h-[100vh] p-4">
