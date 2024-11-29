@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import CodeMirror from "@uiw/react-codemirror";
 import { javascript } from "@codemirror/lang-javascript";
 import { vscodeDark } from "@uiw/codemirror-theme-vscode";
@@ -18,6 +18,11 @@ export const CodeEditor = ({
   onFocus,
 }: CodeEditorProps) => {
   const [value, setValue] = useState(initialValue);
+
+  // Add effect to update local state when initialValue changes
+  useEffect(() => {
+    setValue(initialValue);
+  }, [initialValue]);
 
   const handleChange = useCallback(
     (val: string) => {

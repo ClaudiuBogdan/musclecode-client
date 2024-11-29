@@ -3,7 +3,6 @@ import { persist, createJSONStorage } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
 import { runCode, getAlgorithm, saveSubmission } from "@/lib/api/code";
 import { CodeExecutionResponse } from "@/types/testRunner";
-import { useNotificationStore } from "./notifications";
 import { Difficulty } from "@/types/algorithm";
 
 export type CodeLanguage =

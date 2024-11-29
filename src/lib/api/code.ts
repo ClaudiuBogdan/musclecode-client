@@ -1,6 +1,6 @@
 import { CodeExecutionResponse } from "@/types/testRunner";
 import { apiClient } from "./client";
-import { Algorithm } from "@/types/algorithm";
+import { Algorithm, Difficulty } from "@/types/algorithm";
 
 export interface CodeRunRequest {
   algorithmId: string;
