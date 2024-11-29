@@ -180,6 +180,17 @@ body {
 .cm-scroller {
   position: absolute !important;
   inset: 0 !important;
+
+
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+  transition: scrollbar-color 0.32s ease;
+
+  &:hover {
+    scrollbar-color: hsla(var(--scrollbar-thumb)) transparent;
+    transition: scrollbar-color 0.32s ease;
+  }
+
 }
 
 /* Optional: If you want to ensure the editor content fills the available space */
