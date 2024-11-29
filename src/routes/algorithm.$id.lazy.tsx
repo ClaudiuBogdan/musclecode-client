@@ -105,10 +105,9 @@ function Algorithm() {
 
   return (
     <>
-      <div className="h-[calc(100vh-2rem)] p-2">
+      <div className="h-[100vh] p-4">
         <Split
-          className="h-[calc(100%-3rem)]"
-          style={{ border: "1px solid #d5d5d5", borderRadius: 3 }}
+          lineBar
           onDragEnd={(preSize, nextSize) => {
             setSizes([preSize, nextSize]);
           }}
@@ -121,7 +120,7 @@ function Algorithm() {
           </div>
           <div
             style={{ width: `${sizes[1]}%`, minWidth: "200px" }}
-            className="h-full flex flex-col bg-gray-900"
+            className="h-full bg-gray-900"
           >
             <TopBar
               algorithmId={algorithmId}
@@ -134,9 +133,8 @@ function Algorithm() {
 
             {/* Vertical Split for Editor and Results */}
             <Split
-              className="flex-1"
-              style={{ height: "calc(100% - 37px - 48px)" }} // Subtract the height of the top controls and button bar
               lineBar
+              className="flex-1"
               mode="vertical"
               onDragEnd={(preSize, nextSize) => {
                 setEditorSizes([preSize, nextSize]);
@@ -147,7 +145,6 @@ function Algorithm() {
                 className="flex flex-col"
               >
                 <CodeEditor
-                  className="h-full overflow-auto"
                   initialValue={currentCode}
                   lang={algorithm.activeLanguage}
                   onChange={handleCodeChange}

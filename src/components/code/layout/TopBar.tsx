@@ -25,7 +25,7 @@ export const TopBar: React.FC<TopBarProps> = ({
 }) => {
   return (
     <div className="flex justify-between items-center border-b border-[#1E1E1E] bg-[#1E1E1E] overflow-auto">
-      <div className="flex-1 overflow-x-auto">
+      <div className="flex-1">
         <EditorTabs
           activeTab={activeTab}
           onTabChange={onTabChange}

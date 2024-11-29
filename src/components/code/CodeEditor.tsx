@@ -1,15 +1,14 @@
-import { useCallback, useEffect, useState } from 'react'
-import CodeMirror from '@uiw/react-codemirror'
-import { javascript } from '@codemirror/lang-javascript'
-import { vscodeDark } from '@uiw/codemirror-theme-vscode'
-import { python } from '@codemirror/lang-python'
+import { useCallback, useEffect, useRef, useState } from "react";
+import CodeMirror from "@uiw/react-codemirror";
+import { javascript } from "@codemirror/lang-javascript";
+import { vscodeDark } from "@uiw/codemirror-theme-vscode";
+import { python } from "@codemirror/lang-python";
 
 interface CodeEditorProps {
   initialValue?: string;
   lang?: string;
   onChange?: (value: string) => void;
   onFocus?: () => void;
-  className?: string;
 }
 
 export const CodeEditor = ({
@@ -17,13 +16,8 @@ export const CodeEditor = ({
   lang,
   onChange,
   onFocus,
-  className,
 }: CodeEditorProps) => {
   const [value, setValue] = useState(initialValue);
-
-  useEffect(() => {
-    setValue(initialValue);
-  }, [initialValue]);
 
   const handleChange = useCallback(
     (val: string) => {
@@ -42,25 +36,28 @@ export const CodeEditor = ({
       case "python":
         return python();
       default:
-        return python(); // Default to Python if no language specified
+        return python();
     }
   }, [lang]);
 
   return (
-    <CodeMirror
-      value={value}
-      height="100%"
-      width="100%"
-      style={{ fontSize: "1rem" }}
-      theme={vscodeDark}
-      extensions={[getLanguageExtension()]}
-      basicSetup={{
-        autocompletion: false,
-        allowMultipleSelections: false,
-      }}
-      onFocus={onFocus}
-      onChange={handleChange}
-      className={className}
-    />
+    <div className="h-full w-full relative">
+      <CodeMirror
+        className="h-full w-full absolute inset-0"
+        value={value}
+        height="100%"
+        style={{
+          fontSize: "1rem",
+        }}
+        theme={vscodeDark}
+        extensions={[getLanguageExtension()]}
+        basicSetup={{
+          autocompletion: false,
+          allowMultipleSelections: false,
+        }}
+        onFocus={onFocus}
+        onChange={handleChange}
+      />
+    </div>
   );
 };

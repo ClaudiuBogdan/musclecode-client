@@ -9,20 +9,22 @@ const queryClient = new QueryClient();
 
 export const Route = createRootRoute({
   component: () => (
-    <>
-      <QueryClientProvider client={queryClient}>
-        <ThemeProvider defaultTheme="light" storageKey="ui-theme">
-          <SidebarProvider>
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider defaultTheme="light" storageKey="ui-theme">
+        <SidebarProvider>
+          <div className="flex h-screen overflow-hidden">
             <AppSidebar />
             <SidebarInset>
               <main>
-                <Outlet />
-                <Toaster />
+                <div>
+                  <Outlet />
+                  <Toaster />
+                </div>
               </main>
             </SidebarInset>
-          </SidebarProvider>
-        </ThemeProvider>
-      </QueryClientProvider>
-    </>
+          </div>
+        </SidebarProvider>
+      </ThemeProvider>
+    </QueryClientProvider>
   ),
 });

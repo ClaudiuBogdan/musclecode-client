@@ -3,7 +3,13 @@
 @tailwind utilities;
 
 @layer base {
+  html,
+    body {
+      position: fixed;
+      overflow: hidden;
+    }
   :root {
+    overscroll-behavior: none;
     /* Base colors */
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
@@ -161,4 +167,23 @@ body {
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* Add these new styles */
+.cm-editor {
+  height: 100% !important;
+  width: 100% !important;
+  position: absolute !important;
+  inset: 0 !important;
+}
+
+.cm-scroller {
+  position: absolute !important;
+  inset: 0 !important;
+}
+
+/* Optional: If you want to ensure the editor content fills the available space */
+.cm-content {
+  min-height: 100%;
+  padding: 1rem 1rem 0 0 !important;
 }
