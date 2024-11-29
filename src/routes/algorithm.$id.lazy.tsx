@@ -121,7 +121,7 @@ function Algorithm() {
           </div>
           <div
             style={{ width: `${sizes[1]}%`, minWidth: "200px" }}
-            className="h-full bg-gray-900"
+            className="h-full flex flex-col bg-gray-900"
           >
             <TopBar
               algorithmId={algorithmId}
@@ -162,7 +162,7 @@ function Algorithm() {
                 />
               </div>
               <div
-                style={{ height: `${editorSizes[1]}%`, minHeight: "100px" }}
+                style={{ height: `${editorSizes[1]}%`, minHeight: "20vh" }}
                 className="border-t border-gray-700"
               >
                 <ExecutionResult result={algorithm.executionResult} />

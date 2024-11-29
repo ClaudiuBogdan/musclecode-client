@@ -50,9 +50,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarHeader>
         <Logo />
       </SidebarHeader>
-      <SidebarContent>
-        <NavMain items={data.navMain} />
-      </SidebarContent>
+      <SidebarContent>{/* <NavMain items={data.navMain} /> */}</SidebarContent>
       <SidebarFooter>
         <div className="group-data-[state=collapsed]:visible invisible">
           <SidebarTrigger />

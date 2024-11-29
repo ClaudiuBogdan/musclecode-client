@@ -12,7 +12,7 @@ export const Route = createRootRoute({
     <QueryClientProvider client={queryClient}>
       <ThemeProvider defaultTheme="light" storageKey="ui-theme">
         <SidebarProvider>
-          <div className="flex h-screen w-screen overflow-hidden">
+          <div className="flex h-screen w-screen overflow-auto">
             <AppSidebar />
             <SidebarInset>
               <main>
