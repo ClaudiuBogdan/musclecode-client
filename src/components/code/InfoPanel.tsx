@@ -1,9 +1,9 @@
 import React, { useCallback } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ProblemDescription } from "@/components/code/ProblemDescription";
-import { NotesEditor } from "@/components/code/NotesEditor";
 import { useCodeStore } from "@/stores/algorithm";
 import { cn } from "@/lib/utils";
+import { Notes } from "../notes/Notes";
 
 interface InfoPanelProps {
   algorithmId: string;
@@ -52,7 +52,7 @@ export const InfoPanel: React.FC<InfoPanelProps> = ({ algorithmId }) => {
           value="notes"
           className="flex-grow m-0 overflow-auto border-none outline-none"
         >
-          <NotesEditor
+          <Notes
             value={algorithm?.globalNotes ?? ""}
             onChange={handleNotesChange}
           />

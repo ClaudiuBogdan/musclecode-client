@@ -13,16 +13,28 @@ export const ProblemDescription: FC<ProblemDescriptionProps> = ({
     <div
       className={cn(
         "p-4",
-        "prose prose-sm dark:prose-invert max-w-none overflow-auto",
-        "prose-headings:text-foreground dark:prose-headings:text-zinc-200",
-        "prose-p:text-muted-foreground dark:prose-p:text-zinc-400",
-        "prose-strong:text-foreground dark:prose-strong:text-zinc-200",
-        "prose-code:text-foreground dark:prose-code:text-zinc-200",
-        "prose-pre:bg-zinc-100 dark:prose-pre:bg-zinc-800",
-        "prose-ul:text-muted-foreground dark:prose-ul:text-zinc-400",
-        "prose-li:text-muted-foreground dark:prose-li:text-zinc-400",
-        "prose-blockquote:text-muted-foreground dark:prose-blockquote:text-zinc-400",
-        "prose-a:text-muted-foreground dark:prose-a:text-zinc-400 hover:prose-a:text-foreground dark:hover:prose-a:text-zinc-300"
+        "prose prose-sm max-w-none overflow-auto",
+        // Light mode styles
+        "prose-headings:text-foreground",
+        "prose-p:text-foreground",
+        "prose-strong:text-foreground",
+        "prose-code:text-foreground",
+        "prose-pre:bg-secondary",
+        "prose-ul:text-foreground",
+        "prose-li:text-foreground",
+        "prose-blockquote:text-foreground",
+        "prose-a:text-primary hover:prose-a:text-primary/80",
+        // Dark mode styles
+        "dark:prose-invert",
+        "dark:prose-headings:text-zinc-200",
+        "dark:prose-p:text-zinc-300",
+        "dark:prose-strong:text-zinc-200",
+        "dark:prose-code:text-zinc-200",
+        "dark:prose-pre:bg-zinc-800",
+        "dark:prose-ul:text-zinc-300",
+        "dark:prose-li:text-zinc-300",
+        "dark:prose-blockquote:text-zinc-300",
+        "dark:prose-a:text-blue-400 dark:hover:prose-a:text-blue-300"
       )}
     >
       <ReactMarkdown>{problemDescription}</ReactMarkdown>
