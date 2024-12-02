@@ -125,7 +125,7 @@ export const DifficultySelector: React.FC<DifficultySelectorProps> = ({
         )}
         {DIFFICULTIES.map((difficulty) => (
           <TooltipProvider key={difficulty.value}>
-            <Tooltip>
+            <Tooltip delayDuration={100}>
               <TooltipTrigger asChild>
                 <Button
                   disabled={algorithm.isSubmitting}

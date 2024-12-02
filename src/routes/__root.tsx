@@ -10,7 +10,7 @@ const queryClient = new QueryClient();
 export const Route = createRootRoute({
   component: () => (
     <QueryClientProvider client={queryClient}>
-      <ThemeProvider defaultTheme="light" storageKey="ui-theme">
+      <ThemeProvider defaultTheme="dark" storageKey="ui-theme">
         <SidebarProvider>
           <div className="flex h-screen w-screen overflow-auto">
             <AppSidebar />

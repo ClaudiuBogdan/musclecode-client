@@ -72,7 +72,7 @@ export default function AlgorithmGymDashboard() {
             </CardDescription>
           </motion.div>
         </CardHeader>
-        <CardContent className="space-y-8 relative z-10">
+        <CardContent className="space-y-8 relative z-10 mt-6">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4 px-6 py-4 bg-white/20 rounded-xl backdrop-blur-md">
             <div className="flex items-center space-x-4">
               <div className="bg-yellow-400 rounded-full p-2">

@@ -2,6 +2,7 @@ import { FC } from "react";
 import CodeMirror from "@uiw/react-codemirror";
 import { markdown, markdownLanguage } from "@codemirror/lang-markdown";
 import { EditorView } from "@codemirror/view";
+import { useTheme } from "../theme/theme-provider";
 
 interface NotesEditorProps {
   value: string;
@@ -9,13 +10,14 @@ interface NotesEditorProps {
 }
 
 export const NotesEditor: FC<NotesEditorProps> = ({ value, onChange }) => {
+  const { theme } = useTheme();
   return (
     <div className="h-full w-full relative">
       <CodeMirror
         value={value}
         height="100%"
         className="h-full overflow-auto"
-        theme={"light"}
+        theme={theme === "light" ? "light" : "dark"}
         extensions={[
           markdown({
             base: markdownLanguage,
