@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/sidebar/app-sidebar";
 import { Toaster } from "@/components/ui/Toaster";
+import { GlobalAvatar } from "@/components/chat/Avatar";
 
 const queryClient = new QueryClient();
 
@@ -19,6 +20,7 @@ export const Route = createRootRoute({
                 <div>
                   <Outlet />
                   <Toaster />
+                  <GlobalAvatar />
                 </div>
               </main>
             </SidebarInset>
