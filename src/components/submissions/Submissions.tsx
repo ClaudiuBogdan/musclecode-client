@@ -107,7 +107,7 @@ export default function Submissions({ algorithmId }: { algorithmId: string }) {
 
   if (!submissions || submissions.length === 0) {
     return (
-      <div className="text-gray-500 dark:text-gray-400">
+      <div className="text-gray-500 dark:text-gray-400 text-center w-full h-64 flex items-center justify-center">
         No submissions yet.
       </div>
     );
