@@ -7,6 +7,7 @@ import { python } from "@codemirror/lang-python";
 interface CodeEditorProps {
   initialValue?: string;
   lang?: string;
+  readOnly?: boolean;
   onChange?: (value: string) => void;
   onFocus?: () => void;
 }
@@ -14,6 +15,7 @@ interface CodeEditorProps {
 export const CodeEditor = ({
   initialValue = "",
   lang,
+  readOnly = false,
   onChange,
   onFocus,
 }: CodeEditorProps) => {
@@ -51,6 +53,7 @@ export const CodeEditor = ({
         className="h-full w-full absolute inset-0"
         value={value}
         height="100%"
+        editable={!readOnly}
         style={{
           fontSize: "1rem",
         }}

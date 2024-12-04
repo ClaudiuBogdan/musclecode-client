@@ -1,6 +1,6 @@
 import { CodeExecutionResponse } from "@/types/testRunner";
 import { apiClient } from "./client";
-import { Algorithm, Difficulty } from "@/types/algorithm";
+import { Algorithm, Difficulty, Submission } from "@/types/algorithm";
 
 export interface CodeRunRequest {
   algorithmId: string;
@@ -9,6 +9,7 @@ export interface CodeRunRequest {
 }
 
 export interface SubmissionRequest {
+  algorithmId: string;
   timeSpent: number;
   code: string;
   difficulty: Difficulty;
@@ -42,7 +43,7 @@ export const getAlgorithm = async (algorithmId: string): Promise<Algorithm> => {
 
 export const saveSubmission = async (
   algorithmId: string,
-  submission: SubmissionRequest
+  submission: Submission
 ): Promise<void> => {
   const response = await fetch(`/api/algorithms/${algorithmId}/submissions`, {
     method: "POST",
@@ -55,4 +56,13 @@ export const saveSubmission = async (
   if (!response.ok) {
     throw new Error("Failed to save submission");
   }
+};
+
+export const getSubmissions = async (
+  algorithmId: string
+): Promise<Submission[]> => {
+  const { data } = await apiClient.get<Submission[]>(
+    `/api/algorithms/${algorithmId}/submissions`
+  );
+  return data;
 };

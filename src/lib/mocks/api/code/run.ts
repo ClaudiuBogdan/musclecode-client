@@ -14,9 +14,9 @@ export const runCode = http.post("/api/code/run", async ({ request }) => {
 });
 
 function runTests(code: string): CodeExecutionResponse {
-  const totalPassed = code.split("::passed::").length - 1;
-  const totalFailed = code.split("::failed::").length - 1;
-  const compilationError = code.includes("::compilation-error::");
+  const totalPassed = code.split("::pass::").length - 1;
+  const totalFailed = code.split("::fail::").length - 1;
+  const compilationError = code.includes("::error::");
 
   const testItems = createMockedTestItem(totalPassed, totalFailed);
   return createMockedResult({

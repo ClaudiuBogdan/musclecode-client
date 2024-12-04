@@ -3,7 +3,8 @@ import { persist, createJSONStorage } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
 import { runCode, getAlgorithm, saveSubmission } from "@/lib/api/code";
 import { CodeExecutionResponse } from "@/types/testRunner";
-import { Difficulty } from "@/types/algorithm";
+import { Difficulty, Submission } from "@/types/algorithm";
+import { v4 as uuidv4 } from "uuid";
 
 export type CodeLanguage =
   | "typescript"
@@ -122,7 +123,10 @@ export const useCodeStore = create<CodeStoreState & CodeStoreActions>()(
           state.algorithms[algorithmId].isSubmitting = true;
         });
 
-        const submission = {
+        const submission: Submission = {
+          id: uuidv4(),
+          algorithmId,
+          language: get().algorithms[algorithmId].activeLanguage,
           timeSpent: get().getTotalRunningTime(algorithmId),
           code: get().getCode(
             algorithmId,
@@ -130,7 +134,8 @@ export const useCodeStore = create<CodeStoreState & CodeStoreActions>()(
             get().algorithms[algorithmId].activeTab
           ),
           difficulty,
-          notes: get().algorithms[algorithmId].globalNotes,
+          notes: get().algorithms[algorithmId].submissionNotes,
+          createdAt: new Date().toISOString(),
         };
 
         try {

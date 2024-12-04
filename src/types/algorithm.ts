@@ -26,3 +26,14 @@ export interface Algorithm {
 }
 
 export type AlgorithmPreview = Omit<Algorithm, "files">;
+
+export interface Submission {
+  id: string;
+  algorithmId: string;
+  timeSpent: number;
+  code: string;
+  language: string;
+  notes: string;
+  difficulty: Difficulty;
+  createdAt: string;
+}
