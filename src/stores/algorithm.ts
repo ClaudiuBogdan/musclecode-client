@@ -53,21 +53,23 @@ interface CodeStoreState {
       algorithmId: string;
       description: string;
       isExecuting: boolean;
+      isSubmitting: boolean;
+      completed: boolean;
       activeLanguage: CodeLanguage;
       languages: CodeLanguage[];
       activeTab: CodeFile;
       storedCode: StoredCode;
+      initialStoredCode: StoredCode;
       executionResult: CodeExecutionResponse | null;
       startTime: number | null;
       timerState: TimerState;
       globalNotes: string;
+      submissionNotes: string;
       // The next algorithm to be run if available
       nextAlgorithm: {
         id: string;
         title: string;
       } | null;
-      isSubmitting: boolean;
-      submissionNotes: string;
     };
   };
 }
@@ -96,6 +98,7 @@ interface CodeStoreActions {
   resetTimer: (algorithmId: string) => void;
   getTotalRunningTime: (algorithmId: string) => number;
   runCode: (algorithmId: string) => Promise<void>;
+  resetCode: (algorithmId: string) => void;
 }
 
 export const useCodeStore = create<CodeStoreState & CodeStoreActions>()(
@@ -143,6 +146,7 @@ export const useCodeStore = create<CodeStoreState & CodeStoreActions>()(
 
           set((state) => {
             state.algorithms[algorithmId].isSubmitting = false;
+            state.algorithms[algorithmId].completed = true;
           });
           return true;
         } catch (error) {
@@ -349,6 +353,27 @@ export const useCodeStore = create<CodeStoreState & CodeStoreActions>()(
         }
       },
 
+      resetCode: (algorithmId) => {
+        set((state) => ({
+          ...state,
+          algorithms: {
+            ...state.algorithms,
+            [algorithmId]: {
+              ...state.algorithms[algorithmId],
+              storedCode: state.algorithms[algorithmId].initialStoredCode,
+              completed: false,
+              executionResult: null,
+              startTime: null,
+              timerState: {
+                initialStartTime: Date.now(),
+                pausedAt: null,
+                totalPausedTime: 0,
+              },
+            },
+          },
+        }));
+      },
+
       initializeAlgorithm: async (algorithmId) => {
         const algorithm = get().algorithms[algorithmId];
 
@@ -359,11 +384,11 @@ export const useCodeStore = create<CodeStoreState & CodeStoreActions>()(
             ...state,
             isLoading: true,
           }));
-          const algorithmData = await getAlgorithm(algorithmId);
+          const { algorithm, nextAlgorithm } = await getAlgorithm(algorithmId);
           const codeState: StoredCode = {} as StoredCode;
 
           // Initialize code state from API response
-          Object.entries(algorithmData.files).forEach(
+          Object.entries(algorithm.files).forEach(
             ([language, languageFiles]) => {
               codeState[language as CodeLanguage] = {};
               languageFiles.forEach((file) => {
@@ -380,21 +405,23 @@ export const useCodeStore = create<CodeStoreState & CodeStoreActions>()(
           set((state) => {
             state.algorithms[algorithmId] = {
               algorithmId,
-              description: algorithmData.description,
+              description: algorithm.description,
               activeLanguage: firstLanguage,
               languages,
               activeTab: firstFile,
               storedCode: codeState,
               isExecuting: false,
+              completed: algorithm.completed,
               executionResult: null,
               startTime: null,
-              globalNotes: algorithmData.notes || "",
+              globalNotes: algorithm.notes || "",
               timerState: {
                 initialStartTime: now,
                 pausedAt: null,
                 totalPausedTime: 0,
               },
-              nextAlgorithm: algorithmData.nextAlgorithm,
+              initialStoredCode: codeState,
+              nextAlgorithm: nextAlgorithm,
               isSubmitting: false,
               submissionNotes: "",
             };

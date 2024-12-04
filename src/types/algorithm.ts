@@ -19,10 +19,6 @@ export interface Algorithm {
   files: Record<string, AlgorithmFile[]>; // keyed by language
   // Daily challenge
   completed: boolean;
-  nextAlgorithm: {
-    id: string;
-    title: string;
-  } | null;
 }
 
 export type AlgorithmPreview = Omit<Algorithm, "files">;

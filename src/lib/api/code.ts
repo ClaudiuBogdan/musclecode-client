@@ -34,10 +34,16 @@ export async function runCode(
   return data;
 }
 
-export const getAlgorithm = async (algorithmId: string): Promise<Algorithm> => {
-  const { data } = await apiClient.get<Algorithm>(
-    `/api/algorithms/${algorithmId}`
-  );
+export const getAlgorithm = async (
+  algorithmId: string
+): Promise<{
+  algorithm: Algorithm;
+  nextAlgorithm: Pick<Algorithm, "id" | "title"> | null;
+}> => {
+  const { data } = await apiClient.get<{
+    algorithm: Algorithm;
+    nextAlgorithm: Algorithm | null;
+  }>(`/api/algorithms/${algorithmId}`);
   return data;
 };
 

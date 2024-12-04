@@ -1,6 +1,7 @@
 import { http, HttpResponse } from "msw";
 import { seedAlgorithms } from "./seed";
 import { Algorithm } from "@/types/algorithm";
+import { checkIfCompleted, getNextAlgorithm } from "./fn";
 
 export const byId = http.get("/api/algorithms/:id", ({ params }) => {
   const { id } = params;
@@ -9,5 +10,7 @@ export const byId = http.get("/api/algorithms/:id", ({ params }) => {
   if (!algorithm) {
     return new HttpResponse(null, { status: 404 });
   }
-  return HttpResponse.json(algorithm);
+  algorithm.completed = checkIfCompleted(id as string);
+  const nextAlgorithm = getNextAlgorithm(id as string);
+  return HttpResponse.json({ algorithm, nextAlgorithm });
 });

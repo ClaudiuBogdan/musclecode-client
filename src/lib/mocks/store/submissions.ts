@@ -10,6 +10,7 @@ interface SubmissionState {
   };
   addSubmission: (algorithmId: AlgorithmId, submission: Submission) => void;
   getSubmission: (algorithmId: AlgorithmId) => Submission[];
+  getSubmissions: () => Submission[];
 }
 
 export const mockedSubmissionsStore = create<SubmissionState>()(
@@ -26,6 +27,7 @@ export const mockedSubmissionsStore = create<SubmissionState>()(
         }));
       },
       getSubmission: (algorithmId) => get().submissions[algorithmId] ?? [],
+      getSubmissions: () => Object.values(get().submissions).flat(),
     }),
     {
       name: "mocked-submissions-store",

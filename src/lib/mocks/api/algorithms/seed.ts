@@ -11,11 +11,7 @@ export const seedAlgorithms = (): Algorithm[] => {
 
 Bubble Sort is a simple sorting algorithm that repeatedly steps through the list, compares adjacent elements and swaps them if they are in the wrong order. The pass through the list is repeated until the list is sorted.
       `,
-      completed: true,
-      nextAlgorithm: {
-        id: "2",
-        title: "Selection Sort",
-      },
+      completed: false,
       summary:
         "A simple sorting algorithm that repeatedly steps through the list, compares adjacent elements and swaps them if they are in the wrong order.",
       description: `
@@ -101,10 +97,6 @@ Sorted array: [11, 12, 22, 25, 34, 64, 90]
 Selection Sort is a simple sorting algorithm that divides the input list into two parts: a sorted portion at the left end and an unsorted portion at the right end. Initially, the sorted portion is empty and the unsorted portion is the entire list.
       `,
       completed: false,
-      nextAlgorithm: {
-        id: "3",
-        title: "Insertion Sort",
-      },
       summary:
         "A sorting algorithm that selects the smallest element from an unsorted part and puts it at the beginning.",
       description: `
@@ -182,10 +174,6 @@ Sorted array: [11, 12, 22, 25, 64]
       title: "Insertion Sort",
       category: "Sorting",
       notes: "",
-      nextAlgorithm: {
-        id: "4",
-        title: "Merge Sort",
-      },
       summary:
         "A simple sorting algorithm that builds the final sorted array one item at a time.",
       description: `
@@ -267,10 +255,6 @@ Sorted array: [1, 2, 3, 4, 5, 6]
       category: "Sorting",
       notes: "",
       completed: false,
-      nextAlgorithm: {
-        id: "5",
-        title: "Quick Sort",
-      },
       summary:
         "A divide-and-conquer algorithm that divides the array into two halves, recursively sorts them, and then merges them.",
       description: `
@@ -350,10 +334,6 @@ Sorted array: [3, 9, 10, 27, 38, 43, 82]
       category: "Searching",
       notes: "",
       completed: false,
-      nextAlgorithm: {
-        id: "7",
-        title: "Depth-First Search",
-      },
       summary:
         "A fast search algorithm that finds the position of a target value within a sorted array.",
       description: `
@@ -437,10 +417,6 @@ Step 3: Middle element is 1. Target found!
       category: "Graph Traversal",
       notes: "",
       completed: false,
-      nextAlgorithm: {
-        id: "8",
-        title: "Breadth-First Search",
-      },
       summary:
         "A traversal approach that explores as far as possible along each branch before backtracking.",
       description: `
@@ -521,10 +497,6 @@ A -> B -> D -> E -> C -> F
       category: "Graph Traversal",
       notes: "",
       completed: false,
-      nextAlgorithm: {
-        id: "9",
-        title: "Dijkstra's Algorithm",
-      },
       summary:
         "A traversal approach that explores all the nodes at the present depth prior to moving on to nodes at the next depth level.",
       description: `

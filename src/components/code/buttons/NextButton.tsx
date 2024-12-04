@@ -5,9 +5,10 @@ import { ArrowRight } from "lucide-react";
 type Props = {
   onClick?: () => void;
   disabled?: boolean;
+  className?: string;
 };
 
-const NextButton: FC<Props> = ({ onClick, disabled }) => {
+const NextButton: FC<Props> = ({ onClick, disabled, className }) => {
   return (
     <Button
       variant="outline"
@@ -15,6 +16,7 @@ const NextButton: FC<Props> = ({ onClick, disabled }) => {
       disabled={disabled}
       className={`
         gap-2 min-w-[120px] font-medium
+        ${className}
         ${
           disabled
             ? "text-gray-500 border-gray-800"

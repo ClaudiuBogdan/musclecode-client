@@ -32,6 +32,7 @@ function Algorithm() {
     pauseTimer,
     resumeTimer,
     runCode,
+    resetCode,
     initializeAlgorithm,
   } = useCodeStore();
 
@@ -85,6 +86,11 @@ function Algorithm() {
     await runCode(algorithmId);
   };
 
+  const handleReset = () => {
+    if (!algorithmId) return;
+    resetCode(algorithmId);
+  };
+
   const handleLanguageChange = (language: CodeLanguage) => {
     setActiveTab(algorithmId, getFiles(algorithmId, language)[0].name);
   };
@@ -102,7 +108,6 @@ function Algorithm() {
     algorithm.activeLanguage,
     algorithm.activeTab
   );
-
 
   return (
     <>
@@ -158,7 +163,9 @@ function Algorithm() {
                   hasPassed={hasPassed}
                   isExecuting={algorithm.isExecuting}
                   isSubmitting={algorithm.isSubmitting}
+                  isCompleted={algorithm.completed}
                   onRun={handleRunCode}
+                  onReset={handleReset}
                 />
               </div>
               <div

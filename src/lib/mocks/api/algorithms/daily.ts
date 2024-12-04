@@ -1,7 +1,8 @@
 import { http, HttpResponse } from "msw";
-import { seedAlgorithms } from "./seed";
+import { getDailyAlgorithms } from "./fn";
 
 export const daily = http.get("/api/algorithms/daily", async () => {
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-  return HttpResponse.json(seedAlgorithms().slice(0, 6));
+  const algorithms = getDailyAlgorithms();
+  return HttpResponse.json(algorithms);
 });
+
