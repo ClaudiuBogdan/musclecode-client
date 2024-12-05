@@ -38,21 +38,43 @@ export function LanguageSelector({
     <Select value={activeLanguage} onValueChange={handleLanguageChange}>
       <SelectTrigger
         className={cn(
-          "bg-zinc-900 border-zinc-800 text-zinc-100 hover:bg-zinc-800 hover:text-zinc-100 focus:ring-offset-zinc-900",
+          "h-full border-none rounded-none",
+          "bg-transparent text-gray-400",
+          "hover:bg-[#2D2D2D] hover:text-gray-200",
+          "transition-colors duration-150",
+          "focus:outline-none",
+          "focus-visible:outline-none focus-visible:bg-[#2D2D2D]",
+          "focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-500",
           className
         )}
+        aria-label="Select programming language"
       >
         <div className="flex items-center gap-2">
           <Code2 className="h-4 w-4" />
           <SelectValue />
         </div>
       </SelectTrigger>
-      <SelectContent className="bg-zinc-900 border-zinc-800 text-zinc-200">
+      <SelectContent
+        className={cn(
+          "bg-[#1E1E1E] border-[#252526] text-gray-400 rounded-none mt-0",
+          "shadow-lg shadow-black/20"
+        )}
+        align="end"
+        position="popper"
+        sideOffset={0}
+      >
         {languages.map((lang) => (
           <SelectItem
             key={lang}
             value={lang}
-            className="hover:bg-zinc-800 hover:text-zinc-100 focus:bg-zinc-800 focus:text-zinc-100"
+            className={cn(
+              "transition-colors duration-150",
+              "hover:bg-[#2D2D2D] hover:text-gray-200",
+              "focus:outline-none",
+              "focus-visible:outline-none focus-visible:bg-[#2D2D2D]",
+              "focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-500",
+              "data-[highlighted]:bg-[#2D2D2D] data-[highlighted]:text-gray-200"
+            )}
           >
             <div className="flex items-center gap-2">
               <span>{mapLanguageLabel(lang)}</span>

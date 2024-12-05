@@ -36,14 +36,14 @@ export const TopBar: React.FC<TopBarProps> = ({
           inactiveTabClassName="bg-[#2D2D2D] text-gray-400"
         />
       </div>
-      <div className="flex items-center shrink-0 border-l border-[#252526]">
+      <div className="flex items-center h-full shrink-0 border-l border-[#252526]">
         <Timer
           algorithmId={algorithmId}
           className="px-3 py-1.5 text-sm text-gray-400 border-r border-[#252526]"
         />
         <LanguageSelector
           algorithmId={algorithmId}
-          className="px-3 py-1.5 text-sm text-gray-400 hover:bg-[#2D2D2D] transition-colors duration-150 min-w-[12rem]"
+          className="h-full px-3 py-1.5 text-sm min-w-[12rem]"
           onLanguageChange={onLanguageChange}
         />
       </div>
