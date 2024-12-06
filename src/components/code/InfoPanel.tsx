@@ -5,6 +5,7 @@ import { useCodeStore } from "@/stores/algorithm";
 import { cn } from "@/lib/utils";
 import { Notes } from "../notes/Notes";
 import Submissions from "../submissions/Submissions";
+import { Chat } from "../chat/Chat";
 
 interface InfoPanelProps {
   algorithmId: string;
@@ -43,6 +44,9 @@ export const InfoPanel: React.FC<InfoPanelProps> = ({ algorithmId }) => {
           <TabsTrigger value="submissions" className={tabClassName}>
             Submissions
           </TabsTrigger>
+          <TabsTrigger value="chat" className={tabClassName}>
+            Chat
+          </TabsTrigger>
         </TabsList>
         <TabsContent
           value="problem"
@@ -66,6 +70,12 @@ export const InfoPanel: React.FC<InfoPanelProps> = ({ algorithmId }) => {
           className="flex-grow m-0 overflow-auto border-none outline-none"
         >
           <Submissions algorithmId={algorithmId} />
+        </TabsContent>
+        <TabsContent
+          value="chat"
+          className="flex-grow m-0 overflow-auto border-none outline-none"
+        >
+          <Chat />
         </TabsContent>
       </Tabs>
     </div>
