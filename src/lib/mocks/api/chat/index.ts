@@ -1,5 +1,5 @@
 import { http, HttpResponse, delay, JsonBodyType } from "msw";
-import { nanoid } from "nanoid";
+import { v4 as uuidv4 } from "uuid";
 import { Message } from "@/types/chat";
 import { ChatMessageRequest, ChatResponse } from "@/types/api";
 import { generateResponse } from "./responseGenerator";
@@ -40,7 +40,7 @@ export const sendMessage = http.post("/api/chat", async ({ request }) => {
     const { message } = (await request.json()) as ChatMessageRequest;
 
     const response: Message = {
-      id: nanoid(),
+      id: uuidv4(),
       content: generateResponse(message),
       timestamp: Date.now(),
       sender: "assistant",

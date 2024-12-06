@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { nanoid } from "nanoid";
+import { v4 as uuidv4 } from "uuid";
 import { getConversationThread, findLatestLeafMessage } from "../utils/chat";
 import { streamMessage } from "../lib/api/chat";
 import { Message, ChatStore } from "../types/chat";
@@ -13,7 +13,7 @@ const useChatStore = create<ChatStore>((set, get) => ({
   sendMessage: async (content: string) => {
     try {
       const { activeMessageId } = get();
-      const newMessageId = nanoid();
+      const newMessageId = uuidv4();
       const userMessage: Message = {
         id: newMessageId,
         content,
@@ -39,7 +39,7 @@ const useChatStore = create<ChatStore>((set, get) => ({
         return newState;
       });
 
-      const assistantMessageId = nanoid();
+      const assistantMessageId = uuidv4();
       const assistantMessage: Message = {
         id: assistantMessageId,
         content: "",
@@ -100,7 +100,7 @@ const useChatStore = create<ChatStore>((set, get) => ({
 
     if (message.sender !== "user") return;
 
-    const newMessageId = nanoid();
+    const newMessageId = uuidv4();
     const editedMessage: Message = {
       ...message,
       id: newMessageId,
