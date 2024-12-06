@@ -199,3 +199,7 @@ body {
   min-height: 100%;
   padding: 1rem 1rem 0 0 !important;
 }
+
+.smooth-scroll {
+  scroll-behavior: smooth;
+}

@@ -3,22 +3,22 @@ import { Message as MessageType } from "@/types/chat";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { Copy, ThumbsUp, ThumbsDown, RotateCcw, Edit2 } from "lucide-react";
+import { Copy, RotateCcw, Edit2, BotIcon } from "lucide-react";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
 import useChatStore from "@/stores/chat";
-import { Textarea } from "@/components/ui/textarea";
+import { motion, AnimatePresence } from "framer-motion";
 import { showToast } from "@/utils/toast";
+import { EditMessage } from "./EditMessage";
 
 interface MessageProps {
   message: MessageType;
 }
 
 export const Message: React.FC<MessageProps> = ({ message }) => {
-  const { retryMessage, voteMessage, editMessage } = useChatStore();
+  const { retryMessage, editMessage } = useChatStore();
   const isUser = message.sender === "user";
   const [isEditing, setIsEditing] = useState(false);
-  const [editContent, setEditContent] = useState(message.content);
 
   const handleCopy = async () => {
     await navigator.clipboard.writeText(message.content);
@@ -29,28 +29,24 @@ export const Message: React.FC<MessageProps> = ({ message }) => {
     retryMessage(message.id);
   };
 
-  const handleVote = (isUpvote: boolean) => {
-    voteMessage(message.id, isUpvote);
-  };
-
   const handleEdit = () => {
     setIsEditing(true);
   };
 
-  const handleSaveEdit = async () => {
-    if (editContent.trim() !== message.content) {
+  const handleSaveEdit = async (editedContent: string) => {
+    if (editedContent.trim() !== message.content) {
       try {
-        await editMessage(message.id, editContent);
+        await editMessage(message.id, editedContent);
         showToast.success("Message updated successfully");
       } catch {
         showToast.error("Failed to update message");
+        return;
       }
     }
     setIsEditing(false);
   };
 
   const handleCancelEdit = () => {
-    setEditContent(message.content);
     setIsEditing(false);
   };
 
@@ -62,7 +58,6 @@ export const Message: React.FC<MessageProps> = ({ message }) => {
     let match: RegExpExecArray | null;
 
     while ((match = codeBlockRegex.exec(content)) !== null) {
-      // Add text before code block
       if (match.index > lastIndex) {
         parts.push(
           <span key={`text-${lastIndex}`}>
@@ -71,7 +66,6 @@ export const Message: React.FC<MessageProps> = ({ message }) => {
         );
       }
 
-      // Add code block
       const language = match[1] || "typescript";
       const codeContent = match[2];
       parts.push(
@@ -100,7 +94,6 @@ export const Message: React.FC<MessageProps> = ({ message }) => {
       lastIndex = match.index + match[0].length;
     }
 
-    // Add remaining text
     if (lastIndex < content.length) {
       parts.push(
         <span key={`text-${lastIndex}`}>{content.slice(lastIndex)}</span>
@@ -111,53 +104,56 @@ export const Message: React.FC<MessageProps> = ({ message }) => {
   };
 
   return (
-    <div className={cn("flex group", isUser ? "justify-end" : "justify-start")}>
+    <div
+      className={cn(
+        "flex group max-w-2xl mx-auto",
+        isUser ? "justify-end" : "justify-start"
+      )}
+    >
       <div
         className={cn(
-          "flex items-start space-x-2",
-          isUser && "flex-row-reverse space-x-reverse"
+          "flex items-start space-x-2 max-w-[80%]",
+          isUser && "flex-row-reverse space-x-reverse",
+          isEditing && "w-full"
         )}
       >
-        <Avatar
-          className={cn("w-8 h-8", isUser ? "bg-blue-500" : "bg-gray-500")}
-        >
-          <AvatarFallback>{isUser ? "U" : "A"}</AvatarFallback>
-        </Avatar>
-        <div className="flex flex-col gap-2">
-          <div
-            className={cn(
-              "max-w-md rounded-lg p-3",
-              isUser
-                ? "bg-blue-500 text-white"
-                : "bg-white dark:bg-gray-800 text-gray-800 dark:text-white"
-            )}
-          >
+        {!isUser ? (
+          <Avatar className="w-8 h-8 bg-blue-500 flex items-center justify-center">
+            <AvatarFallback>
+              <BotIcon className="h-4 w-4" />
+            </AvatarFallback>
+          </Avatar>
+        ) : null}
+        <div className="flex flex-col gap-2 flex-1">
+          <AnimatePresence mode="wait">
             {isEditing ? (
-              <div className="flex flex-col gap-2">
-                <Textarea
-                  value={editContent}
-                  onChange={(e) => setEditContent(e.target.value)}
-                  className="min-h-[100px] text-sm"
-                  autoFocus
-                />
-                <div className="flex justify-end gap-2">
-                  <Button variant="ghost" size="sm" onClick={handleCancelEdit}>
-                    Cancel
-                  </Button>
-                  <Button variant="default" size="sm" onClick={handleSaveEdit}>
-                    Save
-                  </Button>
-                </div>
-              </div>
+              <EditMessage
+                content={message.content}
+                onSave={handleSaveEdit}
+                onCancel={handleCancelEdit}
+              />
             ) : (
-              <div className="text-sm">{formatContent(message.content)}</div>
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 10 }}
+                transition={{ duration: 0.2 }}
+                className={cn(
+                  "rounded-lg p-3",
+                  isUser
+                    ? "bg-blue-500 text-white"
+                    : "bg-white dark:bg-gray-800 text-gray-800 dark:text-white"
+                )}
+              >
+                <div className="text-sm">{formatContent(message.content)}</div>
+                {message.status === "error" && (
+                  <p className="text-xs text-red-500 mt-1">
+                    Error: Failed to send message
+                  </p>
+                )}
+              </motion.div>
             )}
-            {message.status === "error" && (
-              <p className="text-xs text-red-500 mt-1">
-                Error: Failed to send message
-              </p>
-            )}
-          </div>
+          </AnimatePresence>
           <div
             className={cn(
               "flex gap-2 opacity-0 transition-opacity group-hover:opacity-100 focus-within:opacity-100",
@@ -168,7 +164,7 @@ export const Message: React.FC<MessageProps> = ({ message }) => {
               variant="ghost"
               size="sm"
               onClick={handleCopy}
-              className="h-8 w-8 p-0"
+              className="h-8 w-8 p-0 hover:bg-gray-100 dark:hover:bg-gray-800"
             >
               <Copy className="h-4 w-4" />
             </Button>
@@ -177,48 +173,20 @@ export const Message: React.FC<MessageProps> = ({ message }) => {
                 variant="ghost"
                 size="sm"
                 onClick={handleEdit}
-                className="h-8 w-8 p-0"
+                className="h-8 w-8 p-0 hover:bg-gray-100 dark:hover:bg-gray-800"
               >
                 <Edit2 className="h-4 w-4" />
               </Button>
             )}
             {!isUser && (
-              <>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => handleVote(true)}
-                  className={cn(
-                    "h-8 px-2",
-                    message.votes?.userVote === "up" && "text-green-500"
-                  )}
-                >
-                  <ThumbsUp className="h-4 w-4 mr-1" />
-                  {message.votes?.upvotes || 0}
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => handleVote(false)}
-                  className={cn(
-                    "h-8 px-2",
-                    message.votes?.userVote === "down" && "text-red-500"
-                  )}
-                >
-                  <ThumbsDown className="h-4 w-4 mr-1" />
-                  {message.votes?.downvotes || 0}
-                </Button>
-                {message.status === "error" && (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={handleRetry}
-                    className="h-8 w-8 p-0"
-                  >
-                    <RotateCcw className="h-4 w-4" />
-                  </Button>
-                )}
-              </>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleRetry}
+                className="h-8 w-8 p-0 hover:bg-gray-100 dark:hover:bg-gray-800"
+              >
+                <RotateCcw className="h-4 w-4" />
+              </Button>
             )}
           </div>
         </div>
@@ -226,3 +194,4 @@ export const Message: React.FC<MessageProps> = ({ message }) => {
     </div>
   );
 };
+
