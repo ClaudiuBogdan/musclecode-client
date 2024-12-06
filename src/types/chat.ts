@@ -35,6 +35,7 @@ export interface ChatStore extends ChatState {
   createThread: (algorithmId: string) => string;
   sendMessage: (message?: string) => Promise<void>;
   startNewChat: () => Promise<void>;
+  setEditMessageId: (messageId: string | null) => void;
   editMessage: (messageId: string, newContent: string) => Promise<void>;
   switchBranch: (messageId: string) => void;
   streamToken: (messageId: string, token: string) => void;

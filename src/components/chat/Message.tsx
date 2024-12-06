@@ -1,4 +1,3 @@
-import React, { useState } from "react";
 import { Message as MessageType } from "@/types/chat";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
@@ -16,9 +15,17 @@ interface MessageProps {
 }
 
 export const Message: React.FC<MessageProps> = ({ message }) => {
-  const { retryMessage, editMessage } = useChatStore();
+  const {
+    retryMessage,
+    editMessage,
+    editingMessageId,
+    setEditMessageId,
+    status,
+  } = useChatStore();
   const isUser = message.sender === "user";
-  const [isEditing, setIsEditing] = useState(false);
+
+  const isEditing = editingMessageId === message.id;
+  const isLoading = status === "loading";
 
   const handleCopy = async () => {
     await navigator.clipboard.writeText(message.content);
@@ -30,24 +37,22 @@ export const Message: React.FC<MessageProps> = ({ message }) => {
   };
 
   const handleEdit = () => {
-    setIsEditing(true);
+    setEditMessageId(message.id);
   };
 
   const handleSaveEdit = async (editedContent: string) => {
     if (editedContent.trim() !== message.content) {
       try {
         await editMessage(message.id, editedContent);
-        showToast.success("Message updated successfully");
       } catch {
-        showToast.error("Failed to update message");
         return;
       }
     }
-    setIsEditing(false);
+    setEditMessageId(null);
   };
 
   const handleCancelEdit = () => {
-    setIsEditing(false);
+    setEditMessageId(null);
   };
 
   // Function to detect and format code blocks
@@ -139,7 +144,7 @@ export const Message: React.FC<MessageProps> = ({ message }) => {
                 exit={{ opacity: 0, y: 10 }}
                 transition={{ duration: 0.2 }}
                 className={cn(
-                  "rounded-lg p-3",
+                  "rounded-lg p-3 min-w-20",
                   isUser
                     ? "bg-blue-500 text-white"
                     : "bg-white dark:bg-gray-800 text-gray-800 dark:text-white"
@@ -168,7 +173,7 @@ export const Message: React.FC<MessageProps> = ({ message }) => {
             >
               <Copy className="h-4 w-4" />
             </Button>
-            {isUser && !isEditing && (
+            {isUser && !isEditing && !isLoading && (
               <Button
                 variant="ghost"
                 size="sm"
@@ -194,4 +199,3 @@ export const Message: React.FC<MessageProps> = ({ message }) => {
     </div>
   );
 };
-

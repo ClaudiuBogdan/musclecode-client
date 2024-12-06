@@ -91,6 +91,7 @@ const useChatStore = create<ChatStore>()(
               ...state,
               status: "loading",
               inputMessage: "",
+              editingMessageId: null,
               threads: {
                 ...state.threads,
                 [activeThreadId]: {
@@ -199,42 +200,58 @@ const useChatStore = create<ChatStore>()(
         });
       },
 
+      setEditMessageId: (messageId: string | null) => {
+        set((state) => {
+          if (state.status === "loading") return state;
+          return {
+            ...state,
+            editingMessageId: messageId,
+          };
+        });
+      },
+
       editMessage: async (messageId: string, newContent: string) => {
-        // TODO: fix this. This should remove the children messages and update the message content and the assistant response.
         const { threads, activeThreadId } = get();
         if (!activeThreadId) return;
 
         const thread = threads[activeThreadId];
-        const message = thread.messages.find((msg) => msg.id === messageId);
+        const messageIndex = thread.messages.findIndex(
+          (msg) => msg.id === messageId
+        );
+        const message = thread.messages[messageIndex];
 
         if (!message || message.sender !== "user") return;
 
-        const newMessageId = uuidv4();
-        const editedMessage: Message = {
-          ...message,
-          id: newMessageId,
-          content: newContent,
-          parentId: message.id,
-          timestamp: Date.now(),
-        };
-
+        // Update the message in place
         set((state) => {
           const thread = state.threads[activeThreadId];
+          const messages = thread.messages
+            .map((msg, index) => {
+              // Remove all messages after the edited message
+              if (index >= messageIndex) {
+                return null;
+              }
+              return msg;
+            })
+            .filter(Boolean) as Message[];
+
           return {
             ...state,
             threads: {
               ...state.threads,
               [activeThreadId]: {
                 ...thread,
-                messages: [...thread.messages, editedMessage],
+                messages,
                 updatedAt: Date.now(),
               },
             },
-            lastMessageId: newMessageId,
+            lastMessageId: messageId,
+            editingMessageId: null,
           };
         });
 
-        await get().sendMessage();
+        // Generate new assistant response
+        await get().sendMessage(newContent);
       },
 
       switchBranch: (messageId: string) => {
