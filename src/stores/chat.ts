@@ -4,6 +4,8 @@ import { streamMessage } from "../lib/api/chat";
 import { Message, ChatStore, Thread } from "../types/chat";
 import { createJSONStorage, persist } from "zustand/middleware";
 
+const STREAM_TIMEOUT_MS = 10000; // 10 second timeout
+
 const useChatStore = create<ChatStore>()(
   persist(
     (set, get) => ({
@@ -12,6 +14,12 @@ const useChatStore = create<ChatStore>()(
       activeAlgorithmId: null,
       lastMessageId: null,
       editingMessageId: null,
+      inputMessage: "",
+      status: "idle",
+
+      updateInputMessage: (message: string) => {
+        set({ inputMessage: message });
+      },
 
       createThread: (algorithmId: string) => {
         const threadId = uuidv4();
@@ -48,10 +56,14 @@ const useChatStore = create<ChatStore>()(
         });
       },
 
-      sendMessage: async (content: string) => {
+      sendMessage: async (message?: string) => {
         let { activeThreadId } = get();
-        const activeAlgorithmId = get().activeAlgorithmId;
+        const { activeAlgorithmId, inputMessage, status } = get();
+        const content = message || inputMessage;
+
         const lastMessageId = get().lastMessageId;
+
+        if (status === "loading") return;
 
         if (!activeThreadId && activeAlgorithmId) {
           activeThreadId = get().createThread(activeAlgorithmId);
@@ -77,6 +89,8 @@ const useChatStore = create<ChatStore>()(
             const thread = state.threads[activeThreadId];
             return {
               ...state,
+              status: "loading",
+              inputMessage: "",
               threads: {
                 ...state.threads,
                 [activeThreadId]: {
@@ -118,11 +132,21 @@ const useChatStore = create<ChatStore>()(
           const stream = await streamMessage(content);
           const reader = stream.getReader();
 
+          const streamTimeout = new Promise((_, reject) => {
+            setTimeout(() => {
+              reject(new Error("Stream timeout"));
+            }, STREAM_TIMEOUT_MS);
+          });
+
           try {
             while (true) {
-              const { done, value } = await reader.read();
-              if (done) break;
-              get().streamToken(assistantMessageId, value);
+              const readResult = (await Promise.race([
+                reader.read(),
+                streamTimeout,
+              ])) as { done: boolean; value: string };
+
+              if (!readResult || readResult.done) break;
+              get().streamToken(assistantMessageId, readResult.value);
             }
             get().completeStream(assistantMessageId);
           } catch (streamError) {
@@ -136,6 +160,7 @@ const useChatStore = create<ChatStore>()(
               );
               return {
                 ...state,
+                status: "error",
                 threads: {
                   ...state.threads,
                   [activeThreadId as string]: {
@@ -150,6 +175,10 @@ const useChatStore = create<ChatStore>()(
           }
         } catch (error) {
           console.error("Send message error:", error);
+          set((state) => ({
+            ...state,
+            status: "error",
+          }));
           throw new Error("Failed to send message");
         }
       },
@@ -166,10 +195,12 @@ const useChatStore = create<ChatStore>()(
           lastMessageId: null,
           editingMessageId: null,
           activeThreadId: threadId,
+          status: "idle", // Reset status when starting new chat
         });
       },
 
       editMessage: async (messageId: string, newContent: string) => {
+        // TODO: fix this. This should remove the children messages and update the message content and the assistant response.
         const { threads, activeThreadId } = get();
         if (!activeThreadId) return;
 
@@ -203,7 +234,7 @@ const useChatStore = create<ChatStore>()(
           };
         });
 
-        await get().sendMessage(newContent);
+        await get().sendMessage();
       },
 
       switchBranch: (messageId: string) => {
@@ -217,6 +248,7 @@ const useChatStore = create<ChatStore>()(
         set({
           lastMessageId: messageId,
           activeThreadId: thread.id,
+          status: "idle", // Reset status when switching branches
         });
       },
 
@@ -267,6 +299,7 @@ const useChatStore = create<ChatStore>()(
           );
           return {
             ...state,
+            status: "idle",
             threads: {
               ...state.threads,
               [activeThreadId as string]: {
@@ -327,11 +360,21 @@ const useChatStore = create<ChatStore>()(
           const stream = await streamMessage(parentMessage.content);
           const reader = stream.getReader();
 
+          const streamTimeout = new Promise((_, reject) => {
+            setTimeout(() => {
+              reject(new Error("Stream timeout"));
+            }, STREAM_TIMEOUT_MS);
+          });
+
           try {
             while (true) {
-              const { done, value } = await reader.read();
-              if (done) break;
-              get().streamToken(messageId, value);
+              const readResult = (await Promise.race([
+                reader.read(),
+                streamTimeout,
+              ])) as { done: boolean; value: string };
+
+              if (!readResult || readResult.done) break;
+              get().streamToken(messageId, readResult.value);
             }
             get().completeStream(messageId);
           } catch (streamError) {
@@ -345,6 +388,7 @@ const useChatStore = create<ChatStore>()(
               );
               return {
                 ...state,
+                status: "error",
                 threads: {
                   ...state.threads,
                   [activeThreadId as string]: {
@@ -359,6 +403,10 @@ const useChatStore = create<ChatStore>()(
           }
         } catch (error) {
           console.error("Retry message error:", error);
+          set((state) => ({
+            ...state,
+            status: "error",
+          }));
           throw new Error("Failed to retry message");
         }
       },
@@ -388,10 +436,77 @@ const useChatStore = create<ChatStore>()(
           (thread) => thread.algorithmId === algorithmId
         );
       },
+
+      voteMessage: (messageId: string, isUpvote: boolean) => {
+        set((state) => {
+          const { threads, activeThreadId } = state;
+          if (!activeThreadId) return state;
+
+          const thread = threads[activeThreadId];
+          const messages = thread.messages.map((msg) => {
+            if (msg.id === messageId) {
+              const currentVotes = msg.votes || { upvotes: 0, downvotes: 0 };
+              const currentUserVote = currentVotes.userVote;
+
+              // Remove previous vote if exists
+              if (currentUserVote) {
+                if (currentUserVote === "up") currentVotes.upvotes--;
+                if (currentUserVote === "down") currentVotes.downvotes--;
+              }
+
+              // Add new vote
+              if (isUpvote) {
+                currentVotes.upvotes++;
+                currentVotes.userVote = "up";
+              } else {
+                currentVotes.downvotes++;
+                currentVotes.userVote = "down";
+              }
+
+              return {
+                ...msg,
+                votes: currentVotes,
+              };
+            }
+            return msg;
+          });
+
+          return {
+            ...state,
+            threads: {
+              ...threads,
+              [activeThreadId]: {
+                ...thread,
+                messages,
+              },
+            },
+          };
+        });
+      },
+
+      copyMessage: async (messageId: string) => {
+        const state = get();
+        const { threads, activeThreadId } = state;
+        if (!activeThreadId) return;
+
+        const thread = threads[activeThreadId];
+        const message = thread.messages.find((msg) => msg.id === messageId);
+
+        if (message) {
+          await navigator.clipboard.writeText(message.content);
+          // TODO: Add toast notification
+        }
+      },
     }),
     {
       name: "chat-store",
       storage: createJSONStorage(() => localStorage),
+      onRehydrateStorage: () => (state) => {
+        // Reset status to idle on rehydration
+        if (state) {
+          state.status = "idle";
+        }
+      },
     }
   )
 );

@@ -14,6 +14,11 @@ export interface Message {
   sender: "user" | "assistant";
   status: "pending" | "streaming" | "complete" | "error";
   parentId: string | null;
+  votes?: {
+    upvotes: number;
+    downvotes: number;
+    userVote?: "up" | "down";
+  };
 }
 
 export interface ChatState {
@@ -21,12 +26,14 @@ export interface ChatState {
   activeThreadId: string | null;
   activeAlgorithmId: string | null;
   lastMessageId: string | null;
+  status: "idle" | "loading" | "error";
+  inputMessage: string;
   editingMessageId: string | null;
 }
 
 export interface ChatStore extends ChatState {
   createThread: (algorithmId: string) => string;
-  sendMessage: (content: string, algorithmId?: string) => Promise<void>;
+  sendMessage: (message?: string) => Promise<void>;
   startNewChat: () => Promise<void>;
   editMessage: (messageId: string, newContent: string) => Promise<void>;
   switchBranch: (messageId: string) => void;
@@ -38,4 +45,7 @@ export interface ChatStore extends ChatState {
   setActiveAlgorithmId: (algorithmId: string) => void;
   findLatestLeafMessage: (threadId: string) => string | null;
   getThreadsByAlgorithm: (algorithmId: string) => Thread[];
+  voteMessage: (messageId: string, isUpvote: boolean) => void;
+  copyMessage: (messageId: string) => Promise<void>;
+  updateInputMessage: (message: string) => void;
 }
