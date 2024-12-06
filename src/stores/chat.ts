@@ -335,12 +335,7 @@ const useChatStore = create<ChatStore>()(
         const thread = threads[activeThreadId];
         const message = thread.messages.find((msg) => msg.id === messageId);
 
-        if (
-          !message ||
-          message.sender !== "assistant" ||
-          message.status !== "error"
-        )
-          return;
+        if (!message || message.sender !== "assistant") return;
         if (!message.parentId) return;
 
         const parentMessage = thread.messages.find(
@@ -348,84 +343,33 @@ const useChatStore = create<ChatStore>()(
         );
         if (!parentMessage) return;
 
+        const parentIndex = thread.messages.findIndex(
+          (msg) => msg.id === parentMessage.id
+        );
+        if (parentIndex === -1) return;
+
+        // Delete the message and the children
+        const messages = thread.messages
+          .map((msg, index) => {
+            // Remove all messages after the edited message
+            if (index >= parentIndex) {
+              return null;
+            }
+            return msg;
+          })
+          .filter(Boolean) as Message[];
+
         set((state) => {
-          const thread = state.threads[activeThreadId];
-          const messages = thread.messages.map((msg) =>
-            msg.id === messageId
-              ? {
-                  ...msg,
-                  content: "",
-                  status: "streaming" as Message["status"],
-                }
-              : msg
-          );
           return {
             ...state,
             threads: {
               ...state.threads,
-              [activeThreadId as string]: {
-                ...thread,
-                messages,
-                updatedAt: Date.now(),
-              },
+              [activeThreadId]: { ...thread, messages },
             },
-            lastMessageId: messageId,
           };
         });
 
-        try {
-          const stream = await streamMessage(parentMessage.content);
-          const reader = stream.getReader();
-
-          const streamTimeout = new Promise((_, reject) => {
-            setTimeout(() => {
-              reject(new Error("Stream timeout"));
-            }, STREAM_TIMEOUT_MS);
-          });
-
-          try {
-            while (true) {
-              const readResult = (await Promise.race([
-                reader.read(),
-                streamTimeout,
-              ])) as { done: boolean; value: string };
-
-              if (!readResult || readResult.done) break;
-              get().streamToken(messageId, readResult.value);
-            }
-            get().completeStream(messageId);
-          } catch (streamError) {
-            console.error("Stream error:", streamError);
-            set((state) => {
-              const thread = state.threads[activeThreadId];
-              const messages = thread.messages.map((msg) =>
-                msg.id === messageId
-                  ? { ...msg, status: "error" as Message["status"] }
-                  : msg
-              );
-              return {
-                ...state,
-                status: "error",
-                threads: {
-                  ...state.threads,
-                  [activeThreadId as string]: {
-                    ...thread,
-                    messages,
-                  },
-                },
-              };
-            });
-          } finally {
-            reader.releaseLock();
-          }
-        } catch (error) {
-          console.error("Retry message error:", error);
-          set((state) => ({
-            ...state,
-            status: "error",
-          }));
-          throw new Error("Failed to retry message");
-        }
+        get().sendMessage(parentMessage.content);
       },
 
       getConversationThread: (threadId: string) => {

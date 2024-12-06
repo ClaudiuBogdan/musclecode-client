@@ -183,7 +183,7 @@ export const Message: React.FC<MessageProps> = ({ message }) => {
                 <Edit2 className="h-4 w-4" />
               </Button>
             )}
-            {!isUser && (
+            {!isUser && !isLoading && (
               <Button
                 variant="ghost"
                 size="sm"
