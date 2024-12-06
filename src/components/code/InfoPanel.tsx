@@ -75,7 +75,7 @@ export const InfoPanel: React.FC<InfoPanelProps> = ({ algorithmId }) => {
           value="chat"
           className="flex-grow m-0 overflow-auto border-none outline-none"
         >
-          <Chat />
+          <Chat algorithmId={algorithmId} />
         </TabsContent>
       </Tabs>
     </div>

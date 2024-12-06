@@ -1,7 +1,5 @@
 import * as React from "react";
 import { SquareTerminal } from "lucide-react";
-
-import { NavMain } from "./nav-main";
 import { NavUser } from "./nav-user";
 import {
   Sidebar,

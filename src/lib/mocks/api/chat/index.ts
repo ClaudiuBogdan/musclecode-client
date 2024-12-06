@@ -41,12 +41,12 @@ export const sendMessage = http.post("/api/chat", async ({ request }) => {
 
     const response: Message = {
       id: uuidv4(),
+      threadId: uuidv4(),
       content: generateResponse(message),
       timestamp: Date.now(),
       sender: "assistant",
       status: "complete",
       parentId: null,
-      childrenIds: [],
     };
 
     return response;

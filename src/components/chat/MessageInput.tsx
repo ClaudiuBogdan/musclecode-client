@@ -3,8 +3,13 @@ import { Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import useChatStore from "@/stores/chat";
+import { cn } from "@/lib/utils";
 
-export const MessageInput: React.FC = () => {
+interface MessageInputProps {
+  className?: string;
+}
+
+export const MessageInput: React.FC<MessageInputProps> = ({ className }) => {
   const [message, setMessage] = useState("");
   const { sendMessage } = useChatStore();
 
@@ -19,7 +24,10 @@ export const MessageInput: React.FC = () => {
   return (
     <form
       onSubmit={handleSubmit}
-      className="p-4 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700"
+      className={cn(
+        "p-4 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700",
+        className
+      )}
     >
       <div className="flex space-x-2">
         <Textarea

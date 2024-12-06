@@ -1,41 +1,37 @@
-import { Message } from "../types/chat";
+import { Message, Thread } from "../types/chat";
 
 export function getConversationThread(
   messages: Record<string, Message>,
-  activeMessageId: string | null
+  threadId: string | null
 ): Message[] {
-  if (!activeMessageId || !messages[activeMessageId]) {
-    return [];
-  }
+  if (!threadId) return [];
 
-  const thread: Message[] = [];
-  let currentId: string | null = activeMessageId;
+  const threadMessages = Object.values(messages)
+    .filter((msg) => msg.threadId === threadId)
+    .sort((a, b) => a.timestamp - b.timestamp);
 
-  while (currentId) {
-    const currentMessage: Message = messages[currentId];
-    thread.unshift(currentMessage);
-    currentId = currentMessage.parentId;
-  }
-
-  return thread;
+  return threadMessages;
 }
 
 export function findLatestLeafMessage(
   messages: Record<string, Message>,
-  rootMessageId: string | null
+  threadId: string | null
 ): string | null {
-  if (!rootMessageId || !messages[rootMessageId]) {
-    return null;
-  }
+  if (!threadId) return null;
 
-  let currentMessage = messages[rootMessageId];
+  const threadMessages = Object.values(messages)
+    .filter((msg) => msg.threadId === threadId)
+    .sort((a, b) => b.timestamp - a.timestamp);
 
-  while (currentMessage.childrenIds.length > 0) {
-    currentMessage =
-      messages[
-        currentMessage.childrenIds[currentMessage.childrenIds.length - 1]
-      ];
-  }
+  const leafMessage = threadMessages.find((msg) => msg.parentId === null);
+  return leafMessage?.id || null;
+}
 
-  return currentMessage.id;
+export function getThreadsByAlgorithm(
+  threads: Record<string, Thread>,
+  algorithmId: string
+): Thread[] {
+  return Object.values(threads)
+    .filter((thread) => thread.algorithmId === algorithmId)
+    .sort((a, b) => b.updatedAt - a.updatedAt);
 }
