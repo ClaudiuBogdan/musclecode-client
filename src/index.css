@@ -170,7 +170,7 @@ body {
   }
 }
 
-/* Add these new styles */
+/* Code editor styles */
 .cm-editor {
   height: 100% !important;
   width: 100% !important;
@@ -182,7 +182,6 @@ body {
   position: absolute !important;
   inset: 0 !important;
 
-
   scrollbar-width: thin;
   scrollbar-color: transparent transparent;
   transition: scrollbar-color 0.32s ease;
@@ -190,11 +189,10 @@ body {
   &:hover {
     scrollbar-color: hsla(var(--scrollbar-thumb)) transparent;
     transition: scrollbar-color 0.32s ease;
-  }
-
+  
 }
 
-/* Optional: If you want to ensure the editor content fills the available space */
+/* Editor content styles */
 .cm-content {
   min-height: 100%;
   padding: 1rem 1rem 0 0 !important;
@@ -202,4 +200,5 @@ body {
 
 .smooth-scroll {
   scroll-behavior: smooth;
+}
 }

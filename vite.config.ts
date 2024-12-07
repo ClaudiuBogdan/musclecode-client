@@ -3,11 +3,16 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import checker from "vite-plugin-checker";
 import { TanStackRouterVite } from "@tanstack/router-plugin/vite";
+import mdx from "@mdx-js/rollup";
 
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
     TanStackRouterVite(),
+    mdx({
+      providerImportSource: "@mdx-js/react",
+      jsxRuntime: "automatic",
+    }),
     react(),
     checker({
       typescript: true,

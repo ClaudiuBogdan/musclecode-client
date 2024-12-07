@@ -3,7 +3,7 @@ import defaultTheme from "tailwindcss/defaultTheme";
 
 export default {
   darkMode: ["class"],
-  content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
+  content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx,md,mdx}"],
   theme: {
     extend: {
       borderRadius: {
@@ -97,6 +97,49 @@ export default {
           },
           to: {
             height: "0",
+          },
+        },
+      },
+      typography: {
+        DEFAULT: {
+          css: {
+            maxWidth: "none",
+            color: "hsl(var(--foreground))",
+            hr: {
+              borderColor: "hsl(var(--border))",
+              marginTop: "3em",
+              marginBottom: "3em",
+            },
+            "h1, h2, h3, h4": {
+              color: "hsl(var(--foreground))",
+              fontWeight: "700",
+            },
+            a: {
+              color: "hsl(var(--primary))",
+              textDecoration: "underline",
+              fontWeight: "500",
+            },
+            strong: {
+              color: "hsl(var(--foreground))",
+              fontWeight: "700",
+            },
+            code: {
+              color: "hsl(var(--foreground))",
+              backgroundColor: "hsl(var(--muted))",
+              borderRadius: "0.25rem",
+              padding: "0.2em 0.4em",
+              fontWeight: "500",
+            },
+            pre: {
+              backgroundColor: "hsl(var(--background))",
+              color: "hsl(var(--foreground))",
+              borderRadius: "0.5rem",
+              border: "1px solid hsl(var(--border))",
+            },
+            blockquote: {
+              color: "hsl(var(--muted-foreground))",
+              borderLeftColor: "hsl(var(--border))",
+            },
           },
         },
       },
