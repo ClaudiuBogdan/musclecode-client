@@ -58,13 +58,9 @@ function Algorithm() {
     [algorithmId, setCode]
   );
 
-  const handleLanguageChange = useCallback(
-    (language: CodeLanguage) => {
-      if (!algorithmId) return;
-      setActiveLanguage(algorithmId, language);
-    },
-    [algorithmId, setActiveLanguage]
-  );
+  const handleLanguageChange = (language: CodeLanguage) => {
+    setActiveTab(algorithmId, getFiles(algorithmId, language)[0].name);
+  };
 
   const handleRunCode = useCallback(() => {
     if (!algorithmId) return;
