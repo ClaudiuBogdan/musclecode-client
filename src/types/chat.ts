@@ -46,6 +46,7 @@ export interface ChatStore extends ChatState {
   setActiveAlgorithmId: (algorithmId: string) => void;
   findLatestLeafMessage: (threadId: string) => string | null;
   getThreadsByAlgorithm: (algorithmId: string) => Thread[];
+  setActiveThreadId: (threadId: string) => void;
   voteMessage: (messageId: string, isUpvote: boolean) => void;
   copyMessage: (messageId: string) => Promise<void>;
   updateInputMessage: (message: string) => void;

@@ -190,9 +190,15 @@ const useChatStore = create<ChatStore>()(
           throw new Error("algorithmId is required to start a new chat");
         }
 
+        const currentThread = get().getActiveThread();
+
+        if (currentThread?.messages.length === 0) {
+          return;
+        }
+
         const threadId = get().createThread(activeAlgorithmId);
+
         set({
-          threads: {},
           lastMessageId: null,
           editingMessageId: null,
           activeThreadId: threadId,
@@ -389,6 +395,10 @@ const useChatStore = create<ChatStore>()(
         const thread = threads[threadId];
         if (!thread || thread.messages.length === 0) return null;
         return thread.messages[thread.messages.length - 1].id;
+      },
+
+      setActiveThreadId: (threadId: string) => {
+        set({ activeThreadId: threadId });
       },
 
       getThreadsByAlgorithm: (algorithmId: string) => {
