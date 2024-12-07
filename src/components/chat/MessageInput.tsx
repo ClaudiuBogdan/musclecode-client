@@ -4,14 +4,20 @@ import { Button } from "@/components/ui/button";
 import useChatStore from "@/stores/chat";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
+import { StopButton } from "./StopButton";
 
 interface MessageInputProps {
   className?: string;
 }
 
 export const MessageInput: React.FC<MessageInputProps> = ({ className }) => {
-  const { sendMessage, status, inputMessage, updateInputMessage } =
-    useChatStore();
+  const {
+    sendMessage,
+    status,
+    inputMessage,
+    updateInputMessage,
+    stopStreaming,
+  } = useChatStore();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const canSend = inputMessage.trim().length > 0 && status === "idle";
 
@@ -50,7 +56,10 @@ export const MessageInput: React.FC<MessageInputProps> = ({ className }) => {
   }, [inputMessage]);
 
   return (
-    <form onSubmit={handleSubmit} className={cn("p-4", className)}>
+    <form onSubmit={handleSubmit} className={cn("relative p-4", className)}>
+      <AnimatePresence>
+        {status === "loading" && <StopButton onStop={stopStreaming} />}
+      </AnimatePresence>
       <div className="relative flex items-end bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-transparent transition-all duration-200">
         <textarea
           ref={textareaRef}

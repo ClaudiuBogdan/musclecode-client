@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { EmptyState } from "./EmptyState";
 
 interface ChatThreadProps {
   className?: string;
@@ -56,26 +57,20 @@ export const ChatThread: React.FC<ChatThreadProps> = ({ className }) => {
 
   return (
     <div className={cn("relative flex flex-col h-full", className)}>
-      <div
-        ref={threadRef}
-        className="flex-1 overflow-y-auto space-y-4 p-4 smooth-scroll"
-      >
-        <AnimatePresence initial={false}>
+      {messages.length === 0 ? (
+        <EmptyState />
+      ) : (
+        <div
+          ref={threadRef}
+          className="flex-1 overflow-y-auto space-y-4 p-4 smooth-scroll"
+        >
           {messages.map((message) => (
-            <motion.div
-              key={message.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.3 }}
-            >
-              <Message message={message} />
-            </motion.div>
+            <Message key={message.id} message={message} />
           ))}
-        </AnimatePresence>
-      </div>
+        </div>
+      )}
       <AnimatePresence>
-        {showScrollButton && (
+        {showScrollButton && messages.length > 0 && (
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}

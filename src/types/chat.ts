@@ -29,11 +29,13 @@ export interface ChatState {
   status: "idle" | "loading" | "error";
   inputMessage: string;
   editingMessageId: string | null;
+  abortController: AbortController | null;
 }
 
 export interface ChatStore extends ChatState {
   createThread: (algorithmId: string) => string;
   sendMessage: (message?: string) => Promise<void>;
+  stopStreaming: () => void;
   startNewChat: () => Promise<void>;
   setEditMessageId: (messageId: string | null) => void;
   editMessage: (messageId: string, newContent: string) => Promise<void>;

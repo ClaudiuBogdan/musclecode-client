@@ -4,7 +4,7 @@ import { streamMessage } from "../lib/api/chat";
 import { Message, ChatStore, Thread } from "../types/chat";
 import { createJSONStorage, persist } from "zustand/middleware";
 
-const STREAM_TIMEOUT_MS = 10000; // 10 second timeout
+const STREAM_TIMEOUT_MS = 5 * 60 * 1000; // 5 minutes
 
 const useChatStore = create<ChatStore>()(
   persist(
@@ -16,6 +16,7 @@ const useChatStore = create<ChatStore>()(
       editingMessageId: null,
       inputMessage: "",
       status: "idle",
+      abortController: null,
 
       updateInputMessage: (message: string) => {
         set({ inputMessage: message });
@@ -74,6 +75,7 @@ const useChatStore = create<ChatStore>()(
         }
 
         try {
+          const abortController = new AbortController();
           const newMessageId = uuidv4();
           const userMessage: Message = {
             id: newMessageId,
@@ -85,23 +87,24 @@ const useChatStore = create<ChatStore>()(
             parentId: lastMessageId,
           };
 
-          set((state) => {
-            const thread = state.threads[activeThreadId];
-            return {
-              ...state,
-              status: "loading",
-              inputMessage: "",
-              editingMessageId: null,
-              threads: {
-                ...state.threads,
-                [activeThreadId]: {
-                  ...thread,
-                  messages: [...thread.messages, userMessage],
-                  updatedAt: Date.now(),
-                },
+          set((state) => ({
+            ...state,
+            status: "loading",
+            inputMessage: "",
+            editingMessageId: null,
+            abortController,
+            threads: {
+              ...state.threads,
+              [activeThreadId]: {
+                ...state.threads[activeThreadId],
+                messages: [
+                  ...state.threads[activeThreadId].messages,
+                  userMessage,
+                ],
+                updatedAt: Date.now(),
               },
-            };
-          });
+            },
+          }));
 
           const assistantMessageId = uuidv4();
           const assistantMessage: Message = {
@@ -114,26 +117,35 @@ const useChatStore = create<ChatStore>()(
             parentId: newMessageId,
           };
 
-          set((state) => {
-            const thread = state.threads[activeThreadId];
-            return {
-              ...state,
-              threads: {
-                ...state.threads,
-                [activeThreadId as string]: {
-                  ...thread,
-                  messages: [...thread.messages, assistantMessage],
-                  updatedAt: Date.now(),
-                },
+          set((state) => ({
+            ...state,
+            threads: {
+              ...state.threads,
+              [activeThreadId]: {
+                ...state.threads[activeThreadId],
+                messages: [
+                  ...state.threads[activeThreadId].messages,
+                  assistantMessage,
+                ],
+                updatedAt: Date.now(),
               },
-              lastMessageId: assistantMessageId,
-            };
-          });
+            },
+            lastMessageId: assistantMessageId,
+          }));
 
           const stream = await streamMessage(content);
           const reader = stream.getReader();
 
-          const streamTimeout = new Promise((_, reject) => {
+          // Create an abortable Promise
+          const abortPromise = new Promise<never>((_, reject) => {
+            const onAbort = () => {
+              reject(new Error("Stream aborted"));
+              abortController.signal.removeEventListener("abort", onAbort);
+            };
+            abortController.signal.addEventListener("abort", onAbort);
+          });
+
+          const streamTimeout = new Promise<never>((_, reject) => {
             setTimeout(() => {
               reject(new Error("Stream timeout"));
             }, STREAM_TIMEOUT_MS);
@@ -144,6 +156,7 @@ const useChatStore = create<ChatStore>()(
               const readResult = (await Promise.race([
                 reader.read(),
                 streamTimeout,
+                abortPromise,
               ])) as { done: boolean; value: string };
 
               if (!readResult || readResult.done) break;
@@ -151,28 +164,33 @@ const useChatStore = create<ChatStore>()(
             }
             get().completeStream(assistantMessageId);
           } catch (streamError) {
-            console.error("Stream error:", streamError);
-            set((state) => {
-              const thread = state.threads[activeThreadId];
-              const messages = thread.messages.map((msg) =>
-                msg.id === assistantMessageId
-                  ? { ...msg, status: "error" as Message["status"] }
-                  : msg
-              );
-              return {
-                ...state,
-                status: "error",
-                threads: {
-                  ...state.threads,
-                  [activeThreadId as string]: {
-                    ...thread,
-                    messages,
+            if ((streamError as Error).message === "Stream aborted") {
+              console.warn("Stream was aborted by the user.");
+            } else {
+              console.error("Stream error:", streamError);
+              set((state) => {
+                const thread = state.threads[activeThreadId];
+                const messages = thread.messages.map((msg) =>
+                  msg.id === assistantMessageId
+                    ? { ...msg, status: "error" as Message["status"] }
+                    : msg
+                );
+                return {
+                  ...state,
+                  status: "error",
+                  threads: {
+                    ...state.threads,
+                    [activeThreadId]: {
+                      ...thread,
+                      messages,
+                    },
                   },
-                },
-              };
-            });
+                };
+              });
+            }
           } finally {
             reader.releaseLock();
+            set({ abortController: null });
           }
         } catch (error) {
           console.error("Send message error:", error);
@@ -181,6 +199,14 @@ const useChatStore = create<ChatStore>()(
             status: "error",
           }));
           throw new Error("Failed to send message");
+        }
+      },
+
+      stopStreaming: () => {
+        const { abortController } = get();
+        if (abortController) {
+          abortController.abort();
+          set({ abortController: null, status: "idle" });
         }
       },
 
@@ -195,6 +221,17 @@ const useChatStore = create<ChatStore>()(
         if (currentThread?.messages.length === 0) {
           return;
         }
+
+        // Clear empty threads
+        const threads = Object.fromEntries(
+          Object.entries(get().threads).filter(
+            ([, thread]) => thread.messages.length > 0
+          )
+        );
+
+        set({
+          threads,
+        });
 
         const threadId = get().createThread(activeAlgorithmId);
 
@@ -476,6 +513,7 @@ const useChatStore = create<ChatStore>()(
         // Reset status to idle on rehydration
         if (state) {
           state.status = "idle";
+          state.abortController = null;
         }
       },
     }
