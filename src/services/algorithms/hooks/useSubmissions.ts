@@ -18,7 +18,8 @@ const fetchSubmissions = async (algorithmId: string): Promise<Submission[]> => {
   try {
     const data = await response.json();
     return data;
-  } catch (error) {
+  } catch (err) {
+    console.error(err);
     throw new Error("Failed to parse server response");
   }
 };

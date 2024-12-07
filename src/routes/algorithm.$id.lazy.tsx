@@ -15,11 +15,6 @@ import {
 } from "@/components/ui/resizable";
 
 export const Route = createLazyFileRoute("/algorithm/$id")({
-  validateSearch: (search: Record<string, unknown>) => {
-    return {
-      tab: search.tab || "problem",
-    };
-  },
   component: Algorithm,
 });
 
@@ -32,7 +27,6 @@ function Algorithm() {
     setCode,
     getFiles,
     setActiveTab,
-    setActiveLanguage,
     runCode,
     getCode,
     resetCode,
@@ -101,7 +95,6 @@ function Algorithm() {
       handleTimerResume();
     }
   }, [algorithmId, algorithm?.timerState, handleTimerStart, handleTimerResume]);
-
 
   if (isLoading) {
     return <div>Loading...</div>;
