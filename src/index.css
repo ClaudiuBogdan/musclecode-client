@@ -145,6 +145,16 @@
   scrollbar-color: hsla(var(--scrollbar-thumb)) hsla(var(--scrollbar-track));
 }
 
+/* Remove focus outline for mouse users but keep it for keyboard navigation */
+*:focus:not(:focus-visible) {
+  outline: none;
+}
+
+*:focus-visible {
+  outline: 2px solid hsl(var(--ring));
+  outline-offset: 2px;
+}
+
 body {
   @apply bg-background text-foreground;
   margin: 0;

@@ -70,8 +70,7 @@ export const Notes: FC<NotesProps> = ({ value, onChange, algorithmId }) => {
         onTogglePreview={handleTogglePreview}
       />
       <div className="flex-1 overflow-hidden grid grid-rows-2 gap-4">
-        <div className="overflow-hidden">
-          <div className="text-sm font-medium mb-2 px-4 pt-2">Global Notes</div>
+        <div className="overflow-hidden p-4">
           {showPreview ? (
             <NotesPreview value={value} />
           ) : (
@@ -80,9 +79,6 @@ export const Notes: FC<NotesProps> = ({ value, onChange, algorithmId }) => {
         </div>
 
         <div className="overflow-hidden border-t">
-          <div className="text-sm font-medium mb-2 px-4 pt-2">
-            Submission Notes History
-          </div>
           <ScrollArea className="h-full">
             <div className="space-y-4 p-4 pb-20">
               {submissionsWithNotes?.map((submission) => (
@@ -115,7 +111,7 @@ export const Notes: FC<NotesProps> = ({ value, onChange, algorithmId }) => {
                 </div>
               ))}
               {(!submissionsWithNotes || submissionsWithNotes.length === 0) && (
-                <div className="text-sm text-muted-foreground text-center py-4">
+                <div className="text-sm text-muted-foreground text-center py-20">
                   No submission notes yet.
                 </div>
               )}

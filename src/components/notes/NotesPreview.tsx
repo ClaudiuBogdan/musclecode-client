@@ -38,7 +38,7 @@ export const NotesPreview: FC<NotesPreviewProps> = ({ value }) => {
           "dark:prose-a:text-blue-400 dark:hover:prose-a:text-blue-300"
         )}
       >
-        <div className="py-4">
+        <div>
           <ReactMarkdown>{value}</ReactMarkdown>
         </div>
       </div>
