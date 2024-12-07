@@ -364,6 +364,7 @@ export const useCodeStore = create<CodeStoreState & CodeStoreActions>()(
               completed: false,
               executionResult: null,
               startTime: null,
+              submissionNotes: "",
               timerState: {
                 initialStartTime: Date.now(),
                 pausedAt: null,

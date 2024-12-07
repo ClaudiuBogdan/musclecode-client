@@ -63,6 +63,7 @@ export const InfoPanel: React.FC<InfoPanelProps> = ({ algorithmId }) => {
           <Notes
             value={algorithm?.globalNotes ?? ""}
             onChange={handleNotesChange}
+            algorithmId={algorithmId}
           />
         </TabsContent>
         <TabsContent
