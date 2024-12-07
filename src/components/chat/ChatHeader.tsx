@@ -24,7 +24,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({ className }) => {
   return (
     <header
       className={cn(
-        "bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 p-4 flex justify-between items-center",
+        "bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 p-1 flex justify-between items-center",
         className
       )}
     >
