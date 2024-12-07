@@ -6,14 +6,37 @@ import { cn } from "@/lib/utils";
 import { Notes } from "../notes/Notes";
 import Submissions from "../submissions/Submissions";
 import { Chat } from "../chat/Chat";
+import { useSearch, useNavigate } from "@tanstack/react-router";
 
 interface InfoPanelProps {
   algorithmId: string;
 }
 
+// Valid tab values
+type TabValue = "description" | "notes" | "submissions" | "chat";
+
 export const InfoPanel: React.FC<InfoPanelProps> = ({ algorithmId }) => {
   const { setGlobalNotes } = useCodeStore();
   const algorithm = useCodeStore((state) => state.algorithms[algorithmId]);
+
+  // Get the current tab from search params with validation
+  const { tab } = useSearch({
+    from: "/algorithm/$id",
+    select: (search: Record<string, unknown>) => ({
+      tab: (search.tab as TabValue) || "description",
+    }),
+  });
+
+  const navigate = useNavigate();
+
+  const handleTabChange = (value: TabValue | string) => {
+    // Update the URL when tab changes
+    navigate({
+      to: ".", // Keep current route
+      search: { tab: value },
+      replace: true,
+    });
+  };
 
   const handleNotesChange = useCallback(
     (value: string) => {
@@ -33,9 +56,13 @@ export const InfoPanel: React.FC<InfoPanelProps> = ({ algorithmId }) => {
 
   return (
     <div className="h-full flex flex-col bg-background">
-      <Tabs defaultValue="problem" className="w-full h-full flex flex-col">
+      <Tabs
+        value={tab}
+        onValueChange={handleTabChange}
+        className="w-full h-full flex flex-col"
+      >
         <TabsList className="h-10 w-full flex justify-start shrink-0 bg-background border-b border-border rounded-none p-0">
-          <TabsTrigger value="problem" className={tabClassName}>
+          <TabsTrigger value="description" className={tabClassName}>
             Description
           </TabsTrigger>
           <TabsTrigger value="notes" className={tabClassName}>
@@ -49,7 +76,7 @@ export const InfoPanel: React.FC<InfoPanelProps> = ({ algorithmId }) => {
           </TabsTrigger>
         </TabsList>
         <TabsContent
-          value="problem"
+          value="description"
           className="flex-grow m-0 overflow-auto border-none outline-none"
         >
           <ProblemDescription

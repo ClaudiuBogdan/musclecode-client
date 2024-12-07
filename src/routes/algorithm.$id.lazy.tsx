@@ -15,6 +15,11 @@ import {
 } from "@/components/ui/resizable";
 
 export const Route = createLazyFileRoute("/algorithm/$id")({
+  validateSearch: (search: Record<string, unknown>) => {
+    return {
+      tab: search.tab || "problem",
+    };
+  },
   component: Algorithm,
 });
 
