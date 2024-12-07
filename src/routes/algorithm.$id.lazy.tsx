@@ -1,14 +1,19 @@
-import Split from '@uiw/react-split'
-import { CodeEditor } from "@/components/code/CodeEditor";
 import { createLazyFileRoute, useParams } from "@tanstack/react-router";
-import { useCodeStore, CodeLanguage } from "@/stores/algorithm";
-import { ExecutionResult } from "@/components/code/ExecutionResult";
 import { useCallback, useEffect } from "react";
+import { CodeEditor } from "@/components/code/CodeEditor";
+import { ExecutionResult } from "@/components/code/ExecutionResult";
+import { useCodeStore, CodeLanguage } from "@/stores/algorithm";
 import { useLayoutStore } from "@/stores/layout";
 import { InfoPanel } from "@/components/code/InfoPanel";
 import { TopBar } from "@/components/code/layout/TopBar";
 import { ButtonBar } from "@/components/code/layout/ButtonBar";
 import { Toaster } from "@/components/ui/Toaster";
+import {
+  ResizablePanelGroup,
+  ResizablePanel,
+  ResizableHandle,
+} from "@/components/ui/resizable";
+
 export const Route = createLazyFileRoute("/algorithm/$id")({
   component: Algorithm,
 });
@@ -16,35 +21,60 @@ export const Route = createLazyFileRoute("/algorithm/$id")({
 function Algorithm() {
   const { id: algorithmId } = useParams({ from: "/algorithm/$id" });
   const { sizes, editorSizes, setSizes, setEditorSizes } = useLayoutStore();
-
-  const algorithm = useCodeStore((state) => state.algorithms[algorithmId]);
-
-  const hasPassed = !!algorithm?.executionResult?.result.completed;
-  const nextAlgorithmId = algorithm?.nextAlgorithm?.id;
-
   const {
+    algorithms,
     isLoading,
-    setActiveTab,
     setCode,
-    getCode,
     getFiles,
-    startTimer,
-    pauseTimer,
-    resumeTimer,
+    setActiveTab,
+    setActiveLanguage,
     runCode,
+    getCode,
     resetCode,
     initializeAlgorithm,
+    pauseTimer,
+    startTimer,
+    resumeTimer,
   } = useCodeStore();
 
-  // Handle timer cleanup on unmount
   useEffect(() => {
     initializeAlgorithm(algorithmId);
+
+    // Handle timer cleanup on unmount
     return () => {
       if (algorithmId) {
         pauseTimer(algorithmId);
       }
     };
   }, [algorithmId, initializeAlgorithm, pauseTimer]);
+
+  const algorithm = algorithms[algorithmId];
+
+  const handleCodeChange = useCallback(
+    (value: string) => {
+      if (!algorithmId) return;
+      setCode(algorithmId, value);
+    },
+    [algorithmId, setCode]
+  );
+
+  const handleLanguageChange = useCallback(
+    (language: CodeLanguage) => {
+      if (!algorithmId) return;
+      setActiveLanguage(algorithmId, language);
+    },
+    [algorithmId, setActiveLanguage]
+  );
+
+  const handleRunCode = useCallback(() => {
+    if (!algorithmId) return;
+    runCode(algorithmId);
+  }, [algorithmId, runCode]);
+
+  const handleReset = useCallback(() => {
+    if (!algorithmId) return;
+    resetCode(algorithmId);
+  }, [algorithmId, resetCode]);
 
   // Timer management functions
   const handleTimerStart = useCallback(() => {
@@ -71,29 +101,6 @@ function Algorithm() {
     }
   }, [algorithmId, algorithm?.timerState, handleTimerStart, handleTimerResume]);
 
-  const handleCodeChange = useCallback(
-    (value: string) => {
-      if (!algorithmId) return;
-
-      setCode(algorithmId, value);
-      handleTimerManagement();
-    },
-    [algorithmId, setCode, handleTimerManagement]
-  );
-
-  const handleRunCode = async () => {
-    if (!algorithmId) return;
-    await runCode(algorithmId);
-  };
-
-  const handleReset = () => {
-    if (!algorithmId) return;
-    resetCode(algorithmId);
-  };
-
-  const handleLanguageChange = (language: CodeLanguage) => {
-    setActiveTab(algorithmId, getFiles(algorithmId, language)[0].name);
-  };
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -103,6 +110,8 @@ function Algorithm() {
     return <div>Algorithm not found</div>;
   }
 
+  const nextAlgorithmId = algorithm?.nextAlgorithm?.id;
+  const hasPassed = !!algorithm?.executionResult?.result.completed;
   const currentCode = getCode(
     algorithmId,
     algorithm.activeLanguage,
@@ -111,72 +120,69 @@ function Algorithm() {
 
   return (
     <>
-      <div className="h-[100vh] p-4">
-        <Split
-          lineBar
-          onDragEnd={(preSize, nextSize) => {
-            setSizes([preSize, nextSize]);
+      <div className="flex h-screen">
+        <ResizablePanelGroup
+          direction="horizontal"
+          onLayout={(sizes) => {
+            setSizes([sizes[0], sizes[1]]);
           }}
         >
-          <div
-            style={{ width: `${sizes[0]}%`, minWidth: "200px" }}
-            className="h-full"
-          >
+          <ResizablePanel defaultSize={sizes[0]} minSize={25}>
             <InfoPanel algorithmId={algorithmId} />
-          </div>
-          <div
-            style={{ width: `${sizes[1]}%`, minWidth: "200px" }}
-            className="h-full flex flex-col bg-gray-900"
-          >
-            <TopBar
-              algorithmId={algorithmId}
-              activeTab={algorithm.activeTab}
-              activeLanguage={algorithm.activeLanguage}
-              onTabChange={(tab: string) => setActiveTab(algorithmId, tab)}
-              onLanguageChange={handleLanguageChange}
-              getFiles={getFiles}
-            />
+          </ResizablePanel>
+          <ResizableHandle withHandle />
+          <ResizablePanel defaultSize={sizes[1]} minSize={40}>
+            <div className="flex h-full flex-col">
+              <TopBar
+                algorithmId={algorithmId}
+                activeTab={algorithm.activeTab}
+                activeLanguage={algorithm.activeLanguage}
+                onTabChange={(tab: string) => setActiveTab(algorithmId, tab)}
+                onLanguageChange={handleLanguageChange}
+                getFiles={getFiles}
+              />
 
-            {/* Vertical Split for Editor and Results */}
-            <Split
-              lineBar
-              className="flex-1"
-              mode="vertical"
-              onDragEnd={(preSize, nextSize) => {
-                setEditorSizes([preSize, nextSize]);
-              }}
-            >
-              <div
-                style={{ height: `${editorSizes[0]}%`, minHeight: "100px" }}
-                className="flex flex-col"
+              <ResizablePanelGroup
+                direction="vertical"
+                onLayout={(sizes) => {
+                  setEditorSizes([sizes[0], sizes[1]]);
+                }}
+                className="flex-1"
               >
-                <CodeEditor
-                  initialValue={currentCode}
-                  lang={algorithm.activeLanguage}
-                  onChange={handleCodeChange}
-                  onFocus={handleTimerManagement}
-                />
-
-                <ButtonBar
-                  algorithmId={algorithmId}
-                  nextAlgorithmId={nextAlgorithmId}
-                  hasPassed={hasPassed}
-                  isExecuting={algorithm.isExecuting}
-                  isSubmitting={algorithm.isSubmitting}
-                  isCompleted={algorithm.completed}
-                  onRun={handleRunCode}
-                  onReset={handleReset}
-                />
-              </div>
-              <div
-                style={{ height: `${editorSizes[1]}%`, minHeight: "20vh" }}
-                className="border-t border-gray-700"
-              >
-                <ExecutionResult result={algorithm.executionResult} />
-              </div>
-            </Split>
-          </div>
-        </Split>
+                <ResizablePanel defaultSize={editorSizes[0]} minSize={30}>
+                  <div className="flex h-full flex-col">
+                    <div className="flex-1">
+                      <CodeEditor
+                        initialValue={currentCode}
+                        lang={algorithm.activeLanguage}
+                        onChange={handleCodeChange}
+                        onFocus={handleTimerManagement}
+                      />
+                    </div>
+                    <ButtonBar
+                      algorithmId={algorithmId}
+                      nextAlgorithmId={nextAlgorithmId}
+                      hasPassed={hasPassed}
+                      isExecuting={algorithm.isExecuting}
+                      isSubmitting={algorithm.isSubmitting}
+                      isCompleted={algorithm.completed}
+                      onRun={handleRunCode}
+                      onReset={handleReset}
+                    />
+                  </div>
+                </ResizablePanel>
+                <ResizableHandle withHandle />
+                <ResizablePanel
+                  defaultSize={editorSizes[1]}
+                  minSize={20}
+                  className="bg-gray-900"
+                >
+                  <ExecutionResult result={algorithm.executionResult} />
+                </ResizablePanel>
+              </ResizablePanelGroup>
+            </div>
+          </ResizablePanel>
+        </ResizablePanelGroup>
       </div>
       <Toaster />
     </>
