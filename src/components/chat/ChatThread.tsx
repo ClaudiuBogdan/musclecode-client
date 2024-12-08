@@ -25,7 +25,9 @@ export const ChatThread: React.FC<ChatThreadProps> = ({ className }) => {
     if (!threadRef.current) {
       return;
     }
-    threadRef.current.scrollTop = threadRef.current.scrollHeight;
+    threadRef.current.scrollTo({
+      top: threadRef.current.scrollHeight,
+    });
   };
 
   // Scroll to bottom if user sends new message
