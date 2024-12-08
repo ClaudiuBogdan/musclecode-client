@@ -2,7 +2,7 @@ import * as ResizablePrimitive from "react-resizable-panels";
 
 import { cn } from "@/lib/utils";
 import React from "react";
-import { GripVerticalIcon } from "lucide-react";
+import { GripVertical } from "lucide-react";
 
 const ResizablePanelGroup = ({
   className,
@@ -37,24 +37,24 @@ const ResizableHandle = ({
   withHandle?: boolean;
 }) => (
   <ResizablePrimitive.PanelResizeHandle
+    hitAreaMargins={{ coarse: 2, fine: 1 }}
     className={cn(
       "group/handle relative flex items-center justify-center",
       // Base styles
-      "w-[1px] bg-border transition-all z-10",
-      "data-[panel-group-direction=vertical]:h-[1px] data-[panel-group-direction=vertical]:w-full",
-      // Hover effect area
-      "after:absolute after:inset-0 after:w-1 after:-translate-x-1/2 after:bg-blue-500/20",
-      "hover:after:bg-blue-500/50",
-      "data-[panel-group-direction=vertical]:after:h-1 data-[panel-group-direction=vertical]:after:w-full data-[panel-group-direction=vertical]:after:-translate-y-1/2 data-[panel-group-direction=vertical]:after:translate-x-0",
-      // Focus styles
-      "focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-1",
+      "bg-gray-500 dark:bg-border transition-all z-10",
+      "w-[3px]",
+      "data-[panel-group-direction=vertical]:h-[3px] data-[panel-group-direction=vertical]:w-full",
       className
     )}
     {...props}
   >
     {withHandle && (
-      <div className="z-10 flex h-4 w-4 items-center justify-center rounded-sm bg-accent/50 opacity-0 group-hover/handle:opacity-100 transition-opacity">
-        <GripVerticalIcon className="h-2.5 w-2.5 text-accent-foreground" />
+      <div
+        className={cn(
+          "opacity-0 group-hover/handle:opacity-100 transition-opacity absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+        )}
+      >
+        <GripVertical className="h-3 w-3 z-100 text-foreground bg-gray-300 dark:bg-gray-700 rounded-sm" />
       </div>
     )}
   </ResizablePrimitive.PanelResizeHandle>
