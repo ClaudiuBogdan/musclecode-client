@@ -5,8 +5,8 @@ import { ChatMessageRequest, ChatResponse } from "@/types/api";
 import { generateResponse } from "./responseGenerator";
 
 // Configuration
-const STREAM_CHUNK_DELAY = 50;
-const MESSAGE_DELAY = 30;
+const STREAM_CHUNK_DELAY = 5;
+const MESSAGE_DELAY = 3;
 const CHUNK_SIZE = 2; // Number of characters to send in each chunk
 const encoder = new TextEncoder();
 

@@ -12,48 +12,57 @@ interface ChatThreadProps {
 }
 
 export const ChatThread: React.FC<ChatThreadProps> = ({ className }) => {
-  const { getActiveThread } = useChatStore();
+  const { getActiveThread, status } = useChatStore();
   const thread = getActiveThread();
   const messages = thread?.messages || [];
+  const lastMessage = messages[messages.length - 1];
+  const messageLength = lastMessage ? lastMessage.content.length : 0;
 
   const threadRef = useRef<HTMLDivElement>(null);
   const [showScrollButton, setShowScrollButton] = useState(false);
 
   const scrollToBottom = () => {
-    if (threadRef.current) {
-      threadRef.current.scrollTop = threadRef.current.scrollHeight;
+    if (!threadRef.current) {
+      return;
     }
+    threadRef.current.scrollTop = threadRef.current.scrollHeight;
   };
 
   useEffect(() => {
-    const threadElement = threadRef.current;
-    if (!threadElement) return;
-
-    const handleScroll = () => {
-      const { scrollTop, scrollHeight, clientHeight } = threadElement;
-      const isNearBottom =
-        scrollHeight - scrollTop - clientHeight / 4 < clientHeight;
-      setShowScrollButton(!isNearBottom);
-    };
-
-    threadElement.addEventListener("scroll", handleScroll);
-    return () => threadElement.removeEventListener("scroll", handleScroll);
-  }, []);
+    if (lastMessage && lastMessage.content === "") {
+      scrollToBottom();
+    }
+  }, [lastMessage]);
 
   useEffect(() => {
     const threadElement = threadRef.current;
     if (!threadElement) return;
 
-    const { scrollTop, scrollHeight, clientHeight } = threadElement;
-    const isNearBottom =
-      scrollHeight - scrollTop - clientHeight / 4 < clientHeight;
+    const getIsNearBottom = () => {
+      const { scrollTop, scrollHeight, clientHeight } = threadElement;
+      return scrollHeight - scrollTop - clientHeight < 18;
+    };
 
-    if (isNearBottom) {
-      scrollToBottom();
-    } else {
+    const isStreaming = status === "loading";
+    const isNearBottom = getIsNearBottom();
+    if (!isNearBottom) {
       setShowScrollButton(true);
     }
-  }, [messages.length]);
+
+    // This is not functional yet. The scroll doesn't stay to to bottom or it blocks the user from scrolling up.
+    if (isStreaming && isNearBottom) {
+      scrollToBottom();
+    }
+
+    const handleScroll = () => {
+      const isNearBottom = getIsNearBottom();
+      setShowScrollButton(!isNearBottom);
+    };
+    threadElement.addEventListener("scroll", handleScroll);
+    return () => {
+      threadElement.removeEventListener("scroll", handleScroll);
+    };
+  }, [messageLength, status]);
 
   return (
     <div className={cn("relative flex flex-col h-full", className)}>
@@ -62,7 +71,8 @@ export const ChatThread: React.FC<ChatThreadProps> = ({ className }) => {
       ) : (
         <div
           ref={threadRef}
-          className="flex-1 overflow-y-auto space-y-4 p-4 smooth-scroll"
+          data-thread-id={thread?.id}
+          className="flex-1 overflow-y-auto space-y-4 p-4"
         >
           {messages.map((message) => (
             <Message key={message.id} message={message} />
