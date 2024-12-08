@@ -12,11 +12,11 @@ interface ChatThreadProps {
 }
 
 export const ChatThread: React.FC<ChatThreadProps> = ({ className }) => {
-  const { getActiveThread, status } = useChatStore();
+  const { getActiveThread } = useChatStore();
   const thread = getActiveThread();
   const messages = thread?.messages || [];
-  const lastMessage = messages[messages.length - 1];
-  const messageLength = lastMessage ? lastMessage.content.length : 0;
+  const totalMessages = messages.length;
+  const lastMessageLength = messages[totalMessages - 1]?.content.length || 0;
 
   const threadRef = useRef<HTMLDivElement>(null);
   const [showScrollButton, setShowScrollButton] = useState(false);
@@ -28,30 +28,24 @@ export const ChatThread: React.FC<ChatThreadProps> = ({ className }) => {
     threadRef.current.scrollTop = threadRef.current.scrollHeight;
   };
 
+  // Scroll to bottom if user sends new message
   useEffect(() => {
-    if (lastMessage && lastMessage.content === "") {
-      scrollToBottom();
-    }
-  }, [lastMessage]);
+    scrollToBottom();
+  }, [totalMessages]);
 
+  // Show scroll icon
   useEffect(() => {
     const threadElement = threadRef.current;
     if (!threadElement) return;
 
     const getIsNearBottom = () => {
       const { scrollTop, scrollHeight, clientHeight } = threadElement;
-      return scrollHeight - scrollTop - clientHeight < 18;
+      return scrollHeight - scrollTop - clientHeight < 25;
     };
 
-    const isStreaming = status === "loading";
     const isNearBottom = getIsNearBottom();
     if (!isNearBottom) {
       setShowScrollButton(true);
-    }
-
-    // This is not functional yet. The scroll doesn't stay to to bottom or it blocks the user from scrolling up.
-    if (isStreaming && isNearBottom) {
-      scrollToBottom();
     }
 
     const handleScroll = () => {
@@ -62,7 +56,7 @@ export const ChatThread: React.FC<ChatThreadProps> = ({ className }) => {
     return () => {
       threadElement.removeEventListener("scroll", handleScroll);
     };
-  }, [messageLength, status]);
+  }, [lastMessageLength]);
 
   return (
     <div className={cn("relative flex flex-col h-full", className)}>
