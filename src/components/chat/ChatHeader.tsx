@@ -28,6 +28,8 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({ className }) => {
         className
       )}
     >
+      <ChatHistory threads={threads} onSelectThread={setActiveThreadId} />
+
       <Button
         variant="ghost"
         size="sm"
@@ -37,7 +39,6 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({ className }) => {
         <PlusCircle className="h-5 w-5 mr-1" />
         New Chat
       </Button>
-      <ChatHistory threads={threads} onSelectThread={setActiveThreadId} />
     </header>
   );
 };
