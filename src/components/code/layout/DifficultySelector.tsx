@@ -83,8 +83,8 @@ export const DifficultySelector: React.FC<DifficultySelectorProps> = ({
 
     if (nextAlgorithmId) {
       router.navigate({
-        to: "/algorithm/$id",
-        params: { id: nextAlgorithmId },
+        to: "/algorithms/$algorithmId",
+        params: { algorithmId: nextAlgorithmId },
       });
     } else {
       router.navigate({

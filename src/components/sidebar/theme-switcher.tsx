@@ -75,8 +75,10 @@ export function ThemeSwitcher() {
                     }
                     className={cn("h-8 w-8 rounded-sm", {
                       "bg-primary": theme === option.value,
-                      "hover:bg-accent": true,
-                      "hover:text-accent-foreground": true,
+                      "hover:bg-secondary": theme !== option.value,
+                      "hover:text-accent-foreground": theme !== option.value,
+                      "hover:bg-accent-foreground": theme === option.value,
+                      "hover:text-primary-foreground": theme === option.value,
                       "focus-visible:ring-1": true,
                       "focus-visible:ring-ring": true,
                       "focus-visible:outline-none": true,

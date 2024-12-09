@@ -14,12 +14,12 @@ import {
   ResizableHandle,
 } from "@/components/ui/resizable";
 
-export const Route = createLazyFileRoute("/algorithm/$id")({
+export const Route = createLazyFileRoute("/algorithms/$algorithmId/")({
   component: Algorithm,
 });
 
 function Algorithm() {
-  const { id: algorithmId } = useParams({ from: "/algorithm/$id" });
+  const { algorithmId } = useParams({ from: "/algorithms/$algorithmId/" });
   const { sizes, editorSizes, setSizes, setEditorSizes } = useLayoutStore();
   const {
     algorithms,

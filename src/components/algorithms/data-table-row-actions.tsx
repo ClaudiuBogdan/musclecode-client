@@ -8,27 +8,20 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
-  DropdownMenuSeparator,
-  DropdownMenuShortcut,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from "@/components/ui/dropdown-menu";
 
-import { categories } from "./data"
 import { AlgorithmPreview } from "@/types/algorithm"
+import { Link } from "@tanstack/react-router";
 
 interface DataTableRowActionsProps<TData> {
-  row: Row<TData>
+  row: Row<TData>;
 }
 
 export function DataTableRowActions<TData>({
   row,
 }: DataTableRowActionsProps<TData>) {
-  const algorithm = row.original as AlgorithmPreview
+  const algorithm = row.original as AlgorithmPreview;
 
   return (
     <DropdownMenu>
@@ -42,10 +35,15 @@ export function DataTableRowActions<TData>({
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-[160px]">
-        <DropdownMenuItem>Edit</DropdownMenuItem>
-        <DropdownMenuItem>Make a copy</DropdownMenuItem>
-        <DropdownMenuItem>Favorite</DropdownMenuItem>
-        <DropdownMenuSeparator />
+        <Link to={`/algorithms/${algorithm.id}/view`}>
+          <DropdownMenuItem>View</DropdownMenuItem>
+        </Link>
+        <Link to={`/algorithms/${algorithm.id}/edit`}>
+          <DropdownMenuItem>Edit</DropdownMenuItem>
+        </Link>
+        {/* <DropdownMenuItem>Make a copy</DropdownMenuItem> */}
+        {/* <DropdownMenuItem>Favorite</DropdownMenuItem> */}
+        {/* <DropdownMenuSeparator />
         <DropdownMenuSub>
           <DropdownMenuSubTrigger>Labels</DropdownMenuSubTrigger>
           <DropdownMenuSubContent>
@@ -62,8 +60,8 @@ export function DataTableRowActions<TData>({
         <DropdownMenuItem>
           Delete
           <DropdownMenuShortcut>⌘⌫</DropdownMenuShortcut>
-        </DropdownMenuItem>
+        </DropdownMenuItem> */}
       </DropdownMenuContent>
     </DropdownMenu>
-  )
+  );
 }

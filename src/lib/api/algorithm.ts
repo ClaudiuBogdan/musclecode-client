@@ -10,7 +10,7 @@ export function useAlgorithmData(id: string) {
   return useQuery<Algorithm>({
     queryKey: algorithmKeys.detail(id),
     queryFn: async () => {
-      const res = await fetch(`/api/algorithm/${id}`);
+      const res = await fetch(`/api/algorithms/${id}`);
       if (!res.ok) {
         throw new Error(`Algorithm with id ${id} not found`);
       }

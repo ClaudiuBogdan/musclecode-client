@@ -27,7 +27,7 @@ src/
 ├── routes/                 # TanStack Router routes
 │   ├── __root.tsx         # Root layout
 │   ├── index.lazy.tsx     # Home page
-│   └── algorithm.$id.lazy.tsx # Algorithm detail page
+│   └── algorithm.$algorithmId.lazy.tsx # Algorithm detail page
 ├── components/
 │   ├── ui/               # Shadcn UI components
 │   ├── code/            # Code editor related components

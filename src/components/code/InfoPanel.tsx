@@ -21,7 +21,7 @@ export const InfoPanel: React.FC<InfoPanelProps> = ({ algorithmId }) => {
 
   // Get the current tab from search params with validation
   const { tab } = useSearch({
-    from: "/algorithm/$id",
+    from: "/algorithms/$algorithmId/",
     select: (search: Record<string, unknown>) => ({
       tab: (search.tab as TabValue) || "description",
     }),

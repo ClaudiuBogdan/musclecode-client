@@ -31,8 +31,8 @@ export const ButtonBar: React.FC<ButtonBarProps> = ({
   const handleSkip = () => {
     if (nextAlgorithmId) {
       router.navigate({
-        to: "/algorithm/$id",
-        params: { id: nextAlgorithmId },
+        to: "/algorithms/$algorithmId",
+        params: { algorithmId: nextAlgorithmId },
       });
     } else {
       router.navigate({

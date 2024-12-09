@@ -152,8 +152,8 @@ export default function AlgorithmGymDashboard() {
                     transition={{ delay: index * 0.1 }}
                   >
                     <Link
-                      to="/algorithm/$id"
-                      params={{ id: algorithm.id }}
+                      to="/algorithms/$algorithmId"
+                      params={{ algorithmId: algorithm.id }}
                       className="group block"
                     >
                       <Card
@@ -217,7 +217,10 @@ export default function AlgorithmGymDashboard() {
         </CardContent>
         <CardFooter className="flex justify-center pb-8">
           {firstAlgorithmId && (
-            <Link to="/algorithm/$id" params={{ id: firstAlgorithmId }}>
+            <Link
+              to="/algorithms/$algorithmId"
+              params={{ algorithmId: firstAlgorithmId }}
+            >
               <Button
                 size="lg"
                 className="w-full sm:w-auto bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white dark:text-white shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-blue-500/20"

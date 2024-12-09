@@ -1,10 +1,11 @@
 import { ColumnDef } from "@tanstack/react-table"
 import { Badge } from "@/components/ui/badge"
+import { Link } from "@tanstack/react-router";
 
-import { categories, difficulties } from "./data"
-import { DataTableColumnHeader } from "./data-table-column-header"
-import { DataTableRowActions } from "./data-table-row-actions"
-import { AlgorithmPreview } from "@/types/algorithm"
+import { categories, difficulties } from "./data";
+import { DataTableColumnHeader } from "./data-table-column-header";
+import { DataTableRowActions } from "./data-table-row-actions";
+import { AlgorithmPreview } from "@/types/algorithm";
 
 export const columns: ColumnDef<AlgorithmPreview>[] = [
   {
@@ -12,15 +13,16 @@ export const columns: ColumnDef<AlgorithmPreview>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Algorithm" />
     ),
-    cell: ({ row }) => {
-      return (
-        <div className="flex space-x-2">
-          <span className="max-w-[500px] truncate font-medium">
-            {row.getValue("title")}
-          </span>
-        </div>
-      );
-    },
+    cell: ({ row }) => (
+      <Link
+        to={`/algorithms/${row.original.id}/view`}
+        className="flex space-x-2"
+      >
+        <span className="max-w-[500px] truncate font-medium">
+          {row.getValue("title")}
+        </span>
+      </Link>
+    ),
   },
   {
     accessorKey: "difficulty",
