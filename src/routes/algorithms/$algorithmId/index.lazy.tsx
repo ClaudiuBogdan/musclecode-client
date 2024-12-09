@@ -1,4 +1,8 @@
-import { createLazyFileRoute, useParams } from "@tanstack/react-router";
+import {
+  createLazyFileRoute,
+  useParams,
+  useSearch,
+} from "@tanstack/react-router";
 import { useCallback, useEffect } from "react";
 import { CodeEditor } from "@/components/code/CodeEditor";
 import { ExecutionResult } from "@/components/code/ExecutionResult";
@@ -20,6 +24,12 @@ export const Route = createLazyFileRoute("/algorithms/$algorithmId/")({
 
 function Algorithm() {
   const { algorithmId } = useParams({ from: "/algorithms/$algorithmId/" });
+  const { tab } = useSearch({
+    from: "/algorithms/$algorithmId/",
+    select: (search: Record<string, unknown>) => ({
+      tab: (search.tab as string) || "description",
+    }),
+  });
   const { sizes, editorSizes, setSizes, setEditorSizes } = useLayoutStore();
   const {
     algorithms,
@@ -122,7 +132,7 @@ function Algorithm() {
           }}
         >
           <ResizablePanel defaultSize={sizes[0]} minSize={25}>
-            <InfoPanel algorithmId={algorithmId} />
+            <InfoPanel algorithmId={algorithmId} tab={tab} />
           </ResizablePanel>
           <ResizableHandle withHandle />
           <ResizablePanel defaultSize={sizes[1]} minSize={40}>

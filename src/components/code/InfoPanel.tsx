@@ -6,26 +6,19 @@ import { cn } from "@/lib/utils";
 import { Notes } from "../notes/Notes";
 import Submissions from "../submissions/Submissions";
 import { Chat } from "../chat/Chat";
-import { useSearch, useNavigate } from "@tanstack/react-router";
+import { useNavigate } from "@tanstack/react-router";
 
 interface InfoPanelProps {
   algorithmId: string;
+  tab: string;
 }
 
 // Valid tab values
 type TabValue = "description" | "notes" | "submissions" | "chat";
 
-export const InfoPanel: React.FC<InfoPanelProps> = ({ algorithmId }) => {
+export const InfoPanel: React.FC<InfoPanelProps> = ({ algorithmId, tab }) => {
   const { setGlobalNotes } = useCodeStore();
   const algorithm = useCodeStore((state) => state.algorithms[algorithmId]);
-
-  // Get the current tab from search params with validation
-  const { tab } = useSearch({
-    from: "/algorithms/$algorithmId/",
-    select: (search: Record<string, unknown>) => ({
-      tab: (search.tab as TabValue) || "description",
-    }),
-  });
 
   const navigate = useNavigate();
 
