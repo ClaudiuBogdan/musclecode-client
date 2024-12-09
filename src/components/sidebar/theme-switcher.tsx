@@ -8,6 +8,8 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useTheme } from "../theme/theme-provider";
+import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
+import { cn } from "@/lib/utils";
 
 type Theme = "system" | "light" | "dark";
 
@@ -20,31 +22,89 @@ export function ThemeSwitcher() {
     { value: "dark" as Theme, icon: Moon, tooltip: "Dark" },
   ];
 
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    const currentIndex = options.findIndex((opt) => opt.value === theme);
+
+    switch (e.key) {
+      case "ArrowLeft":
+      case "ArrowRight": {
+        e.preventDefault();
+        const nextIndex =
+          e.key === "ArrowLeft"
+            ? (currentIndex - 1 + options.length) % options.length
+            : (currentIndex + 1) % options.length;
+        setTheme(options[nextIndex].value);
+        break;
+      }
+      case "Enter":
+      case " ": {
+        e.preventDefault();
+        const button = e.currentTarget as HTMLButtonElement;
+        const value = button.getAttribute("data-value") as Theme;
+        if (value) setTheme(value);
+        break;
+      }
+    }
+  };
+
   return (
     <TooltipProvider>
-      <div className="flex items-center justify-between w-full">
-        <span className="text-sm font-medium">Theme</span>
-        <div className="flex space-x-1">
-          {options.map((option) => (
-            <Tooltip key={option.value} delayDuration={0}>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className={`h-6 w-6 ${theme === option.value ? "bg-muted" : ""}`}
-                  onClick={() => setTheme(option.value)}
-                >
-                  <option.icon className="h-4 w-4" />
-                  <span className="sr-only">{option.tooltip}</span>
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent side="top">
-                <p>{option.tooltip}</p>
-              </TooltipContent>
-            </Tooltip>
-          ))}
+      <DropdownMenuItem
+        className="w-full"
+        role="menuitem"
+        onKeyDown={handleKeyDown}
+      >
+        <div className="flex items-center justify-between w-full">
+          <span className="text-sm">Theme</span>
+          <div
+            className="flex space-x-0.5"
+            role="radiogroup"
+            aria-label="Theme selection"
+          >
+            {options.map((option) => (
+              <Tooltip key={option.value} delayDuration={0}>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    role="radio"
+                    aria-checked={theme === option.value}
+                    data-value={option.value}
+                    data-state={
+                      theme === option.value ? "checked" : "unchecked"
+                    }
+                    className={cn("h-8 w-8 rounded-sm", {
+                      "bg-primary": theme === option.value,
+                      "hover:bg-accent": true,
+                      "hover:text-accent-foreground": true,
+                      "focus-visible:ring-1": true,
+                      "focus-visible:ring-ring": true,
+                      "focus-visible:outline-none": true,
+                    })}
+                    onClick={() => setTheme(option.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        setTheme(option.value);
+                      }
+                    }}
+                  >
+                    <option.icon
+                      className={cn("h-4 w-4", {
+                        "text-primary-foreground": theme === option.value,
+                      })}
+                    />
+                    <span className="sr-only">{option.tooltip} theme</span>
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="top" sideOffset={10}>
+                  <p>{option.tooltip}</p>
+                </TooltipContent>
+              </Tooltip>
+            ))}
+          </div>
         </div>
-      </div>
+      </DropdownMenuItem>
     </TooltipProvider>
   );
 }

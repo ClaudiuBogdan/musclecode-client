@@ -97,9 +97,7 @@ export function NavUser({
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <div className="px-2 py-2">
-              <ThemeSwitcher />
-            </div>
+            <ThemeSwitcher />
             <DropdownMenuSeparator />
             <DropdownMenuItem>
               <LogOut className="mr-2 h-4 w-4" />
