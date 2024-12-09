@@ -9,14 +9,18 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
 import { SubmissionDetail } from "../submissions/SubmissionDetail";
 import { Submission } from "@/types/algorithm";
 import { formatDistanceToNow } from "date-fns";
+import { useCodeStore } from "@/stores/algorithm";
+import { cn } from "@/lib/utils";
 
 interface NotesProps {
-  value: string;
-  onChange: (value: string) => void;
   algorithmId: string;
+  className?: string;
 }
 
-export const Notes: FC<NotesProps> = ({ value, onChange, algorithmId }) => {
+export const Notes: FC<NotesProps> = ({ algorithmId, className }) => {
+  const { setGlobalNotes } = useCodeStore();
+  const algorithm = useCodeStore((state) => state.algorithms[algorithmId]);
+  const globalNotes = algorithm?.globalNotes ?? "";
   const [showPreview, setShowPreview] = useState(false);
   const [selectedSubmission, setSelectedSubmission] =
     useState<Submission | null>(null);
@@ -32,6 +36,14 @@ export const Notes: FC<NotesProps> = ({ value, onChange, algorithmId }) => {
   const handleTogglePreview = useCallback(() => {
     setShowPreview((prev) => !prev);
   }, []);
+
+  const handleNotesChange = useCallback(
+    (value: string) => {
+      if (!algorithmId) return;
+      setGlobalNotes(algorithmId, value);
+    },
+    [algorithmId, setGlobalNotes]
+  );
 
   const handleToolbarAction = useCallback(
     (action: string) => {
@@ -57,13 +69,13 @@ export const Notes: FC<NotesProps> = ({ value, onChange, algorithmId }) => {
           insertion = "```\ncode block\n```";
           break;
       }
-      onChange(value + insertion);
+      handleNotesChange(globalNotes + insertion);
     },
-    [value, onChange, showPreview]
+    [globalNotes, handleNotesChange, showPreview]
   );
 
   return (
-    <div className="h-full w-full flex flex-col">
+    <div className={cn("h-full w-full flex flex-col", className)}>
       <NotesToolbar
         onAction={handleToolbarAction}
         showPreview={showPreview}
@@ -72,9 +84,9 @@ export const Notes: FC<NotesProps> = ({ value, onChange, algorithmId }) => {
       <div className="flex-1 overflow-hidden grid grid-rows-2 gap-4">
         <div className="overflow-hidden p-4">
           {showPreview ? (
-            <NotesPreview value={value} />
+            <NotesPreview value={globalNotes} />
           ) : (
-            <NotesEditor value={value} onChange={onChange} />
+            <NotesEditor value={globalNotes} onChange={handleNotesChange} />
           )}
         </div>
 

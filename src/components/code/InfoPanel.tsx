@@ -1,4 +1,3 @@
-import React, { useCallback } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ProblemDescription } from "@/components/code/ProblemDescription";
 import { useCodeStore } from "@/stores/algorithm";
@@ -11,13 +10,17 @@ import { useNavigate } from "@tanstack/react-router";
 interface InfoPanelProps {
   algorithmId: string;
   tab: string;
+  className?: string;
 }
 
 // Valid tab values
 type TabValue = "description" | "notes" | "submissions" | "chat";
 
-export const InfoPanel: React.FC<InfoPanelProps> = ({ algorithmId, tab }) => {
-  const { setGlobalNotes } = useCodeStore();
+export const InfoPanel: React.FC<InfoPanelProps> = ({
+  algorithmId,
+  tab,
+  className,
+}) => {
   const algorithm = useCodeStore((state) => state.algorithms[algorithmId]);
 
   const navigate = useNavigate();
@@ -31,14 +34,6 @@ export const InfoPanel: React.FC<InfoPanelProps> = ({ algorithmId, tab }) => {
     });
   };
 
-  const handleNotesChange = useCallback(
-    (value: string) => {
-      if (!algorithmId) return;
-      setGlobalNotes(algorithmId, value);
-    },
-    [algorithmId, setGlobalNotes]
-  );
-
   const tabClassName = cn(
     "h-10 rounded-none border-0 px-4 data-[state=active]:bg-muted/50",
     "data-[state=active]:shadow-none relative",
@@ -48,7 +43,7 @@ export const InfoPanel: React.FC<InfoPanelProps> = ({ algorithmId, tab }) => {
   );
 
   return (
-    <div className="h-full flex flex-col bg-background">
+    <div className={cn("h-full flex flex-col bg-background", className)}>
       <Tabs
         value={tab}
         onValueChange={handleTabChange}
@@ -80,11 +75,7 @@ export const InfoPanel: React.FC<InfoPanelProps> = ({ algorithmId, tab }) => {
           value="notes"
           className="flex-grow m-0 overflow-auto border-none outline-none"
         >
-          <Notes
-            value={algorithm?.globalNotes ?? ""}
-            onChange={handleNotesChange}
-            algorithmId={algorithmId}
-          />
+          <Notes algorithmId={algorithmId} />
         </TabsContent>
         <TabsContent
           value="submissions"
