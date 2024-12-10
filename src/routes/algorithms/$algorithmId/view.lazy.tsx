@@ -4,9 +4,7 @@ import {
   useSearch,
 } from "@tanstack/react-router";
 import { useAlgorithmData } from "@/lib/api/algorithm";
-import { Brain, Star, GraduationCap, Code2 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { InfoPanel } from "@/components/code/InfoPanel";
 import { Notes } from "@/components/notes/Notes";
 

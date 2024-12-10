@@ -180,14 +180,6 @@ body {
   }
 }
 
-/* Add these new styles */
-.cm-editor {
-  height: 100% !important;
-  width: 100% !important;
-  position: absolute !important;
-  inset: 0 !important;
-}
-
 .cm-scroller {
   position: absolute !important;
   inset: 0 !important;

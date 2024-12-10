@@ -18,6 +18,7 @@ import { Route as rootRoute } from './routes/__root'
 
 const IndexLazyImport = createFileRoute('/')()
 const AlgorithmsIndexLazyImport = createFileRoute('/algorithms/')()
+const AlgorithmsNewLazyImport = createFileRoute('/algorithms/new')()
 const AlgorithmsAlgorithmIdIndexLazyImport = createFileRoute(
   '/algorithms/$algorithmId/',
 )()
@@ -39,6 +40,14 @@ const AlgorithmsIndexLazyRoute = AlgorithmsIndexLazyImport.update({
   getParentRoute: () => rootRoute,
 } as any).lazy(() =>
   import('./routes/algorithms/index.lazy').then((d) => d.Route),
+)
+
+const AlgorithmsNewLazyRoute = AlgorithmsNewLazyImport.update({
+  id: '/algorithms/new',
+  path: '/algorithms/new',
+  getParentRoute: () => rootRoute,
+} as any).lazy(() =>
+  import('./routes/algorithms/new.lazy').then((d) => d.Route),
 )
 
 const AlgorithmsAlgorithmIdIndexLazyRoute =
@@ -70,6 +79,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexLazyImport
       parentRoute: typeof rootRoute
     }
+    '/algorithms/new': {
+      id: '/algorithms/new'
+      path: '/algorithms/new'
+      fullPath: '/algorithms/new'
+      preLoaderRoute: typeof AlgorithmsNewLazyImport
+      parentRoute: typeof rootRoute
+    }
     '/algorithms/': {
       id: '/algorithms/'
       path: '/algorithms'
@@ -98,6 +114,7 @@ declare module '@tanstack/react-router' {
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexLazyRoute
+  '/algorithms/new': typeof AlgorithmsNewLazyRoute
   '/algorithms': typeof AlgorithmsIndexLazyRoute
   '/algorithms/$algorithmId/view': typeof AlgorithmsAlgorithmIdViewLazyRoute
   '/algorithms/$algorithmId': typeof AlgorithmsAlgorithmIdIndexLazyRoute
@@ -105,6 +122,7 @@ export interface FileRoutesByFullPath {
 
 export interface FileRoutesByTo {
   '/': typeof IndexLazyRoute
+  '/algorithms/new': typeof AlgorithmsNewLazyRoute
   '/algorithms': typeof AlgorithmsIndexLazyRoute
   '/algorithms/$algorithmId/view': typeof AlgorithmsAlgorithmIdViewLazyRoute
   '/algorithms/$algorithmId': typeof AlgorithmsAlgorithmIdIndexLazyRoute
@@ -113,6 +131,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexLazyRoute
+  '/algorithms/new': typeof AlgorithmsNewLazyRoute
   '/algorithms/': typeof AlgorithmsIndexLazyRoute
   '/algorithms/$algorithmId/view': typeof AlgorithmsAlgorithmIdViewLazyRoute
   '/algorithms/$algorithmId/': typeof AlgorithmsAlgorithmIdIndexLazyRoute
@@ -122,18 +141,21 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/algorithms/new'
     | '/algorithms'
     | '/algorithms/$algorithmId/view'
     | '/algorithms/$algorithmId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/algorithms/new'
     | '/algorithms'
     | '/algorithms/$algorithmId/view'
     | '/algorithms/$algorithmId'
   id:
     | '__root__'
     | '/'
+    | '/algorithms/new'
     | '/algorithms/'
     | '/algorithms/$algorithmId/view'
     | '/algorithms/$algorithmId/'
@@ -142,6 +164,7 @@ export interface FileRouteTypes {
 
 export interface RootRouteChildren {
   IndexLazyRoute: typeof IndexLazyRoute
+  AlgorithmsNewLazyRoute: typeof AlgorithmsNewLazyRoute
   AlgorithmsIndexLazyRoute: typeof AlgorithmsIndexLazyRoute
   AlgorithmsAlgorithmIdViewLazyRoute: typeof AlgorithmsAlgorithmIdViewLazyRoute
   AlgorithmsAlgorithmIdIndexLazyRoute: typeof AlgorithmsAlgorithmIdIndexLazyRoute
@@ -149,6 +172,7 @@ export interface RootRouteChildren {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexLazyRoute: IndexLazyRoute,
+  AlgorithmsNewLazyRoute: AlgorithmsNewLazyRoute,
   AlgorithmsIndexLazyRoute: AlgorithmsIndexLazyRoute,
   AlgorithmsAlgorithmIdViewLazyRoute: AlgorithmsAlgorithmIdViewLazyRoute,
   AlgorithmsAlgorithmIdIndexLazyRoute: AlgorithmsAlgorithmIdIndexLazyRoute,
@@ -165,6 +189,7 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/",
+        "/algorithms/new",
         "/algorithms/",
         "/algorithms/$algorithmId/view",
         "/algorithms/$algorithmId/"
@@ -172,6 +197,9 @@ export const routeTree = rootRoute
     },
     "/": {
       "filePath": "index.lazy.tsx"
+    },
+    "/algorithms/new": {
+      "filePath": "algorithms/new.lazy.tsx"
     },
     "/algorithms/": {
       "filePath": "algorithms/index.lazy.tsx"
