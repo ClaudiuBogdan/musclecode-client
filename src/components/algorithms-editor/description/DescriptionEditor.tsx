@@ -20,13 +20,18 @@ import { cn } from "@/lib/utils";
 
 interface DescriptionEditorProps {
   isPreview?: boolean;
+  value: string;
+  onChange: (content: string) => void;
+  hasError?: boolean;
 }
 
 export const DescriptionEditor = ({
   isPreview: defaultIsPreview,
+  value,
+  onChange,
+  hasError,
 }: DescriptionEditorProps) => {
   const { theme } = useTheme();
-  const [value, setValue] = useState("");
   const [isPreview, setIsPreview] = useState(defaultIsPreview);
 
   const handleToolbarAction = (action: string) => {
@@ -59,8 +64,7 @@ export const DescriptionEditor = ({
         break;
     }
 
-    const newValue = value + insertion;
-    setValue(newValue);
+    onChange(value + insertion);
   };
 
   return (
@@ -159,7 +163,10 @@ export const DescriptionEditor = ({
           <CodeMirror
             value={value}
             height="100%"
-            className="h-full relative overflow-auto border rounded-md"
+            className={cn(
+              "h-full overflow-auto rounded-md",
+              hasError ? "border-2 border-destructive" : "border"
+            )}
             theme={theme === "light" ? "light" : "dark"}
             extensions={[
               markdown({
@@ -168,7 +175,7 @@ export const DescriptionEditor = ({
               }),
               EditorView.lineWrapping,
             ]}
-            onChange={setValue}
+            onChange={onChange}
             basicSetup={{
               lineNumbers: false,
               foldGutter: false,

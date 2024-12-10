@@ -1,7 +1,7 @@
 import { CodeEditor } from "@/components/code/CodeEditor";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Plus, Trash2, FileCode, TestTube2 } from "lucide-react";
+import { FileCode, TestTube2, Plus, Trash2 } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -27,52 +27,24 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { useNewAlgorithmStore } from "@/stores/newAlgorithm";
+import { NewAlgorithmLanguageFiles } from "@/types/newAlgorithm";
+import { CodeLanguage } from "@/stores/algorithm";
 
-interface CodeEditorProps {
+interface FilesEditorProps {
   isPreview?: boolean;
-}
-
-interface LanguageFiles {
-  id: string;
-  language: string;
-  solutionFile: {
-    content: string;
-  };
-  testFile: {
-    content: string;
-  };
+  languages: NewAlgorithmLanguageFiles[];
 }
 
 const SUPPORTED_LANGUAGES = [
-  {
-    value: "python",
-    label: "Python",
-    solution: "solution.py",
-    test: "test.py",
-  },
-  {
-    value: "javascript",
-    label: "JavaScript",
-    solution: "solution.js",
-    test: "test.js",
-  },
-  {
-    value: "typescript",
-    label: "TypeScript",
-    solution: "solution.ts",
-    test: "test.ts",
-  },
-  {
-    value: "java",
-    label: "Java",
-    solution: "Solution.java",
-    test: "Test.java",
-  },
-  { value: "cpp", label: "C++", solution: "solution.cpp", test: "test.cpp" },
-];
+  { value: "python", label: "Python" },
+  { value: "javascript", label: "JavaScript" },
+  { value: "typescript", label: "TypeScript" },
+  { value: "java", label: "Java" },
+  { value: "cpp", label: "C++" },
+] as const;
 
-export const FilesEditor = ({ isPreview }: CodeEditorProps) => {
-  const [languages, setLanguages] = useState<LanguageFiles[]>([]);
+export const FilesEditor = ({ isPreview, languages }: FilesEditorProps) => {
   const [selectedLanguageId, setSelectedLanguageId] = useState<string | null>(
     null
   );
@@ -80,8 +52,11 @@ export const FilesEditor = ({ isPreview }: CodeEditorProps) => {
     null
   );
   const [showAddLanguage, setShowAddLanguage] = useState(false);
-  const [newLanguage, setNewLanguage] = useState(SUPPORTED_LANGUAGES[0].value);
+  const [newLanguage, setNewLanguage] = useState<CodeLanguage>("python");
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+
+  const { addLanguage, removeLanguage, updateSolutionFile, updateTestFile } =
+    useNewAlgorithmStore();
 
   const selectedLanguage = languages.find((l) => l.id === selectedLanguageId);
   const availableLanguages = SUPPORTED_LANGUAGES.filter(
@@ -89,31 +64,14 @@ export const FilesEditor = ({ isPreview }: CodeEditorProps) => {
   );
 
   const handleAddLanguage = () => {
-    const langConfig = SUPPORTED_LANGUAGES.find((l) => l.value === newLanguage);
-    if (!langConfig) return;
-
-    const newLang: LanguageFiles = {
-      id: crypto.randomUUID(),
-      language: newLanguage,
-      solutionFile: {
-        content: "",
-      },
-      testFile: {
-        content: "",
-      },
-    };
-
-    setLanguages((prev) => [...prev, newLang]);
-    setSelectedLanguageId(newLang.id);
-    setActiveFile("solution");
+    addLanguage(newLanguage);
     setShowAddLanguage(false);
-    setNewLanguage(SUPPORTED_LANGUAGES[0].value);
+    setNewLanguage("python");
   };
 
   const handleDeleteLanguage = () => {
     if (!selectedLanguageId) return;
-
-    setLanguages((prev) => prev.filter((l) => l.id !== selectedLanguageId));
+    removeLanguage(selectedLanguageId);
     setSelectedLanguageId(languages[0]?.id ?? null);
     setActiveFile(null);
     setShowDeleteConfirm(false);
@@ -122,17 +80,11 @@ export const FilesEditor = ({ isPreview }: CodeEditorProps) => {
   const handleFileContentChange = (content: string) => {
     if (!selectedLanguageId || !activeFile) return;
 
-    setLanguages((prev) =>
-      prev.map((lang) => {
-        if (lang.id !== selectedLanguageId) return lang;
-        return {
-          ...lang,
-          [activeFile === "solution" ? "solutionFile" : "testFile"]: {
-            content,
-          },
-        };
-      })
-    );
+    if (activeFile === "solution") {
+      updateSolutionFile(selectedLanguageId, content);
+    } else {
+      updateTestFile(selectedLanguageId, content);
+    }
   };
 
   if (isPreview) {
@@ -144,14 +96,6 @@ export const FilesEditor = ({ isPreview }: CodeEditorProps) => {
     return activeFile === "solution"
       ? selectedLanguage.solutionFile.content
       : selectedLanguage.testFile.content;
-  };
-
-  const getFileName = () => {
-    if (!selectedLanguage || !activeFile) return "";
-    const langConfig = SUPPORTED_LANGUAGES.find(
-      (l) => l.value === selectedLanguage.language
-    );
-    return activeFile === "solution" ? langConfig?.solution : langConfig?.test;
   };
 
   return (
@@ -189,7 +133,7 @@ export const FilesEditor = ({ isPreview }: CodeEditorProps) => {
                 return (
                   <div
                     key={lang.id}
-                    className={`p-3 rounded-lg border ${
+                    className={`p-3 rounded-lg ${
                       selectedLanguageId === lang.id
                         ? "bg-secondary"
                         : "hover:bg-secondary/50"
@@ -216,7 +160,7 @@ export const FilesEditor = ({ isPreview }: CodeEditorProps) => {
                         className={`w-full justify-start text-xs ${
                           selectedLanguageId === lang.id &&
                           activeFile === "solution"
-                            ? "bg-primary/10 text-primary hover:!bg-primary/10"
+                            ? "bg-primary/10 text-primary"
                             : ""
                         }`}
                         onClick={() => {
@@ -225,7 +169,7 @@ export const FilesEditor = ({ isPreview }: CodeEditorProps) => {
                         }}
                       >
                         <FileCode className="h-3 w-3 mr-2" />
-                        {langConfig?.solution}
+                        solution.{getFileExtension(lang.language)}
                       </Button>
                       <Button
                         variant="ghost"
@@ -233,7 +177,7 @@ export const FilesEditor = ({ isPreview }: CodeEditorProps) => {
                         className={`w-full justify-start text-xs ${
                           selectedLanguageId === lang.id &&
                           activeFile === "test"
-                            ? "bg-primary/10 text-primary hover:!bg-primary/10"
+                            ? "bg-primary/10 text-primary"
                             : ""
                         }`}
                         onClick={() => {
@@ -242,7 +186,7 @@ export const FilesEditor = ({ isPreview }: CodeEditorProps) => {
                         }}
                       >
                         <TestTube2 className="h-3 w-3 mr-2" />
-                        {langConfig?.test}
+                        test.{getFileExtension(lang.language)}
                       </Button>
                     </div>
                   </div>
@@ -279,7 +223,10 @@ export const FilesEditor = ({ isPreview }: CodeEditorProps) => {
               Select a language to add solution and test files.
             </DialogDescription>
           </DialogHeader>
-          <Select value={newLanguage} onValueChange={setNewLanguage}>
+          <Select
+            value={newLanguage}
+            onValueChange={(value: CodeLanguage) => setNewLanguage(value)}
+          >
             <SelectTrigger>
               <SelectValue />
             </SelectTrigger>
@@ -321,3 +268,20 @@ export const FilesEditor = ({ isPreview }: CodeEditorProps) => {
     </div>
   );
 };
+
+function getFileExtension(language: string): string {
+  switch (language) {
+    case "typescript":
+      return "ts";
+    case "javascript":
+      return "js";
+    case "python":
+      return "py";
+    case "java":
+      return "java";
+    case "cpp":
+      return "cpp";
+    default:
+      return "txt";
+  }
+}
