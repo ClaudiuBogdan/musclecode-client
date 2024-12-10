@@ -1,6 +1,8 @@
 import { http, HttpResponse } from "msw";
-import { seedAlgorithms } from "./seed";
+import { useMockAlgorithmsStore } from "../../store/algorithms";
 
 export const all = http.get("/api/algorithms", () => {
-  return HttpResponse.json(seedAlgorithms());
+  const store = useMockAlgorithmsStore.getState();
+  const algorithms = store.getAllAlgorithms();
+  return HttpResponse.json(algorithms);
 });

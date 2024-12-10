@@ -10,7 +10,6 @@ import { useNewAlgorithmStore } from "@/stores/newAlgorithm";
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { Loader2, RotateCcw, AlertCircle } from "lucide-react";
-import { toast } from "sonner";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -23,6 +22,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useAlgorithmValidation } from "@/hooks/useAlgorithmValidation";
 import { cn } from "@/lib/utils";
+import { showToast } from "@/utils/toast";
 
 export const Route = createLazyFileRoute("/algorithms/new")({
   component: RouteComponent,
@@ -49,7 +49,7 @@ function RouteComponent() {
   // Show error toast when error occurs
   useEffect(() => {
     if (error) {
-      toast.error(error);
+      showToast.error(error);
     }
   }, [error]);
 
@@ -61,7 +61,7 @@ function RouteComponent() {
         // Show all errors in the current tab
         const errors = validation.getErrorsForTab(validation.firstErrorTab);
         errors.forEach((error) => {
-          toast.error(error.message);
+          showToast.error(error.message);
         });
       }
       return;
@@ -69,10 +69,13 @@ function RouteComponent() {
 
     try {
       await saveAlgorithm();
-      toast.success("Algorithm saved successfully");
+      showToast.success("Algorithm created successfully!");
       navigate({ to: "/algorithms" });
-    } catch {
-      // Error is handled by the store
+    } catch (error) {
+      // Error is already handled by the store and shown in toast
+      const errorMessage =
+        error instanceof Error ? error.message : "Failed to save algorithm";
+      showToast.error(errorMessage);
     }
   }, [validation, saveAlgorithm, navigate, setActiveTab]);
 
@@ -90,7 +93,7 @@ function RouteComponent() {
   const handleReset = useCallback(() => {
     resetState();
     setShowResetDialog(false);
-    toast.success("Algorithm state reset successfully");
+    showToast.success("Algorithm state reset successfully");
   }, [resetState]);
 
   const hasContent = Boolean(
@@ -303,10 +306,6 @@ function RouteComponent() {
                 <FilesEditor
                   isPreview={false}
                   languages={algorithm.languages}
-                  validationErrors={validation.errors.filter(
-                    (error) =>
-                      error.tab === "solutions" && error.field !== "languages"
-                  )}
                 />
               </div>
             </Card>

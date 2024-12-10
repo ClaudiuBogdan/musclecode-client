@@ -1,5 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { Algorithm, AlgorithmPreview } from "@/types/algorithm";
+import { CreateAlgorithmPayload } from "@/types/newAlgorithm";
+import { apiClient } from "./client";
 
 export const algorithmKeys = {
   all: ["algorithms"] as const,
@@ -32,3 +34,9 @@ export function useAlgorithms() {
     },
   });
 }
+
+export async function createAlgorithm(payload: CreateAlgorithmPayload) {
+  const { data } = await apiClient.post<Algorithm>("/api/algorithms", payload);
+  return data;
+}
+

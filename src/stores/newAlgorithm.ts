@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
 import { persist, createJSONStorage } from "zustand/middleware";
-import { createAlgorithm } from "@/lib/mocks/api/algorithms/createAlgorithm";
+import { createAlgorithm } from "@/lib//api/algorithm";
 import {
   NewAlgorithm,
   NewAlgorithmLanguageFiles,
@@ -249,8 +249,10 @@ export const useNewAlgorithmStore = create<
           };
 
           await createAlgorithm(payload);
+
+          // Reset state after successful save
           get().resetState();
-        } catch (error: unknown) {
+        } catch (error) {
           const errorMessage =
             error instanceof Error ? error.message : "Failed to save algorithm";
           set((state) => {

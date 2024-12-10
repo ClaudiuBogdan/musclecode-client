@@ -6,8 +6,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 export function AlgorithmsTable() {
   const { data: algorithms, isLoading, error } = useAlgorithms();
 
-  console.log({algorithms});
-
   return (
     <Card className="w-full max-w-4xl mx-auto">
       <CardHeader>
