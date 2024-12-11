@@ -6,7 +6,7 @@ import {
 import { useCallback, useEffect } from "react";
 import { CodeEditor } from "@/components/code/CodeEditor";
 import { ExecutionResult } from "@/components/code/ExecutionResult";
-import { useCodeStore, CodeLanguage } from "@/stores/algorithm";
+import { useCodeStore } from "@/stores/algorithm";
 import { useLayoutStore } from "@/stores/layout";
 import { InfoPanel } from "@/components/code/InfoPanel";
 import { TopBar } from "@/components/code/layout/TopBar";
@@ -17,6 +17,7 @@ import {
   ResizablePanel,
   ResizableHandle,
 } from "@/components/ui/resizable";
+import { CodeLanguage } from "@/types/algorithm";
 
 export const Route = createLazyFileRoute("/algorithms/$algorithmId/")({
   component: Algorithm,

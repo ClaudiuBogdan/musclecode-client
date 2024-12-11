@@ -1,9 +1,13 @@
+export type AlgorithmFileType = "solution" | "test";
+
 export interface AlgorithmFile {
+  id: string;
   name: string;
+  type: AlgorithmFileType;
   content: string;
-  isMain: boolean;
-  language: string;
+  language: CodeLanguage;
   readOnly?: boolean;
+  required?: boolean;
 }
 
 export type CodeLanguage =
@@ -12,7 +16,6 @@ export type CodeLanguage =
   | "python"
   | "java"
   | "cpp";
-
 
 export type Difficulty = "again" | "hard" | "good" | "easy";
 
@@ -23,9 +26,9 @@ export interface Algorithm {
   summary: string;
   description: string;
   difficulty: "easy" | "medium" | "hard";
+  tags: string[];
   notes: string;
-  files: Record<string, AlgorithmFile[]>; // keyed by language
-  // Daily challenge
+  files: AlgorithmFile[];
   completed: boolean;
 }
 

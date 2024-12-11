@@ -1,4 +1,4 @@
-import { CodeLanguage, useCodeStore } from '@/stores/algorithm';
+import { useCodeStore } from "@/stores/algorithm";
 import { Code2, Check } from "lucide-react";
 import {
   DropdownMenu,
@@ -7,6 +7,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
+import { CodeLanguage } from "@/types/algorithm";
 
 interface LanguageSelectorProps {
   algorithmId: string;

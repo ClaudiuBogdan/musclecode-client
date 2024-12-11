@@ -27,12 +27,12 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { NewAlgorithmLanguageFiles } from "@/types/newAlgorithm";
-import { CodeLanguage } from "@/types/algorithm";
+import { AlgorithmFile, CodeLanguage } from "@/types/algorithm";
+import { cn } from "@/lib/utils";
 
 interface FilesEditorProps {
   isPreview?: boolean;
-  languages: NewAlgorithmLanguageFiles[];
+  files: AlgorithmFile[];
   onLanguageAdd: (language: CodeLanguage) => void;
   onLanguageRemove: (languageId: string) => void;
   onSolutionFileChange: (languageId: string, content: string) => void;
@@ -49,25 +49,29 @@ const SUPPORTED_LANGUAGES = [
 
 export const FilesEditor = ({
   isPreview,
-  languages,
+  files,
   onLanguageAdd,
   onLanguageRemove,
   onSolutionFileChange,
   onTestFileChange,
 }: FilesEditorProps) => {
-  const [selectedLanguageId, setSelectedLanguageId] = useState<string | null>(
-    null
-  );
-  const [activeFile, setActiveFile] = useState<"solution" | "test" | null>(
-    null
-  );
+  const [activeFile, setActiveFile] = useState<AlgorithmFile | null>(null);
+  const [activeDeleteLanguage, setActiveDeleteLanguage] =
+    useState<CodeLanguage | null>(null);
   const [showAddLanguage, setShowAddLanguage] = useState(false);
   const [newLanguage, setNewLanguage] = useState<CodeLanguage>("python");
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
-  const selectedLanguage = languages.find((l) => l.id === selectedLanguageId);
   const availableLanguages = SUPPORTED_LANGUAGES.filter(
-    (lang) => !languages.find((l) => l.language === lang.value)
+    (lang) => !files.find((l) => l.language === lang.value)
+  );
+
+  const languages = files.reduce(
+    (acc, file) => {
+      acc[file.language] = [...(acc[file.language] || []), file];
+      return acc;
+    },
+    {} as Record<CodeLanguage, AlgorithmFile[]>
   );
 
   const handleAddLanguage = () => {
@@ -77,20 +81,22 @@ export const FilesEditor = ({
   };
 
   const handleDeleteLanguage = () => {
-    if (!selectedLanguageId) return;
-    onLanguageRemove(selectedLanguageId);
-    setSelectedLanguageId(languages[0]?.id ?? null);
-    setActiveFile(null);
+    if (!activeDeleteLanguage) return;
+
+    onLanguageRemove(activeDeleteLanguage);
+    setActiveFile(files[0] || null);
+    setActiveDeleteLanguage(null);
     setShowDeleteConfirm(false);
   };
 
   const handleFileContentChange = (content: string) => {
-    if (!selectedLanguageId || !activeFile) return;
-
-    if (activeFile === "solution") {
-      onSolutionFileChange(selectedLanguageId, content);
+    if (!activeFile) return;
+    if (activeFile.type === "solution") {
+      onSolutionFileChange(activeFile.language, content);
+    } else if (activeFile.type === "test") {
+      onTestFileChange(activeFile.language, content);
     } else {
-      onTestFileChange(selectedLanguageId, content);
+      throw new Error("Invalid file type");
     }
   };
 
@@ -98,18 +104,11 @@ export const FilesEditor = ({
     return <div>Preview</div>;
   }
 
-  const getFileContent = () => {
-    if (!selectedLanguage || !activeFile) return "";
-    return activeFile === "solution"
-      ? selectedLanguage.solutionFile.content
-      : selectedLanguage.testFile.content;
-  };
-
   return (
     <div className="flex gap-4 h-full p-4">
       {/* Language Management Sidebar */}
       <div className="w-64 flex flex-col gap-4">
-        {languages.length === 0 ? (
+        {files.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full gap-4 text-center">
             <div className="text-muted-foreground">No languages added yet</div>
             <Button onClick={() => setShowAddLanguage(true)}>
@@ -133,15 +132,15 @@ export const FilesEditor = ({
             </div>
 
             <div className="space-y-2">
-              {languages.map((lang) => {
+              {Object.entries(languages).map(([language, files]) => {
                 const langConfig = SUPPORTED_LANGUAGES.find(
-                  (l) => l.value === lang.language
+                  (l) => l.value === language
                 );
                 return (
                   <div
-                    key={lang.id}
+                    key={language}
                     className={`p-3 rounded-lg ${
-                      selectedLanguageId === lang.id
+                      activeFile?.language === language
                         ? "bg-secondary"
                         : "hover:bg-secondary/50"
                     }`}
@@ -153,7 +152,7 @@ export const FilesEditor = ({
                         size="icon"
                         className="h-6 w-6"
                         onClick={() => {
-                          setSelectedLanguageId(lang.id);
+                          setActiveDeleteLanguage(language as CodeLanguage);
                           setShowDeleteConfirm(true);
                         }}
                       >
@@ -161,40 +160,28 @@ export const FilesEditor = ({
                       </Button>
                     </div>
                     <div className="space-y-1">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className={`w-full justify-start text-xs ${
-                          selectedLanguageId === lang.id &&
-                          activeFile === "solution"
-                            ? "bg-primary/10 text-primary"
-                            : ""
-                        }`}
-                        onClick={() => {
-                          setSelectedLanguageId(lang.id);
-                          setActiveFile("solution");
-                        }}
-                      >
-                        <FileCode className="h-3 w-3 mr-2" />
-                        solution.{getFileExtension(lang.language)}
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className={`w-full justify-start text-xs ${
-                          selectedLanguageId === lang.id &&
-                          activeFile === "test"
-                            ? "bg-primary/10 text-primary"
-                            : ""
-                        }`}
-                        onClick={() => {
-                          setSelectedLanguageId(lang.id);
-                          setActiveFile("test");
-                        }}
-                      >
-                        <TestTube2 className="h-3 w-3 mr-2" />
-                        test.{getFileExtension(lang.language)}
-                      </Button>
+                      {files.map((file) => (
+                        <Button
+                          key={file.id}
+                          variant="ghost"
+                          size="sm"
+                          className={cn(
+                            "w-full justify-start text-xs hover:bg-secondary/50",
+                            activeFile?.id === file.id &&
+                              "bg-primary/20 hover:bg-primary/50"
+                          )}
+                          onClick={() => {
+                            setActiveFile(file);
+                          }}
+                        >
+                          {file.type === "solution" ? (
+                            <FileCode className="h-3 w-3 mr-2" />
+                          ) : (
+                            <TestTube2 className="h-3 w-3 mr-2" />
+                          )}
+                          {file.name}
+                        </Button>
+                      ))}
                     </div>
                   </div>
                 );
@@ -206,15 +193,15 @@ export const FilesEditor = ({
 
       {/* Code Editor */}
       <div className="flex-1 h-full">
-        {selectedLanguage && activeFile ? (
+        {activeFile ? (
           <CodeEditor
-            initialValue={getFileContent()}
-            lang={selectedLanguage.language}
+            initialValue={activeFile.content}
+            lang={activeFile.language}
             onChange={handleFileContentChange}
           />
         ) : (
           <div className="h-full flex items-center justify-center text-muted-foreground">
-            {languages.length === 0
+            {files.length === 0
               ? "Add a language to start coding"
               : "Select a file to start coding"}
           </div>
@@ -275,20 +262,3 @@ export const FilesEditor = ({
     </div>
   );
 };
-
-function getFileExtension(language: string): string {
-  switch (language) {
-    case "typescript":
-      return "ts";
-    case "javascript":
-      return "js";
-    case "python":
-      return "py";
-    case "java":
-      return "java";
-    case "cpp":
-      return "cpp";
-    default:
-      return "txt";
-  }
-}

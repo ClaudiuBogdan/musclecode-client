@@ -1,6 +1,6 @@
 import { http, HttpResponse } from "msw";
 import { useMockAlgorithmsStore } from "../../store/algorithms";
-import { Algorithm, AlgorithmFile } from "@/types/algorithm";
+import { Algorithm } from "@/types/algorithm";
 import { CreateAlgorithmPayload } from "@/types/newAlgorithm";
 
 export const byId = [
@@ -26,31 +26,12 @@ export const byId = [
       return new HttpResponse(null, { status: 404 });
     }
 
-    // Convert the payload languages to the correct files structure
-    const files: Record<string, AlgorithmFile[]> = {};
-    Object.entries(payload.languages).forEach(([language, content]) => {
-      files[language] = [
-        {
-          name: "solution",
-          content: content.solution,
-          isMain: true,
-          language,
-        },
-        {
-          name: "test",
-          content: content.test,
-          isMain: false,
-          language,
-        },
-      ];
-    });
-
     const updatedAlgorithm: Algorithm = {
       ...existingAlgorithm,
       title: payload.title,
       difficulty: payload.difficulty,
       description: payload.description,
-      files,
+      files: payload.files,
     };
 
     store.updateAlgorithm(updatedAlgorithm);

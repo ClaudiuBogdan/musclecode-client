@@ -47,35 +47,14 @@ export async function createAlgorithm(
   const algorithm: Algorithm = {
     id: uuidv4(),
     title: payload.title,
+    description: payload.description,
     category: "custom",
     summary: "",
-    description: payload.description,
+    tags: [],
     difficulty: payload.difficulty,
     notes: "",
     completed: false,
-    files: Object.entries(payload.languages).reduce(
-      (acc, [language, files]) => {
-        if (!files) return acc;
-
-        acc[language] = [
-          {
-            name: "solution." + getFileExtension(language),
-            content: files.solution,
-            isMain: true,
-            language,
-          },
-          {
-            name: "test." + getFileExtension(language),
-            content: files.test,
-            isMain: false,
-            language,
-            readOnly: true,
-          },
-        ];
-        return acc;
-      },
-      {} as Algorithm["files"]
-    ),
+    files: payload.files,
   };
 
   try {
@@ -92,23 +71,6 @@ export async function createAlgorithm(
   } catch (error) {
     console.error("Error creating algorithm:", error);
     throw new Error("Failed to create algorithm");
-  }
-}
-
-function getFileExtension(language: string): string {
-  switch (language) {
-    case "typescript":
-      return "ts";
-    case "javascript":
-      return "js";
-    case "python":
-      return "py";
-    case "java":
-      return "java";
-    case "cpp":
-      return "cpp";
-    default:
-      return "txt";
   }
 }
 

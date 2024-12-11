@@ -39,7 +39,7 @@ export function useAlgorithmValidation(algorithm: NewAlgorithm) {
     }
 
     // Description tab validation
-    if (!algorithm.description.content.trim()) {
+    if (!algorithm.description.trim()) {
       validationErrors.push({
         tab: "description",
         field: "content",
@@ -47,7 +47,7 @@ export function useAlgorithmValidation(algorithm: NewAlgorithm) {
       });
     }
 
-    if (algorithm.description.content.length > 10000) {
+    if (algorithm.description.length > 10000) {
       validationErrors.push({
         tab: "description",
         field: "content",
@@ -56,7 +56,7 @@ export function useAlgorithmValidation(algorithm: NewAlgorithm) {
     }
 
     // Solutions tab validation
-    if (algorithm.languages.length === 0) {
+    if (algorithm.files.length === 0) {
       validationErrors.push({
         tab: "solutions",
         field: "languages",
@@ -64,19 +64,20 @@ export function useAlgorithmValidation(algorithm: NewAlgorithm) {
       });
     }
 
-    algorithm.languages.forEach((lang) => {
-      if (lang.solutionFile.content.length > 50000) {
+    algorithm.files.forEach((file) => {
+      if (file.type === "solution" && file.content.length > 50000) {
         validationErrors.push({
           tab: "solutions",
-          field: `${lang.language}-solution`,
-          message: `Solution code for ${lang.language} must be less than 50,000 characters`,
+          field: `${file.language}-solution`,
+          message: `Solution code for ${file.language} must be less than 50,000 characters`,
         });
       }
-      if (lang.testFile.content.length > 50000) {
+
+      if (file.type === "test" && file.content.length > 50000) {
         validationErrors.push({
           tab: "solutions",
-          field: `${lang.language}-test`,
-          message: `Test code for ${lang.language} must be less than 50,000 characters`,
+          field: `${file.language}-test`,
+          message: `Test code for ${file.language} must be less than 50,000 characters`,
         });
       }
     });

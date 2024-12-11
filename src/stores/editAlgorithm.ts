@@ -28,11 +28,11 @@ const initialState: EditAlgorithmState = {
       title: "",
       difficulty: "easy",
       tags: [],
+      category: "",
+      summary: "",
     },
-    description: {
-      content: "",
-    },
-    languages: [],
+    description: "",
+    files: [],
   },
 };
 
@@ -73,19 +73,12 @@ export const useEditAlgorithmStore = create<
           const { algorithm } = get();
           const payload: CreateAlgorithmPayload = {
             title: algorithm.metadata.title.trim(),
+            category: algorithm.metadata.category,
+            summary: algorithm.metadata.summary,
             difficulty: algorithm.metadata.difficulty,
             tags: algorithm.metadata.tags,
-            description: algorithm.description.content.trim(),
-            languages: algorithm.languages.reduce(
-              (acc, lang) => {
-                acc[lang.language] = {
-                  solution: lang.solutionFile.content,
-                  test: lang.testFile.content,
-                };
-                return acc;
-              },
-              {} as CreateAlgorithmPayload["languages"]
-            ),
+            description: algorithm.description.trim(),
+            files: algorithm.files,
           };
 
           await updateAlgorithm(algorithmId, payload);

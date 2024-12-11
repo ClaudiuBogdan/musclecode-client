@@ -9,8 +9,6 @@ import { useEditAlgorithmStore } from "@/stores/editAlgorithm";
 import { useEffect, useCallback } from "react";
 import { useAlgorithmValidation } from "@/hooks/useAlgorithmValidation";
 import { showToast } from "@/utils/toast";
-import { v4 as uuidv4 } from "uuid";
-import { CodeLanguage } from "@/types/algorithm";
 
 export const Route = createLazyFileRoute("/algorithms/$algorithmId/edit")({
   component: EditAlgorithm,
@@ -36,6 +34,7 @@ export default function EditAlgorithm() {
     setTags,
     setDescription,
     addLanguage,
+    addFiles: addFile,
     removeLanguage,
     updateSolutionFile,
     updateTestFile,
@@ -49,8 +48,8 @@ export default function EditAlgorithm() {
   const validation = useAlgorithmValidation(algorithm);
 
   useEffect(() => {
-    console.log("existingAlgorithm", existingAlgorithm);
     if (existingAlgorithm) {
+      // TODO: this code needs refactoring. The logic is too complicated and error prone.
       // Set algorithm ID
       setAlgorithmId(algorithmId);
 
@@ -61,18 +60,7 @@ export default function EditAlgorithm() {
       // Set description
       setDescription(existingAlgorithm.description);
 
-      // Set languages
-      Object.entries(existingAlgorithm.files).forEach(([language, files]) => {
-        const mainFile = files.find((f) => f.isMain);
-        const testFile = files.find((f) => !f.isMain);
-
-        if (mainFile && testFile) {
-          const languageId = uuidv4();
-          addLanguage(language as CodeLanguage);
-          updateSolutionFile(languageId, mainFile.content);
-          updateTestFile(languageId, testFile.content);
-        }
-      });
+      addFile(existingAlgorithm.files);
     }
   }, [
     existingAlgorithm,
@@ -85,6 +73,8 @@ export default function EditAlgorithm() {
     addLanguage,
     updateSolutionFile,
     updateTestFile,
+    addFile,
+    resetState,
   ]);
 
   const handleSave = useCallback(async () => {

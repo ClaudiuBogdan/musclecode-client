@@ -134,8 +134,8 @@ export function AlgorithmForm({
   const hasContent = Boolean(
     algorithm.metadata.title ||
       algorithm.metadata.tags.length > 0 ||
-      algorithm.description.content ||
-      algorithm.languages.length > 0
+      algorithm.description ||
+      algorithm.files.length > 0
   );
 
   return (
@@ -313,7 +313,7 @@ export function AlgorithmForm({
                 </div>
                 <DescriptionEditor
                   isPreview={false}
-                  value={algorithm.description.content}
+                  value={algorithm.description}
                   onChange={onDescriptionChange}
                   hasError={validation.getErrorsForField("content").length > 0}
                 />
@@ -340,7 +340,7 @@ export function AlgorithmForm({
                 </div>
                 <FilesEditor
                   isPreview={false}
-                  languages={algorithm.languages}
+                  files={algorithm.files}
                   onLanguageAdd={onLanguageAdd}
                   onLanguageRemove={onLanguageRemove}
                   onSolutionFileChange={onSolutionFileChange}

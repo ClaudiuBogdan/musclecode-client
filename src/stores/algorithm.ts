@@ -382,14 +382,13 @@ export const useCodeStore = create<CodeStoreState & CodeStoreActions>()(
           const codeState: StoredCode = {} as StoredCode;
 
           // Initialize code state from API response
-          Object.entries(algorithm.files).forEach(
-            ([language, languageFiles]) => {
-              codeState[language as CodeLanguage] = {};
-              languageFiles.forEach((file) => {
-                codeState[language as CodeLanguage]![file.name] = file.content;
-              });
-            }
-          );
+          algorithm.files.forEach((file) => {
+            const language = file.language as CodeLanguage;
+            const fileName = file.name;
+            const fileContent = file.content;
+            codeState[language] = codeState[language] || {};
+            codeState[language][fileName] = fileContent;
+          });
 
           const languages = Object.keys(codeState) as CodeLanguage[];
           const firstLanguage = languages[0];

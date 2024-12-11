@@ -1,30 +1,17 @@
-import { CodeLanguage } from "./algorithm";
+import { AlgorithmFile } from "./algorithm";
 
 export interface NewAlgorithmMetadata {
   title: string;
   difficulty: "easy" | "medium" | "hard";
   tags: string[];
-}
-
-export interface NewAlgorithmDescription {
-  content: string;
-}
-
-export interface NewAlgorithmLanguageFiles {
-  id: string;
-  language: CodeLanguage;
-  solutionFile: {
-    content: string;
-  };
-  testFile: {
-    content: string;
-  };
+  category: string;
+  summary: string;
 }
 
 export interface NewAlgorithm {
   metadata: NewAlgorithmMetadata;
-  description: NewAlgorithmDescription;
-  languages: NewAlgorithmLanguageFiles[];
+  description: string;
+  files: AlgorithmFile[];
 }
 
 export interface ValidationError {
@@ -35,13 +22,10 @@ export interface ValidationError {
 
 export interface CreateAlgorithmPayload {
   title: string;
-  difficulty: "easy" | "medium" | "hard";
+  category: string;
+  summary: string;
   tags: string[];
   description: string;
-  languages: {
-    [key in CodeLanguage]?: {
-      solution: string;
-      test: string;
-    };
-  };
+  difficulty: "easy" | "medium" | "hard";
+  files: AlgorithmFile[];
 }

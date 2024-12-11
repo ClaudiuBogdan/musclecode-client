@@ -1,7 +1,7 @@
 import { StateCreator } from "zustand";
-import { CodeLanguage } from "@/types/algorithm";
+import { AlgorithmFile, CodeLanguage } from "@/types/algorithm";
 import { v4 as uuidv4 } from "uuid";
-import { NewAlgorithm, NewAlgorithmLanguageFiles } from "@/types/newAlgorithm";
+import { NewAlgorithm } from "@/types/newAlgorithm";
 
 // Constants
 export const MAX_TITLE_LENGTH = 100;
@@ -27,6 +27,7 @@ export interface BaseAlgorithmActions {
 
   // Language actions
   addLanguage: (language: CodeLanguage) => void;
+  addFiles: (files: AlgorithmFile[]) => void;
   removeLanguage: (languageId: string) => void;
   updateSolutionFile: (languageId: string, content: string) => void;
   updateTestFile: (languageId: string, content: string) => void;
@@ -44,13 +45,13 @@ export const createBaseAlgorithmSlice: StateCreator<
   algorithm: {
     metadata: {
       title: "",
+      category: "",
+      summary: "",
       difficulty: "easy",
       tags: [],
     },
-    description: {
-      content: "",
-    },
-    languages: [],
+    description: "",
+    files: [],
   },
   isLoading: false,
   error: null,
@@ -82,10 +83,7 @@ export const createBaseAlgorithmSlice: StateCreator<
   // Description actions
   setDescription: (content) =>
     set((state) => {
-      state.algorithm.description.content = content.slice(
-        0,
-        MAX_DESCRIPTION_LENGTH
-      );
+      state.algorithm.description = content.slice(0, MAX_DESCRIPTION_LENGTH);
       state.error = null;
       return state;
     }),
@@ -93,43 +91,61 @@ export const createBaseAlgorithmSlice: StateCreator<
   // Language actions
   addLanguage: (language) =>
     set((state) => {
-      if (state.algorithm.languages.some((l) => l.language === language)) {
+      if (state.algorithm.files.some((l) => l.language === language)) {
         state.error = `Language ${language} already exists`;
         return state;
       }
-
-      const newLanguage: NewAlgorithmLanguageFiles = {
-        id: uuidv4(),
-        language,
-        solutionFile: {
+      const files: AlgorithmFile[] = [
+        {
+          id: uuidv4(),
+          name: "solution",
+          type: "solution",
+          language,
           content: getLanguageTemplate(language, "solution"),
+          readOnly: false,
+          required: true,
         },
-        testFile: {
+        {
+          id: uuidv4(),
+          language,
           content: getLanguageTemplate(language, "test"),
+          name: "test",
+          type: "test",
+          readOnly: true,
+          required: true,
         },
-      };
+      ];
 
-      state.algorithm.languages.push(newLanguage);
+      state.algorithm.files.push(...files);
       state.error = null;
       return state;
     }),
 
-  removeLanguage: (languageId) =>
+  addFiles: (files: AlgorithmFile[]) => {
     set((state) => {
-      state.algorithm.languages = state.algorithm.languages.filter(
-        (l) => l.id !== languageId
+      state.algorithm.files = [...files];
+      state.error = null;
+      return state;
+    });
+  },
+
+  removeLanguage: (language) =>
+    set((state) => {
+      state.algorithm.files = state.algorithm.files.filter(
+        (file) => file.language !== language
       );
       state.error = null;
       return state;
     }),
 
+  // TODO: simplify and save the state
   updateSolutionFile: (languageId, content) =>
     set((state) => {
-      const language = state.algorithm.languages.find(
-        (l) => l.id === languageId
+      const file = state.algorithm.files.find(
+        (l) => l.id === languageId && l.type === "solution"
       );
-      if (language) {
-        language.solutionFile.content = content.slice(0, MAX_CODE_LENGTH);
+      if (file) {
+        file.content = content.slice(0, MAX_CODE_LENGTH);
         state.error = null;
       }
       return state;
@@ -137,11 +153,11 @@ export const createBaseAlgorithmSlice: StateCreator<
 
   updateTestFile: (languageId, content) =>
     set((state) => {
-      const language = state.algorithm.languages.find(
-        (l) => l.id === languageId
+      const file = state.algorithm.files.find(
+        (l) => l.id === languageId && l.type === "test"
       );
-      if (language) {
-        language.testFile.content = content.slice(0, MAX_CODE_LENGTH);
+      if (file) {
+        file.content = content.slice(0, MAX_CODE_LENGTH);
         state.error = null;
       }
       return state;
@@ -168,30 +184,25 @@ export const createBaseAlgorithmSlice: StateCreator<
     }
 
     // Validate description
-    if (!algorithm.description.content.trim()) {
+    if (!algorithm.description.trim()) {
       errors.push("Description is required");
     }
-    if (algorithm.description.content.length > MAX_DESCRIPTION_LENGTH) {
+    if (algorithm.description.length > MAX_DESCRIPTION_LENGTH) {
       errors.push(
         `Description must be less than ${MAX_DESCRIPTION_LENGTH} characters`
       );
     }
 
     // Validate languages
-    if (algorithm.languages.length === 0) {
+    if (algorithm.files.length === 0) {
       errors.push("At least one language is required");
     }
 
     // Validate code length
-    for (const lang of algorithm.languages) {
-      if (lang.solutionFile.content.length > MAX_CODE_LENGTH) {
+    for (const file of algorithm.files) {
+      if (file.content.length > MAX_CODE_LENGTH) {
         errors.push(
-          `Solution code for ${lang.language} must be less than ${MAX_CODE_LENGTH} characters`
-        );
-      }
-      if (lang.testFile.content.length > MAX_CODE_LENGTH) {
-        errors.push(
-          `Test code for ${lang.language} must be less than ${MAX_CODE_LENGTH} characters`
+          `Code for ${file.language} must be less than ${MAX_CODE_LENGTH} characters`
         );
       }
     }
