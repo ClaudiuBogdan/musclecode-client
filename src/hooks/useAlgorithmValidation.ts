@@ -22,11 +22,31 @@ export function useAlgorithmValidation(algorithm: NewAlgorithm) {
       });
     }
 
-    if (algorithm.metadata.tags.length > 10) {
+    if (algorithm.metadata.summary.length > 1000) {
       validationErrors.push({
         tab: "metadata",
-        field: "tags",
-        message: "Maximum 10 tags allowed",
+        field: "summary",
+        message: "Summary must be less than 1000 characters",
+      });
+    }
+
+    if (algorithm.metadata.summary.length === 0) {
+      validationErrors.push({
+        tab: "metadata",
+        field: "summary",
+        message: "Summary is required",
+      });
+    }
+
+    if (
+      algorithm.metadata.difficulty !== "easy" &&
+      algorithm.metadata.difficulty !== "medium" &&
+      algorithm.metadata.difficulty !== "hard"
+    ) {
+      validationErrors.push({
+        tab: "metadata",
+        field: "difficulty",
+        message: "Difficulty is required",
       });
     }
 

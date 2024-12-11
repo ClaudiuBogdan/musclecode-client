@@ -30,14 +30,15 @@ export default function EditAlgorithm() {
   const {
     algorithm,
     setTitle,
+    setSummary,
+    setCategory,
     setDifficulty,
     setTags,
     setDescription,
     addLanguage,
     addFiles: addFile,
     removeLanguage,
-    updateSolutionFile,
-    updateTestFile,
+    updateFileContent,
     setAlgorithmId,
     isLoading: isSaving,
     error: saveError,
@@ -52,6 +53,15 @@ export default function EditAlgorithm() {
       // TODO: this code needs refactoring. The logic is too complicated and error prone.
       // Set algorithm ID
       setAlgorithmId(algorithmId);
+
+      // Set summary
+      setSummary(existingAlgorithm.summary);
+
+      // Set tags
+      setTags(existingAlgorithm.tags);
+
+      // Set category
+      setCategory(existingAlgorithm.category);
 
       // Set metadata
       setTitle(existingAlgorithm.title);
@@ -71,9 +81,9 @@ export default function EditAlgorithm() {
     setTags,
     setDescription,
     addLanguage,
-    updateSolutionFile,
-    updateTestFile,
     addFile,
+    setSummary,
+    setCategory,
     resetState,
   ]);
 
@@ -111,15 +121,16 @@ export default function EditAlgorithm() {
       validation={validation}
       onTitleChange={setTitle}
       onDifficultyChange={setDifficulty}
-      onTagsChange={setTags}
       onDescriptionChange={setDescription}
       onLanguageAdd={addLanguage}
       onLanguageRemove={removeLanguage}
-      onSolutionFileChange={updateSolutionFile}
-      onTestFileChange={updateTestFile}
+      onFileContentChange={updateFileContent}
       onSave={handleSave}
       onReset={handleReset}
       onCancel={handleCancel}
+      onSummaryChange={setSummary}
+      onCategoryChange={setCategory}
+      onTagsChange={setTags}
     />
   );
 }

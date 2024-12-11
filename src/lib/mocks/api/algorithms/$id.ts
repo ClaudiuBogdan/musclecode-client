@@ -31,6 +31,9 @@ export const byId = [
       title: payload.title,
       difficulty: payload.difficulty,
       description: payload.description,
+      summary: payload.summary,
+      category: payload.category,
+      tags: payload.tags,
       files: payload.files,
     };
 

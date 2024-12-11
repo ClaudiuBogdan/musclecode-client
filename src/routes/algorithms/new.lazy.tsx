@@ -17,12 +17,13 @@ function RouteComponent() {
     error,
     setTitle,
     setDifficulty,
+    setSummary,
+    setCategory,
     setTags,
     setDescription,
     addLanguage,
     removeLanguage,
-    updateSolutionFile,
-    updateTestFile,
+    updateFileContent,
     saveAlgorithm,
     resetState,
   } = useNewAlgorithmStore();
@@ -59,12 +60,13 @@ function RouteComponent() {
       validation={validation}
       onTitleChange={setTitle}
       onDifficultyChange={setDifficulty}
+      onSummaryChange={setSummary}
+      onCategoryChange={setCategory}
       onTagsChange={setTags}
       onDescriptionChange={setDescription}
       onLanguageAdd={addLanguage}
       onLanguageRemove={removeLanguage}
-      onSolutionFileChange={updateSolutionFile}
-      onTestFileChange={updateTestFile}
+      onFileContentChange={updateFileContent}
       onSave={handleSave}
       onReset={handleReset}
       onCancel={handleCancel}

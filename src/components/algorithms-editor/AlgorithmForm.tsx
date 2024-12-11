@@ -22,6 +22,14 @@ import {
 import { cn } from "@/lib/utils";
 import { showToast } from "@/utils/toast";
 import { ValidationError } from "@/types/newAlgorithm";
+import { MAX_SUMMARY_LENGTH, MAX_TITLE_LENGTH } from "@/stores/baseAlgorithm";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
 
 export interface ValidationResult {
   errors: ValidationError[];
@@ -45,16 +53,16 @@ export interface AlgorithmFormProps {
   // Metadata handlers
   onTitleChange: (title: string) => void;
   onDifficultyChange: (difficulty: "easy" | "medium" | "hard") => void;
+  onSummaryChange: (summary: string) => void;
   onTagsChange: (tags: string[]) => void;
-
+  onCategoryChange: (category: string) => void;
   // Description handlers
   onDescriptionChange: (content: string) => void;
 
   // Language handlers
   onLanguageAdd: (language: CodeLanguage) => void;
   onLanguageRemove: (languageId: string) => void;
-  onSolutionFileChange: (languageId: string, content: string) => void;
-  onTestFileChange: (languageId: string, content: string) => void;
+  onFileContentChange: (fileId: string, content: string) => void;
 
   // Form actions
   onSave: () => Promise<void>;
@@ -72,7 +80,9 @@ export function AlgorithmForm({
   // Metadata handlers
   onTitleChange,
   onDifficultyChange,
+  onSummaryChange,
   onTagsChange,
+  onCategoryChange,
 
   // Description handlers
   onDescriptionChange,
@@ -80,8 +90,7 @@ export function AlgorithmForm({
   // Language handlers
   onLanguageAdd,
   onLanguageRemove,
-  onSolutionFileChange,
-  onTestFileChange,
+  onFileContentChange,
 
   // Form actions
   onSave,
@@ -241,7 +250,7 @@ export function AlgorithmForm({
                     placeholder="Algorithm title..."
                     value={algorithm.metadata.title}
                     onChange={(e) => onTitleChange(e.target.value.trimStart())}
-                    maxLength={100}
+                    maxLength={MAX_TITLE_LENGTH}
                     required
                     className={cn(
                       validation.getErrorsForField("title").length > 0 &&
@@ -250,7 +259,56 @@ export function AlgorithmForm({
                   />
                 </div>
                 <div>
-                  <Label htmlFor="difficulty">Difficulty</Label>
+                  <Label htmlFor="summary" className="flex items-center gap-1">
+                    Summary
+                    <span className="text-destructive">*</span>
+                  </Label>
+                  <Input
+                    id="summary"
+                    placeholder="Algorithm summary..."
+                    value={algorithm.metadata.summary}
+                    onChange={(e) => onSummaryChange(e.target.value)}
+                    maxLength={MAX_SUMMARY_LENGTH}
+                    required
+                    className={cn(
+                      validation.getErrorsForField("summary").length > 0 &&
+                        "border-destructive focus-visible:ring-destructive"
+                    )}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="category" className="flex items-center gap-1">
+                    Category
+                    <span className="text-destructive">*</span>
+                  </Label>
+                  <Select
+                    value={algorithm.metadata.category}
+                    onValueChange={onCategoryChange}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="custom">Custom</SelectItem>
+                      <SelectItem value="array">Array</SelectItem>
+                      <SelectItem value="string">String</SelectItem>
+                      <SelectItem value="linked-list">Linked List</SelectItem>
+                      <SelectItem value="tree">Tree</SelectItem>
+                      <SelectItem value="graph">Graph</SelectItem>
+                      <SelectItem value="dynamic-programming">
+                        Dynamic Programming
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label
+                    htmlFor="difficulty"
+                    className="flex items-center gap-1"
+                  >
+                    Difficulty
+                    <span className="text-destructive">*</span>
+                  </Label>
                   <select
                     id="difficulty"
                     className="w-full p-2 rounded-md border dark:bg-background"
@@ -343,8 +401,7 @@ export function AlgorithmForm({
                   files={algorithm.files}
                   onLanguageAdd={onLanguageAdd}
                   onLanguageRemove={onLanguageRemove}
-                  onSolutionFileChange={onSolutionFileChange}
-                  onTestFileChange={onTestFileChange}
+                  onFileContentChange={onFileContentChange}
                 />
               </div>
             </Card>

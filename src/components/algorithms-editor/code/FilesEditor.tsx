@@ -35,8 +35,7 @@ interface FilesEditorProps {
   files: AlgorithmFile[];
   onLanguageAdd: (language: CodeLanguage) => void;
   onLanguageRemove: (languageId: string) => void;
-  onSolutionFileChange: (languageId: string, content: string) => void;
-  onTestFileChange: (languageId: string, content: string) => void;
+  onFileContentChange: (fileId: string, content: string) => void;
 }
 
 const SUPPORTED_LANGUAGES = [
@@ -52,8 +51,7 @@ export const FilesEditor = ({
   files,
   onLanguageAdd,
   onLanguageRemove,
-  onSolutionFileChange,
-  onTestFileChange,
+  onFileContentChange,
 }: FilesEditorProps) => {
   const [activeFile, setActiveFile] = useState<AlgorithmFile | null>(null);
   const [activeDeleteLanguage, setActiveDeleteLanguage] =
@@ -91,13 +89,7 @@ export const FilesEditor = ({
 
   const handleFileContentChange = (content: string) => {
     if (!activeFile) return;
-    if (activeFile.type === "solution") {
-      onSolutionFileChange(activeFile.language, content);
-    } else if (activeFile.type === "test") {
-      onTestFileChange(activeFile.language, content);
-    } else {
-      throw new Error("Invalid file type");
-    }
+    onFileContentChange(activeFile.id, content);
   };
 
   if (isPreview) {

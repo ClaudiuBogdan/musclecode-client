@@ -9,15 +9,13 @@ import {
   createBaseAlgorithmSlice,
 } from "./baseAlgorithm";
 
-interface NewAlgorithmState extends BaseAlgorithmState {}
-
 interface NewAlgorithmActions extends BaseAlgorithmActions {
   saveAlgorithm: () => Promise<void>;
   resetState: () => void;
 }
 
-const initialState: NewAlgorithmState = {
-  isLoading: false,
+const initialState: BaseAlgorithmState = {
+  isLoading: false as boolean,
   error: null,
   algorithm: {
     metadata: {
@@ -33,11 +31,12 @@ const initialState: NewAlgorithmState = {
 };
 
 export const useNewAlgorithmStore = create<
-  NewAlgorithmState & NewAlgorithmActions
+  BaseAlgorithmState & NewAlgorithmActions
 >()(
   persist(
-    immer((set, get) => ({
-      ...createBaseAlgorithmSlice(set, get),
+    immer((set, get, store) => ({
+      // @ts-expect-error TODO: fix this
+      ...createBaseAlgorithmSlice(set, get, store),
 
       // Save action
       saveAlgorithm: async () => {
@@ -60,7 +59,7 @@ export const useNewAlgorithmStore = create<
           const payload: CreateAlgorithmPayload = {
             title: algorithm.metadata.title.trim(),
             category: algorithm.metadata.category,
-            summary: algorithm.metadata.summary,
+            summary: algorithm.metadata.summary.trim(),
             difficulty: algorithm.metadata.difficulty,
             tags: algorithm.metadata.tags,
             description: algorithm.description.trim(),

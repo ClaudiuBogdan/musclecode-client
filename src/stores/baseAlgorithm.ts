@@ -5,6 +5,7 @@ import { NewAlgorithm } from "@/types/newAlgorithm";
 
 // Constants
 export const MAX_TITLE_LENGTH = 100;
+export const MAX_SUMMARY_LENGTH = 1000;
 export const MAX_TAG_LENGTH = 30;
 export const MAX_TAGS = 10;
 export const MAX_DESCRIPTION_LENGTH = 10000;
@@ -20,6 +21,8 @@ export interface BaseAlgorithmActions {
   // Metadata actions
   setTitle: (title: string) => void;
   setDifficulty: (difficulty: "easy" | "medium" | "hard") => void;
+  setSummary: (summary: string) => void;
+  setCategory: (category: string) => void;
   setTags: (tags: string[]) => void;
 
   // Description actions
@@ -29,17 +32,13 @@ export interface BaseAlgorithmActions {
   addLanguage: (language: CodeLanguage) => void;
   addFiles: (files: AlgorithmFile[]) => void;
   removeLanguage: (languageId: string) => void;
-  updateSolutionFile: (languageId: string, content: string) => void;
-  updateTestFile: (languageId: string, content: string) => void;
+  updateFileContent: (fileId: string, content: string) => void;
 
   // Validation
   validateState: () => { isValid: boolean; errors: string[] };
 }
 
 export const createBaseAlgorithmSlice: StateCreator<
-  BaseAlgorithmState & BaseAlgorithmActions,
-  [],
-  [],
   BaseAlgorithmState & BaseAlgorithmActions
 > = (set, get) => ({
   algorithm: {
@@ -53,7 +52,7 @@ export const createBaseAlgorithmSlice: StateCreator<
     description: "",
     files: [],
   },
-  isLoading: false,
+  isLoading: false as boolean,
   error: null,
 
   // Metadata actions
@@ -67,6 +66,20 @@ export const createBaseAlgorithmSlice: StateCreator<
   setDifficulty: (difficulty) =>
     set((state) => {
       state.algorithm.metadata.difficulty = difficulty;
+      state.error = null;
+      return state;
+    }),
+
+  setSummary: (summary) =>
+    set((state) => {
+      state.algorithm.metadata.summary = summary.slice(0, MAX_SUMMARY_LENGTH);
+      state.error = null;
+      return state;
+    }),
+
+  setCategory: (category) =>
+    set((state) => {
+      state.algorithm.metadata.category = category;
       state.error = null;
       return state;
     }),
@@ -138,24 +151,9 @@ export const createBaseAlgorithmSlice: StateCreator<
       return state;
     }),
 
-  // TODO: simplify and save the state
-  updateSolutionFile: (languageId, content) =>
+  updateFileContent: (fileId, content) =>
     set((state) => {
-      const file = state.algorithm.files.find(
-        (l) => l.id === languageId && l.type === "solution"
-      );
-      if (file) {
-        file.content = content.slice(0, MAX_CODE_LENGTH);
-        state.error = null;
-      }
-      return state;
-    }),
-
-  updateTestFile: (languageId, content) =>
-    set((state) => {
-      const file = state.algorithm.files.find(
-        (l) => l.id === languageId && l.type === "test"
-      );
+      const file = state.algorithm.files.find((l) => l.id === fileId);
       if (file) {
         file.content = content.slice(0, MAX_CODE_LENGTH);
         state.error = null;

@@ -40,8 +40,9 @@ export const useEditAlgorithmStore = create<
   EditAlgorithmState & EditAlgorithmActions
 >()(
   persist(
-    immer((set, get) => ({
-      ...createBaseAlgorithmSlice(set, get),
+    immer((set, get, store) => ({
+      // @ts-expect-error TODO: fix this
+      ...createBaseAlgorithmSlice(set, get, store),
       algorithmId: null,
 
       setAlgorithmId: (id: string) =>
@@ -74,7 +75,7 @@ export const useEditAlgorithmStore = create<
           const payload: CreateAlgorithmPayload = {
             title: algorithm.metadata.title.trim(),
             category: algorithm.metadata.category,
-            summary: algorithm.metadata.summary,
+            summary: algorithm.metadata.summary.trim(),
             difficulty: algorithm.metadata.difficulty,
             tags: algorithm.metadata.tags,
             description: algorithm.description.trim(),
