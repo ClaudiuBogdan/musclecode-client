@@ -27,13 +27,16 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { useNewAlgorithmStore } from "@/stores/newAlgorithm";
 import { NewAlgorithmLanguageFiles } from "@/types/newAlgorithm";
-import { CodeLanguage } from "@/stores/algorithm";
+import { CodeLanguage } from "@/types/algorithm";
 
 interface FilesEditorProps {
   isPreview?: boolean;
   languages: NewAlgorithmLanguageFiles[];
+  onLanguageAdd: (language: CodeLanguage) => void;
+  onLanguageRemove: (languageId: string) => void;
+  onSolutionFileChange: (languageId: string, content: string) => void;
+  onTestFileChange: (languageId: string, content: string) => void;
 }
 
 const SUPPORTED_LANGUAGES = [
@@ -44,7 +47,14 @@ const SUPPORTED_LANGUAGES = [
   { value: "cpp", label: "C++" },
 ] as const;
 
-export const FilesEditor = ({ isPreview, languages }: FilesEditorProps) => {
+export const FilesEditor = ({
+  isPreview,
+  languages,
+  onLanguageAdd,
+  onLanguageRemove,
+  onSolutionFileChange,
+  onTestFileChange,
+}: FilesEditorProps) => {
   const [selectedLanguageId, setSelectedLanguageId] = useState<string | null>(
     null
   );
@@ -55,23 +65,20 @@ export const FilesEditor = ({ isPreview, languages }: FilesEditorProps) => {
   const [newLanguage, setNewLanguage] = useState<CodeLanguage>("python");
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
-  const { addLanguage, removeLanguage, updateSolutionFile, updateTestFile } =
-    useNewAlgorithmStore();
-
   const selectedLanguage = languages.find((l) => l.id === selectedLanguageId);
   const availableLanguages = SUPPORTED_LANGUAGES.filter(
     (lang) => !languages.find((l) => l.language === lang.value)
   );
 
   const handleAddLanguage = () => {
-    addLanguage(newLanguage);
+    onLanguageAdd(newLanguage);
     setShowAddLanguage(false);
     setNewLanguage("python");
   };
 
   const handleDeleteLanguage = () => {
     if (!selectedLanguageId) return;
-    removeLanguage(selectedLanguageId);
+    onLanguageRemove(selectedLanguageId);
     setSelectedLanguageId(languages[0]?.id ?? null);
     setActiveFile(null);
     setShowDeleteConfirm(false);
@@ -81,9 +88,9 @@ export const FilesEditor = ({ isPreview, languages }: FilesEditorProps) => {
     if (!selectedLanguageId || !activeFile) return;
 
     if (activeFile === "solution") {
-      updateSolutionFile(selectedLanguageId, content);
+      onSolutionFileChange(selectedLanguageId, content);
     } else {
-      updateTestFile(selectedLanguageId, content);
+      onTestFileChange(selectedLanguageId, content);
     }
   };
 

@@ -1,4 +1,4 @@
-import { CodeLanguage } from "@/stores/algorithm";
+import { CodeLanguage } from "./algorithm";
 
 export interface NewAlgorithmMetadata {
   title: string;
@@ -25,6 +25,12 @@ export interface NewAlgorithm {
   metadata: NewAlgorithmMetadata;
   description: NewAlgorithmDescription;
   languages: NewAlgorithmLanguageFiles[];
+}
+
+export interface ValidationError {
+  tab: "metadata" | "description" | "solutions";
+  field: string;
+  message: string;
 }
 
 export interface CreateAlgorithmPayload {

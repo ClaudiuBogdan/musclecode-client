@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
 import { persist, createJSONStorage } from "zustand/middleware";
-import { createAlgorithm } from "@/lib/api/algorithm";
+import { updateAlgorithm } from "@/lib/api/algorithm";
 import { CreateAlgorithmPayload } from "@/types/newAlgorithm";
 import {
   BaseAlgorithmState,
@@ -9,16 +9,20 @@ import {
   createBaseAlgorithmSlice,
 } from "./baseAlgorithm";
 
-interface NewAlgorithmState extends BaseAlgorithmState {}
+interface EditAlgorithmState extends BaseAlgorithmState {
+  algorithmId: string | null;
+}
 
-interface NewAlgorithmActions extends BaseAlgorithmActions {
+interface EditAlgorithmActions extends BaseAlgorithmActions {
+  setAlgorithmId: (id: string) => void;
   saveAlgorithm: () => Promise<void>;
   resetState: () => void;
 }
 
-const initialState: NewAlgorithmState = {
+const initialState: EditAlgorithmState = {
   isLoading: false,
   error: null,
+  algorithmId: null,
   algorithm: {
     metadata: {
       title: "",
@@ -32,12 +36,18 @@ const initialState: NewAlgorithmState = {
   },
 };
 
-export const useNewAlgorithmStore = create<
-  NewAlgorithmState & NewAlgorithmActions
+export const useEditAlgorithmStore = create<
+  EditAlgorithmState & EditAlgorithmActions
 >()(
   persist(
     immer((set, get) => ({
       ...createBaseAlgorithmSlice(set, get),
+      algorithmId: null,
+
+      setAlgorithmId: (id: string) =>
+        set((state) => {
+          state.algorithmId = id;
+        }),
 
       // Save action
       saveAlgorithm: async () => {
@@ -47,6 +57,11 @@ export const useNewAlgorithmStore = create<
             state.error = validation.errors[0];
           });
           throw new Error(validation.errors[0]);
+        }
+
+        const { algorithmId } = get();
+        if (!algorithmId) {
+          throw new Error("Algorithm ID is required for editing");
         }
 
         try {
@@ -73,7 +88,7 @@ export const useNewAlgorithmStore = create<
             ),
           };
 
-          await createAlgorithm(payload);
+          await updateAlgorithm(algorithmId, payload);
           get().resetState();
         } catch (error) {
           const errorMessage =
@@ -95,10 +110,11 @@ export const useNewAlgorithmStore = create<
       },
     })),
     {
-      name: "new-algorithm-store",
+      name: "edit-algorithm-store",
       storage: createJSONStorage(() => localStorage),
       partialize: (state) => ({
         algorithm: state.algorithm,
+        algorithmId: state.algorithmId,
       }),
     }
   )

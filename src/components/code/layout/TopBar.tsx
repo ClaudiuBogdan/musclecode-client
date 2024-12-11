@@ -1,7 +1,7 @@
 import { EditorTabs } from "@/components/code/EditorTabs";
 import { LanguageSelector } from "@/components/code/LanguageSelector";
 import { Timer } from "@/components/code/Timer";
-import { CodeLanguage } from "@/stores/algorithm";
+import { CodeLanguage } from "@/types/algorithm";
 
 interface TopBarProps {
   algorithmId: string;

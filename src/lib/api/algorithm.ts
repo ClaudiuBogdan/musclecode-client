@@ -35,8 +35,44 @@ export function useAlgorithms() {
   });
 }
 
+export function useAlgorithm(id: string) {
+  return useQuery<{ algorithm: Algorithm }>({
+    queryKey: algorithmKeys.detail(id),
+    queryFn: async () => {
+      const res = await fetch(`/api/algorithms/${id}`);
+      if (!res.ok) {
+        throw new Error(`Algorithm with id ${id} not found`);
+      }
+      return res.json();
+    },
+  });
+}
+
 export async function createAlgorithm(payload: CreateAlgorithmPayload) {
   const { data } = await apiClient.post<Algorithm>("/api/algorithms", payload);
   return data;
 }
 
+export async function updateAlgorithm(
+  id: string,
+  payload: CreateAlgorithmPayload
+) {
+  const response = await fetch(`/api/algorithms/${id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to update algorithm");
+  }
+
+  return response.json();
+}
+
+export async function getAlgorithm(id: string) {
+  const { data } = await apiClient.get<Algorithm>(`/api/algorithms/${id}`);
+  return data;
+}

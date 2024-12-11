@@ -1,11 +1,5 @@
 import { useMemo } from "react";
-import { NewAlgorithm } from "@/types/newAlgorithm";
-
-interface ValidationError {
-  tab: "metadata" | "description" | "solutions";
-  field: string;
-  message: string;
-}
+import { NewAlgorithm, ValidationError } from "@/types/newAlgorithm";
 
 export function useAlgorithmValidation(algorithm: NewAlgorithm) {
   const errors = useMemo(() => {

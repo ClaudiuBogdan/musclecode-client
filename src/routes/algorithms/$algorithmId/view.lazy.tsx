@@ -34,6 +34,8 @@ function AlgorithmView() {
     return <div>Algorithm not found</div>;
   }
 
+  console.log("algorithm", algorithm);
+
   return (
     <div className="container mx-6 py-6 h-full">
       {/* Main Content */}
@@ -41,6 +43,7 @@ function AlgorithmView() {
         {/* Left Column - Description */}
         <Card>
           <CardContent>
+            {/* TODO: fix this. The data is not loaded correctly. The store should be outside of info panel */}
             <InfoPanel
               algorithmId={algorithmId}
               tab={tab}

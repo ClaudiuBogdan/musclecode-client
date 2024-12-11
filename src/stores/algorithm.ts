@@ -3,15 +3,8 @@ import { persist, createJSONStorage } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
 import { runCode, getAlgorithm, saveSubmission } from "@/lib/api/code";
 import { CodeExecutionResponse } from "@/types/testRunner";
-import { Difficulty, Submission } from "@/types/algorithm";
+import { CodeLanguage, Difficulty, Submission } from "@/types/algorithm";
 import { v4 as uuidv4 } from "uuid";
-
-export type CodeLanguage =
-  | "typescript"
-  | "javascript"
-  | "python"
-  | "java"
-  | "cpp";
 
 export type CodeFile = string;
 

@@ -1,16 +1,60 @@
 import { http, HttpResponse } from "msw";
-import { seedAlgorithms } from "./seed";
-import { Algorithm } from "@/types/algorithm";
-import { checkIfCompleted, getNextAlgorithm } from "./fn";
+import { useMockAlgorithmsStore } from "../../store/algorithms";
+import { Algorithm, AlgorithmFile } from "@/types/algorithm";
+import { CreateAlgorithmPayload } from "@/types/newAlgorithm";
 
-export const byId = http.get("/api/algorithms/:id", ({ params }) => {
-  const { id } = params;
-  const algorithms = seedAlgorithms();
-  const algorithm = algorithms.find((algo) => algo.id === id) as Algorithm;
-  if (!algorithm) {
-    return new HttpResponse(null, { status: 404 });
-  }
-  algorithm.completed = checkIfCompleted(id as string);
-  const nextAlgorithm = getNextAlgorithm(id as string);
-  return HttpResponse.json({ algorithm, nextAlgorithm });
-});
+export const byId = [
+  http.get("/api/algorithms/:id", ({ params }) => {
+    const { id } = params;
+    const algorithm = useMockAlgorithmsStore
+      .getState()
+      .getAlgorithm(id as string);
+
+    if (!algorithm) {
+      return new HttpResponse(null, { status: 404 });
+    }
+
+    return HttpResponse.json({ algorithm });
+  }),
+  http.put("/api/algorithms/:id", async ({ params, request }) => {
+    const { id } = params;
+    const payload = (await request.json()) as CreateAlgorithmPayload;
+    const store = useMockAlgorithmsStore.getState();
+    const existingAlgorithm = store.getAlgorithm(id as string);
+
+    if (!existingAlgorithm) {
+      return new HttpResponse(null, { status: 404 });
+    }
+
+    // Convert the payload languages to the correct files structure
+    const files: Record<string, AlgorithmFile[]> = {};
+    Object.entries(payload.languages).forEach(([language, content]) => {
+      files[language] = [
+        {
+          name: "solution",
+          content: content.solution,
+          isMain: true,
+          language,
+        },
+        {
+          name: "test",
+          content: content.test,
+          isMain: false,
+          language,
+        },
+      ];
+    });
+
+    const updatedAlgorithm: Algorithm = {
+      ...existingAlgorithm,
+      title: payload.title,
+      difficulty: payload.difficulty,
+      description: payload.description,
+      files,
+    };
+
+    store.updateAlgorithm(updatedAlgorithm);
+
+    return HttpResponse.json({ algorithm: updatedAlgorithm });
+  }),
+];

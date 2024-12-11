@@ -6,6 +6,14 @@ export interface AlgorithmFile {
   readOnly?: boolean;
 }
 
+export type CodeLanguage =
+  | "typescript"
+  | "javascript"
+  | "python"
+  | "java"
+  | "cpp";
+
+
 export type Difficulty = "again" | "hard" | "good" | "easy";
 
 export interface Algorithm {

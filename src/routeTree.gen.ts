@@ -25,6 +25,9 @@ const AlgorithmsAlgorithmIdIndexLazyImport = createFileRoute(
 const AlgorithmsAlgorithmIdViewLazyImport = createFileRoute(
   '/algorithms/$algorithmId/view',
 )()
+const AlgorithmsAlgorithmIdEditLazyImport = createFileRoute(
+  '/algorithms/$algorithmId/edit',
+)()
 
 // Create/Update Routes
 
@@ -68,6 +71,15 @@ const AlgorithmsAlgorithmIdViewLazyRoute =
     import('./routes/algorithms/$algorithmId/view.lazy').then((d) => d.Route),
   )
 
+const AlgorithmsAlgorithmIdEditLazyRoute =
+  AlgorithmsAlgorithmIdEditLazyImport.update({
+    id: '/algorithms/$algorithmId/edit',
+    path: '/algorithms/$algorithmId/edit',
+    getParentRoute: () => rootRoute,
+  } as any).lazy(() =>
+    import('./routes/algorithms/$algorithmId/edit.lazy').then((d) => d.Route),
+  )
+
 // Populate the FileRoutesByPath interface
 
 declare module '@tanstack/react-router' {
@@ -93,6 +105,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AlgorithmsIndexLazyImport
       parentRoute: typeof rootRoute
     }
+    '/algorithms/$algorithmId/edit': {
+      id: '/algorithms/$algorithmId/edit'
+      path: '/algorithms/$algorithmId/edit'
+      fullPath: '/algorithms/$algorithmId/edit'
+      preLoaderRoute: typeof AlgorithmsAlgorithmIdEditLazyImport
+      parentRoute: typeof rootRoute
+    }
     '/algorithms/$algorithmId/view': {
       id: '/algorithms/$algorithmId/view'
       path: '/algorithms/$algorithmId/view'
@@ -116,6 +135,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexLazyRoute
   '/algorithms/new': typeof AlgorithmsNewLazyRoute
   '/algorithms': typeof AlgorithmsIndexLazyRoute
+  '/algorithms/$algorithmId/edit': typeof AlgorithmsAlgorithmIdEditLazyRoute
   '/algorithms/$algorithmId/view': typeof AlgorithmsAlgorithmIdViewLazyRoute
   '/algorithms/$algorithmId': typeof AlgorithmsAlgorithmIdIndexLazyRoute
 }
@@ -124,6 +144,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexLazyRoute
   '/algorithms/new': typeof AlgorithmsNewLazyRoute
   '/algorithms': typeof AlgorithmsIndexLazyRoute
+  '/algorithms/$algorithmId/edit': typeof AlgorithmsAlgorithmIdEditLazyRoute
   '/algorithms/$algorithmId/view': typeof AlgorithmsAlgorithmIdViewLazyRoute
   '/algorithms/$algorithmId': typeof AlgorithmsAlgorithmIdIndexLazyRoute
 }
@@ -133,6 +154,7 @@ export interface FileRoutesById {
   '/': typeof IndexLazyRoute
   '/algorithms/new': typeof AlgorithmsNewLazyRoute
   '/algorithms/': typeof AlgorithmsIndexLazyRoute
+  '/algorithms/$algorithmId/edit': typeof AlgorithmsAlgorithmIdEditLazyRoute
   '/algorithms/$algorithmId/view': typeof AlgorithmsAlgorithmIdViewLazyRoute
   '/algorithms/$algorithmId/': typeof AlgorithmsAlgorithmIdIndexLazyRoute
 }
@@ -143,6 +165,7 @@ export interface FileRouteTypes {
     | '/'
     | '/algorithms/new'
     | '/algorithms'
+    | '/algorithms/$algorithmId/edit'
     | '/algorithms/$algorithmId/view'
     | '/algorithms/$algorithmId'
   fileRoutesByTo: FileRoutesByTo
@@ -150,6 +173,7 @@ export interface FileRouteTypes {
     | '/'
     | '/algorithms/new'
     | '/algorithms'
+    | '/algorithms/$algorithmId/edit'
     | '/algorithms/$algorithmId/view'
     | '/algorithms/$algorithmId'
   id:
@@ -157,6 +181,7 @@ export interface FileRouteTypes {
     | '/'
     | '/algorithms/new'
     | '/algorithms/'
+    | '/algorithms/$algorithmId/edit'
     | '/algorithms/$algorithmId/view'
     | '/algorithms/$algorithmId/'
   fileRoutesById: FileRoutesById
@@ -166,6 +191,7 @@ export interface RootRouteChildren {
   IndexLazyRoute: typeof IndexLazyRoute
   AlgorithmsNewLazyRoute: typeof AlgorithmsNewLazyRoute
   AlgorithmsIndexLazyRoute: typeof AlgorithmsIndexLazyRoute
+  AlgorithmsAlgorithmIdEditLazyRoute: typeof AlgorithmsAlgorithmIdEditLazyRoute
   AlgorithmsAlgorithmIdViewLazyRoute: typeof AlgorithmsAlgorithmIdViewLazyRoute
   AlgorithmsAlgorithmIdIndexLazyRoute: typeof AlgorithmsAlgorithmIdIndexLazyRoute
 }
@@ -174,6 +200,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexLazyRoute: IndexLazyRoute,
   AlgorithmsNewLazyRoute: AlgorithmsNewLazyRoute,
   AlgorithmsIndexLazyRoute: AlgorithmsIndexLazyRoute,
+  AlgorithmsAlgorithmIdEditLazyRoute: AlgorithmsAlgorithmIdEditLazyRoute,
   AlgorithmsAlgorithmIdViewLazyRoute: AlgorithmsAlgorithmIdViewLazyRoute,
   AlgorithmsAlgorithmIdIndexLazyRoute: AlgorithmsAlgorithmIdIndexLazyRoute,
 }
@@ -191,6 +218,7 @@ export const routeTree = rootRoute
         "/",
         "/algorithms/new",
         "/algorithms/",
+        "/algorithms/$algorithmId/edit",
         "/algorithms/$algorithmId/view",
         "/algorithms/$algorithmId/"
       ]
@@ -203,6 +231,9 @@ export const routeTree = rootRoute
     },
     "/algorithms/": {
       "filePath": "algorithms/index.lazy.tsx"
+    },
+    "/algorithms/$algorithmId/edit": {
+      "filePath": "algorithms/$algorithmId/edit.lazy.tsx"
     },
     "/algorithms/$algorithmId/view": {
       "filePath": "algorithms/$algorithmId/view.lazy.tsx"

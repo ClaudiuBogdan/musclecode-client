@@ -6,6 +6,7 @@ import { seedAlgorithms } from "../api/algorithms/seed";
 interface MockAlgorithmsState {
   algorithms: Record<string, Algorithm>;
   addAlgorithm: (algorithm: Algorithm) => void;
+  updateAlgorithm: (algorithm: Algorithm) => void;
   getAlgorithm: (id: string) => Algorithm | undefined;
   getAllAlgorithms: () => Algorithm[];
 }
@@ -28,6 +29,26 @@ export const useMockAlgorithmsStore = create<MockAlgorithmsState>()(
             [algorithm.id]: algorithm,
           },
         })),
+
+      updateAlgorithm: (algorithm) =>
+        set((state) => {
+          // Ensure the algorithm exists before updating
+          if (!state.algorithms[algorithm.id]) {
+            console.warn(`Algorithm with id ${algorithm.id} not found`);
+            return state;
+          }
+
+          return {
+            algorithms: {
+              ...state.algorithms,
+              [algorithm.id]: {
+                ...state.algorithms[algorithm.id],
+                ...algorithm,
+                updatedAt: new Date().toISOString(),
+              },
+            },
+          };
+        }),
 
       getAlgorithm: (id) => get().algorithms[id],
 

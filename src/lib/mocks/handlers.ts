@@ -9,7 +9,7 @@ import { createAlgorithmApi } from "./api/algorithms/createAlgorithm";
 export const handlers = [
   daily,
   all,
-  byId,
+  ...byId,
   createAlgorithmApi,
   runCode,
   codeSubmissions,
