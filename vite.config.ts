@@ -24,4 +24,18 @@ export default defineConfig({
       "Cross-Origin-Embedder-Policy": "require-corp",
     },
   },
+  optimizeDeps: {
+    exclude: ["pyodide"],
+  },
+  build: {
+    rollupOptions: {
+      external: ["pyodide"],
+    },
+  },
+  // Configure Pyodide assets to be served from CDN
+  define: {
+    "process.env.PYODIDE_CDN_URL": JSON.stringify(
+      "https://cdn.jsdelivr.net/pyodide/v0.26.4/full/"
+    ),
+  },
 });
