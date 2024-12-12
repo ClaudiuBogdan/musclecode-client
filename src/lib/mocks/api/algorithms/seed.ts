@@ -392,8 +392,67 @@ Step 3: Middle element is 1. Target found!
           id: uuidv4(),
           name: "solution.ts",
           type: "solution",
-          content:
-            "function binarySearch(arr: number[], target: number): number {\n  let left = 0;\n  let right = arr.length - 1;\n\n  while (left <= right) {\nconst mid = Math.floor((left + right) / 2);\nif (arr[mid] === target) return mid;\nif (arr[mid] < target) left = mid + 1;\nelse right = mid - 1;\n  }\n\n  return -1; // Target not found\n}",
+          content: `
+const num: number = 1
+const str: string = "1"
+
+const total: number = 2
+
+
+function binarySearch(arr: number[], target: number): number {
+    let left = 0;
+    let right = arr.length - 1;
+
+    while (left <= right) {
+        const mid = Math.floor((left + right) / 2);
+
+        if (arr[mid] === target) {
+            return mid; // Target found, return its index
+        } else if (arr[mid] < target) {
+            left = mid + 1; // Move to the right half
+        } else {
+            right = mid - 1; // Move to the left half
+        }
+    }
+
+    return -1; // Target not found
+}
+console.log(binarySearch([1, 3, 4, 6, 8, 9, 11], 6))
+          `,
+          language: "javascript",
+          required: true,
+        },
+        {
+          id: uuidv4(),
+          name: "solution.js",
+          type: "solution",
+          content: `
+const num: number = 1
+const str: string = "1"
+
+const total: number = 2
+
+
+function binarySearch(arr: number[], target: number): number {
+    let left = 0;
+    let right = arr.length - 1;
+
+    while (left <= right) {
+        const mid = Math.floor((left + right) / 2);
+
+        if (arr[mid] === target) {
+            return mid; // Target found, return its index
+        } else if (arr[mid] < target) {
+            left = mid + 1; // Move to the right half
+        } else {
+            right = mid - 1; // Move to the left half
+        }
+    }
+
+    return -1; // Target not found
+}
+console.log(binarySearch([1, 3, 4, 6, 8, 9, 11], 6))
+          `,
           language: "typescript",
           required: true,
         },
@@ -410,8 +469,19 @@ Step 3: Middle element is 1. Target found!
           id: uuidv4(),
           name: "solution.py",
           type: "solution",
-          content:
-            "def binary_search(arr, target):\nleft, right = 0, len(arr) - 1\nwhile left <= right:\nmid = (left + right) // 2\nif arr[mid] == target:\nreturn mid\nelif arr[mid] < target:\nleft = mid + 1\nelse:\nright = mid - 1\nreturn -1  # Target not found",
+          content: `
+def binary_search(arr, target):
+  left, right = 0, len(arr) - 1
+  while left <= right:
+      mid = (left + right) // 2
+      if arr[mid] == target:
+          return mid
+      elif arr[mid] < target:
+          left = mid + 1
+      else:
+          right = mid - 1
+  return -1  # Target not found
+  `,
           language: "python",
           required: true,
         },
