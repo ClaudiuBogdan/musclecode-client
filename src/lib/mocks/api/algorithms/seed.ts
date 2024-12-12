@@ -393,13 +393,12 @@ Step 3: Middle element is 1. Target found!
           name: "solution.ts",
           type: "solution",
           content: `
-const num: number = 1
-const str: string = "1"
+const num = 1;
+const str = "1";
 
-const total: number = 2
+const total = 2;
 
-
-function binarySearch(arr: number[], target: number): number {
+function binarySearch(arr, target) {
     let left = 0;
     let right = arr.length - 1;
 
@@ -417,9 +416,36 @@ function binarySearch(arr: number[], target: number): number {
 
     return -1; // Target not found
 }
-console.log(binarySearch([1, 3, 4, 6, 8, 9, 11], 6))
+
+console.log(binarySearch([1, 3, 4, 6, 8, 9, 11], 6)); // Output: 3
+
           `,
           language: "javascript",
+          required: true,
+        },
+
+        {
+          id: uuidv4(),
+          name: "solution.go",
+          type: "solution",
+          content: `
+func binarySearch(arr []int, target int) int {
+    left, right := 0, len(arr) - 1
+    for left <= right {
+        mid := (left + right) / 2
+        if arr[mid] == target {
+            return mid
+        } else if arr[mid] < target {
+            left = mid + 1
+        } else {
+            right = mid - 1
+        }
+    }
+    return -1
+}
+fmt.Println(binarySearch([]int{1, 3, 4, 6, 8, 9, 11}, 6))
+          `,
+          language: "go",
           required: true,
         },
         {

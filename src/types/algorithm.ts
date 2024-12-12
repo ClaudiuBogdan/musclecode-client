@@ -14,6 +14,7 @@ export type CodeLanguage =
   | "typescript"
   | "javascript"
   | "python"
+  | "go"
   | "java"
   | "cpp";
 
