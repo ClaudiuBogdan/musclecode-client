@@ -1,5 +1,7 @@
 export type AlgorithmFileType = "solution" | "test";
 
+export type AlgorithmId = string;
+
 export interface AlgorithmFile {
   id: string;
   name: string;
