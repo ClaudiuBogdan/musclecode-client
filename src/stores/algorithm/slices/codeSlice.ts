@@ -39,6 +39,20 @@ export const createCodeSlice: StateCreator<
       withAlgorithm(state, algorithmId, (state) => {
         const algorithm = state.algorithms[algorithmId];
         algorithm.code.storedCode = { ...algorithm.code.initialStoredCode };
+
+        algorithm.execution = {
+          isExecuting: false,
+          executionResult: null,
+          error: null,
+        };
+
+        algorithm.submission = {
+          isSubmitting: false,
+          completed: false,
+          submissionNotes: "",
+          globalNotes: algorithm.submission?.globalNotes ?? "",
+        };
+
         return state;
       })
     ),
