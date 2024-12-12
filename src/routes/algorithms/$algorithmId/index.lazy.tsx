@@ -6,7 +6,6 @@ import {
 import { useCallback, useEffect } from "react";
 import { CodeEditor } from "@/components/code/CodeEditor";
 import { ExecutionResult } from "@/components/code/ExecutionResult";
-import { useCodeStore } from "@/stores/algorithm";
 import { useLayoutStore } from "@/stores/layout";
 import { InfoPanel } from "@/components/code/InfoPanel";
 import { TopBar } from "@/components/code/layout/TopBar";
@@ -18,6 +17,18 @@ import {
   ResizableHandle,
 } from "@/components/ui/resizable";
 import { CodeLanguage } from "@/types/algorithm";
+import { useAlgorithmStore } from "@/stores/algorithm";
+import {
+  selectActiveLanguage,
+  selectActiveTab,
+  selectIsLoading,
+  selectExecutionResult,
+  selectIsExecuting,
+  selectIsSubmitting,
+  selectIsCompleted,
+  selectNextAlgorithm,
+  selectTimerState,
+} from "@/stores/algorithm/selectors";
 
 export const Route = createLazyFileRoute("/algorithms/$algorithmId/")({
   component: Algorithm,
@@ -32,12 +43,40 @@ function Algorithm() {
     }),
   });
   const { sizes, editorSizes, setSizes, setEditorSizes } = useLayoutStore();
+
+  // Selectors
+  const isLoading = useAlgorithmStore(selectIsLoading);
+  const error = useAlgorithmStore((state) => state.metadata.error);
+  const activeLanguage = useAlgorithmStore((state) =>
+    selectActiveLanguage(state, algorithmId)
+  );
+  const activeTab = useAlgorithmStore((state) =>
+    selectActiveTab(state, algorithmId)
+  );
+  const executionResult = useAlgorithmStore((state) =>
+    selectExecutionResult(state, algorithmId)
+  );
+  const isExecuting = useAlgorithmStore((state) =>
+    selectIsExecuting(state, algorithmId)
+  );
+  const isSubmitting = useAlgorithmStore((state) =>
+    selectIsSubmitting(state, algorithmId)
+  );
+  const isCompleted = useAlgorithmStore((state) =>
+    selectIsCompleted(state, algorithmId)
+  );
+  const nextAlgorithm = useAlgorithmStore((state) =>
+    selectNextAlgorithm(state, algorithmId)
+  );
+  const timerState = useAlgorithmStore((state) =>
+    selectTimerState(state, algorithmId)
+  );
+
+  // Actions
   const {
-    algorithms,
-    isLoading,
     setCode,
     getFiles,
-    setActiveTab,
+    setActiveTab: setActiveTabAction,
     runCode,
     getCode,
     resetCode,
@@ -45,10 +84,13 @@ function Algorithm() {
     pauseTimer,
     startTimer,
     resumeTimer,
-  } = useCodeStore();
+  } = useAlgorithmStore();
 
   useEffect(() => {
-    initializeAlgorithm(algorithmId);
+    const loadAlgorithm = async () => {
+      await initializeAlgorithm(algorithmId);
+    };
+    loadAlgorithm();
 
     // Handle timer cleanup on unmount
     return () => {
@@ -57,8 +99,6 @@ function Algorithm() {
       }
     };
   }, [algorithmId, initializeAlgorithm, pauseTimer]);
-
-  const algorithm = algorithms[algorithmId];
 
   const handleCodeChange = useCallback(
     (value: string) => {
@@ -69,7 +109,10 @@ function Algorithm() {
   );
 
   const handleLanguageChange = (language: CodeLanguage) => {
-    setActiveTab(algorithmId, getFiles(algorithmId, language)[0].name);
+    const files = getFiles(algorithmId, language);
+    if (files.length > 0) {
+      setActiveTabAction(algorithmId, files[0].name);
+    }
   };
 
   const handleRunCode = useCallback(() => {
@@ -96,7 +139,6 @@ function Algorithm() {
   const handleTimerManagement = useCallback(() => {
     if (!algorithmId) return;
 
-    const timerState = algorithm?.timerState;
     if (!timerState) {
       handleTimerStart();
       return;
@@ -105,23 +147,46 @@ function Algorithm() {
     if (timerState.pausedAt !== null) {
       handleTimerResume();
     }
-  }, [algorithmId, algorithm?.timerState, handleTimerStart, handleTimerResume]);
+  }, [algorithmId, timerState, handleTimerStart, handleTimerResume]);
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <div className="text-lg">Loading...</div>
+      </div>
+    );
   }
 
-  if (!algorithm) {
-    return <div>Algorithm not found</div>;
+  if (error) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <div className="text-center">
+          <div className="text-lg text-red-500 mb-2">
+            Error loading algorithm
+          </div>
+          <div className="text-sm text-gray-500">{error}</div>
+          <button
+            onClick={() => initializeAlgorithm(algorithmId)}
+            className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
   }
 
-  const nextAlgorithmId = algorithm?.nextAlgorithm?.id;
-  const hasPassed = !!algorithm?.executionResult?.result.completed;
-  const currentCode = getCode(
-    algorithmId,
-    algorithm.activeLanguage,
-    algorithm.activeTab
-  );
+  if (!activeLanguage || !activeTab) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <div className="text-lg">Algorithm not found</div>
+      </div>
+    );
+  }
+
+  const nextAlgorithmId = nextAlgorithm?.id;
+  const hasPassed = executionResult?.result?.completed ?? false;
+  const currentCode = getCode(algorithmId, activeLanguage, activeTab);
 
   return (
     <>
@@ -140,9 +205,11 @@ function Algorithm() {
             <div className="flex h-full flex-col">
               <TopBar
                 algorithmId={algorithmId}
-                activeTab={algorithm.activeTab}
-                activeLanguage={algorithm.activeLanguage}
-                onTabChange={(tab: string) => setActiveTab(algorithmId, tab)}
+                activeTab={activeTab}
+                activeLanguage={activeLanguage}
+                onTabChange={(tab: string) =>
+                  setActiveTabAction(algorithmId, tab)
+                }
                 onLanguageChange={handleLanguageChange}
                 getFiles={getFiles}
               />
@@ -159,7 +226,7 @@ function Algorithm() {
                     <div className="flex-1">
                       <CodeEditor
                         initialValue={currentCode}
-                        lang={algorithm.activeLanguage}
+                        lang={activeLanguage}
                         onChange={handleCodeChange}
                         onFocus={handleTimerManagement}
                       />
@@ -168,9 +235,9 @@ function Algorithm() {
                       algorithmId={algorithmId}
                       nextAlgorithmId={nextAlgorithmId}
                       hasPassed={hasPassed}
-                      isExecuting={algorithm.isExecuting}
-                      isSubmitting={algorithm.isSubmitting}
-                      isCompleted={algorithm.completed}
+                      isExecuting={isExecuting}
+                      isSubmitting={isSubmitting}
+                      isCompleted={isCompleted}
                       onRun={handleRunCode}
                       onReset={handleReset}
                     />
@@ -182,7 +249,7 @@ function Algorithm() {
                   minSize={20}
                   className="bg-gray-900"
                 >
-                  <ExecutionResult result={algorithm.executionResult} />
+                  <ExecutionResult result={executionResult} />
                 </ResizablePanel>
               </ResizablePanelGroup>
             </div>

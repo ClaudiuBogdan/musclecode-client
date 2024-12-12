@@ -1,6 +1,7 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ProblemDescription } from "@/components/code/ProblemDescription";
-import { useCodeStore } from "@/stores/algorithm";
+import { useAlgorithmStore } from "@/stores/algorithm";
+import { selectAlgorithmDescription } from "@/stores/algorithm/selectors";
 import { cn } from "@/lib/utils";
 import { Notes } from "../notes/Notes";
 import Submissions from "../submissions/Submissions";
@@ -21,8 +22,9 @@ export const InfoPanel: React.FC<InfoPanelProps> = ({
   tab,
   className,
 }) => {
-  const algorithm = useCodeStore((state) => state.algorithms[algorithmId]);
-
+  const description = useAlgorithmStore((state) =>
+    selectAlgorithmDescription(state, algorithmId)
+  );
   const navigate = useNavigate();
 
   const handleTabChange = (value: TabValue | string) => {
@@ -67,9 +69,7 @@ export const InfoPanel: React.FC<InfoPanelProps> = ({
           value="description"
           className="flex-grow m-0 overflow-auto border-none outline-none"
         >
-          <ProblemDescription
-            problemDescription={algorithm?.description ?? ""}
-          />
+          <ProblemDescription problemDescription={description} />
         </TabsContent>
         <TabsContent
           value="notes"

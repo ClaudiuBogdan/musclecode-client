@@ -53,6 +53,7 @@ export interface AlgorithmState {
   metadata: {
     isLoading: boolean;
     activeAlgorithmId: string | null;
+    error: string | null;
   };
   algorithms: Record<AlgorithmId, AlgorithmData>;
 }

@@ -9,7 +9,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
 import { SubmissionDetail } from "../submissions/SubmissionDetail";
 import { Submission } from "@/types/algorithm";
 import { formatDistanceToNow } from "date-fns";
-import { useCodeStore } from "@/stores/algorithm";
+import { useAlgorithmStore } from "@/stores/algorithm";
+import { selectGlobalNotes } from "@/stores/algorithm/selectors";
 import { cn } from "@/lib/utils";
 
 interface NotesProps {
@@ -18,9 +19,10 @@ interface NotesProps {
 }
 
 export const Notes: FC<NotesProps> = ({ algorithmId, className }) => {
-  const { setGlobalNotes } = useCodeStore();
-  const algorithm = useCodeStore((state) => state.algorithms[algorithmId]);
-  const globalNotes = algorithm?.globalNotes ?? "";
+  const setGlobalNotes = useAlgorithmStore((state) => state.setGlobalNotes);
+  const globalNotes = useAlgorithmStore((state) =>
+    selectGlobalNotes(state, algorithmId)
+  );
   const [showPreview, setShowPreview] = useState(false);
   const [selectedSubmission, setSelectedSubmission] =
     useState<Submission | null>(null);

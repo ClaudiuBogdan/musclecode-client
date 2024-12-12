@@ -23,15 +23,26 @@ const createAlgorithmSlice: StateCreator<
 > = (set, get) => ({
   initializeAlgorithm: async (algorithmId: string) => {
     const state = get();
-    if (state.algorithms[algorithmId]) return;
+
+    // If already initialized and not in error state, return early
+    if (state.algorithms[algorithmId] && !state.metadata.error) {
+      return;
+    }
 
     try {
+      // Set loading state and clear any previous errors
       set((state: AlgorithmState) => {
         state.metadata.isLoading = true;
+        state.metadata.error = null;
         return state;
       });
 
       const { algorithm, nextAlgorithm } = await getAlgorithm(algorithmId);
+
+      if (!algorithm) {
+        throw new Error(`Algorithm with id ${algorithmId} not found`);
+      }
+
       const codeState = algorithm.files.reduce<StoredCode>((acc, file) => {
         const language = file.language as keyof StoredCode;
         if (!acc[language]) {
@@ -42,6 +53,10 @@ const createAlgorithmSlice: StateCreator<
       }, {} as StoredCode);
 
       const languages = Object.keys(codeState) as CodeLanguage[];
+      if (languages.length === 0) {
+        throw new Error(`No language files found for algorithm ${algorithmId}`);
+      }
+
       const firstLanguage = languages[0];
       const firstFile = Object.keys(codeState[firstLanguage])[0];
 
@@ -75,10 +90,18 @@ const createAlgorithmSlice: StateCreator<
             nextAlgorithm,
           },
         };
+        state.metadata.activeAlgorithmId = algorithmId;
         return state;
       });
     } catch (error) {
       console.error("Failed to initialize algorithm:", error);
+      set((state: AlgorithmState) => {
+        state.metadata.error =
+          error instanceof Error
+            ? error.message
+            : "Failed to initialize algorithm";
+        return state;
+      });
     } finally {
       set((state: AlgorithmState) => {
         state.metadata.isLoading = false;

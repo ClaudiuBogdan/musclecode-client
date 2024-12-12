@@ -1,4 +1,8 @@
-import { useCodeStore } from "@/stores/algorithm";
+import { useAlgorithmStore } from "@/stores/algorithm";
+import {
+  selectActiveLanguage,
+  selectCodeState,
+} from "@/stores/algorithm/selectors";
 import { Code2, Check } from "lucide-react";
 import {
   DropdownMenu,
@@ -8,6 +12,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 import { CodeLanguage } from "@/types/algorithm";
+import { useCallback, useMemo } from "react";
 
 interface LanguageSelectorProps {
   algorithmId: string;
@@ -20,15 +25,31 @@ export function LanguageSelector({
   className,
   onLanguageChange,
 }: LanguageSelectorProps) {
-  const algorithm = useCodeStore((state) => state.algorithms[algorithmId]);
-  const { setActiveLanguage } = useCodeStore();
+  const activeLanguage = useAlgorithmStore((state) =>
+    selectActiveLanguage(state, algorithmId)
+  );
 
-  const { activeLanguage, languages } = algorithm || {};
+  const codeState = useAlgorithmStore((state) =>
+    selectCodeState(state, algorithmId)
+  );
 
-  const handleLanguageChange = (language: CodeLanguage) => {
-    setActiveLanguage(algorithmId, language);
-    onLanguageChange?.(language);
-  };
+  // Memoize the languages array
+  const languages = useMemo(() => {
+    if (!codeState?.initialStoredCode) return [];
+    return Object.keys(codeState.initialStoredCode) as CodeLanguage[];
+  }, [codeState?.initialStoredCode]);
+
+  const setActiveLanguage = useAlgorithmStore(
+    (state) => state.setActiveLanguage
+  );
+
+  const handleLanguageChange = useCallback(
+    (language: CodeLanguage) => {
+      setActiveLanguage(algorithmId, language);
+      onLanguageChange?.(language);
+    },
+    [algorithmId, setActiveLanguage, onLanguageChange]
+  );
 
   if (!languages || languages.length === 0) {
     return null;
@@ -51,7 +72,7 @@ export function LanguageSelector({
       >
         <div className="flex items-center gap-2">
           <Code2 className="h-4 w-4" />
-          <span>{mapLanguageLabel(activeLanguage)}</span>
+          <span>{activeLanguage ? mapLanguageLabel(activeLanguage) : ""}</span>
         </div>
       </DropdownMenuTrigger>
       <DropdownMenuContent
@@ -92,6 +113,6 @@ export function LanguageSelector({
   );
 }
 
-function mapLanguageLabel(language: CodeLanguage) {
+function mapLanguageLabel(language: CodeLanguage): string {
   return language.charAt(0).toUpperCase() + language.slice(1);
 }

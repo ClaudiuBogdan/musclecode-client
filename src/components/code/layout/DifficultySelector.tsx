@@ -14,7 +14,11 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { useCodeStore } from "@/stores/algorithm";
+import { useAlgorithmStore } from "@/stores/algorithm";
+import {
+  selectIsSubmitting,
+  selectSubmissionNotes,
+} from "@/stores/algorithm/selectors";
 import { Difficulty } from "@/types/algorithm";
 import { useToast } from "@/hooks/use-toast";
 
@@ -60,8 +64,13 @@ export const DifficultySelector: React.FC<DifficultySelectorProps> = ({
 }) => {
   const router = useRouter();
   const { toast } = useToast();
-  const algorithm = useCodeStore((state) => state.algorithms[algorithmId]);
-  const { setSubmissionNotes, submit } = useCodeStore();
+  const isSubmitting = useAlgorithmStore((state) =>
+    selectIsSubmitting(state, algorithmId)
+  );
+  const submissionNotes = useAlgorithmStore((state) =>
+    selectSubmissionNotes(state, algorithmId)
+  );
+  const { setSubmissionNotes, submit } = useAlgorithmStore();
   const [isNotesOpen, setIsNotesOpen] = useState(false);
 
   const handleSubmit = async (difficulty: Difficulty) => {
@@ -120,7 +129,7 @@ export const DifficultySelector: React.FC<DifficultySelectorProps> = ({
   return (
     <div className="flex items-center gap-3">
       <div className="flex items-center gap-1.5">
-        {algorithm.isSubmitting && (
+        {isSubmitting && (
           <Loader2Icon className="h-4 w-4 animate-spin text-gray-400" />
         )}
         {DIFFICULTIES.map((difficulty) => (
@@ -128,7 +137,7 @@ export const DifficultySelector: React.FC<DifficultySelectorProps> = ({
             <Tooltip delayDuration={100}>
               <TooltipTrigger asChild>
                 <Button
-                  disabled={algorithm.isSubmitting}
+                  disabled={isSubmitting}
                   variant="ghost"
                   className={`${difficulty.color} h-8 px-3 font-medium transition-colors duration-150 hover:text-white flex py-1`}
                   onClick={() => handleSubmit(difficulty.value)}
@@ -154,7 +163,7 @@ export const DifficultySelector: React.FC<DifficultySelectorProps> = ({
         <Popover open={isNotesOpen} onOpenChange={setIsNotesOpen}>
           <PopoverTrigger asChild>
             <Button
-              disabled={algorithm.isSubmitting}
+              disabled={isSubmitting}
               variant="ghost"
               className="h-8 px-2 hover:bg-[#2D2D2D] transition-colors duration-150"
             >
@@ -166,7 +175,7 @@ export const DifficultySelector: React.FC<DifficultySelectorProps> = ({
               <label className="text-xs font-medium text-gray-400">Notes</label>
               <Textarea
                 placeholder="Add your notes here..."
-                value={algorithm.submissionNotes}
+                value={submissionNotes}
                 onChange={(e) =>
                   setSubmissionNotes(algorithmId, e.target.value)
                 }

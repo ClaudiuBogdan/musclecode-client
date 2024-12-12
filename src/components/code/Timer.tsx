@@ -8,7 +8,12 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
-import { useCodeStore } from "@/stores/algorithm";
+import { useAlgorithmStore } from "@/stores/algorithm";
+import {
+  selectTimerState,
+  selectRunningTime,
+  selectIsPaused,
+} from "@/stores/algorithm/selectors";
 
 interface TimerProps {
   algorithmId: string;
@@ -16,21 +21,20 @@ interface TimerProps {
 }
 
 export function Timer({ algorithmId, className }: TimerProps) {
-  const timerState = useCodeStore(
-    (state) => state.algorithms[algorithmId]?.timerState
+  const timerState = useAlgorithmStore((state) =>
+    selectTimerState(state, algorithmId)
   );
-  const startTimer = useCodeStore((state) => state.startTimer);
-  const resumeTimer = useCodeStore((state) => state.resumeTimer);
-  const pauseTimer = useCodeStore((state) => state.pauseTimer);
-  const resetTimer = useCodeStore((state) => state.resetTimer);
-  const getTotalRunningTime = useCodeStore(
-    (state) => state.getTotalRunningTime
+  const isPaused = useAlgorithmStore((state) =>
+    selectIsPaused(state, algorithmId)
+  );
+  const { startTimer, resumeTimer, pauseTimer, resetTimer } =
+    useAlgorithmStore();
+  const getTotalRunningTime = useAlgorithmStore((state) =>
+    selectRunningTime(state, algorithmId)
   );
 
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [elapsed, setElapsed] = useState<number>(
-    getTotalRunningTime(algorithmId)
-  );
+  const [elapsed, setElapsed] = useState<number>(getTotalRunningTime);
 
   useEffect(() => {
     if (!timerState) {
@@ -38,24 +42,21 @@ export function Timer({ algorithmId, className }: TimerProps) {
       return;
     }
 
-    if (timerState.pausedAt != null) {
+    if (isPaused) {
       return;
     }
 
     const interval = setInterval(() => {
-      const time = getTotalRunningTime(algorithmId);
-      setElapsed(time);
+      setElapsed(getTotalRunningTime);
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [timerState, algorithmId, startTimer, getTotalRunningTime]);
+  }, [timerState, isPaused, algorithmId, startTimer, getTotalRunningTime]);
 
   const handleReset = () => {
     resetTimer(algorithmId);
     setDropdownOpen(false);
   };
-
-  const isPaused = timerState && !!timerState.pausedAt;
 
   return (
     <div
@@ -83,7 +84,7 @@ export function Timer({ algorithmId, className }: TimerProps) {
         </span>
       </div>
       <div className="flex gap-0.5">
-        {timerState?.pausedAt === null ? (
+        {!isPaused ? (
           <button
             onClick={() => pauseTimer(algorithmId)}
             className="p-1.5 text-gray-400 hover:text-gray-200 hover:bg-gray-700/50 rounded-md transition-colors"

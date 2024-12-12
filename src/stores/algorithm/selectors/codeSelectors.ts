@@ -1,4 +1,4 @@
-import { AlgorithmState, CodeFile } from "../types";
+import { AlgorithmState, CodeFile, CodeState } from "../types";
 import { CodeLanguage } from "@/types/algorithm";
 
 export const selectActiveCode = (
@@ -28,14 +28,21 @@ export const selectActiveTab = (
   return algorithm?.code.activeTab ?? null;
 };
 
+export const selectCodeState = (
+  state: AlgorithmState,
+  algorithmId: string
+): CodeState | null => {
+  const algorithm = state.algorithms[algorithmId];
+  return algorithm?.code ?? null;
+};
+
 export const selectAvailableLanguages = (
   state: AlgorithmState,
   algorithmId: string
 ): CodeLanguage[] => {
-  const algorithm = state.algorithms[algorithmId];
-  if (!algorithm) return [];
-
-  return Object.keys(algorithm.code.storedCode) as CodeLanguage[];
+  const codeState = selectCodeState(state, algorithmId);
+  if (!codeState?.storedCode) return [];
+  return Object.keys(codeState.storedCode) as CodeLanguage[];
 };
 
 export const selectAvailableFiles = (
