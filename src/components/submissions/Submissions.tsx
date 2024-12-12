@@ -56,7 +56,10 @@ export default function Submissions({ algorithmId }: { algorithmId: string }) {
   return (
     <div className="space-y-4">
       <SubmissionsTable
-        submissions={submissions}
+        submissions={submissions.sort(
+          (a, b) =>
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        )}
         onViewCode={setSelectedSubmission}
       />
 
