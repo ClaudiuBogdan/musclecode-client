@@ -321,7 +321,18 @@ export const useCodeStore = create<CodeStoreState & CodeStoreActions>()(
               },
             },
           }));
-          const response = await runCode({ algorithmId, language, code });
+
+          const timeoutPromise = new Promise((_, reject) => {
+            setTimeout(
+              () =>
+                reject(new Error("Code execution timed out after 10 seconds")),
+              10000
+            );
+          });
+
+          const codePromise = runCode({ algorithmId, language, code });
+          const response = await Promise.race([codePromise, timeoutPromise]);
+
           set((state) => ({
             algorithms: {
               ...state.algorithms,
@@ -432,6 +443,23 @@ export const useCodeStore = create<CodeStoreState & CodeStoreActions>()(
     {
       name: "code-store",
       storage: createJSONStorage(() => localStorage),
+      partialize: (state) => ({
+        ...state,
+        algorithms: Object.fromEntries(
+          Object.entries(state.algorithms).map(([id, algo]) => [
+            id,
+            {
+              ...algo,
+              isExecuting: false,
+              isSubmitting: false,
+              timerState: {
+                ...algo.timerState,
+                pausedAt: Date.now(), // Pause timer on storage
+              },
+            },
+          ])
+        ),
+      }),
     }
   )
 );
