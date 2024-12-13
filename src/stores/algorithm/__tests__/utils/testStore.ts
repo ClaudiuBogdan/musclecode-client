@@ -1,20 +1,25 @@
-import { create } from "zustand";
-import { immer } from "zustand/middleware/immer";
-import { AlgorithmState, AlgorithmData, CodeLanguage } from "../../types";
+import { AlgorithmState, AlgorithmData } from "../../types";
+import { CodeLanguage } from "@/types/algorithm";
 
 export const createEmptyAlgorithmData = (): AlgorithmData => ({
   code: {
     activeLanguage: "javascript" as CodeLanguage,
-    activeTab: "index.js",
+    activeTab: "solution.js",
     storedCode: {
-      javascript: {
-        "index.js": "",
-      },
+      javascript: { "solution.js": "" },
+      typescript: { "solution.ts": "" },
+      python: { "solution.py": "" },
+      go: { "solution.go": "" },
+      java: { "Solution.java": "" },
+      cpp: { "solution.cpp": "" },
     },
     initialStoredCode: {
-      javascript: {
-        "index.js": "",
-      },
+      javascript: { "solution.js": "" },
+      typescript: { "solution.ts": "" },
+      python: { "solution.py": "" },
+      go: { "solution.go": "" },
+      java: { "Solution.java": "" },
+      cpp: { "solution.cpp": "" },
     },
   },
   timer: {
@@ -44,12 +49,10 @@ export const createInitialState = (): AlgorithmState => ({
   metadata: {
     isLoading: false,
     activeAlgorithmId: null,
+    error: null,
   },
   algorithms: {},
 });
-
-export const createTestStore = () =>
-  create<AlgorithmState>()(immer(() => createInitialState()));
 
 export const mockAlgorithmState = (
   algorithmId: string,
@@ -58,10 +61,15 @@ export const mockAlgorithmState = (
   metadata: {
     isLoading: false,
     activeAlgorithmId: algorithmId,
+    error: null,
   },
   algorithms: {
     [algorithmId]: {
       ...createEmptyAlgorithmData(),
+      metadata: {
+        ...createEmptyAlgorithmData().metadata,
+        algorithmId,
+      },
       ...partialState,
     },
   },

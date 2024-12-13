@@ -15,7 +15,7 @@ import { getAlgorithm } from "@/lib/api/code";
 import { createInitialState } from "./__tests__/utils/testStore";
 import { CodeLanguage } from "@/types/algorithm";
 
-const createAlgorithmSlice: StateCreator<
+export const createAlgorithmSlice: StateCreator<
   AlgorithmState & StoreActions,
   [["zustand/immer", never], ["zustand/persist", unknown]],
   [],
