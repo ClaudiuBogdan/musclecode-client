@@ -12,7 +12,10 @@
     "test": "vitest",
     "test:ui": "vitest --ui",
     "test:coverage": "vitest run --coverage",
-    "test:watch": "vitest watch"
+    "test:watch": "vitest watch",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:debug": "playwright test --debug"
   },
   "dependencies": {
     "@babel/runtime": "^7.11.0",
@@ -83,6 +86,7 @@
   "devDependencies": {
     "@eslint/js": "^9.13.0",
     "@faker-js/faker": "^9.2.0",
+    "@playwright/test": "^1.49.1",
     "@tanstack/router-devtools": "^1.81.9",
     "@tanstack/router-plugin": "^1.81.9",
     "@testing-library/jest-dom": "^6.1.5",

@@ -27,6 +27,10 @@ describe("State Utils", () => {
           ...createEmptyAlgorithmData().metadata,
           algorithmId: testAlgorithmId,
         },
+        timer: {
+          ...createEmptyAlgorithmData().timer,
+          initialStartTime: expect.any(Number),
+        },
       };
       expect(algorithm).toBeDefined();
       expect(algorithm).toEqual(expectedData);
