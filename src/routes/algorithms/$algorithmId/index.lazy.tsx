@@ -179,7 +179,9 @@ function Algorithm() {
   if (!activeLanguage || !activeTab) {
     return (
       <div className="flex h-screen items-center justify-center">
-        <div className="text-lg">Algorithm not found</div>
+        <div className="text-lg text-red-500">
+          Algorithm configuration error
+        </div>
       </div>
     );
   }

@@ -34,6 +34,36 @@ export const createAlgorithmSlice: StateCreator<
       set((state: AlgorithmState) => {
         state.metadata.isLoading = true;
         state.metadata.error = null;
+        // Initialize an empty placeholder to prevent "not found" errors during loading
+        state.algorithms[algorithmId] = {
+          code: {
+            activeLanguage: "javascript",
+            activeTab: "",
+            storedCode: {} as StoredCode,
+            initialStoredCode: {} as StoredCode,
+          },
+          timer: {
+            initialStartTime: Date.now(),
+            pausedAt: null,
+            totalPausedTime: 0,
+          },
+          execution: {
+            isExecuting: false,
+            executionResult: null,
+            error: null,
+          },
+          submission: {
+            isSubmitting: false,
+            completed: false,
+            submissionNotes: "",
+            globalNotes: "",
+          },
+          metadata: {
+            algorithmId,
+            description: "",
+            nextAlgorithm: null,
+          },
+        };
         return state;
       });
 
@@ -54,7 +84,16 @@ export const createAlgorithmSlice: StateCreator<
 
       const languages = Object.keys(codeState) as CodeLanguage[];
       if (languages.length === 0) {
-        throw new Error(`No language files found for algorithm ${algorithmId}`);
+        const error = new Error(
+          `No language files found for algorithm ${algorithmId}`
+        );
+        set((state: AlgorithmState) => {
+          state.metadata.error = error.message;
+          state.metadata.isLoading = false;
+          delete state.algorithms[algorithmId];
+          return state;
+        });
+        throw error;
       }
 
       const firstLanguage = languages[0];
@@ -91,6 +130,7 @@ export const createAlgorithmSlice: StateCreator<
           },
         };
         state.metadata.activeAlgorithmId = algorithmId;
+        state.metadata.isLoading = false;
         return state;
       });
     } catch (error) {
@@ -100,13 +140,12 @@ export const createAlgorithmSlice: StateCreator<
           error instanceof Error
             ? error.message
             : "Failed to initialize algorithm";
-        return state;
-      });
-    } finally {
-      set((state: AlgorithmState) => {
         state.metadata.isLoading = false;
+        // Clean up the placeholder on error
+        delete state.algorithms[algorithmId];
         return state;
       });
+      throw error; // Re-throw the error to ensure promise rejection
     }
   },
 });
