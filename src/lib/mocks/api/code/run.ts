@@ -12,28 +12,33 @@ import {
 import { createMockTestResponse } from "./utils";
 
 interface RunCodeRequest {
-  code: string;
+  files: Record<string, string>;
   language: string;
   algorithmId: string;
 }
 
 export const runCode = http.post("/api/code/run", async ({ request }) => {
-  const { code, language } = (await request.json()) as RunCodeRequest;
+  const { files, language } = (await request.json()) as RunCodeRequest;
+
+  // Combine solution and test files
+  const combinedCode = Object.entries(files)
+    .map(([, content]) => content)
+    .join("\n\n");
 
   if (language === "python") {
-    return await executePythonCode(code);
+    return await executePythonCode(combinedCode);
   }
 
   if (language === "typescript") {
-    return await executeTypeScriptCode(code);
+    return await executeTypeScriptCode(combinedCode);
   }
 
   if (language === "javascript") {
-    return await executeJavaScriptCode(code);
+    return await executeJavaScriptCode(combinedCode);
   }
 
   // Default behavior for other languages
-  const result = createMockTestResponse(code);
+  const result = createMockTestResponse(combinedCode);
   return HttpResponse.json(result);
 });
 

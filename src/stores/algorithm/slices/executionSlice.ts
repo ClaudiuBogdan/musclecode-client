@@ -17,7 +17,7 @@ export const createExecutionSlice: StateCreator<
 
     return withAlgorithm(state, algorithmId, async () => {
       const algorithm = state.algorithms[algorithmId];
-      const { activeLanguage, activeTab, storedCode } = algorithm.code;
+      const { activeLanguage, storedCode } = algorithm.code;
 
       if (algorithm.execution.isExecuting) {
         return;
@@ -32,7 +32,7 @@ export const createExecutionSlice: StateCreator<
       });
 
       try {
-        const code = storedCode[activeLanguage][activeTab];
+        const files = storedCode[activeLanguage];
 
         const timeoutPromise = new Promise((_, reject) => {
           setTimeout(
@@ -45,7 +45,7 @@ export const createExecutionSlice: StateCreator<
         const codePromise = runCode({
           algorithmId,
           language: activeLanguage,
-          code,
+          files,
         });
         const executionResult = await Promise.race([
           codePromise,
@@ -67,5 +67,5 @@ export const createExecutionSlice: StateCreator<
         throw error;
       }
     });
-  },
+  }
 });

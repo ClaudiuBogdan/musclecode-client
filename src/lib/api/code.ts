@@ -5,7 +5,7 @@ import { Algorithm, Difficulty, Submission } from "@/types/algorithm";
 export interface CodeRunRequest {
   algorithmId: string;
   language: string;
-  code: string;
+  files: Record<string, string>;
 }
 
 export interface SubmissionRequest {

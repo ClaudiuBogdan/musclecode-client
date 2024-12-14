@@ -149,7 +149,7 @@ describe("Execution Slice", () => {
       expect(mockRunCode).toHaveBeenCalledWith({
         algorithmId,
         language: activeLanguage,
-        code,
+        files: state.algorithms[algorithmId].code.storedCode[activeLanguage],
       });
     });
 
