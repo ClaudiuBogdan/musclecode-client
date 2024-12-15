@@ -27,11 +27,14 @@ export interface TestResult {
 export async function runCode(
   request: CodeRunRequest
 ): Promise<CodeExecutionResponse> {
-  const { data } = await apiClient.post<CodeExecutionResponse>("/execute", {
-    ...request,
-    submissionId: "submissionId-123",
-    userId: "userId-123",
-  });
+  const { data } = await apiClient.post<CodeExecutionResponse>(
+    "/api/code/run",
+    {
+      ...request,
+      submissionId: "submissionId-123",
+      userId: "userId-123",
+    }
+  );
   return data;
 }
 

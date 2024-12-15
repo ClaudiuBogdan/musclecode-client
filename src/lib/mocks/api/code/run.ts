@@ -9,37 +9,46 @@ import {
   JavaScriptRuntime,
   JavaScriptRuntimeResult,
 } from "@/wasm/services/javascript-runtime.service";
-import { createMockTestResponse } from "./utils";
+import axios from "axios";
 
 interface RunCodeRequest {
-  files: Record<string, string>;
+  code: string;
   language: string;
-  algorithmId: string;
+  userId: string;
+  submissionId: string;
 }
 
 export const runCode = http.post("/api/code/run", async ({ request }) => {
-  const { files, language } = (await request.json()) as RunCodeRequest;
+  const { userId, submissionId, code, language } =
+    (await request.json()) as RunCodeRequest;
 
-  // Combine solution and test files
-  const combinedCode = Object.entries(files)
-    .map(([, content]) => content)
-    .join("\n\n");
+  try {
+    const apiClient = axios.create({
+      baseURL: "http://localhost:3002",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
 
-  if (language === "python") {
-    return await executePythonCode(combinedCode);
+    const response = await apiClient.post("/execute", {
+      userId,
+      submissionId,
+      code,
+      language,
+    });
+
+    const data = response.data;
+    console.log("================= data ==================");
+    console.log({ data, userId, submissionId, code, language });
+    if (data.error) {
+      return HttpResponse.json({ error: data.error }, { status: 500 });
+    }
+    return HttpResponse.json(data);
+  } catch (error) {
+    return HttpResponse.json({ error: "Failed to run code" }, { status: 500 });
   }
-
-  if (language === "typescript") {
-    return await executeTypeScriptCode(combinedCode);
-  }
-
-  if (language === "javascript") {
-    return await executeJavaScriptCode(combinedCode);
-  }
-
-  // Default behavior for other languages
-  const result = createMockTestResponse(combinedCode);
-  return HttpResponse.json(result);
+  // const result = createMockTestResponse(code);
+  // return HttpResponse.json(result);
 });
 
 async function executePythonCode(code: string): Promise<HttpResponse> {
