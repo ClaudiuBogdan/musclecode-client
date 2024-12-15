@@ -251,7 +251,10 @@ function Algorithm() {
                   minSize={20}
                   className="bg-gray-900"
                 >
-                  <ExecutionResult result={executionResult} />
+                  <ExecutionResult
+                    result={executionResult}
+                    isExecuting={isExecuting}
+                  />
                 </ResizablePanel>
               </ResizablePanelGroup>
             </div>

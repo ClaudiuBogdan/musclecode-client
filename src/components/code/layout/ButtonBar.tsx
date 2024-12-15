@@ -51,7 +51,6 @@ export const ButtonBar: React.FC<ButtonBarProps> = ({
         {!isCompleted && (
           <RunButton
             onRun={onRun}
-            isRunning={isExecuting}
             disabled={isExecuting || isSubmitting}
             className="hover:bg-[#2D2D2D] transition-colors duration-150"
           />

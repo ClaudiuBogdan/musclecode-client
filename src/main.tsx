@@ -21,10 +21,10 @@ async function enableMocking() {
     return;
   }
 
-  const { worker } = await import("./lib/mocks/browser");
-  return worker.start({
-    onUnhandledRequest: "bypass",
-  });
+  // const { worker } = await import("./lib/mocks/browser");
+  // return worker.start({
+  //   onUnhandledRequest: "bypass",
+  // });
 }
 
 // Initialize MSW and then render the app

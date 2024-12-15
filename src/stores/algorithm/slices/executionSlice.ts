@@ -45,7 +45,7 @@ export const createExecutionSlice: StateCreator<
         const codePromise = runCode({
           algorithmId,
           language: activeLanguage,
-          files,
+          code: Object.values(files).join("\n"),
         });
         const executionResult = await Promise.race([
           codePromise,
