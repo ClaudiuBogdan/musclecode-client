@@ -72,11 +72,12 @@ describe("Algorithm Slice", () => {
           {
             id: "test-file-id",
             language: "javascript",
-            name: "solution.js",
+            name: "solution",
             content: "function solution() {}",
             type: "solution",
             readOnly: false,
             required: true,
+            extension: "js",
           },
         ],
         completed: false,

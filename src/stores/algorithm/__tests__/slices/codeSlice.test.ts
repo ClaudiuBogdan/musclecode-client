@@ -10,6 +10,7 @@ import { createExecutionSlice } from "../../slices/executionSlice";
 import { createSubmissionSlice } from "../../slices/submissionSlice";
 import { createAlgorithmSlice } from "../..";
 import { v4 as uuidv4 } from "uuid";
+import { getLanguageExtension } from "@/lib/utils/algorithm";
 
 type TestStore = AlgorithmState & StoreActions;
 
@@ -56,6 +57,7 @@ describe("Code Slice", () => {
       name: tab,
       type: tab.includes("test") ? "test" : "solution",
       content: code,
+      extension: getLanguageExtension(language),
       language,
       readOnly: false,
       required: true,
@@ -107,6 +109,7 @@ describe("Code Slice", () => {
           type: "solution",
           content: pythonCode,
           language: "python",
+          extension: "py",
           readOnly: false,
           required: true,
         };
@@ -197,6 +200,7 @@ describe("Code Slice", () => {
             type: tab.includes("test") ? "test" : "solution",
             content: code,
             language,
+            extension: getLanguageExtension(language),
             readOnly: false,
             required: true,
           };

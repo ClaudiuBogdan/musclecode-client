@@ -1,3 +1,4 @@
+import { getLanguageExtension } from "@/lib/utils/algorithm";
 import { AlgorithmState, AlgorithmData } from "../../types";
 import { AlgorithmFile, CodeLanguage } from "@/types/algorithm";
 import { v4 as uuidv4 } from "uuid";
@@ -11,6 +12,7 @@ const createEmptyFile = (
   type: name.includes("test") ? "test" : "solution",
   content: "",
   language,
+  extension: getLanguageExtension(language),
   readOnly: false,
   required: true,
 });

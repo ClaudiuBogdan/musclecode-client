@@ -65,10 +65,11 @@ describe("Submission Slice", () => {
     const difficulty: Difficulty = "easy";
     const mockFile: AlgorithmFile = {
       id: "test-uuid",
-      name: "solution.js",
+      name: "solution",
       content: "function solution() { return true; }",
       type: "solution",
       language: "javascript",
+      extension: "js",
     };
 
     beforeEach(() => {

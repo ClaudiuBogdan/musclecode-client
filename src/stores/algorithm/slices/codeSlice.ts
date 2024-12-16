@@ -2,6 +2,7 @@ import { StateCreator } from "zustand";
 import { AlgorithmState, CodeActions, StoreActions } from "../types";
 import { withAlgorithm } from "../utils/stateUtils";
 import { v4 as uuidv4 } from "uuid";
+import { getLanguageExtension } from "@/lib/utils/algorithm";
 
 export const createCodeSlice: StateCreator<
   AlgorithmState & StoreActions,
@@ -24,6 +25,7 @@ export const createCodeSlice: StateCreator<
           type: activeTab.includes("test") ? "test" : "solution",
           content: code,
           language: activeLanguage,
+          extension: getLanguageExtension(activeLanguage),
           readOnly: existingFile?.readOnly || false,
           required: existingFile?.required || true,
         };

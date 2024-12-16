@@ -143,10 +143,11 @@ describe("Execution Slice", () => {
       const { activeLanguage, activeTab } = state.algorithms[algorithmId].code;
       const mockFile: AlgorithmFile = {
         id: "test-uuid",
-        name: "solution.js",
+        name: "solution",
         content: "function solution() { return true; }",
         type: "solution",
         language: "javascript",
+        extension: "js",
       };
       state.algorithms[algorithmId].code.storedCode[activeLanguage][activeTab] =
         mockFile;

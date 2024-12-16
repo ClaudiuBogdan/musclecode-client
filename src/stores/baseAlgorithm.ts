@@ -2,6 +2,7 @@ import { StateCreator } from "zustand";
 import { AlgorithmFile, CodeLanguage } from "@/types/algorithm";
 import { v4 as uuidv4 } from "uuid";
 import { NewAlgorithm } from "@/types/newAlgorithm";
+import { getLanguageExtension } from "@/lib/utils/algorithm";
 
 // Constants
 export const MAX_TITLE_LENGTH = 100;
@@ -117,6 +118,7 @@ export const createBaseAlgorithmSlice: StateCreator<
           content: getLanguageTemplate(language, "solution"),
           readOnly: false,
           required: true,
+          extension: getLanguageExtension(language),
         },
         {
           id: uuidv4(),
@@ -126,6 +128,7 @@ export const createBaseAlgorithmSlice: StateCreator<
           type: "test",
           readOnly: true,
           required: true,
+          extension: getLanguageExtension(language),
         },
       ];
 

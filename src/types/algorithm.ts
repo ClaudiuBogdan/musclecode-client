@@ -8,6 +8,7 @@ export interface AlgorithmFile {
   type: AlgorithmFileType;
   content: string;
   language: CodeLanguage;
+  extension: string;
   readOnly?: boolean;
   required?: boolean;
 }
