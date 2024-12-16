@@ -2,6 +2,7 @@ export interface TestItem {
   t: "describe" | "it" | "failed" | "passed" | "completedin" | "error";
   v: string;
   p: boolean;
+  error?: string;
   items?: TestItem[];
 }
 

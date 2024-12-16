@@ -390,7 +390,7 @@ Step 3: Middle element is 1. Target found!
       files: [
         {
           id: uuidv4(),
-          name: "solution.ts",
+          name: "solution.js",
           type: "solution",
           content: `
 const num = 1;
@@ -424,6 +424,28 @@ console.log(binarySearch([1, 3, 4, 6, 8, 9, 11], 6)); // Output: 3
           required: true,
         },
 
+        {
+          id: uuidv4(),
+          name: "test.js",
+          type: "test",
+          content: `
+test('binarySearch', () => {
+    expect(binarySearch([1, 3, 4, 6, 8, 9, 11], 6)).toBe(3);
+    expect(binarySearch([1, 3, 4, 6, 8, 9, 11], 5)).toBe(-1);
+});
+
+describe('binarySearch', () => {
+    it('should return the index of the target value', () => {
+        expect(binarySearch([1, 3, 4, 6, 8, 9, 11], 6)).toBe(3);
+    });
+    it('should return -1 if the target value is not found', () => {
+        expect(binarySearch([1, 3, 4, 6, 8, 9, 11], 5)).toBe(-1);
+    });
+});
+          `,
+          language: "javascript",
+          readOnly: true,
+        },
         {
           id: uuidv4(),
           name: "solution.go",

@@ -49,7 +49,8 @@ const TestItemComponent = ({ item, level = 0 }: TestItemComponentProps) => {
     return null;
   }
 
-  const hasError = item.items?.some((subItem) => subItem.t === "error");
+  const hasError =
+    item.error || item.items?.some((subItem) => subItem.t === "error");
   const hasItems = item.items && item.items.length > 0;
 
   const baseIndent = level * 24;
@@ -85,21 +86,30 @@ const TestItemComponent = ({ item, level = 0 }: TestItemComponentProps) => {
         <div className="mt-1 shrink-0">{getIcon()}</div>
         <div className="flex-1">
           <div className={getItemClass()}>{item.v}</div>
-          {hasError && (item.t === "failed" || item.t === "it") && (
+          {item.error && (
             <div className="mt-2 mb-2">
-              {item.items?.map(
-                (subItem, index) =>
-                  subItem.t === "error" && (
-                    <div
-                      key={index}
-                      className="bg-yellow-950/30 p-2 rounded text-yellow-400 font-mono text-sm whitespace-pre-wrap"
-                    >
-                      {subItem.v}
-                    </div>
-                  )
-              )}
+              <div className="bg-yellow-950/30 p-2 rounded text-yellow-400 font-mono text-sm whitespace-pre-wrap">
+                {item.error}
+              </div>
             </div>
           )}
+          {hasError &&
+            (item.t === "failed" || item.t === "it") &&
+            !item.error && (
+              <div className="mt-2 mb-2">
+                {item.items?.map(
+                  (subItem, index) =>
+                    subItem.t === "error" && (
+                      <div
+                        key={index}
+                        className="bg-yellow-950/30 p-2 rounded text-yellow-400 font-mono text-sm whitespace-pre-wrap"
+                      >
+                        {subItem.v}
+                      </div>
+                    )
+                )}
+              </div>
+            )}
         </div>
         {(item.t === "it" || item.t === "failed" || item.t === "passed") && (
           <span className="text-xs text-gray-500 mt-1 shrink-0">
@@ -206,6 +216,21 @@ const LoadingAnimation = () => {
   );
 };
 
+const ConsoleOutput = ({ stdout }: { stdout: string }) => {
+  if (!stdout) return null;
+
+  return (
+    <div className="border-t border-gray-700 mt-4 pt-4">
+      <div className="text-gray-400 text-sm mb-2 font-semibold">
+        Console Output
+      </div>
+      <pre className="bg-gray-900/50 p-3 rounded text-gray-300 font-mono text-sm whitespace-pre-wrap overflow-auto max-h-[200px]">
+        {stdout}
+      </pre>
+    </div>
+  );
+};
+
 export function ExecutionResult({
   result,
   isExecuting = false,
@@ -256,10 +281,13 @@ export function ExecutionResult({
   return (
     <div className="h-full flex flex-col">
       <ExecutionSummary result={result} />
-      <div className="flex-1 overflow-auto p-4 space-y-2">
-        {result.result.output.map((item, index) => (
-          <TestItemComponent key={index} item={item} />
-        ))}
+      <div className="flex-1 overflow-auto p-4">
+        <div className="space-y-2">
+          {result.result.output.map((item, index) => (
+            <TestItemComponent key={index} item={item} />
+          ))}
+        </div>
+        {result.stdout && <ConsoleOutput stdout={result.stdout} />}
       </div>
     </div>
   );
