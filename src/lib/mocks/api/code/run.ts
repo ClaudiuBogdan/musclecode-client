@@ -38,8 +38,6 @@ export const runCode = http.post("/api/code/run", async ({ request }) => {
     });
 
     const data = response.data;
-    console.log("================= data ==================");
-    console.log({ data, userId, submissionId, code, language });
     if (data.error) {
       return HttpResponse.json({ error: data.error }, { status: 500 });
     }

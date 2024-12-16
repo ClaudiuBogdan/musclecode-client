@@ -6,10 +6,8 @@ import {
   Clock,
   AlertCircle,
   ChevronRight,
-  Code2,
 } from "lucide-react";
-import { motion } from "framer-motion";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { MatrixRain } from "./MatrixAnimation";
 
 interface ExecutionResultProps {
@@ -175,14 +173,26 @@ const ExecutionSummary = ({ result }: { result: CodeExecutionResponse }) => {
   );
 };
 
-const CompilationError = ({ stderr }: { stderr: string }) => {
+const CompilationError = ({ result }: { result: CodeExecutionResponse }) => {
   return (
-    <div className="p-4 overflow-auto">
-      <div className="bg-red-950/30 p-3 rounded border border-red-900/50">
-        <div className="text-red-400 mb-2 font-semibold">Compilation Error</div>
-        <pre className="text-red-400 font-mono text-sm whitespace-pre-wrap overflow-auto">
-          {stderr}
-        </pre>
+    <div className="h-full flex flex-col">
+      <div className="flex items-center gap-4 px-4 py-2 bg-gray-800 border-b border-gray-700">
+        <div className="flex items-center gap-2">
+          <AlertCircle className="h-4 w-4 text-red-500" />
+          <span className="text-sm text-gray-300">{result.message}</span>
+        </div>
+      </div>
+      <div className="p-4 overflow-auto">
+        <div className="bg-red-950/30 p-3 rounded border border-red-900/50">
+          <div className="text-red-400 mb-2 font-semibold">
+            Compilation Error
+          </div>
+          <pre className="text-red-400 font-mono text-sm whitespace-pre-wrap overflow-auto">
+            {result.stderr ||
+              result.result.error ||
+              "Unknown compilation error"}
+          </pre>
+        </div>
       </div>
     </div>
   );
@@ -216,18 +226,17 @@ export function ExecutionResult({
     );
   }
 
+  // Check for compilation error first
   const hasCompilationError =
-    result.stderr && result.result.output.length === 0;
+    result.type === "execution error" &&
+    (result.message === "Compilation failed" ||
+      result.message === "Syntax error");
 
   if (hasCompilationError) {
-    return (
-      <div className="h-full flex flex-col">
-        <ExecutionSummary result={result} />
-        <CompilationError stderr={result.stderr} />
-      </div>
-    );
+    return <CompilationError result={result} />;
   }
 
+  // Check for runtime execution error without test results
   if (result.type === "execution error" && !result.result.output.length) {
     return (
       <div className="h-full">
@@ -243,6 +252,7 @@ export function ExecutionResult({
     );
   }
 
+  // Regular test results display
   return (
     <div className="h-full flex flex-col">
       <ExecutionSummary result={result} />

@@ -119,8 +119,7 @@ const MatrixStream = ({ columnIndex }: { columnIndex: number }) => {
 };
 
 export const MatrixRain = () => {
-  const phrase = "Running tests...";
-
+  const phrase = "[Running tests]";
   return (
     <div className="relative w-[500px] h-[200px] overflow-hidden rounded-2xl bg-gradient-to-b from-gray-900/5 via-gray-900/20 to-gray-900/5 backdrop-blur-sm">
       <div className="absolute top-0 left-0 right-0 h-16 bg-gradient-to-b from-gray-900 to-transparent z-10" />
@@ -142,29 +141,14 @@ export const MatrixRain = () => {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.2 }}
       >
-        <motion.div
-          className="text-green-400 font-mono text-lg px-8 py-4 rounded-xl"
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{
-            opacity: [0.8, 1],
-            scale: 1,
-            textShadow: [
-              "0 0 8px rgba(74, 222, 128, 0.5)",
-              "0 0 16px rgba(74, 222, 128, 0.8)",
-              "0 0 24px rgba(74, 222, 128, 0.6)",
-            ],
-          }}
-          transition={{
-            duration: 0.2,
-            textShadow: {
-              duration: 1.5,
-              repeat: Infinity,
-              ease: "easeInOut",
-            },
+        <p
+          className="text-green-400 font-mono text-lg p-0 rounded-xl bg-gray-900/50 backdrop-blur-sm"
+          style={{
+            textShadow: "0 0 16px rgba(74, 222, 128, 0.8)",
           }}
         >
           {phrase}
-        </motion.div>
+        </p>
       </motion.div>
     </div>
   );
