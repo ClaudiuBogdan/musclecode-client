@@ -142,7 +142,7 @@ export const MatrixRain = () => {
         transition={{ duration: 0.2 }}
       >
         <p
-          className="text-green-400 font-mono text-lg p-0 rounded-xl bg-gray-900/50 backdrop-blur-sm"
+          className="text-green-400 font-mono text-lg p-0 rounded-xl bg-gray-900/50 backdrop-blur-sm select-none"
           style={{
             textShadow: "0 0 16px rgba(74, 222, 128, 0.8)",
           }}

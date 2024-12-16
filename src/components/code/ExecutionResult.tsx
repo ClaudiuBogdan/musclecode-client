@@ -111,11 +111,12 @@ const TestItemComponent = ({ item, level = 0 }: TestItemComponentProps) => {
               </div>
             )}
         </div>
-        {(item.t === "it" || item.t === "failed" || item.t === "passed") && (
+        {/* TODO: fix this */}
+        {/* {(item.t === "it" || item.t === "failed" || item.t === "passed") && (
           <span className="text-xs text-gray-500 mt-1 shrink-0">
             {item.items?.find((i) => i.t === "completedin")?.v}ms
           </span>
-        )}
+        )} */}
       </div>
       {isExpanded && hasItems && (
         <div className="space-y-1">
@@ -177,7 +178,9 @@ const ExecutionSummary = ({ result }: { result: CodeExecutionResponse }) => {
       )}
       <div className="flex items-center gap-2 ml-auto">
         <Clock className="h-4 w-4 text-gray-400" />
-        <span className="text-sm text-gray-400">{result.wallTime}ms</span>
+        <span className="text-sm text-gray-400">
+          {result.wallTime.toFixed(2)}ms
+        </span>
       </div>
     </div>
   );
