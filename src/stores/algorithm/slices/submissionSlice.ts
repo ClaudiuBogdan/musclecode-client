@@ -28,7 +28,7 @@ export const createSubmissionSlice: StateCreator<
 
       try {
         const { activeLanguage, activeTab, storedCode } = algorithm.code;
-        const code = storedCode[activeLanguage][activeTab];
+        const code = storedCode[activeLanguage][activeTab].content;
         const timeSpent = get().getTotalRunningTime(algorithmId);
 
         const submission: Submission = {

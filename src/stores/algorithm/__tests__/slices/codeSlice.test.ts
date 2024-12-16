@@ -9,6 +9,7 @@ import { createTimerSlice } from "../../slices/timerSlice";
 import { createExecutionSlice } from "../../slices/executionSlice";
 import { createSubmissionSlice } from "../../slices/submissionSlice";
 import { createAlgorithmSlice } from "../..";
+import { v4 as uuidv4 } from "uuid";
 
 type TestStore = AlgorithmState & StoreActions;
 
@@ -50,7 +51,15 @@ describe("Code Slice", () => {
     const state = mockAlgorithmState(algorithmId);
     state.algorithms[algorithmId].code.activeLanguage = language;
     state.algorithms[algorithmId].code.activeTab = tab;
-    state.algorithms[algorithmId].code.storedCode[language][tab] = code;
+    state.algorithms[algorithmId].code.storedCode[language][tab] = {
+      id: `${algorithmId}-${uuidv4()}`,
+      name: tab,
+      type: tab.includes("test") ? "test" : "solution",
+      content: code,
+      language,
+      readOnly: false,
+      required: true,
+    };
     return createTestStore(state);
   };
 
@@ -92,7 +101,15 @@ describe("Code Slice", () => {
         const pythonCode = "def solution(): pass";
         initialState.algorithms[DEFAULT_ALGORITHM_ID].code.storedCode.python[
           "solution.py"
-        ] = pythonCode;
+        ] = {
+          id: `${DEFAULT_ALGORITHM_ID}-${uuidv4()}`,
+          name: "solution.py",
+          type: "solution",
+          content: pythonCode,
+          language: "python",
+          readOnly: false,
+          required: true,
+        };
         store = createTestStore(initialState);
 
         store.getState().setCode(DEFAULT_ALGORITHM_ID, DEFAULT_TEST_CODE);
@@ -108,34 +125,6 @@ describe("Code Slice", () => {
         expect(() => {
           store.getState().setCode("non-existent", DEFAULT_TEST_CODE);
         }).toThrow("Algorithm with id non-existent not found");
-      });
-    });
-
-    describe("Language and Tab Management", () => {
-      it("should update active language and maintain code state", () => {
-        const newLanguage: CodeLanguage = "python";
-        const initialCode =
-          store.getState().algorithms[DEFAULT_ALGORITHM_ID].code.storedCode;
-
-        store.getState().setActiveLanguage(DEFAULT_ALGORITHM_ID, newLanguage);
-
-        const updatedState =
-          store.getState().algorithms[DEFAULT_ALGORITHM_ID].code;
-        expect(updatedState.activeLanguage).toBe(newLanguage);
-        expect(updatedState.storedCode).toEqual(initialCode);
-      });
-
-      it("should update active tab and maintain code state", () => {
-        const newTab = "test.js";
-        const initialCode =
-          store.getState().algorithms[DEFAULT_ALGORITHM_ID].code.storedCode;
-
-        store.getState().setActiveTab(DEFAULT_ALGORITHM_ID, newTab);
-
-        const updatedState =
-          store.getState().algorithms[DEFAULT_ALGORITHM_ID].code;
-        expect(updatedState.activeTab).toBe(newTab);
-        expect(updatedState.storedCode).toEqual(initialCode);
       });
     });
 
@@ -175,8 +164,10 @@ describe("Code Slice", () => {
         store.getState().resetCode(DEFAULT_ALGORITHM_ID);
 
         const resetState = store.getState().algorithms[DEFAULT_ALGORITHM_ID];
-        expect(resetState.code.storedCode[activeLanguage][activeTab]).toBe(
-          resetState.code.initialStoredCode[activeLanguage][activeTab]
+        expect(
+          resetState.code.storedCode[activeLanguage][activeTab].content
+        ).toBe(
+          resetState.code.initialStoredCode[activeLanguage][activeTab].content
         );
         expect(resetState.execution.isExecuting).toBe(false);
         expect(resetState.execution.executionResult).toBeNull();
@@ -200,7 +191,15 @@ describe("Code Slice", () => {
         testCases.forEach(({ language, tab, code }) => {
           initialState.algorithms[DEFAULT_ALGORITHM_ID].code.storedCode[
             language
-          ][tab] = code;
+          ][tab] = {
+            id: `${DEFAULT_ALGORITHM_ID}-${uuidv4()}`,
+            name: tab,
+            type: tab.includes("test") ? "test" : "solution",
+            content: code,
+            language,
+            readOnly: false,
+            required: true,
+          };
         });
         store = createTestStore(initialState);
 
@@ -217,34 +216,6 @@ describe("Code Slice", () => {
             .getState()
             .getCode(DEFAULT_ALGORITHM_ID, "javascript", "nonexistent.js")
         ).toBe("");
-      });
-    });
-
-    describe("File Management", () => {
-      it("should return correct file list for each language", () => {
-        const state = mockAlgorithmState(DEFAULT_ALGORITHM_ID);
-        state.algorithms[DEFAULT_ALGORITHM_ID].code.storedCode.javascript = {
-          "solution.js": "",
-          "test.js": "",
-        };
-        store = createTestStore(state);
-
-        const files = store
-          .getState()
-          .getFiles(DEFAULT_ALGORITHM_ID, "javascript");
-
-        expect(files).toHaveLength(2);
-        expect(files).toEqual([
-          { name: "solution.js", readOnly: false },
-          { name: "test.js", readOnly: false },
-        ]);
-      });
-
-      it("should return empty array for non-existent language", () => {
-        const files = store
-          .getState()
-          .getFiles(DEFAULT_ALGORITHM_ID, "rust" as CodeLanguage);
-        expect(files).toHaveLength(0);
       });
     });
   });

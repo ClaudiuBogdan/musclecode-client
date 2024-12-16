@@ -4,7 +4,7 @@ import { createSubmissionSlice } from "../../slices/submissionSlice";
 import { AlgorithmState, StoreActions } from "../../types";
 import { mockAlgorithmState } from "../utils/testStore";
 import { saveSubmission } from "@/lib/api/code";
-import { Difficulty } from "@/types/algorithm";
+import { AlgorithmFile, Difficulty } from "@/types/algorithm";
 import { createAlgorithmSlice } from "../..";
 import { createCodeSlice } from "../../slices/codeSlice";
 import { createTimerSlice } from "../../slices/timerSlice";
@@ -63,13 +63,19 @@ describe("Submission Slice", () => {
 
   describe("submit", () => {
     const difficulty: Difficulty = "easy";
-    const mockCode = "function solution() { return true; }";
+    const mockFile: AlgorithmFile = {
+      id: "test-uuid",
+      name: "solution.js",
+      content: "function solution() { return true; }",
+      type: "solution",
+      language: "javascript",
+    };
 
     beforeEach(() => {
       const state = store.getState();
       const { activeLanguage, activeTab } = state.algorithms[algorithmId].code;
       state.algorithms[algorithmId].code.storedCode[activeLanguage][activeTab] =
-        mockCode;
+        mockFile;
     });
 
     it("should submit code successfully", async () => {
@@ -90,7 +96,7 @@ describe("Submission Slice", () => {
           id: "test-uuid",
           algorithmId,
           difficulty,
-          code: mockCode,
+          code: mockFile.content,
           createdAt: mockDate.toISOString(),
         })
       );

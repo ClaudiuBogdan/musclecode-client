@@ -27,6 +27,145 @@ describe("State Utils", () => {
           ...createEmptyAlgorithmData().metadata,
           algorithmId: testAlgorithmId,
         },
+        code: {
+          ...createEmptyAlgorithmData().code,
+          storedCode: {
+            cpp: {
+              "solution.cpp": {
+                content: "",
+                id: expect.any(String),
+                language: "cpp",
+                name: "solution.cpp",
+                readOnly: false,
+                required: true,
+                type: "solution",
+              },
+            },
+            go: {
+              "solution.go": {
+                content: "",
+                id: expect.any(String),
+                language: "go",
+                name: "solution.go",
+                readOnly: false,
+                required: true,
+                type: "solution",
+              },
+            },
+            java: {
+              "Solution.java": {
+                content: "",
+                id: expect.any(String),
+                language: "java",
+                name: "Solution.java",
+                readOnly: false,
+                required: true,
+                type: "solution",
+              },
+            },
+            javascript: {
+              "solution.js": {
+                content: "",
+                id: expect.any(String),
+                language: "javascript",
+                name: "solution.js",
+                readOnly: false,
+                required: true,
+                type: "solution",
+              },
+            },
+            python: {
+              "solution.py": {
+                content: "",
+                id: expect.any(String),
+                language: "python",
+                name: "solution.py",
+                readOnly: false,
+                required: true,
+                type: "solution",
+              },
+            },
+            typescript: {
+              "solution.ts": {
+                content: "",
+                id: expect.any(String),
+                language: "typescript",
+                name: "solution.ts",
+                readOnly: false,
+                required: true,
+                type: "solution",
+              },
+            },
+          },
+          initialStoredCode: {
+            cpp: {
+              "solution.cpp": {
+                content: "",
+                id: expect.any(String),
+                language: "cpp",
+                name: "solution.cpp",
+                readOnly: false,
+                required: true,
+                type: "solution",
+              },
+            },
+            go: {
+              "solution.go": {
+                content: "",
+                id: expect.any(String),
+                language: "go",
+                name: "solution.go",
+                readOnly: false,
+                required: true,
+                type: "solution",
+              },
+            },
+            java: {
+              "Solution.java": {
+                content: "",
+                id: expect.any(String),
+                language: "java",
+                name: "Solution.java",
+                readOnly: false,
+                required: true,
+                type: "solution",
+              },
+            },
+            javascript: {
+              "solution.js": {
+                content: "",
+                id: expect.any(String),
+                language: "javascript",
+                name: "solution.js",
+                readOnly: false,
+                required: true,
+                type: "solution",
+              },
+            },
+            python: {
+              "solution.py": {
+                content: "",
+                id: expect.any(String),
+                language: "python",
+                name: "solution.py",
+                readOnly: false,
+                required: true,
+                type: "solution",
+              },
+            },
+            typescript: {
+              "solution.ts": {
+                content: "",
+                id: expect.any(String),
+                language: "typescript",
+                name: "solution.ts",
+                readOnly: false,
+                required: true,
+                type: "solution",
+              },
+            },
+          },
+        },
         timer: {
           ...createEmptyAlgorithmData().timer,
           initialStartTime: expect.any(Number),

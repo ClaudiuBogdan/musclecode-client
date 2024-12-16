@@ -1,15 +1,15 @@
 import { CodeLanguage, Difficulty } from "@/types/algorithm";
-import { CodeFile, AlgorithmId } from "./state";
+import { FileName, AlgorithmId } from "./state";
 
 export interface CodeActions {
   setCode: (algorithmId: AlgorithmId, code: string) => void;
   setActiveLanguage: (algorithmId: AlgorithmId, language: CodeLanguage) => void;
-  setActiveTab: (algorithmId: AlgorithmId, tab: CodeFile) => void;
+  setActiveTab: (algorithmId: AlgorithmId, tab: FileName) => void;
   resetCode: (algorithmId: AlgorithmId) => void;
   getCode: (
     algorithmId: AlgorithmId,
     language: CodeLanguage,
-    tab: CodeFile
+    tab: FileName
   ) => string;
   getFiles: (
     algorithmId: AlgorithmId,

@@ -32,7 +32,7 @@ export const createExecutionSlice: StateCreator<
       });
 
       try {
-        const files = storedCode[activeLanguage];
+        const files = Object.values(storedCode[activeLanguage]);
 
         const timeoutPromise = new Promise((_, reject) => {
           setTimeout(
@@ -45,7 +45,7 @@ export const createExecutionSlice: StateCreator<
         const codePromise = runCode({
           algorithmId,
           language: activeLanguage,
-          code: Object.values(files).join("\n"),
+          files,
         });
         const executionResult = await Promise.race([
           codePromise,
@@ -67,5 +67,5 @@ export const createExecutionSlice: StateCreator<
         throw error;
       }
     });
-  }
+  },
 });

@@ -121,7 +121,7 @@ describe("Algorithm Slice", () => {
       expect(
         finalState.algorithms[algorithmId].code.storedCode.javascript[
           "solution.js"
-        ]
+        ].content
       ).toBe("function solution() {}");
     });
 

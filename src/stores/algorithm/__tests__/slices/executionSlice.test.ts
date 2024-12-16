@@ -10,6 +10,7 @@ import { createAlgorithmSlice } from "../..";
 import { createCodeSlice } from "../../slices/codeSlice";
 import { createTimerSlice } from "../../slices/timerSlice";
 import { createSubmissionSlice } from "../../slices/submissionSlice";
+import { AlgorithmFile } from "@/types/algorithm";
 
 // Mock the API call
 vi.mock("@/lib/api/code");
@@ -140,16 +141,26 @@ describe("Execution Slice", () => {
 
       const state = store.getState();
       const { activeLanguage, activeTab } = state.algorithms[algorithmId].code;
-      const code = "test code";
+      const mockFile: AlgorithmFile = {
+        id: "test-uuid",
+        name: "solution.js",
+        content: "function solution() { return true; }",
+        type: "solution",
+        language: "javascript",
+      };
       state.algorithms[algorithmId].code.storedCode[activeLanguage][activeTab] =
-        code;
+        mockFile;
 
       await store.getState().runCode(algorithmId);
 
       expect(mockRunCode).toHaveBeenCalledWith({
         algorithmId,
         language: activeLanguage,
-        files: state.algorithms[algorithmId].code.storedCode[activeLanguage],
+        files: [
+          state.algorithms[algorithmId].code.storedCode[activeLanguage][
+            activeTab
+          ],
+        ],
       });
     });
 

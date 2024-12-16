@@ -1,14 +1,14 @@
-import { CodeLanguage } from "@/types/algorithm";
+import { AlgorithmFile, CodeLanguage } from "@/types/algorithm";
 import { CodeExecutionResponse } from "@/types/testRunner";
 
 export type AlgorithmId = string;
-export type CodeFile = string;
+export type FileName = string;
 
-export type StoredCode = Record<CodeLanguage, Record<CodeFile, string>>;
+export type StoredCode = Record<CodeLanguage, Record<FileName, AlgorithmFile>>;
 
 export interface CodeState {
   activeLanguage: CodeLanguage;
-  activeTab: CodeFile;
+  activeTab: FileName;
   storedCode: StoredCode;
   initialStoredCode: StoredCode;
 }

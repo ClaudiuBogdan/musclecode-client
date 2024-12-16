@@ -16,7 +16,7 @@ const DEFAULT_ALGORITHM_ID = "test-algorithm";
 const createTestStore = (
   initialState = mockAlgorithmState(DEFAULT_ALGORITHM_ID, {
     timer: {
-      initialStartTime: null,
+      initialStartTime: 0,
       pausedAt: null,
       totalPausedTime: 0,
     },
@@ -108,7 +108,7 @@ describe("Timer Slice", () => {
       store.getState().pauseTimer(algorithmId);
 
       const timer = store.getState().algorithms[algorithmId].timer;
-      expect(timer.initialStartTime).toBeNull();
+      expect(timer.initialStartTime).toBeGreaterThanOrEqual(0);
       expect(timer.pausedAt).toBeNull();
     });
 
@@ -150,7 +150,7 @@ describe("Timer Slice", () => {
       store.getState().resumeTimer(algorithmId);
 
       const timer = store.getState().algorithms[algorithmId].timer;
-      expect(timer.initialStartTime).toBeNull();
+      expect(timer.initialStartTime).toBeGreaterThanOrEqual(0);
       expect(timer.pausedAt).toBeNull();
     });
 

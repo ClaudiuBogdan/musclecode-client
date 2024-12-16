@@ -78,7 +78,7 @@ export const createAlgorithmSlice: StateCreator<
         if (!acc[language]) {
           acc[language] = {};
         }
-        acc[language][file.name] = file.content;
+        acc[language][file.name] = file;
         return acc;
       }, {} as StoredCode);
 

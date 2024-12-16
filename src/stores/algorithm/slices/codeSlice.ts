@@ -1,6 +1,7 @@
 import { StateCreator } from "zustand";
 import { AlgorithmState, CodeActions, StoreActions } from "../types";
 import { withAlgorithm } from "../utils/stateUtils";
+import { v4 as uuidv4 } from "uuid";
 
 export const createCodeSlice: StateCreator<
   AlgorithmState & StoreActions,
@@ -13,7 +14,19 @@ export const createCodeSlice: StateCreator<
       withAlgorithm(state, algorithmId, (state) => {
         const algorithm = state.algorithms[algorithmId];
         const { activeLanguage, activeTab } = algorithm.code;
-        algorithm.code.storedCode[activeLanguage][activeTab] = code;
+        const existingFile =
+          algorithm.code.storedCode[activeLanguage][activeTab];
+
+        // Update existing file or create new one
+        algorithm.code.storedCode[activeLanguage][activeTab] = {
+          id: existingFile?.id || `${algorithmId}-${uuidv4()}`,
+          name: activeTab,
+          type: activeTab.includes("test") ? "test" : "solution",
+          content: code,
+          language: activeLanguage,
+          readOnly: existingFile?.readOnly || false,
+          required: existingFile?.required || true,
+        };
         return state;
       })
     ),
@@ -61,7 +74,7 @@ export const createCodeSlice: StateCreator<
     const state = get();
     return withAlgorithm(state, algorithmId, () => {
       const algorithm = state.algorithms[algorithmId];
-      return algorithm.code.storedCode[language]?.[tab] ?? "";
+      return algorithm.code.storedCode[language]?.[tab]?.content ?? "";
     });
   },
 
@@ -70,7 +83,10 @@ export const createCodeSlice: StateCreator<
     return withAlgorithm(state, algorithmId, () => {
       const algorithm = state.algorithms[algorithmId];
       const files = algorithm.code.storedCode[language] ?? {};
-      return Object.keys(files).map((name) => ({ name, readOnly: false }));
+      return Object.values(files).map(({ name, readOnly }) => ({
+        name,
+        readOnly,
+      }));
     });
   },
 });

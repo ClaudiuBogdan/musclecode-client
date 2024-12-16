@@ -1,27 +1,11 @@
 import { CodeExecutionResponse } from "@/types/testRunner";
 import { apiClient } from "./client";
-import { Algorithm, Difficulty, Submission } from "@/types/algorithm";
+import { Algorithm, AlgorithmFile, Submission } from "@/types/algorithm";
 
 export interface CodeRunRequest {
   algorithmId: string;
   language: string;
-  code: string;
-}
-
-export interface SubmissionRequest {
-  algorithmId: string;
-  timeSpent: number;
-  code: string;
-  difficulty: Difficulty;
-  notes: string;
-}
-
-export interface TestResult {
-  passed: boolean;
-  message: string;
-  input?: string;
-  expected?: string;
-  actual?: string;
+  files: AlgorithmFile[];
 }
 
 export async function runCode(
