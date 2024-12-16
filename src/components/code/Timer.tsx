@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react';
-import { formatTime } from '@/utils/time';
-import { Timer as TimerIcon, Pause, Play, RotateCcw } from 'lucide-react';
+import { useEffect, useState, useMemo, useCallback } from "react";
+import { formatTime } from "@/utils/time";
+import { Timer as TimerIcon, Pause, Play, RotateCcw } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -9,11 +9,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 import { useAlgorithmStore } from "@/stores/algorithm";
-import {
-  selectTimerState,
-  selectRunningTime,
-  selectIsPaused,
-} from "@/stores/algorithm/selectors";
+import { selectTimerState, selectIsPaused } from "@/stores/algorithm/selectors";
 
 interface TimerProps {
   algorithmId: string;
@@ -21,20 +17,29 @@ interface TimerProps {
 }
 
 export function Timer({ algorithmId, className }: TimerProps) {
-  const timerState = useAlgorithmStore((state) =>
-    selectTimerState(state, algorithmId)
+  const timerState = useAlgorithmStore(
+    useCallback((state) => selectTimerState(state, algorithmId), [algorithmId])
   );
-  const isPaused = useAlgorithmStore((state) =>
-    selectIsPaused(state, algorithmId)
-  );
-  const { startTimer, resumeTimer, pauseTimer, resetTimer } =
-    useAlgorithmStore();
-  const getTotalRunningTime = useAlgorithmStore((state) =>
-    selectRunningTime(state, algorithmId)
+  const isPaused = useAlgorithmStore(
+    useCallback((state) => selectIsPaused(state, algorithmId), [algorithmId])
   );
 
+  const {
+    startTimer,
+    resumeTimer,
+    pauseTimer,
+    resetTimer,
+    getTotalRunningTime,
+  } = useAlgorithmStore();
+
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [elapsed, setElapsed] = useState<number>(getTotalRunningTime);
+  const [elapsed, setElapsed] = useState<number>(0);
+
+  // Cache the initial running time
+  const initialRunningTime = useMemo(
+    () => getTotalRunningTime(algorithmId),
+    [getTotalRunningTime, algorithmId]
+  );
 
   useEffect(() => {
     if (!timerState) {
@@ -42,21 +47,39 @@ export function Timer({ algorithmId, className }: TimerProps) {
       return;
     }
 
+    setElapsed(initialRunningTime);
+
     if (isPaused) {
       return;
     }
 
     const interval = setInterval(() => {
-      setElapsed(getTotalRunningTime);
+      const runningTime = getTotalRunningTime(algorithmId);
+      setElapsed(runningTime);
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [timerState, isPaused, algorithmId, startTimer, getTotalRunningTime]);
+  }, [
+    timerState,
+    isPaused,
+    algorithmId,
+    startTimer,
+    getTotalRunningTime,
+    initialRunningTime,
+  ]);
 
-  const handleReset = () => {
+  const handleReset = useCallback(() => {
     resetTimer(algorithmId);
     setDropdownOpen(false);
-  };
+  }, [algorithmId, resetTimer]);
+
+  const handlePause = useCallback(() => {
+    pauseTimer(algorithmId);
+  }, [algorithmId, pauseTimer]);
+
+  const handleResume = useCallback(() => {
+    resumeTimer(algorithmId);
+  }, [algorithmId, resumeTimer]);
 
   return (
     <div
@@ -86,7 +109,7 @@ export function Timer({ algorithmId, className }: TimerProps) {
       <div className="flex gap-0.5">
         {!isPaused ? (
           <button
-            onClick={() => pauseTimer(algorithmId)}
+            onClick={handlePause}
             className="p-1.5 text-gray-400 hover:text-gray-200 hover:bg-gray-700/50 rounded-md transition-colors"
             title="Pause"
           >
@@ -94,7 +117,7 @@ export function Timer({ algorithmId, className }: TimerProps) {
           </button>
         ) : (
           <button
-            onClick={() => resumeTimer(algorithmId)}
+            onClick={handleResume}
             className={cn(
               "p-1.5 hover:bg-gray-700/50 rounded-md transition-colors",
               isPaused
@@ -143,4 +166,4 @@ export function Timer({ algorithmId, className }: TimerProps) {
       </div>
     </div>
   );
-} 
+}
