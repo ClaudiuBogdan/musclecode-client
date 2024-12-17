@@ -47,14 +47,14 @@ export const createExecutionSlice: StateCreator<
           language: activeLanguage,
           files,
         });
-        const executionResult = await Promise.race([
-          codePromise,
-          timeoutPromise,
-        ]);
+        const result = await Promise.race([codePromise, timeoutPromise]);
+
+        // The timeout promise only throws an error, so we can safely cast the result to CodeExecutionResponse
+        const executionResult = result as CodeExecutionResponse;
 
         set((state) => {
           state.algorithms[algorithmId].execution.executionResult =
-            executionResult as CodeExecutionResponse;
+            executionResult;
           state.algorithms[algorithmId].execution.isExecuting = false;
           return state;
         });
@@ -64,7 +64,6 @@ export const createExecutionSlice: StateCreator<
           state.algorithms[algorithmId].execution.isExecuting = false;
           return state;
         });
-        throw error;
       }
     });
   },

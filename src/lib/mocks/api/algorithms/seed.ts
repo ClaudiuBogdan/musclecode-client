@@ -1,5 +1,6 @@
 import { Algorithm } from "@/types/algorithm";
 import { v4 as uuidv4 } from "uuid";
+
 export const seedAlgorithms = (): Algorithm[] => {
   return [
     {
@@ -57,7 +58,7 @@ Sorted array: [11, 12, 22, 25, 34, 64, 90]
           name: "solution",
           type: "solution",
           content:
-            "function bubbleSort(arr: number[]): number[] {\n  const n = arr.length;\n  for (let i = 0; i < n - 1; i++) {\nfor (let j = 0; j < n - i - 1; j++) {\n  if (arr[j] > arr[j + 1]) {\n// Swap elements\n[arr[j], arr[j + 1]] = [arr[j + 1], arr[j]];\n  }\n}\n  }\n  return arr;\n}",
+            "export function bubbleSort(arr: number[]): number[] {\n  const n = arr.length;\n  for (let i = 0; i < n - 1; i++) {\nfor (let j = 0; j < n - i - 1; j++) {\n  if (arr[j] > arr[j + 1]) {\n// Swap elements\n[arr[j], arr[j + 1]] = [arr[j + 1], arr[j]];\n  }\n}\n  }\n  return arr;\n}",
           language: "typescript",
           extension: "ts",
           required: true,
@@ -67,7 +68,7 @@ Sorted array: [11, 12, 22, 25, 34, 64, 90]
           name: "test",
           type: "test",
           content:
-            "test('bubbleSort', () => {\n  expect(bubbleSort([64, 34, 25, 12, 22, 11, 90])).toEqual([11, 12, 22, 25, 34, 64, 90]);\n})",
+            "import { bubbleSort } from './solution';\n\ntest('bubbleSort', () => {\n  expect(bubbleSort([64, 34, 25, 12, 22, 11, 90])).toEqual([11, 12, 22, 25, 34, 64, 90]);\n})",
           language: "typescript",
           extension: "ts",
           readOnly: true,
@@ -77,7 +78,7 @@ Sorted array: [11, 12, 22, 25, 34, 64, 90]
           name: "solution",
           type: "solution",
           content:
-            "def bubble_sort(arr):\nn = len(arr)\nfor i in range(n):\nfor j in range(0, n - i - 1):\nif arr[j] > arr[j + 1]:\narr[j], arr[j + 1] = arr[j + 1], arr[j]\nreturn arr",
+            "def bubble_sort(arr):\n  n = len(arr)\n  for i in range(n):\n    for j in range(0, n - i - 1):\n      if arr[j] > arr[j + 1]:\n        arr[j], arr[j + 1] = arr[j + 1], arr[j]\n  return arr\n\nif __name__ == '__main__':\n    print(bubble_sort([64, 34, 25, 12, 22, 11, 90]))",
           language: "python",
           extension: "py",
           required: true,
@@ -87,7 +88,7 @@ Sorted array: [11, 12, 22, 25, 34, 64, 90]
           name: "test",
           type: "test",
           content:
-            "def test_bubble_sort():\nassert bubble_sort([64, 34, 25, 12, 22, 11, 90]) == [11, 12, 22, 25, 34, 64, 90]",
+            "from solution import bubble_sort\n\ndef test_bubble_sort():\n  assert bubble_sort([64, 34, 25, 12, 22, 11, 90]) == [11, 12, 22, 25, 34, 64, 90]",
           language: "python",
           extension: "py",
           readOnly: true,
@@ -146,7 +147,7 @@ Sorted array: [11, 12, 22, 25, 64]
           name: "solution",
           type: "solution",
           content:
-            "function selectionSort(arr: number[]): number[] {\n  const n = arr.length;\n  for (let i = 0; i < n - 1; i++) {\nlet minIdx = i;\nfor (let j = i + 1; j < n; j++) {\n  if (arr[j] < arr[minIdx]) {\nminIdx = j;\n  }\n}\nif (minIdx !== i) {\n  [arr[i], arr[minIdx]] = [arr[minIdx], arr[i]];\n}\n  }\n  return arr;\n}",
+            "export function selectionSort(arr: number[]): number[] {\n  const n = arr.length;\n  for (let i = 0; i < n - 1; i++) {\nlet minIdx = i;\nfor (let j = i + 1; j < n; j++) {\n  if (arr[j] < arr[minIdx]) {\nminIdx = j;\n  }\n}\nif (minIdx !== i) {\n  [arr[i], arr[minIdx]] = [arr[minIdx], arr[i]];\n}\n  }\n  return arr;\n}",
           language: "typescript",
           required: true,
           extension: "ts",
@@ -156,7 +157,7 @@ Sorted array: [11, 12, 22, 25, 64]
           name: "test",
           type: "test",
           content:
-            "test('selectionSort', () => {\n  expect(selectionSort([64, 25, 12, 22, 11])).toEqual([11, 12, 22, 25, 64]);\n})",
+            "import { selectionSort } from './solution';\n\ntest('selectionSort', () => {\n  expect(selectionSort([64, 25, 12, 22, 11])).toEqual([11, 12, 22, 25, 64]);\n})",
           language: "typescript",
           extension: "ts",
           readOnly: true,
@@ -166,7 +167,7 @@ Sorted array: [11, 12, 22, 25, 64]
           name: "solution",
           type: "solution",
           content:
-            "def selection_sort(arr):\nn = len(arr)\nfor i in range(n):\nmin_idx = i\nfor j in range(i + 1, n):\nif arr[j] < arr[min_idx]:\nmin_idx = j\narr[i], arr[min_idx] = arr[min_idx], arr[i]\nreturn arr",
+            "def selection_sort(arr):\n    n = len(arr)\n    for i in range(n):\n        min_idx = i\n        for j in range(i + 1, n):\n            if arr[j] < arr[min_idx]:\n                min_idx = j\n        arr[i], arr[min_idx] = arr[min_idx], arr[i]\n    return arr\n\nif __name__ == '__main__':\n    print(selection_sort([64, 25, 12, 22, 11]))",
           language: "python",
           required: true,
           extension: "py",
@@ -176,7 +177,7 @@ Sorted array: [11, 12, 22, 25, 64]
           name: "test",
           type: "test",
           content:
-            "def test_selection_sort():\nassert selection_sort([64, 25, 12, 22, 11]) == [11, 12, 22, 25, 64]",
+            "from solution import selection_sort\n\ndef test_selection_sort():\n  assert selection_sort([64, 25, 12, 22, 11]) == [11, 12, 22, 25, 64]",
           language: "python",
           extension: "py",
           readOnly: true,
@@ -233,7 +234,7 @@ Sorted array: [1, 2, 3, 4, 5, 6]
           name: "solution",
           type: "solution",
           content:
-            "function insertionSort(arr: number[]): number[] {\n  for (let i = 1; i < arr.length; i++) {\nlet key = arr[i];\nlet j = i - 1;\nwhile (j >= 0 && arr[j] > key) {\n  arr[j + 1] = arr[j];\n  j--;\n}\narr[j + 1] = key;\n  }\n  return arr;\n}",
+            "export function insertionSort(arr: number[]): number[] {\n  for (let i = 1; i < arr.length; i++) {\nlet key = arr[i];\nlet j = i - 1;\nwhile (j >= 0 && arr[j] > key) {\n  arr[j + 1] = arr[j];\n  j--;\n}\narr[j + 1] = key;\n  }\n  return arr;\n}",
           language: "typescript",
           extension: "ts",
           required: true,
@@ -243,7 +244,7 @@ Sorted array: [1, 2, 3, 4, 5, 6]
           name: "test",
           type: "test",
           content:
-            "test('insertionSort', () => {\n  expect(insertionSort([5, 2, 4, 6, 1, 3])).toEqual([1, 2, 3, 4, 5, 6]);\n})",
+            "import { insertionSort } from './solution';\n\ntest('insertionSort', () => {\n  expect(insertionSort([5, 2, 4, 6, 1, 3])).toEqual([1, 2, 3, 4, 5, 6]);\n})",
           language: "typescript",
           readOnly: true,
           extension: "ts",
@@ -253,7 +254,7 @@ Sorted array: [1, 2, 3, 4, 5, 6]
           name: "solution",
           type: "solution",
           content:
-            "def insertion_sort(arr):\nfor i in range(1, len(arr)):\nkey = arr[i]\nj = i - 1\nwhile j >= 0 and arr[j] > key:\narr[j + 1] = arr[j]\nj -= 1\narr[j + 1] = key\nreturn arr",
+            "def insertion_sort(arr):\n    for i in range(1, len(arr)):\n        key = arr[i]\n        j = i - 1\n        while j >= 0 and arr[j] > key:\n            arr[j + 1] = arr[j]\n            j -= 1\n        arr[j + 1] = key\n    return arr\n\nif __name__ == '__main__':\n    print(insertion_sort([5, 2, 4, 6, 1, 3]))",
           language: "python",
           required: true,
           extension: "py",
@@ -263,7 +264,7 @@ Sorted array: [1, 2, 3, 4, 5, 6]
           name: "test",
           type: "test",
           content:
-            "def test_insertion_sort():\nassert insertion_sort([5, 2, 4, 6, 1, 3]) == [1, 2, 3, 4, 5, 6]",
+            "from solution import insertion_sort\n\ndef test_insertion_sort():\n  assert insertion_sort([5, 2, 4, 6, 1, 3]) == [1, 2, 3, 4, 5, 6]",
           language: "python",
           readOnly: true,
           extension: "py",
@@ -319,7 +320,7 @@ Sorted array: [3, 9, 10, 27, 38, 43, 82]
           name: "solution",
           type: "solution",
           content:
-            "function mergeSort(arr: number[]): number[] {\n  if (arr.length <= 1) return arr;\n\n  const mid = Math.floor(arr.length / 2);\n  const left = mergeSort(arr.slice(0, mid));\n  const right = mergeSort(arr.slice(mid));\n\n  return merge(left, right);\n}\n\nfunction merge(left: number[], right: number[]): number[] {\n  let result = [];\n  let leftIndex = 0;\n  let rightIndex = 0;\n\n  while (leftIndex < left.length && rightIndex < right.length) {\nif (left[leftIndex] < right[rightIndex]) {\n  result.push(left[leftIndex]);\n  leftIndex++;\n} else {\n  result.push(right[rightIndex]);\n  rightIndex++;\n}\n  }\n\n  return result.concat(left.slice(leftIndex)).concat(right.slice(rightIndex));\n}",
+            "export function mergeSort(arr: number[]): number[] {\n  if (arr.length <= 1) return arr;\n\n  const mid = Math.floor(arr.length / 2);\n  const left = mergeSort(arr.slice(0, mid));\n  const right = mergeSort(arr.slice(mid));\n\n  return merge(left, right);\n}\n\nfunction merge(left: number[], right: number[]): number[] {\n  let result = [];\n  let leftIndex = 0;\n  let rightIndex = 0;\n\n  while (leftIndex < left.length && rightIndex < right.length) {\nif (left[leftIndex] < right[rightIndex]) {\n  result.push(left[leftIndex]);\n  leftIndex++;\n} else {\n  result.push(right[rightIndex]);\n  rightIndex++;\n}\n  }\n\n  return result.concat(left.slice(leftIndex)).concat(right.slice(rightIndex));\n}",
           language: "typescript",
           required: true,
           extension: "ts",
@@ -329,7 +330,7 @@ Sorted array: [3, 9, 10, 27, 38, 43, 82]
           name: "test",
           type: "test",
           content:
-            "test('mergeSort', () => {\n  expect(mergeSort([38, 27, 43, 3, 9, 82, 10])).toEqual([3, 9, 10, 27, 38, 43, 82]);\n})",
+            "import { mergeSort } from './solution';\n\ntest('mergeSort', () => {\n  expect(mergeSort([38, 27, 43, 3, 9, 82, 10])).toEqual([3, 9, 10, 27, 38, 43, 82]);\n})",
           language: "typescript",
           readOnly: true,
           extension: "ts",
@@ -339,7 +340,7 @@ Sorted array: [3, 9, 10, 27, 38, 43, 82]
           name: "solution",
           type: "solution",
           content:
-            "def quick_sort(arr):\nif len(arr) <= 1:\nreturn arr\npivot = arr[len(arr) // 2]\nleft = [x for x in arr if x < pivot]\nmiddle = [x for x in arr if x == pivot]\nright = [x for x in arr if x > pivot]\nreturn quick_sort(left) + middle + quick_sort(right)",
+            "def quick_sort(arr):\n    if len(arr) <= 1:\n        return arr\n    pivot = arr[len(arr) // 2]\n    left = [x for x in arr if x < pivot]\n    middle = [x for x in arr if x == pivot]\n    right = [x for x in arr if x > pivot]\n    return quick_sort(left) + middle + quick_sort(right)\n\nif __name__ == '__main__':\n    print(quick_sort([10, 7, 8, 9, 1, 5]))",
           language: "python",
           required: true,
           extension: "py",
@@ -349,7 +350,7 @@ Sorted array: [3, 9, 10, 27, 38, 43, 82]
           name: "test",
           type: "test",
           content:
-            "def test_quick_sort():\nassert quick_sort([10, 7, 8, 9, 1, 5]) == [1, 5, 7, 8, 9, 10]",
+            "from solution import quick_sort\n\ndef test_quick_sort():\n  assert quick_sort([10, 7, 8, 9, 1, 5]) == [1, 5, 7, 8, 9, 10]",
           language: "python",
           readOnly: true,
           extension: "py",
@@ -409,12 +410,7 @@ Step 3: Middle element is 1. Target found!
           name: "solution",
           type: "solution",
           content: `
-const num = 1;
-const str = "1";
-
-const total = 2;
-
-function binarySearch(arr, target) {
+export function binarySearch(arr, target) {
     let left = 0;
     let right = arr.length - 1;
 
@@ -432,9 +428,6 @@ function binarySearch(arr, target) {
 
     return -1; // Target not found
 }
-
-console.log(binarySearch([1, 3, 4, 6, 8, 9, 11], 6)); // Output: 3
-
           `,
           language: "javascript",
           required: true,
@@ -446,18 +439,11 @@ console.log(binarySearch([1, 3, 4, 6, 8, 9, 11], 6)); // Output: 3
           name: "test",
           type: "test",
           content: `
+import { binarySearch } from './solution';
+
 test('binarySearch', () => {
     expect(binarySearch([1, 3, 4, 6, 8, 9, 11], 6)).toBe(3);
     expect(binarySearch([1, 3, 4, 6, 8, 9, 11], 5)).toBe(-1);
-});
-
-describe('binarySearch', () => {
-    it('should return the index of the target value', () => {
-        expect(binarySearch([1, 3, 4, 6, 8, 9, 11], 6)).toBe(3);
-    });
-    it('should return -1 if the target value is not found', () => {
-        expect(binarySearch([1, 3, 4, 6, 8, 9, 11], 5)).toBe(-1);
-    });
 });
           `,
           language: "javascript",
@@ -469,6 +455,10 @@ describe('binarySearch', () => {
           name: "solution",
           type: "solution",
           content: `
+package main
+
+import "fmt"
+
 func binarySearch(arr []int, target int) int {
     left, right := 0, len(arr) - 1
     for left <= right {
@@ -483,10 +473,25 @@ func binarySearch(arr []int, target int) int {
     }
     return -1
 }
-fmt.Println(binarySearch([]int{1, 3, 4, 6, 8, 9, 11}, 6))
-          `,
+`,
           language: "go",
           required: true,
+          extension: "go",
+        },
+        {
+          id: uuidv4(),
+          name: "test",
+          type: "test",
+          content: `
+import "testing"
+
+func TestBinarySearch(t *testing.T) {
+    assert.Equal(t, binarySearch([]int{1, 3, 4, 6, 8, 9, 11}, 6), 3)
+    assert.Equal(t, binarySearch([]int{1, 3, 4, 6, 8, 9, 11}, 5), -1)
+}
+          `,
+          language: "go",
+          readOnly: true,
           extension: "go",
         },
         {
@@ -494,13 +499,7 @@ fmt.Println(binarySearch([]int{1, 3, 4, 6, 8, 9, 11}, 6))
           name: "solution",
           type: "solution",
           content: `
-const num: number = 1
-const str: string = "1"
-
-const total: number = 2
-
-
-function binarySearch(arr: number[], target: number): number {
+export function binarySearch(arr: number[], target: number): number {
     let left = 0;
     let right = arr.length - 1;
 
@@ -518,7 +517,6 @@ function binarySearch(arr: number[], target: number): number {
 
     return -1; // Target not found
 }
-console.log(binarySearch([1, 3, 4, 6, 8, 9, 11], 6))
           `,
           language: "typescript",
           required: true,
@@ -529,7 +527,7 @@ console.log(binarySearch([1, 3, 4, 6, 8, 9, 11], 6))
           name: "test",
           type: "test",
           content:
-            "test('binarySearch', () => {\n  expect(binarySearch([1, 3, 4, 6, 8, 9, 11], 6)).toBe(3);\n  expect(binarySearch([1, 3, 4, 6, 8, 9, 11], 5)).toBe(-1);\n})",
+            "import { binarySearch } from './solution';\n\ntest('binarySearch', () => {\n  expect(binarySearch([1, 3, 4, 6, 8, 9, 11], 6)).toBe(3);\n  expect(binarySearch([1, 3, 4, 6, 8, 9, 11], 5)).toBe(-1);\n})",
           language: "typescript",
           readOnly: true,
           extension: "ts",
@@ -540,17 +538,20 @@ console.log(binarySearch([1, 3, 4, 6, 8, 9, 11], 6))
           type: "solution",
           content: `
 def binary_search(arr, target):
-  left, right = 0, len(arr) - 1
-  while left <= right:
-      mid = (left + right) // 2
-      if arr[mid] == target:
-          return mid
-      elif arr[mid] < target:
-          left = mid + 1
-      else:
-          right = mid - 1
-  return -1  # Target not found
-  `,
+    left, right = 0, len(arr) - 1
+    while left <= right:
+        mid = (left + right) // 2
+        if arr[mid] == target:
+            return mid
+        elif arr[mid] < target:
+            left = mid + 1
+        else:
+            right = mid - 1
+    return -1  # Target not found
+
+if __name__ == '__main__':
+    print(binary_search([1, 3, 4, 6, 8, 9, 11], 6))
+          `,
           language: "python",
           required: true,
           extension: "py",
@@ -560,7 +561,7 @@ def binary_search(arr, target):
           name: "test",
           type: "test",
           content:
-            "def test_binary_search():\nassert binary_search([1, 3, 4, 6, 8, 9, 11], 6) == 3\nassert binary_search([1, 3, 4, 6, 8, 9, 11], 5) == -1",
+            "from solution import binary_search\n\ndef test_binary_search():\n  assert binary_search([1, 3, 4, 6, 8, 9, 11], 6) == 3\n  assert binary_search([1, 3, 4, 6, 8, 9, 11], 5) == -1",
           language: "python",
           readOnly: true,
           extension: "py",
@@ -617,7 +618,7 @@ A -> B -> D -> E -> C -> F
           name: "solution",
           type: "solution",
           content:
-            "class Graph {\n  private adjacencyList: Map<number, number[]>;\n\n  constructor() {\nthis.adjacencyList = new Map();\n  }\n\n  addVertex(vertex: number) {\nif (!this.adjacencyList.has(vertex)) {\n  this.adjacencyList.set(vertex, []);\n}\n  }\n\n  addEdge(vertex1: number, vertex2: number) {\nthis.adjacencyList.get(vertex1)?.push(vertex2);\nthis.adjacencyList.get(vertex2)?.push(vertex1);\n  }\n\n  dfs(start: number): number[] {\nconst visited: Set<number> = new Set();\nconst result: number[] = [];\n\nconst dfsHelper = (vertex: number) => {\n  visited.add(vertex);\n  result.push(vertex);\n\n  this.adjacencyList.get(vertex)?.forEach(neighbor => {\nif (!visited.has(neighbor)) {\n  dfsHelper(neighbor);\n}\n  });\n};\n\ndfsHelper(start);\nreturn result;\n  }\n}",
+            "export class Graph {\n  private adjacencyList: Map<number, number[]>;\n\n  constructor() {\nthis.adjacencyList = new Map();\n  }\n\n  addVertex(vertex: number) {\nif (!this.adjacencyList.has(vertex)) {\n  this.adjacencyList.set(vertex, []);\n}\n  }\n\n  addEdge(vertex1: number, vertex2: number) {\nthis.adjacencyList.get(vertex1)?.push(vertex2);\nthis.adjacencyList.get(vertex2)?.push(vertex1);\n  }\n\n  dfs(start: number): number[] {\nconst visited: Set<number> = new Set();\nconst result: number[] = [];\n\nconst dfsHelper = (vertex: number) => {\n  visited.add(vertex);\n  result.push(vertex);\n\n  this.adjacencyList.get(vertex)?.forEach(neighbor => {\nif (!visited.has(neighbor)) {\n  dfsHelper(neighbor);\n}\n  });\n};\n\ndfsHelper(start);\nreturn result;\n  }\n}",
           language: "typescript",
           required: true,
           extension: "ts",
@@ -627,7 +628,7 @@ A -> B -> D -> E -> C -> F
           name: "test",
           type: "test",
           content:
-            "test('depthFirstSearch', () => {\n  const graph = new Graph();\n  [0, 1, 2, 3, 4, 5].forEach(v => graph.addVertex(v));\n  [[0, 1], [0, 2], [1, 3], [2, 4], [2, 5]].forEach(([v1, v2]) => graph.addEdge(v1, v2));\n  expect(graph.dfs(0)).toEqual([0, 1, 3, 2, 4, 5]);\n})",
+            "import { Graph } from './solution';\n\ntest('depthFirstSearch', () => {\n  const graph = new Graph();\n  [0, 1, 2, 3, 4, 5].forEach(v => graph.addVertex(v));\n  [[0, 1], [0, 2], [1, 3], [2, 4], [2, 5]].forEach(([v1, v2]) => graph.addEdge(v1, v2));\n  expect(graph.dfs(0)).toEqual([0, 1, 3, 2, 4, 5]);\n})",
           language: "typescript",
           readOnly: true,
           extension: "ts",
@@ -637,7 +638,7 @@ A -> B -> D -> E -> C -> F
           name: "solution",
           type: "solution",
           content:
-            "class Graph:\ndef __init__(self):\nself.adjacency_list = {}\n\ndef add_vertex(self, vertex):\nif vertex not in self.adjacency_list:\nself.adjacency_list[vertex] = []\n\ndef add_edge(self, vertex1, vertex2):\nself.adjacency_list[vertex1].append(vertex2)\nself.adjacency_list[vertex2].append(vertex1)\n\ndef dfs(self, start):\nvisited = set()\nresult = []\n\ndef dfs_helper(vertex):\nvisited.add(vertex)\nresult.append(vertex)\n\nfor neighbor in self.adjacency_list[vertex]:\nif neighbor not in visited:\ndfs_helper(neighbor)\n\ndfs_helper(start)\nreturn result",
+            "class Graph:\n    def __init__(self):\n        self.adjacency_list = {}\n\n    def add_vertex(self, vertex):\n        if vertex not in self.adjacency_list:\n            self.adjacency_list[vertex] = []\n\n    def add_edge(self, vertex1, vertex2):\n        self.adjacency_list[vertex1].append(vertex2)\n        self.adjacency_list[vertex2].append(vertex1)\n\n    def dfs(self, start):\n        visited = set()\n        result = []\n\n        def dfs_helper(vertex):\n            visited.add(vertex)\n            result.append(vertex)\n\n            for neighbor in self.adjacency_list[vertex]:\n                if neighbor not in visited:\n                    dfs_helper(neighbor)\n\n        dfs_helper(start)\n        return result\n\nif __name__ == '__main__':\n    graph = Graph()\n    for v in range(6):\n        graph.add_vertex(v)\n    for v1, v2 in [(0, 1), (0, 2), (1, 3), (2, 4), (2, 5)]:\n        graph.add_edge(v1, v2)\n    print(graph.dfs(0))",
           language: "python",
           required: true,
           extension: "py",
@@ -647,7 +648,7 @@ A -> B -> D -> E -> C -> F
           name: "test",
           type: "test",
           content:
-            "def test_depth_first_search():\ngraph = Graph()\nfor v in range(6):\ngraph.add_vertex(v)\nfor v1, v2 in [(0, 1), (0, 2), (1, 3), (2, 4), (2, 5)]:\ngraph.add_edge(v1, v2)\nassert graph.dfs(0) == [0, 1, 3, 2, 4, 5]",
+            "from solution import Graph\n\ndef test_depth_first_search():\n    graph = Graph()\n    for v in range(6):\n        graph.add_vertex(v)\n    for v1, v2 in [(0, 1), (0, 2), (1, 3), (2, 4), (2, 5)]:\n        graph.add_edge(v1, v2)\n    assert graph.dfs(0) == [0, 1, 3, 2, 4, 5]",
           language: "python",
           readOnly: true,
           extension: "py",
@@ -704,7 +705,7 @@ A -> B -> C -> D -> E -> F
           name: "solution",
           type: "solution",
           content:
-            "class Graph {\n  private adjacencyList: Map<number, number[]>;\n\n  constructor() {\nthis.adjacencyList = new Map();\n  }\n\n  addVertex(vertex: number) {\nif (!this.adjacencyList.has(vertex)) {\n  this.adjacencyList.set(vertex, []);\n}\n  }\n\n  addEdge(vertex1: number, vertex2: number) {\nthis.adjacencyList.get(vertex1)?.push(vertex2);\nthis.adjacencyList.get(vertex2)?.push(vertex1);\n  }\n\n  bfs(start: number): number[] {\nconst visited: Set<number> = new Set();\nconst queue: number[] = [];\nconst result: number[] = [];\n\nvisited.add(start);\nqueue.push(start);\n\nwhile (queue.length > 0) {\n  const vertex = queue.shift()!;\n  result.push(vertex);\n\n  this.adjacencyList.get(vertex)?.forEach(neighbor => {\nif (!visited.has(neighbor)) {\n  visited.add(neighbor);\n  queue.push(neighbor);\n}\n  });\n}\n\nreturn result;\n  }\n}",
+            "export class Graph {\n  private adjacencyList: Map<number, number[]>;\n\n  constructor() {\nthis.adjacencyList = new Map();\n  }\n\n  addVertex(vertex: number) {\nif (!this.adjacencyList.has(vertex)) {\n  this.adjacencyList.set(vertex, []);\n}\n  }\n\n  addEdge(vertex1: number, vertex2: number) {\nthis.adjacencyList.get(vertex1)?.push(vertex2);\nthis.adjacencyList.get(vertex2)?.push(vertex1);\n  }\n\n  bfs(start: number): number[] {\nconst visited: Set<number> = new Set();\nconst queue: number[] = [];\nconst result: number[] = [];\n\nvisited.add(start);\nqueue.push(start);\n\nwhile (queue.length > 0) {\n  const vertex = queue.shift()!;\n  result.push(vertex);\n\n  this.adjacencyList.get(vertex)?.forEach(neighbor => {\nif (!visited.has(neighbor)) {\n  visited.add(neighbor);\n  queue.push(neighbor);\n}\n  });\n}\n\nreturn result;\n  }\n}",
           language: "typescript",
           required: true,
           extension: "ts",
@@ -714,7 +715,7 @@ A -> B -> C -> D -> E -> F
           name: "test",
           type: "test",
           content:
-            "test('breadthFirstSearch', () => {\n  const graph = new Graph();\n  [0, 1, 2, 3, 4, 5].forEach(v => graph.addVertex(v));\n  [[0, 1], [0, 2], [1, 3], [2, 4], [2, 5]].forEach(([v1, v2]) => graph.addEdge(v1, v2));\n  expect(graph.bfs(0)).toEqual([0, 1, 2, 3, 4, 5]);\n})",
+            "import { Graph } from './solution';\n\ntest('breadthFirstSearch', () => {\n  const graph = new Graph();\n  [0, 1, 2, 3, 4, 5].forEach(v => graph.addVertex(v));\n  [[0, 1], [0, 2], [1, 3], [2, 4], [2, 5]].forEach(([v1, v2]) => graph.addEdge(v1, v2));\n  expect(graph.bfs(0)).toEqual([0, 1, 2, 3, 4, 5]);\n})",
           language: "typescript",
           readOnly: true,
           extension: "ts",
@@ -724,7 +725,7 @@ A -> B -> C -> D -> E -> F
           name: "solution",
           type: "solution",
           content:
-            "from collections import deque\n\nclass Graph:\ndef __init__(self):\nself.adjacency_list = {}\n\ndef add_vertex(self, vertex):\nif vertex not in self.adjacency_list:\nself.adjacency_list[vertex] = []\n\ndef add_edge(self, vertex1, vertex2):\nself.adjacency_list[vertex1].append(vertex2)\nself.adjacency_list[vertex2].append(vertex1)\n\ndef bfs(self, start):\nvisited = set()\nqueue = deque([start])\nresult = []\n\nvisited.add(start)\n\nwhile queue:\nvertex = queue.popleft()\nresult.append(vertex)\n\nfor neighbor in self.adjacency_list[vertex]:\nif neighbor not in visited:\nvisited.add(neighbor)\nqueue.append(neighbor)\n\nreturn result",
+            "from collections import deque\n\nclass Graph:\n    def __init__(self):\n        self.adjacency_list = {}\n\n    def add_vertex(self, vertex):\n        if vertex not in self.adjacency_list:\n            self.adjacency_list[vertex] = []\n\n    def add_edge(self, vertex1, vertex2):\n        self.adjacency_list[vertex1].append(vertex2)\n        self.adjacency_list[vertex2].append(vertex1)\n\n    def bfs(self, start):\n        visited = set()\n        queue = deque([start])\n        result = []\n\n        visited.add(start)\n\n        while queue:\n            vertex = queue.popleft()\n            result.append(vertex)\n\n            for neighbor in self.adjacency_list[vertex]:\n                if neighbor not in visited:\n                    visited.add(neighbor)\n                    queue.append(neighbor)\n\n        return result\n\nif __name__ == '__main__':\n    graph = Graph()\n    for v in range(6):\n        graph.add_vertex(v)\n    for v1, v2 in [(0, 1), (0, 2), (1, 3), (2, 4), (2, 5)]:\n        graph.add_edge(v1, v2)\n    print(graph.bfs(0))",
           language: "python",
           extension: "py",
           required: true,
@@ -734,7 +735,7 @@ A -> B -> C -> D -> E -> F
           name: "test",
           type: "test",
           content:
-            "def test_breadth_first_search():\ngraph = Graph()\nfor v in range(6):\ngraph.add_vertex(v)\nfor v1, v2 in [(0, 1), (0, 2), (1, 3), (2, 4), (2, 5)]:\ngraph.add_edge(v1, v2)\nassert graph.bfs(0) == [0, 1, 2, 3, 4, 5]",
+            "from solution import Graph\n\ndef test_breadth_first_search():\n    graph = Graph()\n    for v in range(6):\n        graph.add_vertex(v)\n    for v1, v2 in [(0, 1), (0, 2), (1, 3), (2, 4), (2, 5)]:\n        graph.add_edge(v1, v2)\n    assert graph.bfs(0) == [0, 1, 2, 3, 4, 5]",
           language: "python",
           extension: "py",
           readOnly: true,

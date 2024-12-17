@@ -5,6 +5,7 @@ import {
 } from "@tanstack/react-router";
 import { useCallback, useEffect } from "react";
 import { CodeEditor } from "@/components/code/CodeEditor";
+import { showToast } from "@/utils/toast";
 import { ExecutionResult } from "@/components/code/ExecutionResult";
 import { useLayoutStore } from "@/stores/layout";
 import { InfoPanel } from "@/components/code/InfoPanel";
@@ -47,6 +48,10 @@ function Algorithm() {
   // Selectors
   const isLoading = useAlgorithmStore(selectIsLoading);
   const error = useAlgorithmStore((state) => state.metadata.error);
+  const executionError = useAlgorithmStore(
+    (state) => state.algorithms[algorithmId]?.execution.error
+  );
+
   const activeLanguage = useAlgorithmStore((state) =>
     selectActiveLanguage(state, algorithmId)
   );
@@ -99,6 +104,15 @@ function Algorithm() {
       }
     };
   }, [algorithmId, initializeAlgorithm, pauseTimer]);
+
+  useEffect(() => {
+    if (executionError) {
+      showToast.error(
+        executionError.message ||
+          "An unexpected error occurred during code execution"
+      );
+    }
+  }, [executionError]);
 
   const handleCodeChange = useCallback(
     (value: string) => {
