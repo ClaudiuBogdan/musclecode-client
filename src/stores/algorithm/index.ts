@@ -172,6 +172,7 @@ export const useAlgorithmStore = create<AlgorithmState & StoreActions>()(
               ...algo,
               execution: {
                 ...algo.execution,
+                error: null,
                 isExecuting: false,
               },
               submission: {
