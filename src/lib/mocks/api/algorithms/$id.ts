@@ -1,44 +1,74 @@
 import { http, HttpResponse } from "msw";
-import { useMockAlgorithmsStore } from "../../store/algorithms";
-import { Algorithm } from "@/types/algorithm";
-import { CreateAlgorithmPayload } from "@/types/newAlgorithm";
+import axios from "axios";
+
+const apiClient = axios.create({
+  baseURL: "http://localhost:3000",
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
 
 export const byId = [
-  http.get("/api/algorithms/:id", ({ params }) => {
+  http.get("/api/algorithms/:id", async ({ params }) => {
     const { id } = params;
-    const algorithm = useMockAlgorithmsStore
-      .getState()
-      .getAlgorithm(id as string);
-
-    if (!algorithm) {
-      return new HttpResponse(null, { status: 404 });
+    try {
+      const response = await apiClient.get(`/api/algorithms/${id}`);
+      return HttpResponse.json(response.data);
+    } catch (error) {
+      console.error(error);
+      return new HttpResponse(null, { status: 500 });
     }
-
-    return HttpResponse.json({ algorithm });
   }),
+
   http.put("/api/algorithms/:id", async ({ params, request }) => {
     const { id } = params;
-    const payload = (await request.json()) as CreateAlgorithmPayload;
-    const store = useMockAlgorithmsStore.getState();
-    const existingAlgorithm = store.getAlgorithm(id as string);
-
-    if (!existingAlgorithm) {
-      return new HttpResponse(null, { status: 404 });
+    try {
+      const payload = await request.json();
+      const response = await apiClient.put(`/api/algorithms/${id}`, payload);
+      return HttpResponse.json(response.data);
+    } catch (error) {
+      console.error(error);
+      return new HttpResponse(null, { status: 500 });
     }
-
-    const updatedAlgorithm: Algorithm = {
-      ...existingAlgorithm,
-      title: payload.title,
-      difficulty: payload.difficulty,
-      description: payload.description,
-      summary: payload.summary,
-      category: payload.category,
-      tags: payload.tags,
-      files: payload.files,
-    };
-
-    store.updateAlgorithm(updatedAlgorithm);
-
-    return HttpResponse.json({ algorithm: updatedAlgorithm });
   }),
 ];
+
+// export const byId = [
+//   http.get("/api/algorithms/:id", ({ params }) => {
+//     const { id } = params;
+//     const algorithm = useMockAlgorithmsStore
+//       .getState()
+//       .getAlgorithm(id as string);
+
+//     if (!algorithm) {
+//       return new HttpResponse(null, { status: 404 });
+//     }
+
+//     return HttpResponse.json({ algorithm });
+//   }),
+//   http.put("/api/algorithms/:id", async ({ params, request }) => {
+//     const { id } = params;
+//     const payload = (await request.json()) as CreateAlgorithmPayload;
+//     const store = useMockAlgorithmsStore.getState();
+//     const existingAlgorithm = store.getAlgorithm(id as string);
+
+//     if (!existingAlgorithm) {
+//       return new HttpResponse(null, { status: 404 });
+//     }
+
+//     const updatedAlgorithm: Algorithm = {
+//       ...existingAlgorithm,
+//       title: payload.title,
+//       difficulty: payload.difficulty,
+//       description: payload.description,
+//       summary: payload.summary,
+//       category: payload.category,
+//       tags: payload.tags,
+//       files: payload.files,
+//     };
+
+//     store.updateAlgorithm(updatedAlgorithm);
+
+//     return HttpResponse.json({ algorithm: updatedAlgorithm });
+//   }),
+// ];
