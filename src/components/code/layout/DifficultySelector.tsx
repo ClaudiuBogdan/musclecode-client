@@ -17,9 +17,9 @@ import {
 import { useAlgorithmStore } from "@/stores/algorithm";
 import {
   selectIsSubmitting,
-  selectSubmissionNotes,
+  selectUserProgressNotes,
 } from "@/stores/algorithm/selectors";
-import { Difficulty } from "@/types/algorithm";
+import { Rating } from "@/types/algorithm";
 import { useToast } from "@/hooks/use-toast";
 
 interface DifficultySelectorProps {
@@ -29,28 +29,28 @@ interface DifficultySelectorProps {
 
 const DIFFICULTIES = [
   {
-    value: "again" as Difficulty,
+    value: "again" as Rating,
     label: "Again",
     color: "text-red-500 hover:bg-red-500/10",
     nextReviewDate: new Date(Date.now() + 1000 * 60 * 10),
     description: "You had significant difficulty with this problem",
   },
   {
-    value: "hard" as Difficulty,
+    value: "hard" as Rating,
     label: "Hard",
     color: "text-orange-500 hover:bg-orange-500/10",
     nextReviewDate: new Date(Date.now() + 1000 * 60 * 60 * 24 * 3),
     description: "You solved it with some struggle",
   },
   {
-    value: "good" as Difficulty,
+    value: "good" as Rating,
     label: "Good",
     color: "text-green-500 hover:bg-green-500/10",
     nextReviewDate: new Date(Date.now() + 1000 * 60 * 60 * 24 * 4),
     description: "You solved it with minor hesitation",
   },
   {
-    value: "easy" as Difficulty,
+    value: "easy" as Rating,
     label: "Easy",
     color: "text-blue-500 hover:bg-blue-500/10",
     nextReviewDate: new Date(Date.now() + 1000 * 60 * 60 * 24 * 5 * 30),
@@ -68,12 +68,12 @@ export const DifficultySelector: React.FC<DifficultySelectorProps> = ({
     selectIsSubmitting(state, algorithmId)
   );
   const submissionNotes = useAlgorithmStore((state) =>
-    selectSubmissionNotes(state, algorithmId)
+    selectUserProgressNotes(state, algorithmId)
   );
   const { setSubmissionNotes, submit } = useAlgorithmStore();
   const [isNotesOpen, setIsNotesOpen] = useState(false);
 
-  const handleSubmit = async (difficulty: Difficulty) => {
+  const handleSubmit = async (difficulty: Rating) => {
     const hasSubmitted = await submit(algorithmId, difficulty);
     if (!hasSubmitted) {
       toast({

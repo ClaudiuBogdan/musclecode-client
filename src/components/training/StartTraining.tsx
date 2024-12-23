@@ -153,7 +153,7 @@ export default function AlgorithmGymDashboard() {
                   >
                     <Link
                       to="/algorithms/$algorithmId"
-                      params={{ algorithmId: algorithm.id }}
+                      params={{ algorithmId: algorithm.algorithmId }}
                       className="group block"
                     >
                       <Card

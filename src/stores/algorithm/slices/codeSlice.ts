@@ -61,11 +61,12 @@ export const createCodeSlice: StateCreator<
           error: null,
         };
 
-        algorithm.submission = {
+        algorithm.userProgress = {
           isSubmitting: false,
           completed: false,
-          submissionNotes: "",
-          globalNotes: algorithm.submission?.globalNotes ?? "",
+          notes: "",
+          dailyProgress: null,
+          lastSubmissionDate: null,
         };
 
         return state;

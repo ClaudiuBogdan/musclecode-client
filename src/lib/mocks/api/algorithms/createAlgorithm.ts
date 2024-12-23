@@ -15,7 +15,7 @@ export const createAlgorithmApi = http.post(
   async ({ request }) => {
     const payload = (await request.json()) as CreateAlgorithmPayload;
     try {
-      const response = await apiClient.post("/api/algorithms", payload);
+      const response = await apiClient.post("/api/v1/algorithms", payload);
       return HttpResponse.json(response.data);
     } catch (error) {
       console.error(error);

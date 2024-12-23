@@ -1,14 +1,14 @@
 import {
-  selectSubmissionState,
+  selectUserProgressState,
   selectIsSubmitting,
   selectIsCompleted,
-  selectGlobalNotes,
-  selectSubmissionNotes,
-} from "../../selectors/submissionSelectors";
+  selectUserProgressNotes,
+} from "../../selectors";
 import { mockAlgorithmState } from "../utils/testStore";
-import { AlgorithmState, SubmissionState } from "../../types";
+import { AlgorithmState, UserProgressState } from "../../types";
+import { describe, expect, it, beforeEach } from "vitest";
 
-describe("Submission Selectors", () => {
+describe("User Progress Selectors", () => {
   const algorithmId = "test-algorithm";
   let state: AlgorithmState;
 
@@ -16,29 +16,33 @@ describe("Submission Selectors", () => {
     state = mockAlgorithmState(algorithmId);
   });
 
-  describe("selectSubmissionState", () => {
-    it("should return submission state for existing algorithm", () => {
-      const submissionState = selectSubmissionState(state, algorithmId);
-      expect(submissionState).toBeDefined();
-      expect(submissionState).toEqual<SubmissionState>({
+  describe("selectUserProgressState", () => {
+    it("should return user progress for existing algorithm", () => {
+      const userProgress = selectUserProgressState(state, algorithmId);
+      expect(userProgress).toBeDefined();
+      expect(userProgress).toEqual<UserProgressState>({
         isSubmitting: false,
         completed: false,
-        submissionNotes: "",
-        globalNotes: "",
+        notes: "",
+        dailyProgress: null,
+        lastSubmissionDate: null,
       });
     });
 
     it("should return null for non-existent algorithm", () => {
-      const submissionState = selectSubmissionState(state, "non-existent");
-      expect(submissionState).toBeNull();
+      const userProgress = selectUserProgressState(state, "non-existent");
+      expect(userProgress).toBeNull();
     });
 
     it("should handle empty state", () => {
       const emptyState = {
         algorithms: {},
       } as AlgorithmState;
-      const submissionState = selectSubmissionState(emptyState, algorithmId);
-      expect(submissionState).toBeNull();
+      const userProgressState = selectUserProgressState(
+        emptyState,
+        algorithmId
+      );
+      expect(userProgressState).toBeNull();
     });
   });
 
@@ -55,8 +59,8 @@ describe("Submission Selectors", () => {
           ...state.algorithms,
           [algorithmId]: {
             ...state.algorithms[algorithmId],
-            submission: {
-              ...state.algorithms[algorithmId].submission,
+            userProgress: {
+              ...state.algorithms[algorithmId].userProgress,
               isSubmitting: true,
             },
           },
@@ -79,8 +83,8 @@ describe("Submission Selectors", () => {
           ...state.algorithms,
           [algorithmId]: {
             ...state.algorithms[algorithmId],
-            submission: {
-              ...state.algorithms[algorithmId].submission,
+            userProgress: {
+              ...state.algorithms[algorithmId].userProgress,
               isSubmitting: true,
             },
           },
@@ -95,8 +99,8 @@ describe("Submission Selectors", () => {
           ...state.algorithms,
           [algorithmId]: {
             ...state.algorithms[algorithmId],
-            submission: {
-              ...state.algorithms[algorithmId].submission,
+            userProgress: {
+              ...state.algorithms[algorithmId].userProgress,
               isSubmitting: false,
             },
           },
@@ -119,8 +123,8 @@ describe("Submission Selectors", () => {
           ...state.algorithms,
           [algorithmId]: {
             ...state.algorithms[algorithmId],
-            submission: {
-              ...state.algorithms[algorithmId].submission,
+            userProgress: {
+              ...state.algorithms[algorithmId].userProgress,
               completed: true,
             },
           },
@@ -143,8 +147,8 @@ describe("Submission Selectors", () => {
           ...state.algorithms,
           [algorithmId]: {
             ...state.algorithms[algorithmId],
-            submission: {
-              ...state.algorithms[algorithmId].submission,
+            userProgress: {
+              ...state.algorithms[algorithmId].userProgress,
               completed: true,
             },
           },
@@ -159,8 +163,8 @@ describe("Submission Selectors", () => {
           ...state.algorithms,
           [algorithmId]: {
             ...state.algorithms[algorithmId],
-            submission: {
-              ...state.algorithms[algorithmId].submission,
+            userProgress: {
+              ...state.algorithms[algorithmId].userProgress,
               isSubmitting: true,
             },
           },
@@ -170,61 +174,62 @@ describe("Submission Selectors", () => {
     });
   });
 
-  describe("selectGlobalNotes", () => {
-    const testNotes = "Test global notes";
+  // TODO: add global notes
+  // describe("selectGlobalNotes", () => {
+  //   const testNotes = "Test global notes";
 
-    it("should return empty string by default", () => {
-      const notes = selectGlobalNotes(state, algorithmId);
-      expect(notes).toBe("");
-    });
+  //   it("should return empty string by default", () => {
+  //     const notes = selectGlobalNotes(state, algorithmId);
+  //     expect(notes).toBe("");
+  //   });
 
-    it("should return global notes when available", () => {
-      state = {
-        ...state,
-        algorithms: {
-          ...state.algorithms,
-          [algorithmId]: {
-            ...state.algorithms[algorithmId],
-            submission: {
-              ...state.algorithms[algorithmId].submission,
-              globalNotes: testNotes,
-            },
-          },
-        },
-      };
-      const notes = selectGlobalNotes(state, algorithmId);
-      expect(notes).toBe(testNotes);
-    });
+  //   it("should return global notes when available", () => {
+  //     state = {
+  //       ...state,
+  //       algorithms: {
+  //         ...state.algorithms,
+  //         [algorithmId]: {
+  //           ...state.algorithms[algorithmId],
+  //           userProgress: {
+  //             ...state.algorithms[algorithmId].userProgress,
+  //             notes: testNotes,
+  //           },
+  //         },
+  //       },
+  //     };
+  //     const notes = selectGlobalNotes(state, algorithmId);
+  //     expect(notes).toBe(testNotes);
+  //   });
 
-    it("should return empty string for non-existent algorithm", () => {
-      const notes = selectGlobalNotes(state, "non-existent");
-      expect(notes).toBe("");
-    });
+  //   it("should return empty string for non-existent algorithm", () => {
+  //     const notes = selectGlobalNotes(state, "non-existent");
+  //     expect(notes).toBe("");
+  //   });
 
-    it("should handle whitespace in notes", () => {
-      state = {
-        ...state,
-        algorithms: {
-          ...state.algorithms,
-          [algorithmId]: {
-            ...state.algorithms[algorithmId],
-            submission: {
-              ...state.algorithms[algorithmId].submission,
-              globalNotes: "   " + testNotes + "   ",
-            },
-          },
-        },
-      };
-      const notes = selectGlobalNotes(state, algorithmId);
-      expect(notes).toBe("   " + testNotes + "   ");
-    });
-  });
+  //   it("should handle whitespace in notes", () => {
+  //     state = {
+  //       ...state,
+  //       algorithms: {
+  //         ...state.algorithms,
+  //         [algorithmId]: {
+  //           ...state.algorithms[algorithmId],
+  //           userProgress: {
+  //             ...state.algorithms[algorithmId].userProgress,
+  //             notes: "   " + testNotes + "   ",
+  //           },
+  //         },
+  //       },
+  //     };
+  //     const notes = selectGlobalNotes(state, algorithmId);
+  //     expect(notes).toBe("   " + testNotes + "   ");
+  //   });
+  // });
 
   describe("selectSubmissionNotes", () => {
     const testNotes = "Test submission notes";
 
     it("should return empty string by default", () => {
-      const notes = selectSubmissionNotes(state, algorithmId);
+      const notes = selectUserProgressNotes(state, algorithmId);
       expect(notes).toBe("");
     });
 
@@ -235,19 +240,19 @@ describe("Submission Selectors", () => {
           ...state.algorithms,
           [algorithmId]: {
             ...state.algorithms[algorithmId],
-            submission: {
-              ...state.algorithms[algorithmId].submission,
-              submissionNotes: testNotes,
+            userProgress: {
+              ...state.algorithms[algorithmId].userProgress,
+              notes: testNotes,
             },
           },
         },
       };
-      const notes = selectSubmissionNotes(state, algorithmId);
+      const notes = selectUserProgressNotes(state, algorithmId);
       expect(notes).toBe(testNotes);
     });
 
     it("should return empty string for non-existent algorithm", () => {
-      const notes = selectSubmissionNotes(state, "non-existent");
+      const notes = selectUserProgressNotes(state, "non-existent");
       expect(notes).toBe("");
     });
 
@@ -258,18 +263,18 @@ describe("Submission Selectors", () => {
           ...state.algorithms,
           [algorithmId]: {
             ...state.algorithms[algorithmId],
-            submission: {
-              ...state.algorithms[algorithmId].submission,
-              submissionNotes: undefined as unknown as string,
+            userProgress: {
+              ...state.algorithms[algorithmId].userProgress,
+              notes: undefined as unknown as string,
             },
           },
         },
       };
-      expect(selectSubmissionNotes(state, algorithmId)).toBe("");
+      expect(selectUserProgressNotes(state, algorithmId)).toBe("");
 
-      state.algorithms[algorithmId].submission.submissionNotes =
+      state.algorithms[algorithmId].userProgress.notes =
         null as unknown as string;
-      expect(selectSubmissionNotes(state, algorithmId)).toBe("");
+      expect(selectUserProgressNotes(state, algorithmId)).toBe("");
     });
 
     it("should preserve notes through state transitions", () => {
@@ -280,14 +285,14 @@ describe("Submission Selectors", () => {
           ...state.algorithms,
           [algorithmId]: {
             ...state.algorithms[algorithmId],
-            submission: {
-              ...state.algorithms[algorithmId].submission,
-              submissionNotes: testNotes,
+            userProgress: {
+              ...state.algorithms[algorithmId].userProgress,
+              notes: testNotes,
             },
           },
         },
       };
-      expect(selectSubmissionNotes(state, algorithmId)).toBe(testNotes);
+      expect(selectUserProgressNotes(state, algorithmId)).toBe(testNotes);
 
       // Start submission
       state = {
@@ -296,14 +301,14 @@ describe("Submission Selectors", () => {
           ...state.algorithms,
           [algorithmId]: {
             ...state.algorithms[algorithmId],
-            submission: {
-              ...state.algorithms[algorithmId].submission,
+            userProgress: {
+              ...state.algorithms[algorithmId].userProgress,
               isSubmitting: true,
             },
           },
         },
       };
-      expect(selectSubmissionNotes(state, algorithmId)).toBe(testNotes);
+      expect(selectUserProgressNotes(state, algorithmId)).toBe(testNotes);
     });
   });
 });

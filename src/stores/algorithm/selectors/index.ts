@@ -1,5 +1,5 @@
 export * from "./codeSelectors";
 export * from "./timerSelectors";
 export * from "./executionSelectors";
-export * from "./submissionSelectors";
+export * from "./userProgressSelectors";
 export * from "./metadataSelectors";

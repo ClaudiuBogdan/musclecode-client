@@ -10,7 +10,7 @@ const apiClient = axios.create({
 
 export const daily = http.get("/api/algorithms/daily", async () => {
   try {
-    const response = await apiClient.get("/api/algorithms/daily");
+    const response = await apiClient.get("/api/v1/algorithms/daily");
     return HttpResponse.json(response.data);
   } catch (error) {
     console.error(error);

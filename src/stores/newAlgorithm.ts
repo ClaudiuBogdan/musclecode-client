@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
 import { persist, createJSONStorage } from "zustand/middleware";
-import { createAlgorithm } from "@/lib/api/algorithm";
+import { createAlgorithmTemplate } from "@/lib/api/algorithm";
 import { CreateAlgorithmPayload } from "@/types/newAlgorithm";
 import {
   BaseAlgorithmState,
@@ -66,7 +66,7 @@ export const useNewAlgorithmStore = create<
             files: algorithm.files,
           };
 
-          await createAlgorithm(payload);
+          await createAlgorithmTemplate(payload);
           get().resetState();
         } catch (error) {
           const errorMessage =

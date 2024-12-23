@@ -18,7 +18,7 @@ export const codeSubmissions = http.post(
       const submission = (await request.json()) as Submission;
 
       const response = await apiClient.post(
-        `/api/algorithms/${submissionId}/submissions`,
+        `/api/v1/algorithms/${submissionId}/submissions`,
         submission
       );
 
@@ -43,7 +43,7 @@ export const getSubmission = http.get(
     try {
       const submissionId = params.id as string;
       const response = await apiClient.get(
-        `/api/algorithms/${submissionId}/submissions`
+        `/api/v1/algorithms/${submissionId}/submissions`
       );
       return HttpResponse.json(response.data);
     } catch (error) {

@@ -278,9 +278,9 @@ describe("State Utils", () => {
       expect(
         modifiedState.algorithms[testAlgorithmId].metadata.description
       ).toBe(newDescription);
-      expect(testState.algorithms[testAlgorithmId].metadata.description).toBe(
-        ""
-      );
+      expect(
+        testState.algorithms[testAlgorithmId].metadata.template?.description
+      ).toBe("");
     });
   });
 

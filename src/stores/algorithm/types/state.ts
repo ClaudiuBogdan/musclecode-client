@@ -1,4 +1,9 @@
-import { AlgorithmFile, CodeLanguage } from "@/types/algorithm";
+import {
+  AlgorithmFile,
+  CodeLanguage,
+  AlgorithmTemplate,
+  DailyAlgorithm,
+} from "@/types/algorithm";
 import { CodeExecutionResponse } from "@/types/testRunner";
 
 export type AlgorithmId = string;
@@ -25,16 +30,17 @@ export interface ExecutionState {
   error: Error | null;
 }
 
-export interface SubmissionState {
+export interface UserProgressState {
   isSubmitting: boolean;
   completed: boolean;
-  submissionNotes: string;
-  globalNotes: string;
+  notes: string;
+  dailyProgress: DailyAlgorithm | null;
+  lastSubmissionDate: string | null;
 }
 
 export interface AlgorithmMetadataState {
   algorithmId: string;
-  description: string;
+  template: AlgorithmTemplate | null;
   nextAlgorithm: {
     id: string;
     title: string;
@@ -45,7 +51,7 @@ export interface AlgorithmData {
   code: CodeState;
   timer: TimerState;
   execution: ExecutionState;
-  submission: SubmissionState;
+  userProgress: UserProgressState;
   metadata: AlgorithmMetadataState;
 }
 

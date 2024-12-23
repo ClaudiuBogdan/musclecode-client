@@ -58,15 +58,16 @@ export const createEmptyAlgorithmData = (): AlgorithmData => {
       executionResult: null,
       error: null,
     },
-    submission: {
+    userProgress: {
       isSubmitting: false,
       completed: false,
-      submissionNotes: "",
-      globalNotes: "",
+      notes: "",
+      dailyProgress: null,
+      lastSubmissionDate: null,
     },
     metadata: {
       algorithmId: "",
-      description: "",
+      template: null,
       nextAlgorithm: null,
     },
   };

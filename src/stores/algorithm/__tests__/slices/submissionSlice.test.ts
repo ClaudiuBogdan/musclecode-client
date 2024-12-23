@@ -4,7 +4,7 @@ import { createSubmissionSlice } from "../../slices/submissionSlice";
 import { AlgorithmState, StoreActions } from "../../types";
 import { mockAlgorithmState } from "../utils/testStore";
 import { saveSubmission } from "@/lib/api/code";
-import { AlgorithmFile, Difficulty } from "@/types/algorithm";
+import { AlgorithmFile, Rating } from "@/types/algorithm";
 import { createAlgorithmSlice } from "../..";
 import { createCodeSlice } from "../../slices/codeSlice";
 import { createTimerSlice } from "../../slices/timerSlice";
@@ -62,7 +62,7 @@ describe("Submission Slice", () => {
   });
 
   describe("submit", () => {
-    const difficulty: Difficulty = "easy";
+    const difficulty: Rating = "easy";
     const mockFile: AlgorithmFile = {
       id: "test-uuid",
       name: "solution",
@@ -86,7 +86,7 @@ describe("Submission Slice", () => {
 
       expect(result).toBe(true);
       const submissionState =
-        store.getState().algorithms[algorithmId].submission;
+        store.getState().algorithms[algorithmId].userProgress;
       expect(submissionState.isSubmitting).toBe(false);
       expect(submissionState.completed).toBe(true);
 
@@ -112,7 +112,7 @@ describe("Submission Slice", () => {
 
       expect(result).toBe(false);
       const submissionState =
-        store.getState().algorithms[algorithmId].submission;
+        store.getState().algorithms[algorithmId].userProgress;
       expect(submissionState.isSubmitting).toBe(false);
       expect(submissionState.completed).toBe(false);
     });
@@ -127,7 +127,7 @@ describe("Submission Slice", () => {
       const secondSubmission = store.getState().submit(algorithmId, difficulty);
 
       expect(
-        store.getState().algorithms[algorithmId].submission.isSubmitting
+        store.getState().algorithms[algorithmId].userProgress.isSubmitting
       ).toBe(true);
 
       vi.advanceTimersByTime(100);
@@ -165,17 +165,17 @@ describe("Submission Slice", () => {
 
       // Check initial state
       expect(
-        store.getState().algorithms[algorithmId].submission.isSubmitting
+        store.getState().algorithms[algorithmId].userProgress.isSubmitting
       ).toBe(true);
       expect(
-        store.getState().algorithms[algorithmId].submission.completed
+        store.getState().algorithms[algorithmId].userProgress.completed
       ).toBe(false);
 
       await submissionPromise;
 
       // Check final state
       const submissionState =
-        store.getState().algorithms[algorithmId].submission;
+        store.getState().algorithms[algorithmId].userProgress;
       expect(submissionState.isSubmitting).toBe(false);
       expect(submissionState.completed).toBe(true);
     });
@@ -187,7 +187,7 @@ describe("Submission Slice", () => {
       store.getState().setGlobalNotes(algorithmId, testNotes);
 
       const globalNotes =
-        store.getState().algorithms[algorithmId].submission.globalNotes;
+        store.getState().algorithms[algorithmId].userProgress.notes;
       expect(globalNotes).toBe(testNotes);
     });
 
@@ -199,7 +199,7 @@ describe("Submission Slice", () => {
       await store.getState().submit(algorithmId, "easy");
 
       const globalNotes =
-        store.getState().algorithms[algorithmId].submission.globalNotes;
+        store.getState().algorithms[algorithmId].userProgress.notes;
       expect(globalNotes).toBe(testNotes);
     });
 
@@ -216,7 +216,7 @@ describe("Submission Slice", () => {
       store.getState().setSubmissionNotes(algorithmId, testNotes);
 
       const submissionNotes =
-        store.getState().algorithms[algorithmId].submission.submissionNotes;
+        store.getState().algorithms[algorithmId].userProgress.notes;
       expect(submissionNotes).toBe(testNotes);
     });
 
@@ -227,9 +227,8 @@ describe("Submission Slice", () => {
       store.getState().setGlobalNotes(algorithmId, globalNotes);
       store.getState().setSubmissionNotes(algorithmId, submissionNotes);
 
-      const state = store.getState().algorithms[algorithmId].submission;
-      expect(state.globalNotes).toBe(globalNotes);
-      expect(state.submissionNotes).toBe(submissionNotes);
+      const state = store.getState().algorithms[algorithmId].userProgress;
+      expect(state.notes).toBe(submissionNotes);
     });
 
     it("should throw error for non-existent algorithm", () => {
@@ -245,8 +244,9 @@ describe("Submission Slice", () => {
       vi.mocked(mockSaveSubmission).mockResolvedValueOnce(undefined);
       await store.getState().submit(algorithmId, "easy");
 
-      const submissionNotes =
-        store.getState().algorithms[algorithmId].submission.submissionNotes;
+      const submissionNotes: string =
+        store.getState().algorithms[algorithmId].userProgress.notes;
+
       expect(submissionNotes).toBe(testNotes);
     });
   });

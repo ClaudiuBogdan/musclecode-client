@@ -52,15 +52,16 @@ export const createAlgorithmSlice: StateCreator<
             executionResult: null,
             error: null,
           },
-          submission: {
+          userProgress: {
             isSubmitting: false,
             completed: false,
-            submissionNotes: "",
-            globalNotes: "",
+            notes: "",
+            dailyProgress: null,
+            lastSubmissionDate: null,
           },
           metadata: {
             algorithmId,
-            description: "",
+            template: null,
             nextAlgorithm: null,
           },
         };
@@ -117,15 +118,16 @@ export const createAlgorithmSlice: StateCreator<
             executionResult: null,
             error: null,
           },
-          submission: {
+          userProgress: {
             isSubmitting: false,
-            completed: algorithm.completed,
-            submissionNotes: "",
-            globalNotes: algorithm.notes || "",
+            completed: false, // TODO: get user progress from backend
+            notes: "",
+            dailyProgress: null,
+            lastSubmissionDate: null,
           },
           metadata: {
             algorithmId,
-            description: algorithm.description,
+            template: algorithm,
             nextAlgorithm,
           },
         };
@@ -175,8 +177,8 @@ export const useAlgorithmStore = create<AlgorithmState & StoreActions>()(
                 error: null,
                 isExecuting: false,
               },
-              submission: {
-                ...algo.submission,
+              userProgress: {
+                ...algo.userProgress,
                 isSubmitting: false,
               },
               timer: {

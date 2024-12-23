@@ -1,11 +1,11 @@
-import { Submission, Difficulty } from "@/types/algorithm";
+import { Submission, Rating } from "@/types/algorithm";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, Clock } from "lucide-react";
 import { CodeEditor } from "../code/CodeEditor";
 import { LanguageBadge } from "./LanguageBadge";
 import { formatTime } from "@/lib/utils/time";
 
-const difficultyColors: Record<Difficulty, string> = {
+const difficultyColors: Record<Rating, string> = {
   again: "bg-red-500 text-white",
   hard: "bg-orange-500 text-white",
   good: "bg-green-500 text-white",

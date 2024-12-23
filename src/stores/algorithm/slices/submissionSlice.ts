@@ -17,12 +17,12 @@ export const createSubmissionSlice: StateCreator<
     return withAlgorithm(state, algorithmId, async () => {
       const algorithm = state.algorithms[algorithmId];
 
-      if (algorithm.submission.isSubmitting) {
+      if (algorithm.userProgress.isSubmitting) {
         return false;
       }
 
       set((state) => {
-        state.algorithms[algorithmId].submission.isSubmitting = true;
+        state.algorithms[algorithmId].userProgress.isSubmitting = true;
         return state;
       });
 
@@ -38,15 +38,15 @@ export const createSubmissionSlice: StateCreator<
           code,
           timeSpent,
           difficulty,
-          notes: algorithm.submission.submissionNotes,
+          notes: algorithm.userProgress.notes,
           createdAt: new Date().toISOString(),
         };
 
         await saveSubmission(algorithmId, submission);
 
         set((state) => {
-          state.algorithms[algorithmId].submission.isSubmitting = false;
-          state.algorithms[algorithmId].submission.completed = true;
+          state.algorithms[algorithmId].userProgress.isSubmitting = false;
+          state.algorithms[algorithmId].userProgress.completed = true;
           return state;
         });
 
@@ -54,7 +54,7 @@ export const createSubmissionSlice: StateCreator<
       } catch (error) {
         console.error("Failed to submit code:", error);
         set((state) => {
-          state.algorithms[algorithmId].submission.isSubmitting = false;
+          state.algorithms[algorithmId].userProgress.isSubmitting = false;
           return state;
         });
         return false;
@@ -65,7 +65,7 @@ export const createSubmissionSlice: StateCreator<
   setGlobalNotes: (algorithmId, notes) =>
     set((state) =>
       withAlgorithm(state, algorithmId, (state) => {
-        state.algorithms[algorithmId].submission.globalNotes = notes;
+        state.algorithms[algorithmId].userProgress.notes = notes;
         return state;
       })
     ),
@@ -73,7 +73,7 @@ export const createSubmissionSlice: StateCreator<
   setSubmissionNotes: (algorithmId, notes) =>
     set((state) =>
       withAlgorithm(state, algorithmId, (state) => {
-        state.algorithms[algorithmId].submission.submissionNotes = notes;
+        state.algorithms[algorithmId].userProgress.notes = notes;
         return state;
       })
     ),

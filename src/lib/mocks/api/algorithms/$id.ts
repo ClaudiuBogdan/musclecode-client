@@ -12,19 +12,18 @@ export const byId = [
   http.get("/api/algorithms/:id", async ({ params }) => {
     const { id } = params;
     try {
-      const response = await apiClient.get(`/api/algorithms/${id}`);
+      const response = await apiClient.get(`/api/v1/algorithms/${id}`);
       return HttpResponse.json(response.data);
     } catch (error) {
       console.error(error);
       return new HttpResponse(null, { status: 500 });
     }
   }),
-
   http.put("/api/algorithms/:id", async ({ params, request }) => {
     const { id } = params;
     try {
       const payload = await request.json();
-      const response = await apiClient.put(`/api/algorithms/${id}`, payload);
+      const response = await apiClient.put(`/api/v1/algorithms/${id}`, payload);
       return HttpResponse.json(response.data);
     } catch (error) {
       console.error(error);

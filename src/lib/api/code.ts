@@ -1,6 +1,20 @@
 import { CodeExecutionResponse } from "@/types/testRunner";
 import { apiClient } from "./client";
-import { Algorithm, AlgorithmFile, Submission } from "@/types/algorithm";
+import {
+  AlgorithmTemplate,
+  AlgorithmFile,
+  Submission,
+} from "@/types/algorithm";
+
+interface NextAlgorithm {
+  id: string;
+  title: string;
+}
+
+interface GetAlgorithmResponse {
+  algorithm: AlgorithmTemplate;
+  nextAlgorithm: NextAlgorithm | null;
+}
 
 export interface CodeRunRequest {
   algorithmId: string;
@@ -12,7 +26,7 @@ export async function runCode(
   request: CodeRunRequest
 ): Promise<CodeExecutionResponse> {
   const { data } = await apiClient.post<CodeExecutionResponse>(
-    "/api/code/run",
+    "/api/v1/code/run",
     {
       ...request,
       submissionId: "submissionId-123",
@@ -24,14 +38,10 @@ export async function runCode(
 
 export const getAlgorithm = async (
   algorithmId: string
-): Promise<{
-  algorithm: Algorithm;
-  nextAlgorithm: Pick<Algorithm, "id" | "title"> | null;
-}> => {
-  const { data } = await apiClient.get<{
-    algorithm: Algorithm;
-    nextAlgorithm: Algorithm | null;
-  }>(`/api/algorithms/${algorithmId}`);
+): Promise<GetAlgorithmResponse> => {
+  const { data } = await apiClient.get<GetAlgorithmResponse>(
+    `/api/v1/algorithms/${algorithmId}`
+  );
   return data;
 };
 
@@ -39,24 +49,18 @@ export const saveSubmission = async (
   algorithmId: string,
   submission: Submission
 ): Promise<void> => {
-  const response = await fetch(`/api/algorithms/${algorithmId}/submissions`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(submission),
-  });
-
-  if (!response.ok) {
-    throw new Error("Failed to save submission");
-  }
+  const { data } = await apiClient.post<void>(
+    `/api/v1/algorithms/${algorithmId}/submissions`,
+    submission
+  );
+  return data;
 };
 
 export const getSubmissions = async (
   algorithmId: string
 ): Promise<Submission[]> => {
   const { data } = await apiClient.get<Submission[]>(
-    `/api/algorithms/${algorithmId}/submissions`
+    `/api/v1/algorithms/${algorithmId}/submissions`
   );
   return data;
 };

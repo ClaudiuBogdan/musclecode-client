@@ -10,7 +10,6 @@ import { SubmissionDetail } from "../submissions/SubmissionDetail";
 import { Submission } from "@/types/algorithm";
 import { formatDistanceToNow } from "date-fns";
 import { useAlgorithmStore } from "@/stores/algorithm";
-import { selectGlobalNotes } from "@/stores/algorithm/selectors";
 import { cn } from "@/lib/utils";
 
 interface NotesProps {
@@ -20,9 +19,7 @@ interface NotesProps {
 
 export const Notes: FC<NotesProps> = ({ algorithmId, className }) => {
   const setGlobalNotes = useAlgorithmStore((state) => state.setGlobalNotes);
-  const globalNotes = useAlgorithmStore((state) =>
-    selectGlobalNotes(state, algorithmId)
-  );
+  const globalNotes = ""; // TODO: get global notes from store
   const [showPreview, setShowPreview] = useState(false);
   const [selectedSubmission, setSelectedSubmission] =
     useState<Submission | null>(null);

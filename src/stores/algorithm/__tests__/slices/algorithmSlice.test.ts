@@ -9,7 +9,7 @@ import { createTimerSlice } from "../../slices/timerSlice";
 import { createExecutionSlice } from "../../slices/executionSlice";
 import { createSubmissionSlice } from "../../slices/submissionSlice";
 import { getAlgorithm } from "@/lib/api/code";
-import { Algorithm } from "@/types/algorithm";
+import { AlgorithmTemplate } from "@/types/algorithm";
 
 // Mock the API call
 vi.mock("@/lib/api/code");
@@ -57,8 +57,8 @@ describe("Algorithm Slice", () => {
 
   describe("initializeAlgorithm", () => {
     const mockAlgorithmResponse: {
-      algorithm: Algorithm;
-      nextAlgorithm: Pick<Algorithm, "id" | "title"> | null;
+      algorithm: AlgorithmTemplate;
+      nextAlgorithm: Pick<AlgorithmTemplate, "id" | "title"> | null;
     } = {
       algorithm: {
         id: algorithmId,
@@ -80,8 +80,6 @@ describe("Algorithm Slice", () => {
             extension: "js",
           },
         ],
-        completed: false,
-        notes: "",
       },
       nextAlgorithm: null,
     };
@@ -116,9 +114,9 @@ describe("Algorithm Slice", () => {
       // Check final state
       const finalState = store.getState();
       expect(finalState.metadata.isLoading).toBe(false);
-      expect(finalState.algorithms[algorithmId].metadata.description).toBe(
-        "Test Description"
-      );
+      expect(
+        finalState.algorithms[algorithmId].metadata.template?.description
+      ).toBe("Test Description");
       expect(
         finalState.algorithms[algorithmId].code.storedCode.javascript[
           "solution.js"
@@ -170,9 +168,9 @@ describe("Algorithm Slice", () => {
       const finalState = store.getState();
       expect(finalState.metadata.error).toBeNull();
       expect(finalState.algorithms[algorithmId]).toBeDefined();
-      expect(finalState.algorithms[algorithmId].metadata.description).toBe(
-        "Test Description"
-      );
+      expect(
+        finalState.algorithms[algorithmId].metadata.template?.description
+      ).toBe("Test Description");
     });
 
     it("should handle empty files array", async () => {

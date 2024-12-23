@@ -1,4 +1,8 @@
-import { Algorithm, AlgorithmId } from "@/types/algorithm";
+import {
+  AlgorithmTemplate,
+  AlgorithmId,
+  AlgorithmUserProgress,
+} from "@/types/algorithm";
 
 export interface NextAlgorithm {
   id: AlgorithmId;
@@ -6,6 +10,11 @@ export interface NextAlgorithm {
 }
 
 export interface AlgorithmResponse {
-  algorithm: Algorithm;
+  template: AlgorithmTemplate;
+  nextAlgorithm: NextAlgorithm | null;
+}
+
+export interface UserProgressResponse {
+  progress: AlgorithmUserProgress;
   nextAlgorithm: NextAlgorithm | null;
 }

@@ -23,7 +23,7 @@ export const selectAlgorithmDescription = (
   algorithmId: string
 ): string => {
   const metadata = selectAlgorithmMetadata(state, algorithmId);
-  return metadata?.description ?? "";
+  return metadata?.template?.description ?? "";
 };
 
 export const selectNextAlgorithm = (

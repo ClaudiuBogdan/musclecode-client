@@ -1,24 +1,23 @@
-import { Algorithm } from "@/types/algorithm";
+import { AlgorithmTemplate } from "@/types/algorithm";
 import { useMockAlgorithmsStore } from "../../store/algorithms";
 import { CreateAlgorithmPayload } from "@/types/newAlgorithm";
 import { v4 as uuidv4 } from "uuid";
 
-
 export function getDailyAlgorithms() {
   const store = useMockAlgorithmsStore.getState();
-  return store.getAllAlgorithms();
+  return store.algorithms;
 }
 
 export function getAlgorithm(algorithmId: string) {
   const store = useMockAlgorithmsStore.getState();
-  const algorithm = store.getAlgorithm(algorithmId);
+  const algorithm = store.algorithms.find((a) => a.id === algorithmId);
 
   if (!algorithm) {
     throw new Error(`Algorithm with id ${algorithmId} not found`);
   }
 
   // Get next algorithm
-  const allAlgorithms = store.getAllAlgorithms();
+  const allAlgorithms = store.algorithms;
   const currentIndex = allAlgorithms.findIndex((a) => a.id === algorithmId);
   const nextAlgorithm =
     currentIndex < allAlgorithms.length - 1
@@ -36,7 +35,7 @@ export function getAlgorithm(algorithmId: string) {
 
 export async function createAlgorithm(
   payload: CreateAlgorithmPayload
-): Promise<Algorithm> {
+): Promise<AlgorithmTemplate> {
   // Simulate network delay
   await new Promise((resolve) => setTimeout(resolve, 1000));
 
@@ -44,7 +43,7 @@ export async function createAlgorithm(
   const store = useMockAlgorithmsStore.getState();
 
   // Convert payload to Algorithm type
-  const algorithm: Algorithm = {
+  const algorithm: AlgorithmTemplate = {
     id: uuidv4(),
     title: payload.title,
     description: payload.description,
@@ -52,8 +51,6 @@ export async function createAlgorithm(
     summary: payload.summary,
     tags: payload.tags,
     difficulty: payload.difficulty,
-    notes: "",
-    completed: false,
     files: payload.files,
   };
 
@@ -62,7 +59,7 @@ export async function createAlgorithm(
     store.addAlgorithm(algorithm);
 
     // Verify the algorithm was saved
-    const savedAlgorithm = store.getAlgorithm(algorithm.id);
+    const savedAlgorithm = store.algorithms.find((a) => a.id === algorithm.id);
     if (!savedAlgorithm) {
       throw new Error("Failed to save algorithm to store");
     }
@@ -76,13 +73,13 @@ export async function createAlgorithm(
 
 export function checkIfCompleted(algorithmId: string): boolean {
   const store = useMockAlgorithmsStore.getState();
-  const algorithm = store.getAlgorithm(algorithmId);
-  return algorithm?.completed ?? false;
+  const algorithm = store.algorithms.find((a) => a.id === algorithmId);
+  return algorithm !== undefined; // This should read the completed state from the store. The template doesn't include the completed state.
 }
 
 export function getNextAlgorithm(currentAlgorithmId: string) {
   const store = useMockAlgorithmsStore.getState();
-  const allAlgorithms = store.getAllAlgorithms();
+  const allAlgorithms = store.algorithms;
   const currentIndex = allAlgorithms.findIndex(
     (a) => a.id === currentAlgorithmId
   );

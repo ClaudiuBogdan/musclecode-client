@@ -1,4 +1,4 @@
-import { CodeLanguage, Difficulty } from "@/types/algorithm";
+import { CodeLanguage, Rating } from "@/types/algorithm";
 import { FileName, AlgorithmId } from "./state";
 
 export interface CodeActions {
@@ -30,10 +30,7 @@ export interface ExecutionActions {
 }
 
 export interface SubmissionActions {
-  submit: (
-    algorithmId: AlgorithmId,
-    difficulty: Difficulty
-  ) => Promise<boolean>;
+  submit: (algorithmId: AlgorithmId, difficulty: Rating) => Promise<boolean>;
   setGlobalNotes: (algorithmId: AlgorithmId, notes: string) => void;
   setSubmissionNotes: (algorithmId: AlgorithmId, notes: string) => void;
 }

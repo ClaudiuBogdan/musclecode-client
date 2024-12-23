@@ -159,7 +159,7 @@ describe("Code Slice", () => {
           state.algorithms[DEFAULT_ALGORITHM_ID].execution.executionResult =
             mockExecutionResult;
           state.algorithms[DEFAULT_ALGORITHM_ID].execution.error = null;
-          state.algorithms[DEFAULT_ALGORITHM_ID].submission.globalNotes =
+          state.algorithms[DEFAULT_ALGORITHM_ID].userProgress.notes =
             "test notes";
         });
 
@@ -174,7 +174,7 @@ describe("Code Slice", () => {
         );
         expect(resetState.execution.isExecuting).toBe(false);
         expect(resetState.execution.executionResult).toBeNull();
-        expect(resetState.submission.globalNotes).toBe("test notes");
+        expect(resetState.userProgress.notes).toBe("test notes");
       });
     });
 

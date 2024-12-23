@@ -3,7 +3,7 @@ import axios from "axios";
 import { ApiError } from "@/types/api";
 
 export const apiClient = axios.create({
-  baseURL: "http://localhost:5173",
+  baseURL: "http://localhost:3000",
   headers: {
     "Content-Type": "application/json",
   },
