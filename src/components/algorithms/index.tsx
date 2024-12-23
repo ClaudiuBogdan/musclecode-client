@@ -1,7 +1,7 @@
-import { useAlgorithms } from "@/lib/api/algorithm";
 import { columns } from "./columns";
 import { DataTable } from "./data-table";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import { useAlgorithms } from "@/services/algorithms/hooks/useAlgorithms";
 
 export function AlgorithmsTable() {
   const { data: algorithms, isLoading, error } = useAlgorithms();

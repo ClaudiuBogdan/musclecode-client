@@ -52,9 +52,18 @@ export interface DailyAlgorithm {
 }
 
 export interface AlgorithmUserProgress {
-  algorithmUserData: AlgorithmUserData | null;
-  dailyAlgorithm: DailyAlgorithm | null;
-  algorithmTemplate: AlgorithmTemplate;
+  completed: boolean;
+  isSubmitting: boolean;
+  submissionNote: string;
+  notes: {
+    content: string;
+    state: "saving" | "saved" | "error";
+  };
+  dailyProgress?: {
+    date: string;
+    completed: boolean;
+  };
+  lastSubmissionDate?: string;
 }
 
 export type AlgorithmPreview = Pick<

@@ -4,6 +4,11 @@ import { AlgorithmState, StoreActions, SubmissionActions } from "../types";
 import { Submission } from "@/types/algorithm";
 import { withAlgorithm } from "../utils/stateUtils";
 import { saveSubmission } from "@/lib/api/code";
+import { saveNotes } from "@/lib/api/algorithm";
+import { debounce } from "@/lib/utils/debounce";
+
+// Create a debounced save notes function
+const debouncedSaveNotes = debounce(saveNotes, 3000);
 
 export const createSubmissionSlice: StateCreator<
   AlgorithmState & StoreActions,
@@ -62,7 +67,8 @@ export const createSubmissionSlice: StateCreator<
     });
   },
 
-  setGlobalNotes: (algorithmId, notes) =>
+  setGlobalNotes: (algorithmId, notes) => {
+    // Set initial saving state
     set((state) =>
       withAlgorithm(state, algorithmId, (state) => {
         state.algorithms[algorithmId].userProgress.notes = {
@@ -71,7 +77,34 @@ export const createSubmissionSlice: StateCreator<
         };
         return state;
       })
-    ),
+    );
+
+    // Save notes with debounce
+    debouncedSaveNotes(algorithmId, notes)
+      .then(() => {
+        set((state) =>
+          withAlgorithm(state, algorithmId, (state) => {
+            state.algorithms[algorithmId].userProgress.notes = {
+              content: notes,
+              state: "saved",
+            };
+            return state;
+          })
+        );
+      })
+      .catch((error) => {
+        console.error("Failed to save notes:", error);
+        set((state) =>
+          withAlgorithm(state, algorithmId, (state) => {
+            state.algorithms[algorithmId].userProgress.notes = {
+              content: notes,
+              state: "error",
+            };
+            return state;
+          })
+        );
+      });
+  },
 
   setSubmissionNotes: (algorithmId, notes) =>
     set((state) =>

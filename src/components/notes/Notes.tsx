@@ -70,9 +70,9 @@ export const Notes: FC<NotesProps> = ({ algorithmId, className }) => {
           insertion = "```\ncode block\n```";
           break;
       }
-      handleNotesChange(notes + insertion);
+      handleNotesChange(notes.content + insertion);
     },
-    [notes, handleNotesChange, showPreview]
+    [notes.content, handleNotesChange, showPreview]
   );
 
   return (
