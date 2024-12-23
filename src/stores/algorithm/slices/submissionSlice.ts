@@ -8,7 +8,7 @@ import { saveNotes } from "@/lib/api/algorithm";
 import { debounce } from "@/lib/utils/debounce";
 
 // Create a debounced save notes function
-const debouncedSaveNotes = debounce(saveNotes, 3000);
+const debouncedSaveNotes = debounce(saveNotes, 1000);
 
 export const createSubmissionSlice: StateCreator<
   AlgorithmState & StoreActions,

@@ -20,7 +20,11 @@ interface NotesProps {
 export const Notes: FC<NotesProps> = ({ algorithmId, className }) => {
   const setGlobalNotes = useAlgorithmStore((state) => state.setGlobalNotes);
   const notes = useAlgorithmStore(
-    (state) => state.algorithms[algorithmId]?.userProgress.notes
+    (state) =>
+      state.algorithms[algorithmId]?.userProgress.notes || {
+        content: "",
+        state: "loading",
+      }
   );
   const [showPreview, setShowPreview] = useState(false);
   const [selectedSubmission, setSelectedSubmission] =

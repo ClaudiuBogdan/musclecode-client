@@ -50,7 +50,10 @@ export const createAlgorithmSlice: StateCreator<
           userProgress: {
             isSubmitting: false,
             completed: false,
-            notes: "",
+            notes: {
+              content: "",
+              state: "saved",
+            },
             dailyProgress: null,
             lastSubmissionDate: null,
             submissions: [],
