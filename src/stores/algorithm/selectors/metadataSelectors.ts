@@ -1,3 +1,4 @@
+import { Submission } from "@/types/algorithm";
 import { AlgorithmState } from "../types";
 
 export const selectIsLoading = (state: AlgorithmState): boolean => {
@@ -24,6 +25,13 @@ export const selectAlgorithmDescription = (
 ): string => {
   const metadata = selectAlgorithmMetadata(state, algorithmId);
   return metadata?.template?.description ?? "";
+};
+
+export const selectAlgorithmSubmissions = (
+  state: AlgorithmState,
+  algorithmId: string
+): Submission[] => {
+  return state.algorithms[algorithmId]?.userProgress.submissions ?? [];
 };
 
 export const selectNextAlgorithm = (

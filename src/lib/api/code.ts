@@ -5,15 +5,14 @@ import {
   AlgorithmFile,
   Submission,
 } from "@/types/algorithm";
-
-interface NextAlgorithm {
-  id: string;
-  title: string;
-}
+import axios from "axios";
 
 interface GetAlgorithmResponse {
-  algorithm: AlgorithmTemplate;
-  nextAlgorithm: NextAlgorithm | null;
+  id: string;
+  algorithmTemplate: AlgorithmTemplate;
+  submissions: Submission[];
+  notes: string;
+  due: string;
 }
 
 export interface CodeRunRequest {
@@ -25,14 +24,17 @@ export interface CodeRunRequest {
 export async function runCode(
   request: CodeRunRequest
 ): Promise<CodeExecutionResponse> {
-  const { data } = await apiClient.post<CodeExecutionResponse>(
-    "/api/v1/code/run",
-    {
-      ...request,
-      submissionId: "submissionId-123",
-      userId: "userId-123",
-    }
-  );
+  const executingApi = axios.create({
+    baseURL: "http://localhost:3002",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+  const { data } = await executingApi.post<CodeExecutionResponse>("/execute", {
+    ...request,
+    submissionId: "submissionId-123",
+    userId: "userId-123",
+  });
   return data;
 }
 
@@ -40,7 +42,7 @@ export const getAlgorithm = async (
   algorithmId: string
 ): Promise<GetAlgorithmResponse> => {
   const { data } = await apiClient.get<GetAlgorithmResponse>(
-    `/api/v1/algorithms/${algorithmId}`
+    `/api/v1/algorithms/practice/${algorithmId}`
   );
   return data;
 };
@@ -60,7 +62,7 @@ export const getSubmissions = async (
   algorithmId: string
 ): Promise<Submission[]> => {
   const { data } = await apiClient.get<Submission[]>(
-    `/api/v1/algorithms/${algorithmId}/submissions`
+    `/api/v1/algorithms/submissions/${algorithmId}/`
   );
   return data;
 };

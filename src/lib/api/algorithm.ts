@@ -31,7 +31,7 @@ export function useAlgorithms() {
 }
 
 export function useAlgorithm(id: string) {
-  return useQuery<{ algorithm: AlgorithmTemplate }>({
+  return useQuery<AlgorithmTemplate>({
     queryKey: algorithmKeys.detail(id),
     queryFn: async () => {
       const { data } = await apiClient.get(
@@ -85,7 +85,7 @@ export function useAlgorithmUserProgress(userId: string, algorithmId: string) {
     queryKey: algorithmKeys.userDetail(userId, algorithmId),
     queryFn: async () => {
       const { data } = await apiClient.get(
-        `/api/v1/algorithms/${algorithmId}/progress?userId=${userId}`
+        `/api/v1/algorithms/practice/${algorithmId}/progress?userId=${userId}`
       );
       return data;
     },
@@ -154,7 +154,7 @@ export function useUpdateDailyProgress() {
 // Template management
 export async function createAlgorithmTemplate(payload: CreateAlgorithmPayload) {
   const { data } = await apiClient.post<AlgorithmTemplate>(
-    "/api/v1/algorithms",
+    "/api/v1/algorithms/templates",
     payload
   );
   return data;
@@ -165,7 +165,7 @@ export async function updateAlgorithmTemplate(
   payload: CreateAlgorithmPayload
 ) {
   const { data } = await apiClient.put<AlgorithmTemplate>(
-    `/api/v1/algorithms/${id}`,
+    `/api/v1/algorithms/templates/${id}`,
     payload
   );
   return data;

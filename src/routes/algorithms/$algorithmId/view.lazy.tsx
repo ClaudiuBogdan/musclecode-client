@@ -3,10 +3,12 @@ import {
   useParams,
   useSearch,
 } from "@tanstack/react-router";
-import { useAlgorithmData } from "@/lib/api/algorithm";
 import { Card, CardContent } from "@/components/ui/card";
 import { InfoPanel } from "@/components/code/InfoPanel";
 import { Notes } from "@/components/notes/Notes";
+import { useEffect } from "react";
+import { useAlgorithmStore } from "@/stores/algorithm";
+import { selectIsLoading } from "@/stores/algorithm/selectors";
 
 export const Route = createLazyFileRoute("/algorithms/$algorithmId/view")({
   component: AlgorithmView,
@@ -17,6 +19,10 @@ function AlgorithmView() {
     from: "/algorithms/$algorithmId/view",
   });
 
+  const { initializeAlgorithm } = useAlgorithmStore();
+  const isLoading = useAlgorithmStore(selectIsLoading);
+  const error = useAlgorithmStore((state) => state.metadata.error);
+
   const { tab } = useSearch({
     from: "/algorithms/$algorithmId/view",
     select: (search: Record<string, unknown>) => ({
@@ -24,17 +30,20 @@ function AlgorithmView() {
     }),
   });
 
-  const { data: algorithm, isLoading } = useAlgorithmData(algorithmId);
+  useEffect(() => {
+    const loadAlgorithm = async () => {
+      await initializeAlgorithm(algorithmId);
+    };
+    loadAlgorithm();
+  }, [algorithmId, initializeAlgorithm]);
 
   if (isLoading) {
     return <div>Loading...</div>;
   }
 
-  if (!algorithm) {
-    return <div>Algorithm not found</div>;
+  if (error) {
+    return <div>Error: {error}</div>;
   }
-
-  console.log("algorithm", algorithm);
 
   return (
     <div className="container mx-6 py-6 h-full">

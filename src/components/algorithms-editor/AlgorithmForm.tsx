@@ -1,6 +1,6 @@
 import { NewAlgorithm } from "@/types/newAlgorithm";
 import { CodeLanguage } from "@/types/algorithm";
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { Loader2, RotateCcw, AlertCircle } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card } from "@/components/ui/card";
@@ -30,6 +30,22 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
+
+const defaultAlgorithmCategories = [
+  "Array",
+  "String",
+  "Linked List",
+  "Tree",
+  "Graph",
+  "Dynamic Programming",
+  "Math",
+  "Sorting",
+  "Search",
+  "Bit Manipulation",
+  "Recursion",
+  "Sliding Window",
+  "Dynamic Programming",
+];
 
 export interface ValidationResult {
   errors: ValidationError[];
@@ -99,6 +115,17 @@ export function AlgorithmForm({
 }: AlgorithmFormProps) {
   const [activeTab, setActiveTab] = useState("metadata");
   const [showResetDialog, setShowResetDialog] = useState(false);
+  const currentCategory = algorithm.metadata.category;
+  const algorithmCategories = useMemo(() => {
+    if (!currentCategory) {
+      return defaultAlgorithmCategories;
+    }
+    const categories = defaultAlgorithmCategories.filter(
+      (category) => category !== currentCategory
+    );
+    categories.unshift(currentCategory);
+    return categories;
+  }, [currentCategory]);
 
   const handleSave = useCallback(async () => {
     if (!validation.isValid) {
@@ -289,15 +316,11 @@ export function AlgorithmForm({
                       <SelectValue placeholder="Select category" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="custom">Custom</SelectItem>
-                      <SelectItem value="array">Array</SelectItem>
-                      <SelectItem value="string">String</SelectItem>
-                      <SelectItem value="linked-list">Linked List</SelectItem>
-                      <SelectItem value="tree">Tree</SelectItem>
-                      <SelectItem value="graph">Graph</SelectItem>
-                      <SelectItem value="dynamic-programming">
-                        Dynamic Programming
-                      </SelectItem>
+                      {algorithmCategories.map((category) => (
+                        <SelectItem key={category} value={category}>
+                          {category}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </div>

@@ -14,6 +14,7 @@ import { createSubmissionSlice } from "./slices/submissionSlice";
 import { getAlgorithm } from "@/lib/api/code";
 import { createInitialState } from "./__tests__/utils/testStore";
 import { CodeLanguage } from "@/types/algorithm";
+import { endOfDay } from "date-fns";
 
 export const createAlgorithmSlice: StateCreator<
   AlgorithmState & StoreActions,
@@ -22,20 +23,14 @@ export const createAlgorithmSlice: StateCreator<
   AlgorithmActions
 > = (set, get) => ({
   initializeAlgorithm: async (algorithmId: string) => {
-    const state = get();
-
-    // If already initialized and not in error state, return early
-    if (state.algorithms[algorithmId] && !state.metadata.error) {
-      return;
-    }
-
     try {
       // Set loading state and clear any previous errors
+      const isInitialized = get().algorithms[algorithmId] !== undefined;
       set((state: AlgorithmState) => {
         state.metadata.isLoading = true;
         state.metadata.error = null;
         // Initialize an empty placeholder to prevent "not found" errors during loading
-        state.algorithms[algorithmId] = {
+        state.algorithms[algorithmId] = state.algorithms[algorithmId] || {
           code: {
             activeLanguage: "javascript",
             activeTab: "",
@@ -58,6 +53,7 @@ export const createAlgorithmSlice: StateCreator<
             notes: "",
             dailyProgress: null,
             lastSubmissionDate: null,
+            submissions: [],
           },
           metadata: {
             algorithmId,
@@ -68,20 +64,23 @@ export const createAlgorithmSlice: StateCreator<
         return state;
       });
 
-      const { algorithm, nextAlgorithm } = await getAlgorithm(algorithmId);
+      const response = await getAlgorithm(algorithmId);
 
-      if (!algorithm) {
-        throw new Error(`Algorithm with id ${algorithmId} not found`);
-      }
+      const algorithmTemplate = response.algorithmTemplate;
+      const submissions = response.submissions;
+      const completed = new Date(response.due) < endOfDay(new Date());
 
-      const codeState = algorithm.files.reduce<StoredCode>((acc, file) => {
-        const language = file.language as keyof StoredCode;
-        if (!acc[language]) {
-          acc[language] = {};
-        }
-        acc[language][file.name] = file;
-        return acc;
-      }, {} as StoredCode);
+      const codeState = algorithmTemplate.files.reduce<StoredCode>(
+        (acc, file) => {
+          const language = file.language as keyof StoredCode;
+          if (!acc[language]) {
+            acc[language] = {};
+          }
+          acc[language][file.name] = file;
+          return acc;
+        },
+        {} as StoredCode
+      );
 
       const languages = Object.keys(codeState) as CodeLanguage[];
       if (languages.length === 0) {
@@ -100,41 +99,64 @@ export const createAlgorithmSlice: StateCreator<
       const firstLanguage = languages[0];
       const firstFile = Object.keys(codeState[firstLanguage])[0];
 
-      set((state: AlgorithmState) => {
-        state.algorithms[algorithmId] = {
-          code: {
-            activeLanguage: firstLanguage,
-            activeTab: firstFile,
-            storedCode: codeState,
-            initialStoredCode: codeState,
-          },
-          timer: {
-            initialStartTime: Date.now(),
-            pausedAt: null,
-            totalPausedTime: 0,
-          },
-          execution: {
-            isExecuting: false,
-            executionResult: null,
-            error: null,
-          },
-          userProgress: {
-            isSubmitting: false,
-            completed: false, // TODO: get user progress from backend
-            notes: "",
-            dailyProgress: null,
-            lastSubmissionDate: null,
-          },
-          metadata: {
-            algorithmId,
-            template: algorithm,
-            nextAlgorithm,
-          },
-        };
-        state.metadata.activeAlgorithmId = algorithmId;
-        state.metadata.isLoading = false;
-        return state;
-      });
+      if (!isInitialized) {
+        set((state: AlgorithmState) => {
+          state.algorithms[algorithmId] = {
+            code: {
+              activeLanguage: firstLanguage,
+              activeTab: firstFile,
+              storedCode: codeState,
+              initialStoredCode: codeState,
+            },
+            timer: {
+              initialStartTime: Date.now(),
+              pausedAt: null,
+              totalPausedTime: 0,
+            },
+            execution: {
+              isExecuting: false,
+              executionResult: null,
+              error: null,
+            },
+            userProgress: {
+              isSubmitting: false,
+              completed,
+              notes: response.notes || "",
+              lastSubmissionDate: null,
+              submissions: submissions,
+            },
+            metadata: {
+              algorithmId,
+              template: algorithmTemplate,
+              nextAlgorithm: null,
+            },
+          };
+          state.metadata.activeAlgorithmId = algorithmId;
+          state.metadata.isLoading = false;
+          return state;
+        });
+      } else {
+        set((state: AlgorithmState) => {
+          state.algorithms[algorithmId] = {
+            ...state.algorithms[algorithmId],
+            userProgress: {
+              isSubmitting: false,
+              completed,
+              notes: response.notes || "",
+              lastSubmissionDate: null,
+              submissions: submissions,
+            },
+            metadata: {
+              algorithmId,
+              template: algorithmTemplate,
+              nextAlgorithm: null,
+            },
+          };
+          state.metadata.activeAlgorithmId = algorithmId;
+          state.metadata.isLoading = false;
+          return state;
+        });
+      }
     } catch (error) {
       console.error("Failed to initialize algorithm:", error);
       set((state: AlgorithmState) => {

@@ -3,6 +3,7 @@ import {
   CodeLanguage,
   AlgorithmTemplate,
   DailyAlgorithm,
+  Submission,
 } from "@/types/algorithm";
 import { CodeExecutionResponse } from "@/types/testRunner";
 
@@ -34,8 +35,8 @@ export interface UserProgressState {
   isSubmitting: boolean;
   completed: boolean;
   notes: string;
-  dailyProgress: DailyAlgorithm | null;
   lastSubmissionDate: string | null;
+  submissions: Submission[];
 }
 
 export interface AlgorithmMetadataState {

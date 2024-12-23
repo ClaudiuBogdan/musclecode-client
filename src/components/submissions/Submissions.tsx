@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useSubmissions } from "@/services/algorithms/hooks/useSubmissions";
 import { Submission } from "@/types/algorithm";
 import {
   Dialog,
@@ -12,38 +11,14 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { SubmissionDetail } from "./SubmissionDetail";
 import { SubmissionsTable } from "./SubmissionsTable";
-import { LoadingState } from "./LoadingState";
-import { ErrorState } from "./ErrorState";
 
-export default function Submissions({ algorithmId }: { algorithmId: string }) {
-  const {
-    data: submissions,
-    isLoading,
-    error,
-    refetch,
-    isRefetching,
-  } = useSubmissions(algorithmId);
+interface SubmissionsProps {
+  submissions: Submission[];
+}
+
+export default function Submissions({ submissions }: SubmissionsProps) {
   const [selectedSubmission, setSelectedSubmission] =
     useState<Submission | null>(null);
-
-  if (isLoading || isRefetching) {
-    return <LoadingState />;
-  }
-
-  if (error) {
-    const errorMessage =
-      error.message === "Invalid server response"
-        ? "Unable to load submissions. Please try again."
-        : `Error loading submissions: ${error.message}`;
-
-    return (
-      <ErrorState
-        message={errorMessage}
-        onRetry={() => refetch()}
-        isRetrying={isRefetching}
-      />
-    );
-  }
 
   if (!submissions || submissions.length === 0) {
     return (
@@ -56,10 +31,7 @@ export default function Submissions({ algorithmId }: { algorithmId: string }) {
   return (
     <div className="space-y-4">
       <SubmissionsTable
-        submissions={submissions.sort(
-          (a, b) =>
-            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-        )}
+        submissions={submissions}
         onViewCode={setSelectedSubmission}
       />
 

@@ -1,12 +1,16 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ProblemDescription } from "@/components/code/ProblemDescription";
 import { useAlgorithmStore } from "@/stores/algorithm";
-import { selectAlgorithmDescription } from "@/stores/algorithm/selectors";
+import {
+  selectAlgorithmDescription,
+  selectAlgorithmSubmissions,
+} from "@/stores/algorithm/selectors";
 import { cn } from "@/lib/utils";
 import { Notes } from "../notes/Notes";
 import Submissions from "../submissions/Submissions";
 import { Chat } from "../chat/Chat";
 import { useNavigate } from "@tanstack/react-router";
+import { useMemo } from "react";
 
 interface InfoPanelProps {
   algorithmId: string;
@@ -22,9 +26,17 @@ export const InfoPanel: React.FC<InfoPanelProps> = ({
   tab,
   className,
 }) => {
-  const description = useAlgorithmStore((state) =>
-    selectAlgorithmDescription(state, algorithmId)
+  const state = useAlgorithmStore();
+
+  const description = useMemo(
+    () => selectAlgorithmDescription(state, algorithmId),
+    [state, algorithmId]
   );
+  const submissions = useMemo(
+    () => selectAlgorithmSubmissions(state, algorithmId),
+    [state, algorithmId]
+  );
+
   const navigate = useNavigate();
 
   const handleTabChange = (value: TabValue | string) => {
@@ -81,7 +93,7 @@ export const InfoPanel: React.FC<InfoPanelProps> = ({
           value="submissions"
           className="flex-grow m-0 overflow-auto border-none outline-none"
         >
-          <Submissions algorithmId={algorithmId} />
+          <Submissions submissions={submissions} />
         </TabsContent>
         <TabsContent
           value="chat"

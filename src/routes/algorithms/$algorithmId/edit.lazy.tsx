@@ -21,11 +21,10 @@ export default function EditAlgorithm() {
   });
 
   const {
-    data,
+    data: existingAlgorithm,
     isLoading: isLoadingAlgorithm,
     error: loadError,
   } = useAlgorithm(algorithmId);
-  const existingAlgorithm = data?.algorithm;
 
   const {
     algorithm,
