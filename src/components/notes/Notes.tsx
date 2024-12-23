@@ -108,7 +108,7 @@ export const Notes: FC<NotesProps> = ({ algorithmId, className }) => {
                         })}
                       </span>
                       <span>•</span>
-                      <span className="uppercase">{submission.difficulty}</span>
+                      <span className="uppercase">{submission.rating}</span>
                     </div>
                     <Button
                       variant="ghost"

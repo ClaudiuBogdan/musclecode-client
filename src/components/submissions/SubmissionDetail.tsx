@@ -34,9 +34,9 @@ export function SubmissionDetail({ submission }: SubmissionDetailProps) {
           <LanguageBadge language={submission.language} />
           <Badge
             variant="outline"
-            className={difficultyColors[submission.difficulty]}
+            className={difficultyColors[submission.rating]}
           >
-            {submission.difficulty}
+            {submission.rating}
           </Badge>
         </div>
       </div>

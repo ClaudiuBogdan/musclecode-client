@@ -142,8 +142,10 @@ export default function AlgorithmGymDashboard() {
               {dailyAlgorithms?.map((algorithm, index) => {
                 const DifficultyIcon =
                   difficultyIcons[
-                    algorithm.difficulty as keyof typeof difficultyIcons
+                    algorithm.algorithmPreview
+                      .difficulty as keyof typeof difficultyIcons
                   ] || Brain;
+                const { algorithmPreview } = algorithm;
                 return (
                   <motion.div
                     key={algorithm.id}
@@ -153,7 +155,7 @@ export default function AlgorithmGymDashboard() {
                   >
                     <Link
                       to="/algorithms/$algorithmId"
-                      params={{ algorithmId: algorithm.algorithmId }}
+                      params={{ algorithmId: algorithmPreview.id }}
                       className="group block"
                     >
                       <Card
@@ -167,13 +169,13 @@ export default function AlgorithmGymDashboard() {
                       >
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                           <CardTitle className="text-lg font-semibold text-gold-900 dark:text-gold-900 group-hover:text-gold-900 transition-colors">
-                            {algorithm.title}
+                            {algorithmPreview.title}
                           </CardTitle>
                           <DifficultyIcon
                             className={`w-6 h-6 ${
-                              algorithm.difficulty === "easy"
+                              algorithmPreview.difficulty === "easy"
                                 ? "text-green-400"
-                                : algorithm.difficulty === "medium"
+                                : algorithmPreview.difficulty === "medium"
                                   ? "text-yellow-400"
                                   : "text-red-400"
                             }`}
@@ -184,14 +186,14 @@ export default function AlgorithmGymDashboard() {
                             <Badge
                               variant="outline"
                               className={`capitalize ${
-                                algorithm.difficulty === "easy"
+                                algorithmPreview.difficulty === "easy"
                                   ? "border-green-400 text-green-400"
-                                  : algorithm.difficulty === "medium"
+                                  : algorithmPreview.difficulty === "medium"
                                     ? "border-yellow-400 text-yellow-400"
                                     : "border-red-400 text-red-400"
                               }`}
                             >
-                              {algorithm.difficulty}
+                              {algorithmPreview.difficulty}
                             </Badge>
                             {algorithm.completed && (
                               <Badge className="bg-emerald-500 text-white dark:text-white">
@@ -201,7 +203,7 @@ export default function AlgorithmGymDashboard() {
                             )}
                           </div>
                           <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
-                            {algorithm.category}
+                            {algorithmPreview.category}
                           </p>
                         </CardContent>
                         <div className="absolute bottom-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">

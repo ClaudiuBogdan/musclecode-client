@@ -45,9 +45,9 @@ export function SubmissionsTable({
             <TableCell>
               <Badge
                 variant="outline"
-                className={difficultyColors[submission.difficulty]}
+                className={difficultyColors[submission.rating]}
               >
-                {submission.difficulty}
+                {submission.rating}
               </Badge>
             </TableCell>
             <TableCell>

@@ -37,7 +37,7 @@ export const createSubmissionSlice: StateCreator<
           language: activeLanguage,
           code,
           timeSpent,
-          difficulty,
+          rating: difficulty,
           notes: algorithm.userProgress.notes,
           createdAt: new Date().toISOString(),
         };

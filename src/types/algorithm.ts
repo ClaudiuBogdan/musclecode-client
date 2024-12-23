@@ -45,10 +45,10 @@ export interface AlgorithmUserData {
 
 export interface DailyAlgorithm {
   id: string;
-  userId: string;
-  algorithmId: string;
   date: string;
   completed: boolean;
+  createdAt: string;
+  algorithmPreview: AlgorithmPreview;
 }
 
 export interface AlgorithmUserProgress {
@@ -57,15 +57,10 @@ export interface AlgorithmUserProgress {
   algorithmTemplate: AlgorithmTemplate;
 }
 
-export type BaseAlgorithmPreview = Pick<
+export type AlgorithmPreview = Pick<
   AlgorithmTemplate,
-  "title" | "category" | "difficulty"
-> & { algorithmId: string };
-
-export type AlgorithmPreview = BaseAlgorithmPreview & {
-  id: string;
-  completed: boolean;
-};
+  "id" | "title" | "category" | "difficulty" | "tags"
+>;
 
 export interface Submission {
   id: string;
@@ -74,6 +69,6 @@ export interface Submission {
   code: string;
   language: string;
   notes: string;
-  difficulty: Rating;
+  rating: Rating;
   createdAt: string;
 }
