@@ -29,5 +29,5 @@ export const selectUserProgressNotes = (
   algorithmId: string
 ): string => {
   const submission = selectUserProgressState(state, algorithmId);
-  return submission?.notes ?? "";
+  return submission?.submissionNote ?? "";
 };

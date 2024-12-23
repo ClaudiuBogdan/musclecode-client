@@ -19,7 +19,9 @@ interface NotesProps {
 
 export const Notes: FC<NotesProps> = ({ algorithmId, className }) => {
   const setGlobalNotes = useAlgorithmStore((state) => state.setGlobalNotes);
-  const globalNotes = ""; // TODO: get global notes from store
+  const notes = useAlgorithmStore(
+    (state) => state.algorithms[algorithmId]?.userProgress.notes
+  );
   const [showPreview, setShowPreview] = useState(false);
   const [selectedSubmission, setSelectedSubmission] =
     useState<Submission | null>(null);
@@ -68,9 +70,9 @@ export const Notes: FC<NotesProps> = ({ algorithmId, className }) => {
           insertion = "```\ncode block\n```";
           break;
       }
-      handleNotesChange(globalNotes + insertion);
+      handleNotesChange(notes + insertion);
     },
-    [globalNotes, handleNotesChange, showPreview]
+    [notes, handleNotesChange, showPreview]
   );
 
   return (
@@ -83,10 +85,15 @@ export const Notes: FC<NotesProps> = ({ algorithmId, className }) => {
       <div className="flex-1 overflow-hidden grid grid-rows-2 gap-4">
         <div className="overflow-hidden p-4">
           {showPreview ? (
-            <NotesPreview value={globalNotes} />
+            <NotesPreview value={notes.content} />
           ) : (
-            <NotesEditor value={globalNotes} onChange={handleNotesChange} />
+            <NotesEditor value={notes.content} onChange={handleNotesChange} />
           )}
+          <div className="text-xs text-muted-foreground">
+            {notes.state === "saving" && "Saving..."}
+            {notes.state === "error" && "Error saving notes"}
+            {notes.state === "saved" && "Saved"}
+          </div>
         </div>
 
         <div className="overflow-hidden border-t">

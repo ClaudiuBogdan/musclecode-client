@@ -62,10 +62,9 @@ export const createCodeSlice: StateCreator<
         };
 
         algorithm.userProgress = {
+          ...algorithm.userProgress,
           isSubmitting: false,
           completed: false,
-          notes: "",
-          dailyProgress: null,
           lastSubmissionDate: null,
         };
 

@@ -121,7 +121,11 @@ export const createAlgorithmSlice: StateCreator<
             userProgress: {
               isSubmitting: false,
               completed,
-              notes: response.notes || "",
+              notes: {
+                content: response.notes || "",
+                state: "saved",
+              },
+              submissionNote: "",
               lastSubmissionDate: null,
               submissions: submissions,
             },
@@ -142,7 +146,11 @@ export const createAlgorithmSlice: StateCreator<
             userProgress: {
               isSubmitting: false,
               completed,
-              notes: response.notes || "",
+              notes: {
+                content: response.notes || "",
+                state: "saved",
+              },
+              submissionNote: "",
               lastSubmissionDate: null,
               submissions: submissions,
             },

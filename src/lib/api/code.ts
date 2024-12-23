@@ -7,7 +7,7 @@ import {
 } from "@/types/algorithm";
 import axios from "axios";
 
-interface GetAlgorithmResponse {
+export interface GetAlgorithmResponse {
   id: string;
   algorithmTemplate: AlgorithmTemplate;
   submissions: Submission[];

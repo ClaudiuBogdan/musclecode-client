@@ -2,7 +2,6 @@ import {
   AlgorithmFile,
   CodeLanguage,
   AlgorithmTemplate,
-  DailyAlgorithm,
   Submission,
 } from "@/types/algorithm";
 import { CodeExecutionResponse } from "@/types/testRunner";
@@ -34,7 +33,11 @@ export interface ExecutionState {
 export interface UserProgressState {
   isSubmitting: boolean;
   completed: boolean;
-  notes: string;
+  notes: {
+    content: string;
+    state: "saved" | "saving" | "error";
+  };
+  submissionNote: string;
   lastSubmissionDate: string | null;
   submissions: Submission[];
 }

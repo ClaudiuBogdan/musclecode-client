@@ -245,7 +245,7 @@ describe("Submission Slice", () => {
       await store.getState().submit(algorithmId, "easy");
 
       const submissionNotes: string =
-        store.getState().algorithms[algorithmId].userProgress.notes;
+        store.getState().algorithms[algorithmId].userProgress.submissionNote;
 
       expect(submissionNotes).toBe(testNotes);
     });

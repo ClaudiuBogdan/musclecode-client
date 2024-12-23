@@ -61,9 +61,13 @@ export const createEmptyAlgorithmData = (): AlgorithmData => {
     userProgress: {
       isSubmitting: false,
       completed: false,
-      notes: "",
-      dailyProgress: null,
+      notes: {
+        content: "",
+        state: "saved",
+      },
+      submissionNote: "",
       lastSubmissionDate: null,
+      submissions: [],
     },
     metadata: {
       algorithmId: "",

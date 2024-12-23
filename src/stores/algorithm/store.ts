@@ -25,9 +25,13 @@ const initialAlgorithmData: AlgorithmData = {
   userProgress: {
     isSubmitting: false,
     completed: false,
-    notes: "",
-    dailyProgress: null,
+    submissionNote: "",
+    notes: {
+      content: "",
+      state: "saved",
+    },
     lastSubmissionDate: null,
+    submissions: [],
   },
   metadata: {
     algorithmId: "",

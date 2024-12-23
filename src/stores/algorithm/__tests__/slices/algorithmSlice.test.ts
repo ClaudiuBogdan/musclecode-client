@@ -8,8 +8,7 @@ import { createCodeSlice } from "../../slices/codeSlice";
 import { createTimerSlice } from "../../slices/timerSlice";
 import { createExecutionSlice } from "../../slices/executionSlice";
 import { createSubmissionSlice } from "../../slices/submissionSlice";
-import { getAlgorithm } from "@/lib/api/code";
-import { AlgorithmTemplate } from "@/types/algorithm";
+import { getAlgorithm, GetAlgorithmResponse } from "@/lib/api/code";
 
 // Mock the API call
 vi.mock("@/lib/api/code");
@@ -56,11 +55,9 @@ describe("Algorithm Slice", () => {
   });
 
   describe("initializeAlgorithm", () => {
-    const mockAlgorithmResponse: {
-      algorithm: AlgorithmTemplate;
-      nextAlgorithm: Pick<AlgorithmTemplate, "id" | "title"> | null;
-    } = {
-      algorithm: {
+    const mockAlgorithmResponse: GetAlgorithmResponse = {
+      id: algorithmId,
+      algorithmTemplate: {
         id: algorithmId,
         title: "Test Algorithm",
         description: "Test Description",
@@ -81,7 +78,9 @@ describe("Algorithm Slice", () => {
           },
         ],
       },
-      nextAlgorithm: null,
+      submissions: [],
+      notes: "test notes",
+      due: "2024-01-01",
     };
 
     it("should set loading state and initialize placeholder immediately", async () => {
@@ -176,8 +175,8 @@ describe("Algorithm Slice", () => {
     it("should handle empty files array", async () => {
       const responseWithNoFiles = {
         ...mockAlgorithmResponse,
-        algorithm: {
-          ...mockAlgorithmResponse.algorithm,
+        algorithmTemplate: {
+          ...mockAlgorithmResponse.algorithmTemplate,
           files: [],
         },
       };

@@ -23,9 +23,13 @@ describe("User Progress Selectors", () => {
       expect(userProgress).toEqual<UserProgressState>({
         isSubmitting: false,
         completed: false,
-        notes: "",
-        dailyProgress: null,
+        notes: {
+          content: "",
+          state: "saved",
+        },
+        submissionNote: "",
         lastSubmissionDate: null,
+        submissions: [],
       });
     });
 
@@ -226,7 +230,10 @@ describe("User Progress Selectors", () => {
   // });
 
   describe("selectSubmissionNotes", () => {
-    const testNotes = "Test submission notes";
+    const testNotes = {
+      content: "Test submission notes",
+      state: "saved",
+    };
 
     it("should return empty string by default", () => {
       const notes = selectUserProgressNotes(state, algorithmId);
@@ -242,7 +249,10 @@ describe("User Progress Selectors", () => {
             ...state.algorithms[algorithmId],
             userProgress: {
               ...state.algorithms[algorithmId].userProgress,
-              notes: testNotes,
+              notes: {
+                content: testNotes.content,
+                state: testNotes.state as "saved" | "saving" | "error",
+              },
             },
           },
         },
@@ -265,15 +275,20 @@ describe("User Progress Selectors", () => {
             ...state.algorithms[algorithmId],
             userProgress: {
               ...state.algorithms[algorithmId].userProgress,
-              notes: undefined as unknown as string,
+              notes: undefined as unknown as {
+                content: string;
+                state: "saved" | "saving" | "error";
+              },
             },
           },
         },
       };
       expect(selectUserProgressNotes(state, algorithmId)).toBe("");
 
-      state.algorithms[algorithmId].userProgress.notes =
-        null as unknown as string;
+      state.algorithms[algorithmId].userProgress.notes = null as unknown as {
+        content: string;
+        state: "saved" | "saving" | "error";
+      };
       expect(selectUserProgressNotes(state, algorithmId)).toBe("");
     });
 
@@ -287,7 +302,10 @@ describe("User Progress Selectors", () => {
             ...state.algorithms[algorithmId],
             userProgress: {
               ...state.algorithms[algorithmId].userProgress,
-              notes: testNotes,
+              notes: {
+                content: testNotes.content,
+                state: testNotes.state as "saved" | "saving" | "error",
+              },
             },
           },
         },

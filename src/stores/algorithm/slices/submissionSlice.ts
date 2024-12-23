@@ -38,7 +38,7 @@ export const createSubmissionSlice: StateCreator<
           code,
           timeSpent,
           rating: difficulty,
-          notes: algorithm.userProgress.notes,
+          notes: algorithm.userProgress.submissionNote,
           createdAt: new Date().toISOString(),
         };
 
@@ -65,7 +65,10 @@ export const createSubmissionSlice: StateCreator<
   setGlobalNotes: (algorithmId, notes) =>
     set((state) =>
       withAlgorithm(state, algorithmId, (state) => {
-        state.algorithms[algorithmId].userProgress.notes = notes;
+        state.algorithms[algorithmId].userProgress.notes = {
+          content: notes,
+          state: "saving",
+        };
         return state;
       })
     ),
@@ -73,7 +76,7 @@ export const createSubmissionSlice: StateCreator<
   setSubmissionNotes: (algorithmId, notes) =>
     set((state) =>
       withAlgorithm(state, algorithmId, (state) => {
-        state.algorithms[algorithmId].userProgress.notes = notes;
+        state.algorithms[algorithmId].userProgress.submissionNote = notes;
         return state;
       })
     ),
