@@ -1,5 +1,5 @@
 import { create, StateCreator } from "zustand";
-import { persist, createJSONStorage } from "zustand/middleware";
+import { persist } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
 import {
   AlgorithmActions,
@@ -15,6 +15,7 @@ import { getAlgorithm } from "@/lib/api/code";
 import { createInitialState } from "./__tests__/utils/testStore";
 import { CodeLanguage } from "@/types/algorithm";
 import { endOfDay } from "date-fns";
+import { algorithmStorageWithTTL } from "./storage";
 
 export const createAlgorithmSlice: StateCreator<
   AlgorithmState & StoreActions,
@@ -105,6 +106,7 @@ export const createAlgorithmSlice: StateCreator<
       if (!isInitialized) {
         set((state: AlgorithmState) => {
           state.algorithms[algorithmId] = {
+            _createdAt: Date.now(),
             code: {
               activeLanguage: firstLanguage,
               activeTab: firstFile,
@@ -197,7 +199,7 @@ export const useAlgorithmStore = create<AlgorithmState & StoreActions>()(
     })),
     {
       name: "algorithm-store",
-      storage: createJSONStorage(() => localStorage),
+      storage: algorithmStorageWithTTL,
       partialize: (state) => ({
         ...state,
         algorithms: Object.fromEntries(

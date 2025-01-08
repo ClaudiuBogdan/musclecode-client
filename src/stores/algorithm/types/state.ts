@@ -57,6 +57,7 @@ export interface AlgorithmData {
   execution: ExecutionState;
   userProgress: UserProgressState;
   metadata: AlgorithmMetadataState;
+  _createdAt: number;
 }
 
 export interface AlgorithmState {
