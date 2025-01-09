@@ -14,7 +14,6 @@ import { createSubmissionSlice } from "./slices/submissionSlice";
 import { getAlgorithm } from "@/lib/api/code";
 import { createInitialState } from "./__tests__/utils/testStore";
 import { CodeLanguage } from "@/types/algorithm";
-import { endOfDay } from "date-fns";
 import { algorithmStorageWithTTL } from "./storage";
 
 export const createAlgorithmSlice: StateCreator<
@@ -82,7 +81,6 @@ export const createAlgorithmSlice: StateCreator<
 
       const algorithmTemplate = response.algorithmTemplate;
       const submissions = response.submissions;
-      const completed = new Date(response.due) > endOfDay(new Date());
 
       const codeState = algorithmTemplate.files.reduce<StoredCode>(
         (acc, file) => {
@@ -124,6 +122,8 @@ export const createAlgorithmSlice: StateCreator<
       if (shouldResetCode) {
         get().resetCode(algorithmId);
       }
+
+      const completed = !!newDailyAlgorithm && newDailyAlgorithm.completed;
 
       // Initialize the algorithm if it doesn't exist
       if (!isInitialized) {
@@ -175,13 +175,13 @@ export const createAlgorithmSlice: StateCreator<
           state.algorithms[algorithmId] = {
             ...prevAlgorithmState,
             userProgress: {
+              ...prevAlgorithmState.userProgress,
               isSubmitting: false,
               completed,
               notes: {
                 content: response.notes || "",
                 state: "saved",
               },
-              submissionNote: "",
               lastSubmissionDate: null,
               submissions: submissions,
             },
