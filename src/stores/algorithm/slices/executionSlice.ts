@@ -4,7 +4,7 @@ import { withAlgorithm } from "../utils/stateUtils";
 import { runCode } from "@/lib/api/code";
 import { CodeExecutionResponse } from "@/types/testRunner";
 
-const EXECUTION_TIMEOUT = 10000; // 10 seconds
+const EXECUTION_TIMEOUT_SECONDS = 20; 
 
 export const createExecutionSlice: StateCreator<
   AlgorithmState & StoreActions,
@@ -37,8 +37,12 @@ export const createExecutionSlice: StateCreator<
         const timeoutPromise = new Promise((_, reject) => {
           setTimeout(
             () =>
-              reject(new Error("Code execution timed out after 10 seconds")),
-            EXECUTION_TIMEOUT
+              reject(
+                new Error(
+                  `Code execution timed out after ${EXECUTION_TIMEOUT_SECONDS} seconds`
+                )
+              ),
+            EXECUTION_TIMEOUT_SECONDS * 1000
           );
         });
 

@@ -63,6 +63,12 @@ export const createAlgorithmSlice: StateCreator<
             algorithmId,
             template: null,
             nextAlgorithm: null,
+            ratingSchedule: {
+              again: 0,
+              hard: 0,
+              good: 0,
+              easy: 0,
+            },
           },
         };
         return state;
@@ -72,7 +78,7 @@ export const createAlgorithmSlice: StateCreator<
 
       const algorithmTemplate = response.algorithmTemplate;
       const submissions = response.submissions;
-      const completed = new Date(response.due) < endOfDay(new Date());
+      const completed = new Date(response.due) > endOfDay(new Date());
 
       const codeState = algorithmTemplate.files.reduce<StoredCode>(
         (acc, file) => {
@@ -137,7 +143,8 @@ export const createAlgorithmSlice: StateCreator<
             metadata: {
               algorithmId,
               template: algorithmTemplate,
-              nextAlgorithm: null,
+              nextAlgorithm: response.nextAlgorithm,
+              ratingSchedule: response.ratingSchedule,
             },
           };
           state.metadata.activeAlgorithmId = algorithmId;
@@ -162,7 +169,8 @@ export const createAlgorithmSlice: StateCreator<
             metadata: {
               algorithmId,
               template: algorithmTemplate,
-              nextAlgorithm: null,
+              nextAlgorithm: response.nextAlgorithm,
+              ratingSchedule: response.ratingSchedule,
             },
           };
           state.metadata.activeAlgorithmId = algorithmId;

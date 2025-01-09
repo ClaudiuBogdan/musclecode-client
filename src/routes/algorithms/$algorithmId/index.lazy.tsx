@@ -29,6 +29,7 @@ import {
   selectIsCompleted,
   selectNextAlgorithm,
   selectTimerState,
+  selectRatingSchedule,
 } from "@/stores/algorithm/selectors";
 
 export const Route = createLazyFileRoute("/algorithms/$algorithmId/")({
@@ -75,6 +76,9 @@ function Algorithm() {
   );
   const timerState = useAlgorithmStore((state) =>
     selectTimerState(state, algorithmId)
+  );
+  const ratingSchedule = useAlgorithmStore((state) =>
+    selectRatingSchedule(state, algorithmId)
   );
 
   // Actions
@@ -254,6 +258,7 @@ function Algorithm() {
                       isExecuting={isExecuting}
                       isSubmitting={isSubmitting}
                       isCompleted={isCompleted}
+                      ratingSchedule={ratingSchedule}
                       onRun={handleRunCode}
                       onReset={handleReset}
                     />

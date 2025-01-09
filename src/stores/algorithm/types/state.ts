@@ -3,6 +3,8 @@ import {
   CodeLanguage,
   AlgorithmTemplate,
   Submission,
+  RatingSchedule,
+  AlgorithmPreview,
 } from "@/types/algorithm";
 import { CodeExecutionResponse } from "@/types/testRunner";
 
@@ -45,10 +47,8 @@ export interface UserProgressState {
 export interface AlgorithmMetadataState {
   algorithmId: string;
   template: AlgorithmTemplate | null;
-  nextAlgorithm: {
-    id: string;
-    title: string;
-  } | null;
+  nextAlgorithm: AlgorithmPreview | null;
+  ratingSchedule: RatingSchedule | null;
 }
 
 export interface AlgorithmData {

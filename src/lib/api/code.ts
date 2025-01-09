@@ -4,6 +4,8 @@ import {
   AlgorithmTemplate,
   AlgorithmFile,
   Submission,
+  AlgorithmPreview,
+  RatingSchedule,
 } from "@/types/algorithm";
 import axios from "axios";
 
@@ -13,6 +15,8 @@ export interface GetAlgorithmResponse {
   submissions: Submission[];
   notes: string;
   due: string;
+  ratingSchedule: RatingSchedule;
+  nextAlgorithm: AlgorithmPreview;
 }
 
 export interface CodeRunRequest {

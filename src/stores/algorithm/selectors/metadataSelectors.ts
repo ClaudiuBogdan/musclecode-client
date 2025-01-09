@@ -41,3 +41,17 @@ export const selectNextAlgorithm = (
   const metadata = selectAlgorithmMetadata(state, algorithmId);
   return metadata?.nextAlgorithm ?? null;
 };
+
+export const selectRatingSchedule = (
+  state: AlgorithmState,
+  algorithmId: string
+) => {
+  return (
+    state.algorithms[algorithmId]?.metadata.ratingSchedule ?? {
+      again: 0,
+      hard: 0,
+      good: 0,
+      easy: 0,
+    }
+  );
+};

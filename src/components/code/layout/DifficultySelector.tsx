@@ -19,12 +19,13 @@ import {
   selectIsSubmitting,
   selectUserProgressNotes,
 } from "@/stores/algorithm/selectors";
-import { Rating } from "@/types/algorithm";
+import { Rating, RatingSchedule } from "@/types/algorithm";
 import { useToast } from "@/hooks/use-toast";
 
 interface DifficultySelectorProps {
   algorithmId: string;
   nextAlgorithmId?: string;
+  ratingSchedule: RatingSchedule;
 }
 
 const DIFFICULTIES = [
@@ -32,28 +33,28 @@ const DIFFICULTIES = [
     value: "again" as Rating,
     label: "Again",
     color: "text-red-500 hover:bg-red-500/10",
-    nextReviewDate: new Date(Date.now() + 1000 * 60 * 10),
+    nextReviewDate: new Date(),
     description: "You had significant difficulty with this problem",
   },
   {
     value: "hard" as Rating,
     label: "Hard",
     color: "text-orange-500 hover:bg-orange-500/10",
-    nextReviewDate: new Date(Date.now() + 1000 * 60 * 60 * 24 * 3),
+    nextReviewDate: new Date(),
     description: "You solved it with some struggle",
   },
   {
     value: "good" as Rating,
     label: "Good",
     color: "text-green-500 hover:bg-green-500/10",
-    nextReviewDate: new Date(Date.now() + 1000 * 60 * 60 * 24 * 4),
+    nextReviewDate: new Date(),
     description: "You solved it with minor hesitation",
   },
   {
     value: "easy" as Rating,
     label: "Easy",
     color: "text-blue-500 hover:bg-blue-500/10",
-    nextReviewDate: new Date(Date.now() + 1000 * 60 * 60 * 24 * 5 * 30),
+    nextReviewDate: new Date(),
     description: "You solved it without any difficulty",
   },
 ];
@@ -61,6 +62,7 @@ const DIFFICULTIES = [
 export const DifficultySelector: React.FC<DifficultySelectorProps> = ({
   algorithmId,
   nextAlgorithmId,
+  ratingSchedule,
 }) => {
   const router = useRouter();
   const { toast } = useToast();
@@ -72,6 +74,12 @@ export const DifficultySelector: React.FC<DifficultySelectorProps> = ({
   );
   const { setSubmissionNotes, submit } = useAlgorithmStore();
   const [isNotesOpen, setIsNotesOpen] = useState(false);
+
+  DIFFICULTIES.forEach((difficulty) => {
+    difficulty.nextReviewDate = new Date(
+      Date.now() + ratingSchedule[difficulty.value]
+    );
+  });
 
   const handleSubmit = async (difficulty: Rating) => {
     const hasSubmitted = await submit(algorithmId, difficulty);

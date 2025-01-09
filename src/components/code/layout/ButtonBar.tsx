@@ -4,6 +4,7 @@ import { SkipButton } from "@/components/code/buttons/SkipButton";
 import { ResetButton } from "@/components/code/buttons/ResetButton";
 import { DifficultySelector } from "./DifficultySelector";
 import NextButton from "../buttons/NextButton";
+import { RatingSchedule } from "@/types/algorithm";
 
 interface ButtonBarProps {
   algorithmId: string;
@@ -12,6 +13,7 @@ interface ButtonBarProps {
   isExecuting: boolean;
   isSubmitting: boolean;
   isCompleted: boolean;
+  ratingSchedule: RatingSchedule;
   onRun: () => void;
   onReset: () => void;
 }
@@ -23,6 +25,7 @@ export const ButtonBar: React.FC<ButtonBarProps> = ({
   isExecuting,
   isSubmitting,
   isCompleted,
+  ratingSchedule,
   onRun,
   onReset,
 }) => {
@@ -82,6 +85,7 @@ export const ButtonBar: React.FC<ButtonBarProps> = ({
         <DifficultySelector
           algorithmId={algorithmId}
           nextAlgorithmId={nextAlgorithmId}
+          ratingSchedule={ratingSchedule}
         />
       )}
     </div>

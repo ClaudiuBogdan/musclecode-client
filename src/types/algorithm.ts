@@ -71,6 +71,13 @@ export type AlgorithmPreview = Pick<
   "id" | "title" | "category" | "difficulty" | "tags"
 >;
 
+export interface RatingSchedule {
+  again: number;
+  hard: number;
+  good: number;
+  easy: number;
+}
+
 export interface Submission {
   id: string;
   algorithmId: string;
