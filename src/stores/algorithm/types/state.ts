@@ -5,6 +5,7 @@ import {
   Submission,
   RatingSchedule,
   AlgorithmPreview,
+  DailyAlgorithm,
 } from "@/types/algorithm";
 import { CodeExecutionResponse } from "@/types/testRunner";
 
@@ -49,6 +50,7 @@ export interface AlgorithmMetadataState {
   template: AlgorithmTemplate | null;
   nextAlgorithm: AlgorithmPreview | null;
   ratingSchedule: RatingSchedule | null;
+  dailyAlgorithm: DailyAlgorithm | null;
 }
 
 export interface AlgorithmData {

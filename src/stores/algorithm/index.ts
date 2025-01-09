@@ -25,6 +25,10 @@ export const createAlgorithmSlice: StateCreator<
 > = (set, get) => ({
   initializeAlgorithm: async (algorithmId: string) => {
     try {
+      const isLoading = get().metadata.isLoading;
+      if (isLoading) {
+        return;
+      }
       // Set loading state and clear any previous errors
       const isInitialized = get().algorithms[algorithmId] !== undefined;
       set((state: AlgorithmState) => {
@@ -109,6 +113,19 @@ export const createAlgorithmSlice: StateCreator<
       const firstLanguage = languages[0];
       const firstFile = Object.keys(codeState[firstLanguage])[0];
 
+      // Reset code if the daily algorithm has changed
+      const prevAlgorithmState = get().algorithms[algorithmId];
+      const dailyAlgorithm = prevAlgorithmState.metadata.dailyAlgorithm;
+      const newDailyAlgorithm = response.dailyAlgorithm;
+      const shouldResetCode =
+        dailyAlgorithm &&
+        newDailyAlgorithm &&
+        dailyAlgorithm.id !== newDailyAlgorithm.id;
+      if (shouldResetCode) {
+        get().resetCode(algorithmId);
+      }
+
+      // Initialize the algorithm if it doesn't exist
       if (!isInitialized) {
         set((state: AlgorithmState) => {
           state.algorithms[algorithmId] = {
@@ -145,6 +162,7 @@ export const createAlgorithmSlice: StateCreator<
               template: algorithmTemplate,
               nextAlgorithm: response.nextAlgorithm,
               ratingSchedule: response.ratingSchedule,
+              dailyAlgorithm: response.dailyAlgorithm,
             },
           };
           state.metadata.activeAlgorithmId = algorithmId;
@@ -153,8 +171,9 @@ export const createAlgorithmSlice: StateCreator<
         });
       } else {
         set((state: AlgorithmState) => {
+          const prevAlgorithmState = state.algorithms[algorithmId];
           state.algorithms[algorithmId] = {
-            ...state.algorithms[algorithmId],
+            ...prevAlgorithmState,
             userProgress: {
               isSubmitting: false,
               completed,
@@ -171,6 +190,7 @@ export const createAlgorithmSlice: StateCreator<
               template: algorithmTemplate,
               nextAlgorithm: response.nextAlgorithm,
               ratingSchedule: response.ratingSchedule,
+              dailyAlgorithm: response.dailyAlgorithm,
             },
           };
           state.metadata.activeAlgorithmId = algorithmId;

@@ -6,6 +6,7 @@ import {
   Submission,
   AlgorithmPreview,
   RatingSchedule,
+  DailyAlgorithm,
 } from "@/types/algorithm";
 import axios from "axios";
 
@@ -16,7 +17,8 @@ export interface GetAlgorithmResponse {
   notes: string;
   due: string;
   ratingSchedule: RatingSchedule;
-  nextAlgorithm: AlgorithmPreview;
+  nextAlgorithm: AlgorithmPreview | null;
+  dailyAlgorithm: DailyAlgorithm | null;
 }
 
 export interface CodeRunRequest {

@@ -26,7 +26,6 @@ import {
   selectExecutionResult,
   selectIsExecuting,
   selectIsSubmitting,
-  selectIsCompleted,
   selectNextAlgorithm,
   selectTimerState,
   selectRatingSchedule,
