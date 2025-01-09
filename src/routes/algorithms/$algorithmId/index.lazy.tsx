@@ -68,9 +68,6 @@ function Algorithm() {
   const isSubmitting = useAlgorithmStore((state) =>
     selectIsSubmitting(state, algorithmId)
   );
-  const isCompleted = useAlgorithmStore((state) =>
-    selectIsCompleted(state, algorithmId)
-  );
   const nextAlgorithm = useAlgorithmStore((state) =>
     selectNextAlgorithm(state, algorithmId)
   );
@@ -257,7 +254,6 @@ function Algorithm() {
                       hasPassed={hasPassed}
                       isExecuting={isExecuting}
                       isSubmitting={isSubmitting}
-                      isCompleted={isCompleted}
                       ratingSchedule={ratingSchedule}
                       onRun={handleRunCode}
                       onReset={handleReset}

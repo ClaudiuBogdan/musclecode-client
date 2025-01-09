@@ -3,7 +3,6 @@ import { RunButton } from "@/components/code/buttons/RunButton";
 import { SkipButton } from "@/components/code/buttons/SkipButton";
 import { ResetButton } from "@/components/code/buttons/ResetButton";
 import { DifficultySelector } from "./DifficultySelector";
-import NextButton from "../buttons/NextButton";
 import { RatingSchedule } from "@/types/algorithm";
 
 interface ButtonBarProps {
@@ -12,7 +11,6 @@ interface ButtonBarProps {
   hasPassed: boolean;
   isExecuting: boolean;
   isSubmitting: boolean;
-  isCompleted: boolean;
   ratingSchedule: RatingSchedule;
   onRun: () => void;
   onReset: () => void;
@@ -24,7 +22,6 @@ export const ButtonBar: React.FC<ButtonBarProps> = ({
   hasPassed,
   isExecuting,
   isSubmitting,
-  isCompleted,
   ratingSchedule,
   onRun,
   onReset,
@@ -51,38 +48,32 @@ export const ButtonBar: React.FC<ButtonBarProps> = ({
   return (
     <div className="flex overflow-y-hidden items-center justify-start gap-4 px-3 py-1.5 border-t border-[#1E1E1E] bg-[#1E1E1E] shadow-[0_-1px_2px_rgba(0,0,0,0.2)]">
       <div className="flex justify-between w-full gap-3">
-        {!isCompleted && (
+        {!hasPassed && (
           <RunButton
             onRun={onRun}
             disabled={isExecuting || isSubmitting}
             className="hover:bg-[#2D2D2D] transition-colors duration-150"
           />
         )}
-        {isCompleted && (
+        <div className="flex gap-2">
           <ResetButton
+            disabled={isExecuting || isSubmitting}
             onClick={handleReset}
             className="hover:bg-[#2D2D2D] transition-colors duration-150"
           />
-        )}
-        {!hasPassed && !!nextAlgorithmId && !isCompleted && (
-          <SkipButton
-            disabled={isExecuting}
-            onClick={handleSkip}
-            className="hover:bg-[#2D2D2D] transition-colors duration-150"
-          />
-        )}
-
-        {isCompleted && (
-          <NextButton
-            disabled={isExecuting}
-            onClick={handleSkip}
-            className="hover:bg-[#2D2D2D] transition-colors duration-150"
-          />
-        )}
+          {!hasPassed && !!nextAlgorithmId && (
+            <SkipButton
+              disabled={isExecuting}
+              onClick={handleSkip}
+              className="hover:bg-[#2D2D2D] transition-colors duration-150"
+            />
+          )}
+        </div>
       </div>
 
-      {hasPassed && !isCompleted && (
+      {hasPassed && (
         <DifficultySelector
+          onReset={handleReset}
           algorithmId={algorithmId}
           nextAlgorithmId={nextAlgorithmId}
           ratingSchedule={ratingSchedule}

@@ -26,6 +26,7 @@ interface DifficultySelectorProps {
   algorithmId: string;
   nextAlgorithmId?: string;
   ratingSchedule: RatingSchedule;
+  onReset: () => void;
 }
 
 const DIFFICULTIES = [
@@ -63,6 +64,7 @@ export const DifficultySelector: React.FC<DifficultySelectorProps> = ({
   algorithmId,
   nextAlgorithmId,
   ratingSchedule,
+  onReset,
 }) => {
   const router = useRouter();
   const { toast } = useToast();
@@ -97,6 +99,8 @@ export const DifficultySelector: React.FC<DifficultySelectorProps> = ({
       description: "Your progress has been saved successfully.",
       variant: "default",
     });
+
+    onReset();
 
     if (nextAlgorithmId) {
       router.navigate({
