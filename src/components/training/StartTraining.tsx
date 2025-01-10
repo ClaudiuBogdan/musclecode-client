@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -13,7 +14,6 @@ import { Badge } from "@/components/ui/badge";
 import {
   Dumbbell,
   Brain,
-  Zap,
   Trophy,
   Calendar,
   Star,
@@ -24,6 +24,7 @@ import { useState, useEffect } from "react";
 import { useDailyAlgorithms } from "@/services/algorithms/hooks/useDailyAlgorithms";
 import { Progress } from "@/components/ui/progress";
 import { motion, AnimatePresence } from "framer-motion";
+import { categories, difficulties } from "../algorithms/data";
 
 export default function AlgorithmGymDashboard() {
   const { data: dailyAlgorithms, isLoading, error } = useDailyAlgorithms();
@@ -41,11 +42,8 @@ export default function AlgorithmGymDashboard() {
     setStreak(Math.floor(Math.random() * 30) + 1);
   }, []);
 
-  const difficultyIcons = {
-    easy: Zap,
-    medium: Brain,
-    hard: Dumbbell,
-  };
+  const difficultyIcons = difficulties;
+  const categoryIcons = categories;
 
   return (
     <motion.div
@@ -140,11 +138,6 @@ export default function AlgorithmGymDashboard() {
           <AnimatePresence>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {dailyAlgorithms?.map((algorithm, index) => {
-                const DifficultyIcon =
-                  difficultyIcons[
-                    algorithm.algorithmPreview
-                      .difficulty as keyof typeof difficultyIcons
-                  ] || Brain;
                 const { algorithmPreview } = algorithm;
                 return (
                   <motion.div
@@ -171,30 +164,54 @@ export default function AlgorithmGymDashboard() {
                           <CardTitle className="text-lg font-semibold text-gold-900 dark:text-gold-900 group-hover:text-gold-900 transition-colors">
                             {algorithmPreview.title}
                           </CardTitle>
-                          <DifficultyIcon
-                            className={`w-6 h-6 ${
-                              algorithmPreview.difficulty === "easy"
-                                ? "text-green-400"
-                                : algorithmPreview.difficulty === "medium"
-                                  ? "text-yellow-400"
-                                  : "text-red-400"
-                            }`}
-                          />
+                          {(() => {
+                            const icon =
+                              categoryIcons.find(
+                                (cat) => cat.value === algorithmPreview.category
+                              )?.icon || Brain;
+                            return React.createElement(icon, {
+                              className: "w-6 h-6",
+                            });
+                          })()}
                         </CardHeader>
                         <CardContent>
                           <div className="flex justify-between items-center mb-2">
-                            <Badge
-                              variant="outline"
-                              className={`capitalize ${
-                                algorithmPreview.difficulty === "easy"
-                                  ? "border-green-400 text-green-400"
-                                  : algorithmPreview.difficulty === "medium"
-                                    ? "border-yellow-400 text-yellow-400"
-                                    : "border-red-400 text-red-400"
-                              }`}
-                            >
-                              {algorithmPreview.difficulty}
-                            </Badge>
+                            <div className="flex items-center gap-2">
+                              <Badge
+                                variant="outline"
+                                className={`capitalize ${
+                                  algorithmPreview.difficulty === "easy"
+                                    ? "border-green-400 text-green-400"
+                                    : algorithmPreview.difficulty === "medium"
+                                      ? "border-yellow-400 text-yellow-400"
+                                      : "border-red-400 text-red-400"
+                                }`}
+                              >
+                                {/* Difficulty Icon */}
+                                <div
+                                  className={`p-1 rounded ${
+                                    algorithmPreview.difficulty === "easy"
+                                      ? "text-green-400"
+                                      : algorithmPreview.difficulty === "medium"
+                                        ? "text-yellow-400"
+                                        : "text-red-400"
+                                  }`}
+                                >
+                                  {(() => {
+                                    const icon =
+                                      difficultyIcons.find(
+                                        (diff) =>
+                                          diff.value ===
+                                          algorithmPreview.difficulty
+                                      )?.icon || Brain;
+                                    return React.createElement(icon, {
+                                      className: "w-4 h-4",
+                                    });
+                                  })()}
+                                </div>
+                                {algorithmPreview.difficulty}
+                              </Badge>
+                            </div>
                             {algorithm.completed && (
                               <Badge className="bg-emerald-500 text-white dark:text-white">
                                 <Star className="w-3 h-3 mr-1 fill-current" />
