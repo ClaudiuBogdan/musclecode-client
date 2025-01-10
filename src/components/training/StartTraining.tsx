@@ -77,12 +77,13 @@ export default function AlgorithmGymDashboard() {
                 <Trophy className="w-6 h-6 text-yellow-900" />
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                {/* TODO: Add streak */}
+                {/* <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
                   Current Streak
                 </h3>
                 <p className="text-3xl font-bold text-yellow-300">
                   {streak} days
-                </p>
+                </p> */}
               </div>
             </div>
             <div className="flex-1 flex items-center space-x-3 max-w-md">
