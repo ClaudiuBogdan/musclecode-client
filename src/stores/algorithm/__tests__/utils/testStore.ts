@@ -73,7 +73,15 @@ export const createEmptyAlgorithmData = (): AlgorithmData => {
       algorithmId: "",
       template: null,
       nextAlgorithm: null,
+      ratingSchedule: {
+        again: 1,
+        hard: 2,
+        good: 3,
+        easy: 4,
+      },
+      dailyAlgorithm: null,
     },
+    _createdAt: 0,
   };
 };
 

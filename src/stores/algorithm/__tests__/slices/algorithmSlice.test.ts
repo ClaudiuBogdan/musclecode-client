@@ -81,6 +81,14 @@ describe("Algorithm Slice", () => {
       submissions: [],
       notes: "test notes",
       due: "2024-01-01",
+      ratingSchedule: {
+        again: 1,
+        hard: 2,
+        good: 3,
+        easy: 4,
+      },
+      nextAlgorithm: null,
+      dailyAlgorithm: null,
     };
 
     it("should set loading state and initialize placeholder immediately", async () => {
