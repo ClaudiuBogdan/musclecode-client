@@ -38,15 +38,29 @@ export function useAlgorithmValidation(algorithm: NewAlgorithm) {
       });
     }
 
-    if (
-      algorithm.metadata.difficulty !== "easy" &&
-      algorithm.metadata.difficulty !== "medium" &&
-      algorithm.metadata.difficulty !== "hard"
-    ) {
+    // Category validation
+    if (!algorithm.metadata.category?.trim()) {
+      validationErrors.push({
+        tab: "metadata",
+        field: "category",
+        message: "Category is required",
+      });
+    }
+
+    // Difficulty validation
+    if (!algorithm.metadata.difficulty?.trim()) {
       validationErrors.push({
         tab: "metadata",
         field: "difficulty",
         message: "Difficulty is required",
+      });
+    } else if (
+      !["easy", "medium", "hard"].includes(algorithm.metadata.difficulty)
+    ) {
+      validationErrors.push({
+        tab: "metadata",
+        field: "difficulty",
+        message: "Invalid difficulty level",
       });
     }
 

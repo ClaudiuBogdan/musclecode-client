@@ -30,22 +30,35 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
+import { categories as predefinedCategories } from "../algorithms/data";
+import { Code2 } from "lucide-react";
 
-const defaultAlgorithmCategories = [
-  "Array",
-  "String",
-  "Linked List",
-  "Tree",
-  "Graph",
-  "Dynamic Programming",
-  "Math",
-  "Sorting",
-  "Search",
-  "Bit Manipulation",
-  "Recursion",
-  "Sliding Window",
-  "Dynamic Programming",
-];
+// Helper function to convert a string to kebab case
+function toKebabCase(str: string): string {
+  return str
+    .toLowerCase()
+    .replace(/\s+/g, "-")
+    .replace(/[^a-z0-9-]/g, "");
+}
+
+// Helper function to merge categories and ensure no duplicates
+function mergeCategories(serverCategories: string[] = []) {
+  const merged = new Map(predefinedCategories.map((cat) => [cat.value, cat]));
+
+  // Add server categories that don't exist in predefined list
+  serverCategories.forEach((category) => {
+    const value = toKebabCase(category);
+    if (!merged.has(value)) {
+      merged.set(value, {
+        value,
+        label: category,
+        icon: Code2, // Default icon for server-provided categories
+      });
+    }
+  });
+
+  return Array.from(merged.values());
+}
 
 export interface ValidationResult {
   errors: ValidationError[];
@@ -65,6 +78,7 @@ export interface AlgorithmFormProps {
   error: string | null;
   validation: ValidationResult;
   mode: "new" | "edit";
+  serverCategories?: string[];
 
   // Metadata handlers
   onTitleChange: (title: string) => void;
@@ -92,6 +106,7 @@ export function AlgorithmForm({
   isLoading,
   validation,
   mode,
+  serverCategories = [],
 
   // Metadata handlers
   onTitleChange,
@@ -112,20 +127,41 @@ export function AlgorithmForm({
   onSave,
   onReset,
   onCancel,
-}: AlgorithmFormProps) {
+}: AlgorithmFormProps & { serverCategories?: string[] }) {
   const [activeTab, setActiveTab] = useState("metadata");
   const [showResetDialog, setShowResetDialog] = useState(false);
   const currentCategory = algorithm.metadata.category;
-  const algorithmCategories = useMemo(() => {
+
+  console.log("currentCategory", currentCategory);
+
+  // Merge predefined and server categories
+  const allCategories = useMemo(
+    () => mergeCategories(serverCategories),
+    [serverCategories]
+  );
+
+  // Sort categories with current category first
+  const sortedCategories = useMemo(() => {
     if (!currentCategory) {
-      return defaultAlgorithmCategories;
+      return allCategories;
     }
-    const categories = defaultAlgorithmCategories.filter(
-      (category) => category !== currentCategory
+    const categories = allCategories.filter(
+      (category) => category.value !== currentCategory
     );
-    categories.unshift(currentCategory);
+    const currentCategoryData = allCategories.find(
+      (category) => category.value === currentCategory
+    );
+    if (currentCategoryData) {
+      categories.unshift(currentCategoryData);
+    }
     return categories;
-  }, [currentCategory]);
+  }, [currentCategory, allCategories]);
+
+  // Get the current category data for display
+  const selectedCategory = useMemo(
+    () => allCategories.find((cat) => cat.value === currentCategory),
+    [allCategories, currentCategory]
+  );
 
   const handleSave = useCallback(async () => {
     if (!validation.isValid) {
@@ -308,33 +344,79 @@ export function AlgorithmForm({
                     Category
                     <span className="text-destructive">*</span>
                   </Label>
-                  <Select
-                    value={algorithm.metadata.category}
-                    onValueChange={onCategoryChange}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select category" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {algorithmCategories.map((category) => (
-                        <SelectItem key={category} value={category}>
-                          {category}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <div className="flex flex-col gap-1.5">
+                    {validation.getErrorsForField("category").map((error) => (
+                      <span
+                        key={error.message}
+                        className="text-sm text-destructive"
+                      >
+                        {error.message}
+                      </span>
+                    ))}
+                    <Select
+                      value={currentCategory || undefined}
+                      onValueChange={onCategoryChange}
+                    >
+                      <SelectTrigger
+                        className={cn(
+                          "w-full",
+                          validation.getErrorsForField("category").length > 0 &&
+                            "border-destructive focus-visible:ring-destructive"
+                        )}
+                      >
+                        <SelectValue placeholder="Select category">
+                          {selectedCategory ? (
+                            <div className="flex items-center gap-2">
+                              <selectedCategory.icon className="h-4 w-4 shrink-0" />
+                              <span className="truncate">
+                                {selectedCategory.label}
+                              </span>
+                            </div>
+                          ) : null}
+                        </SelectValue>
+                      </SelectTrigger>
+                      <SelectContent>
+                        {sortedCategories.map((category) => (
+                          <SelectItem
+                            key={category.value}
+                            value={category.value}
+                            className="flex w-full items-center gap-2 pr-8"
+                          >
+                            <div className="flex items-center gap-2 truncate">
+                              <category.icon className="h-4 w-4 shrink-0" />
+                              <span className="truncate">{category.label}</span>
+                            </div>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
                 <div>
-                  <Label
-                    htmlFor="difficulty"
-                    className="flex items-center gap-1"
-                  >
-                    Difficulty
-                    <span className="text-destructive">*</span>
-                  </Label>
+                  <div className="flex items-center justify-between">
+                    <Label
+                      htmlFor="difficulty"
+                      className="flex items-center gap-1"
+                    >
+                      Difficulty
+                      <span className="text-destructive">*</span>
+                    </Label>
+                    {validation.getErrorsForField("difficulty").map((error) => (
+                      <span
+                        key={error.message}
+                        className="text-sm text-destructive"
+                      >
+                        {error.message}
+                      </span>
+                    ))}
+                  </div>
                   <select
                     id="difficulty"
-                    className="w-full p-2 rounded-md border dark:bg-background"
+                    className={cn(
+                      "w-full p-2 rounded-md border dark:bg-background",
+                      validation.getErrorsForField("difficulty").length > 0 &&
+                        "border-destructive focus-visible:ring-destructive"
+                    )}
                     value={algorithm.metadata.difficulty}
                     onChange={(e) =>
                       onDifficultyChange(
@@ -342,6 +424,7 @@ export function AlgorithmForm({
                       )
                     }
                   >
+                    <option value="">Select difficulty</option>
                     <option value="easy">Easy</option>
                     <option value="medium">Medium</option>
                     <option value="hard">Hard</option>

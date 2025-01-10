@@ -3,29 +3,82 @@ import {
   CircleSlash,
   Clock,
   Code2,
-  FileCode2,
   GraduationCap,
   Star,
-} from "lucide-react"
+  ListTree,
+  Type,
+  Link,
+  Network,
+  Calculator,
+  SortAsc,
+  Search as SearchIcon,
+  Binary,
+  Repeat,
+  SlidersHorizontal,
+} from "lucide-react";
 
 export const categories = [
   {
-    value: "Graph Algorithms",
-    label: "Graph Algorithms",
+    value: "array",
+    label: "Array",
     icon: Code2,
   },
   {
-    value: "searching",
-    label: "Searching", 
-    icon: FileCode2,
+    value: "string",
+    label: "String",
+    icon: Type,
+  },
+  {
+    value: "linked-list",
+    label: "Linked List",
+    icon: Link,
+  },
+  {
+    value: "tree",
+    label: "Tree",
+    icon: ListTree,
+  },
+  {
+    value: "graph",
+    label: "Graph",
+    icon: Network,
   },
   {
     value: "dynamic-programming",
     label: "Dynamic Programming",
     icon: Brain,
   },
-  // Add other categories as needed
-]
+  {
+    value: "math",
+    label: "Math",
+    icon: Calculator,
+  },
+  {
+    value: "sorting",
+    label: "Sorting",
+    icon: SortAsc,
+  },
+  {
+    value: "search",
+    label: "Search",
+    icon: SearchIcon,
+  },
+  {
+    value: "bit-manipulation",
+    label: "Bit Manipulation",
+    icon: Binary,
+  },
+  {
+    value: "recursion",
+    label: "Recursion",
+    icon: Repeat,
+  },
+  {
+    value: "sliding-window",
+    label: "Sliding Window",
+    icon: SlidersHorizontal,
+  },
+];
 
 export const difficulties = [
   {
