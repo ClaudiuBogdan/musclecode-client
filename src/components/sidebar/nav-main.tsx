@@ -1,73 +1,141 @@
 "use client";
 
-import { ChevronRight, type LucideIcon } from "lucide-react";
-
 import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
+  Settings,
+  Shield,
+  Bell,
+  CreditCard,
+  User,
+  LayoutDashboard,
+  Code2,
+} from "lucide-react";
+import { Link, useMatches } from "@tanstack/react-router";
+import { cn } from "@/lib/utils";
+import { buttonVariants } from "@/components/ui/button";
 import {
   SidebarGroup,
   SidebarGroupLabel,
   SidebarMenu,
-  SidebarMenuButton,
   SidebarMenuItem,
-  SidebarMenuSub,
-  SidebarMenuSubButton,
-  SidebarMenuSubItem,
+  SidebarMenuButton,
+  useSidebar,
 } from "@/components/ui/sidebar";
 
-export function NavMain({
-  items,
-}: {
-  items: {
-    title: string;
-    url: string;
-    icon?: LucideIcon;
-    isActive?: boolean;
-    items?: {
-      title: string;
-      url: string;
-    }[];
-  }[];
-}) {
+interface SettingsItem {
+  title: string;
+  url: string;
+  icon: React.ComponentType<{ className?: string }>;
+}
+
+const mainItems = [
+  {
+    title: "Dashboard",
+    url: "/",
+    icon: LayoutDashboard,
+  },
+  {
+    title: "Algorithms",
+    url: "/algorithms",
+    icon: Code2,
+  },
+];
+
+const settingsItems = {
+  title: "Settings",
+  icon: Settings,
+  subItems: [
+    {
+      title: "Profile",
+      url: "/settings/profile",
+      icon: User,
+    },
+    {
+      title: "Billing",
+      url: "/settings/billing",
+      icon: CreditCard,
+    },
+    {
+      title: "Notifications",
+      url: "/settings/notifications",
+      icon: Bell,
+    },
+    {
+      title: "Security",
+      url: "/settings/security",
+      icon: Shield,
+    },
+    {
+      title: "Preferences",
+      url: "/settings/preferences",
+      icon: Settings,
+    },
+  ] as SettingsItem[],
+};
+
+export function NavMain() {
+  const matches = useMatches();
+  const currentPath =
+    matches.length > 0 ? matches[matches.length - 1].pathname : "/";
+  const { collapsed } = useSidebar();
+
+  const isActive = (url: string) => {
+    if (url === "/") {
+      return currentPath === "/";
+    }
+    return currentPath.startsWith(url);
+  };
+
   return (
-    <SidebarGroup>
-      <SidebarGroupLabel>Platform</SidebarGroupLabel>
-      <SidebarMenu>
-        {items.map((item) => (
-          <Collapsible
-            key={item.title}
-            asChild
-            defaultOpen={item.isActive}
-            className="group/collapsible"
-          >
-            <SidebarMenuItem>
-              <CollapsibleTrigger asChild>
-                <SidebarMenuButton tooltip={item.title}>
-                  {item.icon && <item.icon />}
-                  <span>{item.title}</span>
-                  <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+    <div className="flex h-full flex-col">
+      <div className="flex-1 py-2">
+        <SidebarGroup>
+          {!collapsed && <SidebarGroupLabel>Platform</SidebarGroupLabel>}
+          <SidebarMenu>
+            {mainItems.map((item) => (
+              <SidebarMenuItem key={item.url}>
+                <SidebarMenuButton asChild>
+                  <Link
+                    to={item.url}
+                    className={cn(
+                      buttonVariants({ variant: "ghost" }),
+                      "w-full justify-start gap-2",
+                      isActive(item.url) && "bg-muted font-medium"
+                    )}
+                  >
+                    <item.icon className="h-4 w-4" />
+                    {!collapsed && <span className="flex-1">{item.title}</span>}
+                  </Link>
                 </SidebarMenuButton>
-              </CollapsibleTrigger>
-              <CollapsibleContent>
-                <SidebarMenuSub>
-                  {item.items?.map((subItem) => (
-                    <SidebarMenuSubItem key={subItem.title}>
-                      <SidebarMenuSubButton asChild>
-                        <a href={subItem.url}>
-                          <span>{subItem.title}</span>
-                        </a>
-                      </SidebarMenuSubButton>
-                    </SidebarMenuSubItem>
-                  ))}
-                </SidebarMenuSub>
-              </CollapsibleContent>
-            </SidebarMenuItem>
-          </Collapsible>
-        ))}
-      </SidebarMenu>
-    </SidebarGroup>
+              </SidebarMenuItem>
+            ))}
+          </SidebarMenu>
+        </SidebarGroup>
+      </div>
+
+      <div className="border-t py-2">
+        <SidebarGroup>
+          {!collapsed && <SidebarGroupLabel>Settings</SidebarGroupLabel>}
+          <SidebarMenu>
+            {settingsItems.subItems.map((item) => (
+              <SidebarMenuItem key={item.url}>
+                <SidebarMenuButton asChild>
+                  <Link
+                    to={item.url}
+                    className={cn(
+                      buttonVariants({ variant: "ghost" }),
+                      "w-full justify-start gap-2",
+                      isActive(item.url) && "bg-muted font-medium"
+                    )}
+                  >
+                    <item.icon className="h-4 w-4" />
+                    {!collapsed && <span className="flex-1">{item.title}</span>}
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            ))}
+          </SidebarMenu>
+        </SidebarGroup>
+      </div>
+    </div>
   );
 }

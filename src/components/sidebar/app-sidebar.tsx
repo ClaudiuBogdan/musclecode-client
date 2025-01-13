@@ -1,49 +1,23 @@
 import * as React from "react";
-import { SquareTerminal } from "lucide-react";
 import { NavUser } from "./nav-user";
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
   SidebarRail,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import Logo from "./logo";
-import { Link } from "@tanstack/react-router";
+import { NavMain } from "./nav-main";
 
-// This is sample data.
+// Sample user data
 const data = {
   user: {
     name: "shadcn",
     email: "m@example.com",
     avatar: "/avatars/shadcn.jpg",
   },
-  navMain: [
-    {
-      title: "Playground",
-      url: "#",
-      icon: SquareTerminal,
-      isActive: true,
-      items: [
-        {
-          title: "History",
-          url: "#",
-        },
-        {
-          title: "Starred",
-          url: "#",
-        },
-        {
-          title: "Settings",
-          url: "#",
-        },
-      ],
-    },
-  ],
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
@@ -52,18 +26,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarHeader>
         <Logo />
       </SidebarHeader>
-      <SidebarContent className="flex flex-col gap-2 p-2">
-        {/* <NavMain items={data.navMain} /> */}
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <Link href="/algorithms">
-              <SidebarMenuButton>
-                <SquareTerminal />
-                <span>Algorithms</span>
-              </SidebarMenuButton>
-            </Link>
-          </SidebarMenuItem>
-        </SidebarMenu>
+      <SidebarContent className="flex flex-1 flex-col">
+        <div className="flex-1">
+          <NavMain />
+        </div>
       </SidebarContent>
       <SidebarFooter>
         <div className="group-data-[state=collapsed]:visible invisible">
