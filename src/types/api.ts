@@ -1,7 +1,13 @@
-export type ApiError = {
-  message: string;
-  status: number;
-};
+export class ApiError extends Error {
+  constructor(
+    message: string,
+    public readonly status: number,
+    public readonly details?: unknown
+  ) {
+    super(message);
+    this.name = "ApiError";
+  }
+}
 
 export interface ApiRequest<T = unknown> {
   body: T;
