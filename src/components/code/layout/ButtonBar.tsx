@@ -4,6 +4,7 @@ import { SkipButton } from "@/components/code/buttons/SkipButton";
 import { ResetButton } from "@/components/code/buttons/ResetButton";
 import { DifficultySelector } from "./DifficultySelector";
 import { RatingSchedule } from "@/types/algorithm";
+import { useCodeComparison } from "@/hooks/useCodeComparison";
 
 interface ButtonBarProps {
   algorithmId: string;
@@ -27,6 +28,7 @@ export const ButtonBar: React.FC<ButtonBarProps> = ({
   onReset,
 }) => {
   const router = useRouter();
+  const hasCodeChanges = useCodeComparison(algorithmId);
 
   const handleSkip = () => {
     if (nextAlgorithmId) {
@@ -56,11 +58,13 @@ export const ButtonBar: React.FC<ButtonBarProps> = ({
           />
         )}
         <div className="flex gap-2">
-          <ResetButton
-            disabled={isExecuting || isSubmitting}
-            onClick={handleReset}
-            className="hover:bg-[#2D2D2D] transition-colors duration-150"
-          />
+          {hasCodeChanges && (
+            <ResetButton
+              disabled={isExecuting || isSubmitting}
+              onClick={handleReset}
+              className="hover:bg-[#2D2D2D] transition-colors duration-150"
+            />
+          )}
           {!hasPassed && !!nextAlgorithmId && (
             <SkipButton
               disabled={isExecuting}
