@@ -1,43 +1,26 @@
 import { Message } from "../../types/chat";
+import { chatCompletion, streamChatCompletion } from "./openai";
 
-export async function sendMessage(content: string): Promise<Message> {
-  const response = await fetch("/api/chat", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ message: content }),
-  });
+export async function sendMessage(
+  content: string,
+  history: Message[] = []
+): Promise<Message> {
+  const response = await chatCompletion(content, history);
 
-  if (!response.ok) {
-    throw new Error("Failed to send message");
-  }
-
-  return response.json();
+  return {
+    id: crypto.randomUUID(),
+    threadId: crypto.randomUUID(),
+    content: response,
+    timestamp: Date.now(),
+    sender: "assistant",
+    status: "complete",
+    parentId: null,
+  };
 }
 
 export async function streamMessage(
-  content: string
+  content: string,
+  history: Message[] = []
 ): Promise<ReadableStream<string>> {
-  const response = await fetch("/api/chat/stream", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ message: content }),
-  });
-
-  if (!response.ok) {
-    throw new Error("Failed to stream message");
-  }
-
-  const textDecoder = new TextDecoder();
-  const transformStream = new TransformStream({
-    transform(chunk: Uint8Array, controller) {
-      const text = textDecoder.decode(chunk);
-      controller.enqueue(text);
-    },
-  });
-
-  return response.body!.pipeThrough(transformStream);
+  return streamChatCompletion(content, history);
 }

@@ -77,6 +77,7 @@ const useChatStore = create<ChatStore>()(
         try {
           const abortController = new AbortController();
           const newMessageId = uuidv4();
+          const thread = get().threads[activeThreadId];
           const userMessage: Message = {
             id: newMessageId,
             threadId: activeThreadId,
@@ -133,7 +134,7 @@ const useChatStore = create<ChatStore>()(
             lastMessageId: assistantMessageId,
           }));
 
-          const stream = await streamMessage(content);
+          const stream = await streamMessage(content, thread.messages);
           const reader = stream.getReader();
 
           // Create an abortable Promise
