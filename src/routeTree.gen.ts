@@ -21,6 +21,7 @@ const SettingsIndexLazyImport = createFileRoute('/settings/')()
 const AlgorithmsIndexLazyImport = createFileRoute('/algorithms/')()
 const SettingsSecurityLazyImport = createFileRoute('/settings/security')()
 const SettingsProfileLazyImport = createFileRoute('/settings/profile')()
+const SettingsPreferencesLazyImport = createFileRoute('/settings/preferences')()
 const SettingsNotificationsLazyImport = createFileRoute(
   '/settings/notifications',
 )()
@@ -74,6 +75,14 @@ const SettingsProfileLazyRoute = SettingsProfileLazyImport.update({
   getParentRoute: () => rootRoute,
 } as any).lazy(() =>
   import('./routes/settings/profile.lazy').then((d) => d.Route),
+)
+
+const SettingsPreferencesLazyRoute = SettingsPreferencesLazyImport.update({
+  id: '/settings/preferences',
+  path: '/settings/preferences',
+  getParentRoute: () => rootRoute,
+} as any).lazy(() =>
+  import('./routes/settings/preferences.lazy').then((d) => d.Route),
 )
 
 const SettingsNotificationsLazyRoute = SettingsNotificationsLazyImport.update({
@@ -159,6 +168,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SettingsNotificationsLazyImport
       parentRoute: typeof rootRoute
     }
+    '/settings/preferences': {
+      id: '/settings/preferences'
+      path: '/settings/preferences'
+      fullPath: '/settings/preferences'
+      preLoaderRoute: typeof SettingsPreferencesLazyImport
+      parentRoute: typeof rootRoute
+    }
     '/settings/profile': {
       id: '/settings/profile'
       path: '/settings/profile'
@@ -218,6 +234,7 @@ export interface FileRoutesByFullPath {
   '/algorithms/new': typeof AlgorithmsNewLazyRoute
   '/settings/billing': typeof SettingsBillingLazyRoute
   '/settings/notifications': typeof SettingsNotificationsLazyRoute
+  '/settings/preferences': typeof SettingsPreferencesLazyRoute
   '/settings/profile': typeof SettingsProfileLazyRoute
   '/settings/security': typeof SettingsSecurityLazyRoute
   '/algorithms': typeof AlgorithmsIndexLazyRoute
@@ -232,6 +249,7 @@ export interface FileRoutesByTo {
   '/algorithms/new': typeof AlgorithmsNewLazyRoute
   '/settings/billing': typeof SettingsBillingLazyRoute
   '/settings/notifications': typeof SettingsNotificationsLazyRoute
+  '/settings/preferences': typeof SettingsPreferencesLazyRoute
   '/settings/profile': typeof SettingsProfileLazyRoute
   '/settings/security': typeof SettingsSecurityLazyRoute
   '/algorithms': typeof AlgorithmsIndexLazyRoute
@@ -247,6 +265,7 @@ export interface FileRoutesById {
   '/algorithms/new': typeof AlgorithmsNewLazyRoute
   '/settings/billing': typeof SettingsBillingLazyRoute
   '/settings/notifications': typeof SettingsNotificationsLazyRoute
+  '/settings/preferences': typeof SettingsPreferencesLazyRoute
   '/settings/profile': typeof SettingsProfileLazyRoute
   '/settings/security': typeof SettingsSecurityLazyRoute
   '/algorithms/': typeof AlgorithmsIndexLazyRoute
@@ -263,6 +282,7 @@ export interface FileRouteTypes {
     | '/algorithms/new'
     | '/settings/billing'
     | '/settings/notifications'
+    | '/settings/preferences'
     | '/settings/profile'
     | '/settings/security'
     | '/algorithms'
@@ -276,6 +296,7 @@ export interface FileRouteTypes {
     | '/algorithms/new'
     | '/settings/billing'
     | '/settings/notifications'
+    | '/settings/preferences'
     | '/settings/profile'
     | '/settings/security'
     | '/algorithms'
@@ -289,6 +310,7 @@ export interface FileRouteTypes {
     | '/algorithms/new'
     | '/settings/billing'
     | '/settings/notifications'
+    | '/settings/preferences'
     | '/settings/profile'
     | '/settings/security'
     | '/algorithms/'
@@ -304,6 +326,7 @@ export interface RootRouteChildren {
   AlgorithmsNewLazyRoute: typeof AlgorithmsNewLazyRoute
   SettingsBillingLazyRoute: typeof SettingsBillingLazyRoute
   SettingsNotificationsLazyRoute: typeof SettingsNotificationsLazyRoute
+  SettingsPreferencesLazyRoute: typeof SettingsPreferencesLazyRoute
   SettingsProfileLazyRoute: typeof SettingsProfileLazyRoute
   SettingsSecurityLazyRoute: typeof SettingsSecurityLazyRoute
   AlgorithmsIndexLazyRoute: typeof AlgorithmsIndexLazyRoute
@@ -318,6 +341,7 @@ const rootRouteChildren: RootRouteChildren = {
   AlgorithmsNewLazyRoute: AlgorithmsNewLazyRoute,
   SettingsBillingLazyRoute: SettingsBillingLazyRoute,
   SettingsNotificationsLazyRoute: SettingsNotificationsLazyRoute,
+  SettingsPreferencesLazyRoute: SettingsPreferencesLazyRoute,
   SettingsProfileLazyRoute: SettingsProfileLazyRoute,
   SettingsSecurityLazyRoute: SettingsSecurityLazyRoute,
   AlgorithmsIndexLazyRoute: AlgorithmsIndexLazyRoute,
@@ -341,6 +365,7 @@ export const routeTree = rootRoute
         "/algorithms/new",
         "/settings/billing",
         "/settings/notifications",
+        "/settings/preferences",
         "/settings/profile",
         "/settings/security",
         "/algorithms/",
@@ -361,6 +386,9 @@ export const routeTree = rootRoute
     },
     "/settings/notifications": {
       "filePath": "settings/notifications.lazy.tsx"
+    },
+    "/settings/preferences": {
+      "filePath": "settings/preferences.lazy.tsx"
     },
     "/settings/profile": {
       "filePath": "settings/profile.lazy.tsx"
