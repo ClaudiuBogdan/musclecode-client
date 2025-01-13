@@ -9,6 +9,9 @@ import useChatStore from "@/stores/chat";
 import { motion, AnimatePresence } from "framer-motion";
 import { showToast } from "@/utils/toast";
 import { EditMessage } from "./EditMessage";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import { detectLanguage, cleanTheme } from "@/lib/code-detection";
 
 interface MessageProps {
   message: MessageType;
@@ -55,59 +58,6 @@ export const Message: React.FC<MessageProps> = ({ message }) => {
     setEditMessageId(null);
   };
 
-  // Function to detect and format code blocks
-  const formatContent = (content: string) => {
-    const codeBlockRegex = /```(\w+)?\n([\s\S]*?)```/g;
-    const parts: React.ReactNode[] = [];
-    let lastIndex = 0;
-    let match: RegExpExecArray | null;
-
-    while ((match = codeBlockRegex.exec(content)) !== null) {
-      if (match.index > lastIndex) {
-        parts.push(
-          <span key={`text-${lastIndex}`}>
-            {content.slice(lastIndex, match.index)}
-          </span>
-        );
-      }
-
-      const language = match[1] || "typescript";
-      const codeContent = match[2];
-      parts.push(
-        <div
-          key={`code-${match.index}`}
-          className="relative my-2 rounded-md group"
-        >
-          <Button
-            variant="ghost"
-            size="sm"
-            className="absolute right-2 top-2 opacity-0 transition-opacity group-hover:opacity-100"
-            onClick={() => navigator.clipboard.writeText(codeContent)}
-          >
-            <Copy className="h-4 w-4" />
-          </Button>
-          <SyntaxHighlighter
-            language={language}
-            style={vscDarkPlus}
-            className="rounded-md"
-          >
-            {codeContent}
-          </SyntaxHighlighter>
-        </div>
-      );
-
-      lastIndex = match.index + match[0].length;
-    }
-
-    if (lastIndex < content.length) {
-      parts.push(
-        <span key={`text-${lastIndex}`}>{content.slice(lastIndex)}</span>
-      );
-    }
-
-    return parts;
-  };
-
   return (
     <div
       className={cn(
@@ -144,13 +94,75 @@ export const Message: React.FC<MessageProps> = ({ message }) => {
                 exit={{ opacity: 0, y: 10 }}
                 transition={{ duration: 0.2 }}
                 className={cn(
-                  "rounded-lg p-3 min-w-20",
+                  "rounded-lg p-3 min-w-20 prose prose-sm dark:prose-invert max-w-none",
                   isUser
-                    ? "bg-blue-500 text-white"
-                    : "bg-white dark:bg-gray-800 text-gray-800 dark:text-white"
+                    ? "bg-blue-500 text-white prose-white [&_code]:text-white [&_code]:bg-blue-600/50"
+                    : "bg-white dark:bg-gray-800 text-gray-800 dark:text-white [&_code]:bg-gray-100 dark:[&_code]:bg-gray-700"
                 )}
               >
-                <div className="text-sm">{formatContent(message.content)}</div>
+                <ReactMarkdown
+                  remarkPlugins={[remarkGfm]}
+                  components={{
+                    code(props) {
+                      const { children, className, ...rest } = props;
+                      const content = String(children);
+                      const match = /language-(\w+)/.exec(className || "");
+                      const isInline = !match && !className;
+
+                      if (isInline) {
+                        return (
+                          <code
+                            className={cn(
+                              "rounded px-1.5 py-0.5 font-mono text-sm",
+                              className
+                            )}
+                            {...rest}
+                          >
+                            {children}
+                          </code>
+                        );
+                      }
+
+                      const language = match
+                        ? match[1]
+                        : detectLanguage(content);
+                      const style = {
+                        ...vscDarkPlus,
+                        ...cleanTheme,
+                      };
+
+                      return (
+                        <div className="relative my-2 font-mono text-sm">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="absolute right-2 top-2 opacity-0 transition-opacity group-hover:opacity-100 z-10"
+                            onClick={() =>
+                              navigator.clipboard.writeText(content)
+                            }
+                          >
+                            <Copy className="h-4 w-4" />
+                          </Button>
+                          <SyntaxHighlighter
+                            language={language || "text"}
+                            style={style}
+                            PreTag="div"
+                            showLineNumbers={false}
+                            customStyle={{
+                              padding: "0.75rem",
+                              fontSize: "0.875rem",
+                              lineHeight: 1.5,
+                            }}
+                          >
+                            {content}
+                          </SyntaxHighlighter>
+                        </div>
+                      );
+                    },
+                  }}
+                >
+                  {message.content}
+                </ReactMarkdown>
                 {message.status === "error" && (
                   <p className="text-xs text-red-500 mt-1">
                     Error: Failed to send message
