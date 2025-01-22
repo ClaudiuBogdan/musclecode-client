@@ -1,16 +1,11 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { KeycloakService } from "@/lib/auth/keycloak";
-
-interface User {
-  id: string;
-  username: string;
-  roles: string[];
-}
+import { getAuthService } from "@/lib/auth/auth-service";
+import type { AuthUser } from "@/lib/auth/types";
 
 interface AuthState {
   isAuthenticated: boolean;
-  user: User | null;
+  user: AuthUser | null;
   token: string | null;
   loading: boolean;
   error: Error | null;
@@ -34,25 +29,18 @@ export const useAuthStore = create<AuthState>()(
 
       initialize: async () => {
         try {
-          set({ loading: true });
-          const keycloak = KeycloakService.getInstance();
-          const authenticated = await keycloak.init();
+          set({ loading: true, error: null });
+          const authService = getAuthService();
+          const authenticated = await authService.init();
 
           if (authenticated) {
-            const token = keycloak.getToken();
-            const username = keycloak.getUsername();
+            const user = authService.getUser();
+            const token = authService.getToken();
 
             set({
               isAuthenticated: true,
+              user,
               token,
-              user: username
-                ? {
-                    id: keycloak.getKeycloakInstance().subject ?? "",
-                    username,
-                    roles:
-                      keycloak.getKeycloakInstance().realmAccess?.roles ?? [],
-                  }
-                : null,
             });
           }
         } catch (error) {
@@ -64,9 +52,9 @@ export const useAuthStore = create<AuthState>()(
 
       login: async () => {
         try {
-          set({ loading: true });
-          const keycloak = KeycloakService.getInstance();
-          await keycloak.login();
+          set({ loading: true, error: null });
+          const authService = getAuthService();
+          await authService.login();
         } catch (error) {
           set({ error: error as Error });
         } finally {
@@ -76,9 +64,9 @@ export const useAuthStore = create<AuthState>()(
 
       logout: async () => {
         try {
-          set({ loading: true });
-          const keycloak = KeycloakService.getInstance();
-          await keycloak.logout();
+          set({ loading: true, error: null });
+          const authService = getAuthService();
+          await authService.logout();
           set({
             isAuthenticated: false,
             user: null,
@@ -96,8 +84,8 @@ export const useAuthStore = create<AuthState>()(
       },
 
       hasRole: (role: string) => {
-        const keycloak = KeycloakService.getInstance();
-        return keycloak.hasRole(role);
+        const authService = getAuthService();
+        return authService.hasRole(role);
       },
     }),
     {
