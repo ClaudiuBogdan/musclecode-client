@@ -1,5 +1,6 @@
 import Keycloak from "keycloak-js";
 import { authConfig } from "@/config/auth";
+import { AuthErrorCode, createAuthError } from "./errors";
 
 export class KeycloakService {
   private static instance: KeycloakService;
@@ -36,21 +37,24 @@ export class KeycloakService {
       return authenticated;
     } catch (error) {
       console.error("Failed to initialize Keycloak:", error);
-      throw error;
+      throw createAuthError(AuthErrorCode.INIT_FAILED);
     }
   }
 
   private setupTokenRefresh(): void {
     this.keycloak.onTokenExpired = () => {
-      this.keycloak.updateToken(70).catch((error) => {
-        console.error("Failed to refresh token:", error);
-        this.keycloak.login();
+      this.keycloak.updateToken(70).catch(() => {
+        throw createAuthError(AuthErrorCode.TOKEN_EXPIRED);
       });
     };
   }
 
   public getToken(): string | undefined {
-    return this.keycloak.token;
+    const token = this.keycloak.token;
+    if (!token) {
+      throw createAuthError(AuthErrorCode.INVALID_TOKEN);
+    }
+    return token;
   }
 
   public getUsername(): string | undefined {
@@ -58,11 +62,20 @@ export class KeycloakService {
   }
 
   public async login(): Promise<void> {
-    await this.keycloak.login();
+    try {
+      await this.keycloak.login();
+    } catch (error) {
+      throw createAuthError(AuthErrorCode.UNAUTHORIZED);
+    }
   }
 
   public async logout(): Promise<void> {
-    await this.keycloak.logout();
+    try {
+      await this.keycloak.logout();
+    } catch (error) {
+      console.error("Logout failed:", error);
+      // Don't throw on logout error, just log it
+    }
   }
 
   public isAuthenticated(): boolean {
@@ -70,6 +83,9 @@ export class KeycloakService {
   }
 
   public hasRole(role: string): boolean {
+    if (!this.isAuthenticated()) {
+      throw createAuthError(AuthErrorCode.UNAUTHORIZED);
+    }
     return this.keycloak.hasRealmRole(role);
   }
 

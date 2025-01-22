@@ -1,6 +1,9 @@
 import { useEffect } from "react";
+import { ErrorBoundary } from "react-error-boundary";
 import { useAuthStore } from "@/stores/auth";
 import { authConfig } from "@/config/auth";
+import { AuthLoading } from "./AuthLoading";
+import { AuthErrorBoundary } from "./AuthErrorBoundary";
 
 interface AuthProviderProps {
   children: React.ReactNode;
@@ -9,6 +12,7 @@ interface AuthProviderProps {
 export function AuthProvider({ children }: AuthProviderProps) {
   const initialize = useAuthStore((state) => state.initialize);
   const loading = useAuthStore((state) => state.loading);
+  const error = useAuthStore((state) => state.error);
 
   useEffect(() => {
     if (authConfig.enabled) {
@@ -17,12 +21,29 @@ export function AuthProvider({ children }: AuthProviderProps) {
   }, [initialize]);
 
   if (loading && authConfig.enabled) {
-    return (
-      <div className="flex h-screen w-screen items-center justify-center">
-        <div className="text-lg">Loading...</div>
-      </div>
-    );
+    return <AuthLoading message="Initializing authentication..." />;
   }
 
-  return <>{children}</>;
+  return (
+    <ErrorBoundary
+      FallbackComponent={AuthErrorBoundary}
+      onReset={() => {
+        // Reset the error state
+        useAuthStore.setState({ error: null });
+        // Retry initialization
+        if (authConfig.enabled) {
+          initialize();
+        }
+      }}
+    >
+      {error ? (
+        <AuthErrorBoundary
+          error={error}
+          resetErrorBoundary={() => useAuthStore.setState({ error: null })}
+        />
+      ) : (
+        children
+      )}
+    </ErrorBoundary>
+  );
 }
