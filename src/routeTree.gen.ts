@@ -16,6 +16,8 @@ import { Route as rootRoute } from './routes/__root'
 
 // Create Virtual Routes
 
+const UnauthorizedLazyImport = createFileRoute('/unauthorized')()
+const LoginLazyImport = createFileRoute('/login')()
 const IndexLazyImport = createFileRoute('/')()
 const SettingsIndexLazyImport = createFileRoute('/settings/')()
 const AlgorithmsIndexLazyImport = createFileRoute('/algorithms/')()
@@ -38,6 +40,18 @@ const AlgorithmsAlgorithmIdEditLazyImport = createFileRoute(
 )()
 
 // Create/Update Routes
+
+const UnauthorizedLazyRoute = UnauthorizedLazyImport.update({
+  id: '/unauthorized',
+  path: '/unauthorized',
+  getParentRoute: () => rootRoute,
+} as any).lazy(() => import('./routes/unauthorized.lazy').then((d) => d.Route))
+
+const LoginLazyRoute = LoginLazyImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRoute,
+} as any).lazy(() => import('./routes/login.lazy').then((d) => d.Route))
 
 const IndexLazyRoute = IndexLazyImport.update({
   id: '/',
@@ -147,6 +161,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexLazyImport
       parentRoute: typeof rootRoute
     }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginLazyImport
+      parentRoute: typeof rootRoute
+    }
+    '/unauthorized': {
+      id: '/unauthorized'
+      path: '/unauthorized'
+      fullPath: '/unauthorized'
+      preLoaderRoute: typeof UnauthorizedLazyImport
+      parentRoute: typeof rootRoute
+    }
     '/algorithms/new': {
       id: '/algorithms/new'
       path: '/algorithms/new'
@@ -231,6 +259,8 @@ declare module '@tanstack/react-router' {
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexLazyRoute
+  '/login': typeof LoginLazyRoute
+  '/unauthorized': typeof UnauthorizedLazyRoute
   '/algorithms/new': typeof AlgorithmsNewLazyRoute
   '/settings/billing': typeof SettingsBillingLazyRoute
   '/settings/notifications': typeof SettingsNotificationsLazyRoute
@@ -246,6 +276,8 @@ export interface FileRoutesByFullPath {
 
 export interface FileRoutesByTo {
   '/': typeof IndexLazyRoute
+  '/login': typeof LoginLazyRoute
+  '/unauthorized': typeof UnauthorizedLazyRoute
   '/algorithms/new': typeof AlgorithmsNewLazyRoute
   '/settings/billing': typeof SettingsBillingLazyRoute
   '/settings/notifications': typeof SettingsNotificationsLazyRoute
@@ -262,6 +294,8 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexLazyRoute
+  '/login': typeof LoginLazyRoute
+  '/unauthorized': typeof UnauthorizedLazyRoute
   '/algorithms/new': typeof AlgorithmsNewLazyRoute
   '/settings/billing': typeof SettingsBillingLazyRoute
   '/settings/notifications': typeof SettingsNotificationsLazyRoute
@@ -279,6 +313,8 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/login'
+    | '/unauthorized'
     | '/algorithms/new'
     | '/settings/billing'
     | '/settings/notifications'
@@ -293,6 +329,8 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/login'
+    | '/unauthorized'
     | '/algorithms/new'
     | '/settings/billing'
     | '/settings/notifications'
@@ -307,6 +345,8 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/login'
+    | '/unauthorized'
     | '/algorithms/new'
     | '/settings/billing'
     | '/settings/notifications'
@@ -323,6 +363,8 @@ export interface FileRouteTypes {
 
 export interface RootRouteChildren {
   IndexLazyRoute: typeof IndexLazyRoute
+  LoginLazyRoute: typeof LoginLazyRoute
+  UnauthorizedLazyRoute: typeof UnauthorizedLazyRoute
   AlgorithmsNewLazyRoute: typeof AlgorithmsNewLazyRoute
   SettingsBillingLazyRoute: typeof SettingsBillingLazyRoute
   SettingsNotificationsLazyRoute: typeof SettingsNotificationsLazyRoute
@@ -338,6 +380,8 @@ export interface RootRouteChildren {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexLazyRoute: IndexLazyRoute,
+  LoginLazyRoute: LoginLazyRoute,
+  UnauthorizedLazyRoute: UnauthorizedLazyRoute,
   AlgorithmsNewLazyRoute: AlgorithmsNewLazyRoute,
   SettingsBillingLazyRoute: SettingsBillingLazyRoute,
   SettingsNotificationsLazyRoute: SettingsNotificationsLazyRoute,
@@ -362,6 +406,8 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/",
+        "/login",
+        "/unauthorized",
         "/algorithms/new",
         "/settings/billing",
         "/settings/notifications",
@@ -377,6 +423,12 @@ export const routeTree = rootRoute
     },
     "/": {
       "filePath": "index.lazy.tsx"
+    },
+    "/login": {
+      "filePath": "login.lazy.tsx"
+    },
+    "/unauthorized": {
+      "filePath": "unauthorized.lazy.tsx"
     },
     "/algorithms/new": {
       "filePath": "algorithms/new.lazy.tsx"
