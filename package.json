@@ -65,6 +65,7 @@
     "csstype": "^3.0.10",
     "date-fns": "^3.0.0",
     "immer": "^10.1.1",
+    "keycloak-js": "^26.1.0",
     "lucide-react": "^0.460.0",
     "motion": "^11.11.14",
     "msw": "^2.6.5",
