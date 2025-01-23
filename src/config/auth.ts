@@ -14,7 +14,8 @@ export type AuthConfig = z.infer<typeof authConfigSchema>;
 
 // Auth is disabled in development by default
 export const authConfig = authConfigSchema.parse({
-  enabled: import.meta.env.PROD || import.meta.env.VITE_AUTH_ENABLED === "true",
+  enabled:
+    import.meta.env.PROD || import.meta.env.VITE_AUTH_ENABLED !== "false",
   keycloak: {
     url: import.meta.env.VITE_KEYCLOAK_URL,
     realm: import.meta.env.VITE_KEYCLOAK_REALM,

@@ -8,8 +8,8 @@ export interface AuthService {
   init(): Promise<boolean>;
   login(): Promise<void>;
   logout(): Promise<void>;
-  isAuthenticated(): boolean;
-  getToken(): string;
-  getUser(): AuthUser | null;
+  isAuthenticated(): Promise<boolean>;
+  getToken(): Promise<string>;
+  getUser(): Promise<AuthUser | null>;
   hasRole(role: string): boolean;
 }

@@ -1,15 +1,30 @@
-import { AuthService } from "./types";
 import { KeycloakAuthService } from "./keycloak-auth-service";
 import { MockAuthService } from "./mock-auth-service";
-import { authConfig } from "@/config/auth";
+import type { AuthService } from "./types";
 
-let authServiceInstance: AuthService | null = null;
+let authService: AuthService | null = null;
 
 export function getAuthService(): AuthService {
-  if (!authServiceInstance) {
-    authServiceInstance = authConfig.enabled
-      ? new KeycloakAuthService()
-      : new MockAuthService();
+  if (!authService) {
+    console.log("[AuthService] Initializing new auth service instance");
+    const isDev = import.meta.env.DEV;
+    const useMock = isDev && import.meta.env.VITE_USE_MOCK_AUTH === "true";
+
+    console.log("[AuthService] Environment:", { isDev, useMock });
+
+    if (useMock) {
+      console.log("[AuthService] Using MockAuthService");
+      authService = new MockAuthService();
+    } else {
+      console.log("[AuthService] Using KeycloakAuthService");
+      authService = new KeycloakAuthService();
+    }
   }
-  return authServiceInstance;
+  return authService;
+}
+
+// Reset auth service (useful for testing)
+export function resetAuthService(): void {
+  console.log("[AuthService] Resetting auth service instance");
+  authService = null;
 }

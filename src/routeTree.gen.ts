@@ -13,16 +13,16 @@ import { createFileRoute } from '@tanstack/react-router'
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
+import { Route as LoginImport } from './routes/login'
+import { Route as SettingsProfileImport } from './routes/settings/profile'
 
 // Create Virtual Routes
 
 const UnauthorizedLazyImport = createFileRoute('/unauthorized')()
-const LoginLazyImport = createFileRoute('/login')()
 const IndexLazyImport = createFileRoute('/')()
 const SettingsIndexLazyImport = createFileRoute('/settings/')()
 const AlgorithmsIndexLazyImport = createFileRoute('/algorithms/')()
 const SettingsSecurityLazyImport = createFileRoute('/settings/security')()
-const SettingsProfileLazyImport = createFileRoute('/settings/profile')()
 const SettingsPreferencesLazyImport = createFileRoute('/settings/preferences')()
 const SettingsNotificationsLazyImport = createFileRoute(
   '/settings/notifications',
@@ -47,7 +47,7 @@ const UnauthorizedLazyRoute = UnauthorizedLazyImport.update({
   getParentRoute: () => rootRoute,
 } as any).lazy(() => import('./routes/unauthorized.lazy').then((d) => d.Route))
 
-const LoginLazyRoute = LoginLazyImport.update({
+const LoginRoute = LoginImport.update({
   id: '/login',
   path: '/login',
   getParentRoute: () => rootRoute,
@@ -83,14 +83,6 @@ const SettingsSecurityLazyRoute = SettingsSecurityLazyImport.update({
   import('./routes/settings/security.lazy').then((d) => d.Route),
 )
 
-const SettingsProfileLazyRoute = SettingsProfileLazyImport.update({
-  id: '/settings/profile',
-  path: '/settings/profile',
-  getParentRoute: () => rootRoute,
-} as any).lazy(() =>
-  import('./routes/settings/profile.lazy').then((d) => d.Route),
-)
-
 const SettingsPreferencesLazyRoute = SettingsPreferencesLazyImport.update({
   id: '/settings/preferences',
   path: '/settings/preferences',
@@ -121,6 +113,14 @@ const AlgorithmsNewLazyRoute = AlgorithmsNewLazyImport.update({
   getParentRoute: () => rootRoute,
 } as any).lazy(() =>
   import('./routes/algorithms/new.lazy').then((d) => d.Route),
+)
+
+const SettingsProfileRoute = SettingsProfileImport.update({
+  id: '/settings/profile',
+  path: '/settings/profile',
+  getParentRoute: () => rootRoute,
+} as any).lazy(() =>
+  import('./routes/settings/profile.lazy').then((d) => d.Route),
 )
 
 const AlgorithmsAlgorithmIdIndexLazyRoute =
@@ -165,7 +165,7 @@ declare module '@tanstack/react-router' {
       id: '/login'
       path: '/login'
       fullPath: '/login'
-      preLoaderRoute: typeof LoginLazyImport
+      preLoaderRoute: typeof LoginImport
       parentRoute: typeof rootRoute
     }
     '/unauthorized': {
@@ -173,6 +173,13 @@ declare module '@tanstack/react-router' {
       path: '/unauthorized'
       fullPath: '/unauthorized'
       preLoaderRoute: typeof UnauthorizedLazyImport
+      parentRoute: typeof rootRoute
+    }
+    '/settings/profile': {
+      id: '/settings/profile'
+      path: '/settings/profile'
+      fullPath: '/settings/profile'
+      preLoaderRoute: typeof SettingsProfileImport
       parentRoute: typeof rootRoute
     }
     '/algorithms/new': {
@@ -201,13 +208,6 @@ declare module '@tanstack/react-router' {
       path: '/settings/preferences'
       fullPath: '/settings/preferences'
       preLoaderRoute: typeof SettingsPreferencesLazyImport
-      parentRoute: typeof rootRoute
-    }
-    '/settings/profile': {
-      id: '/settings/profile'
-      path: '/settings/profile'
-      fullPath: '/settings/profile'
-      preLoaderRoute: typeof SettingsProfileLazyImport
       parentRoute: typeof rootRoute
     }
     '/settings/security': {
@@ -259,13 +259,13 @@ declare module '@tanstack/react-router' {
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexLazyRoute
-  '/login': typeof LoginLazyRoute
+  '/login': typeof LoginRoute
   '/unauthorized': typeof UnauthorizedLazyRoute
+  '/settings/profile': typeof SettingsProfileRoute
   '/algorithms/new': typeof AlgorithmsNewLazyRoute
   '/settings/billing': typeof SettingsBillingLazyRoute
   '/settings/notifications': typeof SettingsNotificationsLazyRoute
   '/settings/preferences': typeof SettingsPreferencesLazyRoute
-  '/settings/profile': typeof SettingsProfileLazyRoute
   '/settings/security': typeof SettingsSecurityLazyRoute
   '/algorithms': typeof AlgorithmsIndexLazyRoute
   '/settings': typeof SettingsIndexLazyRoute
@@ -276,13 +276,13 @@ export interface FileRoutesByFullPath {
 
 export interface FileRoutesByTo {
   '/': typeof IndexLazyRoute
-  '/login': typeof LoginLazyRoute
+  '/login': typeof LoginRoute
   '/unauthorized': typeof UnauthorizedLazyRoute
+  '/settings/profile': typeof SettingsProfileRoute
   '/algorithms/new': typeof AlgorithmsNewLazyRoute
   '/settings/billing': typeof SettingsBillingLazyRoute
   '/settings/notifications': typeof SettingsNotificationsLazyRoute
   '/settings/preferences': typeof SettingsPreferencesLazyRoute
-  '/settings/profile': typeof SettingsProfileLazyRoute
   '/settings/security': typeof SettingsSecurityLazyRoute
   '/algorithms': typeof AlgorithmsIndexLazyRoute
   '/settings': typeof SettingsIndexLazyRoute
@@ -294,13 +294,13 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexLazyRoute
-  '/login': typeof LoginLazyRoute
+  '/login': typeof LoginRoute
   '/unauthorized': typeof UnauthorizedLazyRoute
+  '/settings/profile': typeof SettingsProfileRoute
   '/algorithms/new': typeof AlgorithmsNewLazyRoute
   '/settings/billing': typeof SettingsBillingLazyRoute
   '/settings/notifications': typeof SettingsNotificationsLazyRoute
   '/settings/preferences': typeof SettingsPreferencesLazyRoute
-  '/settings/profile': typeof SettingsProfileLazyRoute
   '/settings/security': typeof SettingsSecurityLazyRoute
   '/algorithms/': typeof AlgorithmsIndexLazyRoute
   '/settings/': typeof SettingsIndexLazyRoute
@@ -315,11 +315,11 @@ export interface FileRouteTypes {
     | '/'
     | '/login'
     | '/unauthorized'
+    | '/settings/profile'
     | '/algorithms/new'
     | '/settings/billing'
     | '/settings/notifications'
     | '/settings/preferences'
-    | '/settings/profile'
     | '/settings/security'
     | '/algorithms'
     | '/settings'
@@ -331,11 +331,11 @@ export interface FileRouteTypes {
     | '/'
     | '/login'
     | '/unauthorized'
+    | '/settings/profile'
     | '/algorithms/new'
     | '/settings/billing'
     | '/settings/notifications'
     | '/settings/preferences'
-    | '/settings/profile'
     | '/settings/security'
     | '/algorithms'
     | '/settings'
@@ -347,11 +347,11 @@ export interface FileRouteTypes {
     | '/'
     | '/login'
     | '/unauthorized'
+    | '/settings/profile'
     | '/algorithms/new'
     | '/settings/billing'
     | '/settings/notifications'
     | '/settings/preferences'
-    | '/settings/profile'
     | '/settings/security'
     | '/algorithms/'
     | '/settings/'
@@ -363,13 +363,13 @@ export interface FileRouteTypes {
 
 export interface RootRouteChildren {
   IndexLazyRoute: typeof IndexLazyRoute
-  LoginLazyRoute: typeof LoginLazyRoute
+  LoginRoute: typeof LoginRoute
   UnauthorizedLazyRoute: typeof UnauthorizedLazyRoute
+  SettingsProfileRoute: typeof SettingsProfileRoute
   AlgorithmsNewLazyRoute: typeof AlgorithmsNewLazyRoute
   SettingsBillingLazyRoute: typeof SettingsBillingLazyRoute
   SettingsNotificationsLazyRoute: typeof SettingsNotificationsLazyRoute
   SettingsPreferencesLazyRoute: typeof SettingsPreferencesLazyRoute
-  SettingsProfileLazyRoute: typeof SettingsProfileLazyRoute
   SettingsSecurityLazyRoute: typeof SettingsSecurityLazyRoute
   AlgorithmsIndexLazyRoute: typeof AlgorithmsIndexLazyRoute
   SettingsIndexLazyRoute: typeof SettingsIndexLazyRoute
@@ -380,13 +380,13 @@ export interface RootRouteChildren {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexLazyRoute: IndexLazyRoute,
-  LoginLazyRoute: LoginLazyRoute,
+  LoginRoute: LoginRoute,
   UnauthorizedLazyRoute: UnauthorizedLazyRoute,
+  SettingsProfileRoute: SettingsProfileRoute,
   AlgorithmsNewLazyRoute: AlgorithmsNewLazyRoute,
   SettingsBillingLazyRoute: SettingsBillingLazyRoute,
   SettingsNotificationsLazyRoute: SettingsNotificationsLazyRoute,
   SettingsPreferencesLazyRoute: SettingsPreferencesLazyRoute,
-  SettingsProfileLazyRoute: SettingsProfileLazyRoute,
   SettingsSecurityLazyRoute: SettingsSecurityLazyRoute,
   AlgorithmsIndexLazyRoute: AlgorithmsIndexLazyRoute,
   SettingsIndexLazyRoute: SettingsIndexLazyRoute,
@@ -408,11 +408,11 @@ export const routeTree = rootRoute
         "/",
         "/login",
         "/unauthorized",
+        "/settings/profile",
         "/algorithms/new",
         "/settings/billing",
         "/settings/notifications",
         "/settings/preferences",
-        "/settings/profile",
         "/settings/security",
         "/algorithms/",
         "/settings/",
@@ -425,10 +425,13 @@ export const routeTree = rootRoute
       "filePath": "index.lazy.tsx"
     },
     "/login": {
-      "filePath": "login.lazy.tsx"
+      "filePath": "login.tsx"
     },
     "/unauthorized": {
       "filePath": "unauthorized.lazy.tsx"
+    },
+    "/settings/profile": {
+      "filePath": "settings/profile.tsx"
     },
     "/algorithms/new": {
       "filePath": "algorithms/new.lazy.tsx"
@@ -441,9 +444,6 @@ export const routeTree = rootRoute
     },
     "/settings/preferences": {
       "filePath": "settings/preferences.lazy.tsx"
-    },
-    "/settings/profile": {
-      "filePath": "settings/profile.lazy.tsx"
     },
     "/settings/security": {
       "filePath": "settings/security.lazy.tsx"

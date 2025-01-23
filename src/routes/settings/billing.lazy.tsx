@@ -21,7 +21,6 @@ import {
   resumeSubscription,
   availablePlans,
   type BillingInfo,
-  type Plan,
 } from "@/lib/api/billing";
 import { ApiError } from "@/types/api";
 import { format } from "date-fns";
@@ -277,61 +276,62 @@ function BillingSettings() {
       </Card>
 
       {/* Payment Method - Only show if user has payment methods */}
-      {billing?.paymentMethods?.length > 0 && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Payment Method</CardTitle>
-            <CardDescription>
-              Manage your payment methods and billing information
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {billing.paymentMethods.map((method) => (
-                <div
-                  key={method.id}
-                  className="flex items-center justify-between"
-                >
-                  <div className="flex items-center gap-4">
-                    <CreditCard className="h-6 w-6 text-muted-foreground" />
-                    <div>
-                      <p className="font-medium capitalize">
-                        {method.card.brand} •••• {method.card.last4}
-                      </p>
-                      <p className="text-sm text-muted-foreground">
-                        Expires {method.card.expiryMonth}/
-                        {method.card.expiryYear}
-                      </p>
+      {billing?.paymentMethods?.length &&
+        billing?.paymentMethods?.length > 0 && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Payment Method</CardTitle>
+              <CardDescription>
+                Manage your payment methods and billing information
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {billing?.paymentMethods.map((method) => (
+                  <div
+                    key={method.id}
+                    className="flex items-center justify-between"
+                  >
+                    <div className="flex items-center gap-4">
+                      <CreditCard className="h-6 w-6 text-muted-foreground" />
+                      <div>
+                        <p className="font-medium capitalize">
+                          {method.card.brand} •••• {method.card.last4}
+                        </p>
+                        <p className="text-sm text-muted-foreground">
+                          Expires {method.card.expiryMonth}/
+                          {method.card.expiryYear}
+                        </p>
+                      </div>
                     </div>
+                    {method.isDefault && (
+                      <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded">
+                        Default
+                      </span>
+                    )}
                   </div>
-                  {method.isDefault && (
-                    <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded">
-                      Default
-                    </span>
-                  )}
+                ))}
+
+                <Separator />
+
+                <div className="flex flex-col sm:flex-row gap-4">
+                  <Button
+                    variant="outline"
+                    className="w-full sm:w-auto"
+                    onClick={handleManageSubscription}
+                    disabled={isRedirecting}
+                  >
+                    {isRedirecting && (
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    )}
+                    <Receipt className="mr-2 h-4 w-4" />
+                    Manage Billing
+                  </Button>
                 </div>
-              ))}
-
-              <Separator />
-
-              <div className="flex flex-col sm:flex-row gap-4">
-                <Button
-                  variant="outline"
-                  className="w-full sm:w-auto"
-                  onClick={handleManageSubscription}
-                  disabled={isRedirecting}
-                >
-                  {isRedirecting && (
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  )}
-                  <Receipt className="mr-2 h-4 w-4" />
-                  Manage Billing
-                </Button>
               </div>
-            </div>
-          </CardContent>
-        </Card>
-      )}
+            </CardContent>
+          </Card>
+        )}
     </div>
   );
 }

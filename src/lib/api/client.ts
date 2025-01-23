@@ -21,6 +21,7 @@ apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
     const apiError: ApiError = {
+      name: "ApiError",
       message: error.response?.data?.message ?? "An error occurred",
       status: error.response?.status ?? 500,
     };

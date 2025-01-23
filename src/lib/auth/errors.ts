@@ -19,7 +19,9 @@ export enum AuthErrorCode {
 
   // Token errors
   TOKEN_EXPIRED = "auth/token-expired",
-  INVALID_TOKEN = "auth/invalid-token",
+  TOKEN_INVALID = "auth/token-invalid",
+  TOKEN_NOT_FOUND = "auth/token-not-found",
+  TOKEN_STORAGE_ERROR = "auth/token-storage-error",
 
   // Permission errors
   INSUFFICIENT_PERMISSIONS = "auth/insufficient-permissions",
@@ -44,7 +46,8 @@ export function isAuthErrorRequiringLogout(error: Error): boolean {
     AuthErrorCode.SESSION_EXPIRED,
     AuthErrorCode.INVALID_SESSION,
     AuthErrorCode.TOKEN_EXPIRED,
-    AuthErrorCode.INVALID_TOKEN,
+    AuthErrorCode.TOKEN_INVALID,
+    AuthErrorCode.TOKEN_NOT_FOUND,
     AuthErrorCode.UNAUTHORIZED,
   ];
 
@@ -60,7 +63,10 @@ export function createAuthError(
       "Your session has expired. Please log in again.",
     [AuthErrorCode.INVALID_SESSION]: "Invalid session. Please log in again.",
     [AuthErrorCode.TOKEN_EXPIRED]: "Your authentication token has expired.",
-    [AuthErrorCode.INVALID_TOKEN]: "Invalid authentication token.",
+    [AuthErrorCode.TOKEN_INVALID]: "Invalid authentication token.",
+    [AuthErrorCode.TOKEN_NOT_FOUND]: "Authentication token not found.",
+    [AuthErrorCode.TOKEN_STORAGE_ERROR]:
+      "Failed to store authentication token.",
     [AuthErrorCode.INSUFFICIENT_PERMISSIONS]:
       "You do not have permission to perform this action.",
     [AuthErrorCode.UNAUTHORIZED]:

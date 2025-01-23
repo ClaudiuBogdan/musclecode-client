@@ -72,7 +72,7 @@ export class KeycloakService {
 
     const token = this.keycloak?.token;
     if (!token) {
-      throw createAuthError(AuthErrorCode.INVALID_TOKEN);
+      throw createAuthError(AuthErrorCode.TOKEN_INVALID);
     }
     return token;
   }

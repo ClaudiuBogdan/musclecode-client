@@ -1,5 +1,6 @@
 import { AuthService, AuthUser } from "./types";
 import { AuthErrorCode, createAuthError } from "./errors";
+import { TokenStorage } from "./token-storage";
 
 export class MockAuthService implements AuthService {
   private authenticated = false;
@@ -8,43 +9,62 @@ export class MockAuthService implements AuthService {
     username: "mock.user",
     roles: ["user", "admin"],
   };
+  private mockToken = "mock-jwt-token.with.signature";
 
   async init(): Promise<boolean> {
-    // Auto-authenticate in development
-    this.authenticated = true;
-    return true;
+    try {
+      // Auto-authenticate in development
+      this.authenticated = true;
+      await TokenStorage.setToken(this.mockToken);
+      return true;
+    } catch {
+      this.authenticated = false;
+      return false;
+    }
   }
 
   async login(): Promise<void> {
     this.authenticated = true;
+    await TokenStorage.setToken(this.mockToken);
   }
 
   async logout(): Promise<void> {
     this.authenticated = false;
+    TokenStorage.removeToken();
   }
 
-  isAuthenticated(): boolean {
-    return this.authenticated;
+  async isAuthenticated(): Promise<boolean> {
+    try {
+      // Check both mock state and token existence
+      const token = await TokenStorage.getToken();
+      return this.authenticated && !!token;
+    } catch {
+      return false;
+    }
   }
 
-  getToken(): string {
+  async getToken(): Promise<string> {
     if (!this.authenticated) {
       throw createAuthError(AuthErrorCode.UNAUTHORIZED);
     }
-    return "mock-token";
+
+    try {
+      return await TokenStorage.getToken();
+    } catch {
+      // If token is not in storage, store it and return
+      await TokenStorage.setToken(this.mockToken);
+      return this.mockToken;
+    }
   }
 
-  getUser(): AuthUser | null {
-    if (!this.authenticated) {
+  async getUser(): Promise<AuthUser | null> {
+    if (!(await this.isAuthenticated())) {
       return null;
     }
     return this.mockUser;
   }
 
   hasRole(role: string): boolean {
-    if (!this.authenticated) {
-      throw createAuthError(AuthErrorCode.UNAUTHORIZED);
-    }
     return this.mockUser.roles.includes(role);
   }
 }

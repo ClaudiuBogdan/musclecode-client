@@ -30,5 +30,5 @@ export const Route = createRootRoute({
       </ThemeProvider>
     </QueryClientProvider>
   ),
-  beforeLoad: createRouteGuard(),
+  // beforeLoad: createRouteGuard(),
 });

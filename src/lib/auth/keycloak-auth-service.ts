@@ -2,6 +2,7 @@ import Keycloak from "keycloak-js";
 import { AuthService, AuthUser } from "./types";
 import { AuthErrorCode, createAuthError } from "./errors";
 import { authConfig } from "@/config/auth";
+import { TokenStorage } from "./token-storage";
 
 export class KeycloakAuthService implements AuthService {
   private keycloak: Keycloak;
@@ -21,10 +22,16 @@ export class KeycloakAuthService implements AuthService {
         silentCheckSsoRedirectUri:
           window.location.origin + "/silent-check-sso.html",
         pkceMethod: "S256",
+        checkLoginIframe: false, // Disable iframe checking for better security
       });
 
       if (authenticated) {
         this.setupTokenRefresh();
+        // Store the initial token
+        const token = this.keycloak.token;
+        if (token) {
+          await TokenStorage.setToken(token);
+        }
       }
 
       return authenticated;
@@ -36,9 +43,20 @@ export class KeycloakAuthService implements AuthService {
 
   private setupTokenRefresh(): void {
     this.keycloak.onTokenExpired = () => {
-      this.keycloak.updateToken(70).catch(() => {
-        throw createAuthError(AuthErrorCode.TOKEN_EXPIRED);
-      });
+      this.keycloak
+        .updateToken(70)
+        .then(async (refreshed) => {
+          if (refreshed) {
+            const token = this.keycloak.token;
+            if (token) {
+              await TokenStorage.setToken(token);
+            }
+          }
+        })
+        .catch(() => {
+          TokenStorage.removeToken();
+          throw createAuthError(AuthErrorCode.TOKEN_EXPIRED);
+        });
     };
   }
 
@@ -52,6 +70,7 @@ export class KeycloakAuthService implements AuthService {
 
   async logout(): Promise<void> {
     try {
+      TokenStorage.removeToken();
       await this.keycloak.logout();
     } catch (error) {
       console.error("Logout failed:", error);
@@ -59,20 +78,33 @@ export class KeycloakAuthService implements AuthService {
     }
   }
 
-  isAuthenticated(): boolean {
-    return !!this.keycloak.authenticated;
-  }
-
-  getToken(): string {
-    const token = this.keycloak.token;
-    if (!token) {
-      throw createAuthError(AuthErrorCode.INVALID_TOKEN);
+  async isAuthenticated(): Promise<boolean> {
+    try {
+      // Check both Keycloak state and token existence
+      const token = await TokenStorage.getToken();
+      return !!this.keycloak.authenticated && !!token;
+    } catch {
+      return false;
     }
-    return token;
   }
 
-  getUser(): AuthUser | null {
-    if (!this.isAuthenticated()) {
+  async getToken(): Promise<string> {
+    try {
+      // Always get the token from secure storage
+      return await TokenStorage.getToken();
+    } catch {
+      // If token is not in storage but keycloak has it, store it
+      const token = this.keycloak.token;
+      if (token) {
+        await TokenStorage.setToken(token);
+        return token;
+      }
+      throw createAuthError(AuthErrorCode.TOKEN_INVALID);
+    }
+  }
+
+  async getUser(): Promise<AuthUser | null> {
+    if (!(await this.isAuthenticated())) {
       return null;
     }
 
@@ -83,10 +115,7 @@ export class KeycloakAuthService implements AuthService {
     };
   }
 
-  hasRole(role: string): boolean {
-    if (!this.isAuthenticated()) {
-      throw createAuthError(AuthErrorCode.UNAUTHORIZED);
-    }
+  async hasRole(role: string): boolean {
     return this.keycloak.hasRealmRole(role);
   }
 }
