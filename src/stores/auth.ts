@@ -29,6 +29,10 @@ export const useAuthStore = create<AuthState>()(
 
       initialize: async () => {
         try {
+          if (get().loading) {
+            console.log("[AuthStore] Already loading");
+            return;
+          }
           console.log("[AuthStore] Initializing");
           set({ loading: true, error: null });
           const authService = getAuthService();
@@ -133,7 +137,6 @@ export const useAuthStore = create<AuthState>()(
     {
       name: "auth-storage",
       partialize: (state) => ({
-        isAuthenticated: state.isAuthenticated,
         user: state.user,
         token: state.token,
       }),

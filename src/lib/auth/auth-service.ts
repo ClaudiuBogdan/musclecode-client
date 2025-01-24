@@ -17,7 +17,7 @@ export function getAuthService(): AuthService {
       authService = new MockAuthService();
     } else {
       console.log("[AuthService] Using KeycloakAuthService");
-      authService = new KeycloakAuthService();
+      authService = KeycloakAuthService.getInstance();
     }
   }
   return authService;

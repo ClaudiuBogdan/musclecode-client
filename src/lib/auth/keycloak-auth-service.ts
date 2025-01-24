@@ -5,9 +5,10 @@ import { authConfig } from "@/config/auth";
 import { TokenStorage } from "./token-storage";
 
 export class KeycloakAuthService implements AuthService {
+  private static instance: KeycloakAuthService | null = null;
   private keycloak: Keycloak;
 
-  constructor() {
+  private constructor() {
     this.keycloak = new Keycloak({
       url: authConfig.keycloak.url,
       realm: authConfig.keycloak.realm,
@@ -15,14 +16,20 @@ export class KeycloakAuthService implements AuthService {
     });
   }
 
+  public static getInstance(): KeycloakAuthService {
+    if (!KeycloakAuthService.instance) {
+      KeycloakAuthService.instance = new KeycloakAuthService();
+    }
+    return KeycloakAuthService.instance;
+  }
+
   async init(): Promise<boolean> {
     try {
       const authenticated = await this.keycloak.init({
-        onLoad: "check-sso",
-        silentCheckSsoRedirectUri:
-          window.location.origin + "/silent-check-sso.html",
+        onLoad: "login-required",
         pkceMethod: "S256",
         checkLoginIframe: false, // Disable iframe checking for better security
+        enableLogging: true,
       });
 
       if (authenticated) {
