@@ -138,8 +138,6 @@ export const useAuthStore = create<AuthState>()(
       name: "auth-storage",
       partialize: (state) => ({
         user: state.user,
-        // TODO: remove this. Storing token in local storage is not secure
-        token: state.token,
       }),
     }
   )

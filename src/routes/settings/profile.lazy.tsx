@@ -29,15 +29,13 @@ import {
   type Profile,
 } from '@/lib/api/profile'
 import { ApiError } from "@/types/api";
-import { useAuthStore } from "@/stores/auth";
 
 export const Route = createLazyFileRoute("/settings/profile")({
   component: ProfileSettings,
 });
 
 function ProfileSettings() {
-  const queryClient = useQueryClient()
-  const user = useAuthStore((state) => state.user)
+  const queryClient = useQueryClient();
 
   const {
     register,
@@ -46,7 +44,7 @@ function ProfileSettings() {
     reset,
   } = useForm<Profile>({
     resolver: zodResolver(profileSchema),
-  })
+  });
 
   // Fetch profile data
   const {
@@ -54,83 +52,83 @@ function ProfileSettings() {
     isLoading: isLoadingProfile,
     error: profileError,
   } = useQuery({
-    queryKey: ['profile'],
+    queryKey: ["profile"],
     queryFn: fetchProfile,
-  }) as UseQueryResult<Profile, Error>
+  }) as UseQueryResult<Profile, Error>;
 
   // Reset form when profile data changes
   useEffect(() => {
     if (profile) {
-      reset(profile)
+      reset(profile);
     }
-  }, [profile, reset])
+  }, [profile, reset]);
 
   // Update profile mutation
   const { mutate: updateProfileMutation, isPending: isUpdating } = useMutation({
     mutationFn: updateProfile,
     onSuccess: (data) => {
-      queryClient.setQueryData(['profile'], data)
-      toast.success('Profile updated successfully')
+      queryClient.setQueryData(["profile"], data);
+      toast.success("Profile updated successfully");
     },
     onError: (error: unknown) => {
       if (error instanceof ApiError) {
-        toast.error(error.message)
+        toast.error(error.message);
       } else {
-        toast.error('Failed to update profile')
+        toast.error("Failed to update profile");
       }
     },
-  })
+  });
 
   // Provider connection mutations
   const { mutate: connectProviderMutation, isPending: isConnecting } =
     useMutation({
       mutationFn: connectProvider,
       onSuccess: (data) => {
-        queryClient.setQueryData(['profile'], data)
-        toast.success('Provider connected successfully')
+        queryClient.setQueryData(["profile"], data);
+        toast.success("Provider connected successfully");
       },
       onError: (error: unknown) => {
         if (error instanceof ApiError) {
-          toast.error(error.message)
+          toast.error(error.message);
         } else {
-          toast.error('Failed to connect provider')
+          toast.error("Failed to connect provider");
         }
       },
-    })
+    });
 
   const { mutate: disconnectProviderMutation, isPending: isDisconnecting } =
     useMutation({
       mutationFn: disconnectProvider,
       onSuccess: (data) => {
-        queryClient.setQueryData(['profile'], data)
-        toast.success('Provider disconnected successfully')
+        queryClient.setQueryData(["profile"], data);
+        toast.success("Provider disconnected successfully");
       },
       onError: (error: unknown) => {
         if (error instanceof ApiError) {
-          toast.error(error.message)
+          toast.error(error.message);
         } else {
-          toast.error('Failed to disconnect provider')
+          toast.error("Failed to disconnect provider");
         }
       },
-    })
+    });
 
   const onSubmit = useCallback(
     (data: Profile) => {
-      updateProfileMutation(data)
+      updateProfileMutation(data);
     },
-    [updateProfileMutation],
-  )
+    [updateProfileMutation]
+  );
 
   const handleProviderConnection = useCallback(
-    (provider: 'github' | 'google') => {
+    (provider: "github" | "google") => {
       if (profile?.connections[provider]) {
-        disconnectProviderMutation(provider)
+        disconnectProviderMutation(provider);
       } else {
-        connectProviderMutation(provider)
+        connectProviderMutation(provider);
       }
     },
-    [profile?.connections, connectProviderMutation, disconnectProviderMutation],
-  )
+    [profile?.connections, connectProviderMutation, disconnectProviderMutation]
+  );
 
   // Handle loading state
   if (isLoadingProfile) {
@@ -141,7 +139,7 @@ function ProfileSettings() {
           <span>Loading profile...</span>
         </div>
       </div>
-    )
+    );
   }
 
   // Handle error state
@@ -154,39 +152,16 @@ function ProfileSettings() {
           <AlertDescription>
             {profileError instanceof ApiError
               ? profileError.message
-              : 'Failed to load profile'}
+              : "Failed to load profile"}
           </AlertDescription>
         </Alert>
       </div>
-    )
+    );
   }
 
   return (
     <div className="container mx-auto p-6">
       <h1 className="mb-6 text-2xl font-semibold">Profile Settings</h1>
-
-      <div className="rounded-lg border bg-card p-6">
-        <div className="space-y-4">
-          <div>
-            <label className="text-sm font-medium">Username</label>
-            <div className="mt-1 text-lg">{user?.username}</div>
-          </div>
-
-          <div>
-            <label className="text-sm font-medium">Roles</label>
-            <div className="mt-1">
-              {user?.roles.map((role) => (
-                <span
-                  key={role}
-                  className="mr-2 rounded-full bg-primary/10 px-3 py-1 text-sm text-primary"
-                >
-                  {role}
-                </span>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
 
       <div className="mx-auto max-w-2xl space-y-8 mt-6">
         {/* Profile Header */}
@@ -197,9 +172,9 @@ function ProfileSettings() {
                 <AvatarImage src={profile?.avatar} alt={profile?.name} />
                 <AvatarFallback className="text-2xl">
                   {profile?.name
-                    ?.split(' ')
+                    ?.split(" ")
                     .map((n) => n[0])
-                    .join('')}
+                    .join("")}
                 </AvatarFallback>
               </Avatar>
               <div className="text-center sm:text-left">
@@ -231,7 +206,7 @@ function ProfileSettings() {
                     <Label htmlFor="name">Full Name</Label>
                     <Input
                       id="name"
-                      {...register('name')}
+                      {...register("name")}
                       aria-invalid={!!errors.name}
                     />
                     {errors.name && (
@@ -246,7 +221,7 @@ function ProfileSettings() {
                     <Input
                       id="email"
                       type="email"
-                      {...register('email')}
+                      {...register("email")}
                       aria-invalid={!!errors.email}
                     />
                     {errors.email && (
@@ -261,7 +236,7 @@ function ProfileSettings() {
                   <Label htmlFor="bio">Bio</Label>
                   <Textarea
                     id="bio"
-                    {...register('bio')}
+                    {...register("bio")}
                     placeholder="Tell us about yourself"
                     className="resize-none"
                     rows={3}
@@ -287,7 +262,7 @@ function ProfileSettings() {
                       Saving...
                     </>
                   ) : (
-                    'Save Changes'
+                    "Save Changes"
                   )}
                 </Button>
               </div>
@@ -310,22 +285,22 @@ function ProfileSettings() {
                 <p className="font-medium">GitHub</p>
                 <p className="text-sm text-muted-foreground">
                   {profile?.connections.github
-                    ? 'Your GitHub account is connected'
-                    : 'Connect your GitHub account to sync your profile'}
+                    ? "Your GitHub account is connected"
+                    : "Connect your GitHub account to sync your profile"}
                 </p>
               </div>
               <Button
                 variant={
-                  profile?.connections.github ? 'destructive' : 'outline'
+                  profile?.connections.github ? "destructive" : "outline"
                 }
                 className="sm:w-auto w-full"
-                onClick={() => handleProviderConnection('github')}
+                onClick={() => handleProviderConnection("github")}
                 disabled={isConnecting || isDisconnecting}
               >
                 {isConnecting || isDisconnecting ? (
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 ) : null}
-                {profile?.connections.github ? 'Disconnect' : 'Connect'}
+                {profile?.connections.github ? "Disconnect" : "Connect"}
               </Button>
             </div>
 
@@ -337,27 +312,27 @@ function ProfileSettings() {
                 <p className="font-medium">Google</p>
                 <p className="text-sm text-muted-foreground">
                   {profile?.connections.google
-                    ? 'Your Google account is connected'
-                    : 'Use your Google account for quick sign-in'}
+                    ? "Your Google account is connected"
+                    : "Use your Google account for quick sign-in"}
                 </p>
               </div>
               <Button
                 variant={
-                  profile?.connections.google ? 'destructive' : 'outline'
+                  profile?.connections.google ? "destructive" : "outline"
                 }
                 className="sm:w-auto w-full"
-                onClick={() => handleProviderConnection('google')}
+                onClick={() => handleProviderConnection("google")}
                 disabled={isConnecting || isDisconnecting}
               >
                 {isConnecting || isDisconnecting ? (
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 ) : null}
-                {profile?.connections.google ? 'Disconnect' : 'Connect'}
+                {profile?.connections.google ? "Disconnect" : "Connect"}
               </Button>
             </div>
           </CardContent>
         </Card>
       </div>
     </div>
-  )
+  );
 }

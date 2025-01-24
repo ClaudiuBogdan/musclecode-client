@@ -111,12 +111,24 @@ function SecuritySettings() {
         </CardHeader>
         <CardContent>
           <form onSubmit={handlePasswordUpdate} className="space-y-4">
+            <div className="space-y-2" hidden>
+              <Label htmlFor="username">Username</Label>
+              <Input
+                id="username"
+                name="username"
+                type="text"
+                autoComplete="username"
+                required
+                disabled={true}
+              />
+            </div>
             <div className="space-y-2">
               <Label htmlFor="currentPassword">Current Password</Label>
               <Input
                 id="currentPassword"
                 name="currentPassword"
                 type="password"
+                autoComplete="current-password"
                 required
                 disabled={isUpdatingPassword}
               />
@@ -127,6 +139,7 @@ function SecuritySettings() {
                 id="newPassword"
                 name="newPassword"
                 type="password"
+                autoComplete="new-password"
                 required
                 disabled={isUpdatingPassword}
               />
@@ -140,6 +153,7 @@ function SecuritySettings() {
                 id="confirmPassword"
                 name="confirmPassword"
                 type="password"
+                autoComplete="new-password"
                 required
                 disabled={isUpdatingPassword}
               />
