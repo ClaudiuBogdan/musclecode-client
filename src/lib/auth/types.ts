@@ -11,5 +11,5 @@ export interface AuthService {
   isAuthenticated(): Promise<boolean>;
   getToken(): Promise<string>;
   getUser(): Promise<AuthUser | null>;
-  hasRole(role: string): boolean;
+  hasRole(role: string): Promise<boolean>;
 }

@@ -136,7 +136,7 @@ export class KeycloakService {
     return this.keycloak?.realmAccess?.roles ?? [];
   }
 
-  public hasRole(role: string): boolean {
+  public async hasRole(role: string): Promise<boolean> {
     if (!this.isAuthenticated()) {
       throw createAuthError(AuthErrorCode.UNAUTHORIZED);
     }

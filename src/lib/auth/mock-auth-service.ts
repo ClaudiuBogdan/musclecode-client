@@ -64,7 +64,7 @@ export class MockAuthService implements AuthService {
     return this.mockUser;
   }
 
-  hasRole(role: string): boolean {
+  async hasRole(role: string): Promise<boolean> {
     return this.mockUser.roles.includes(role);
   }
 }
