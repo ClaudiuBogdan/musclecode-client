@@ -269,69 +269,6 @@ function ProfileSettings() {
             </form>
           </CardContent>
         </Card>
-
-        {/* Connected Accounts */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Connected Accounts</CardTitle>
-            <CardDescription>
-              Manage your connected accounts and identity providers
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="grid gap-6">
-            {/* GitHub Connection */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <div className="space-y-1">
-                <p className="font-medium">GitHub</p>
-                <p className="text-sm text-muted-foreground">
-                  {profile?.connections.github
-                    ? "Your GitHub account is connected"
-                    : "Connect your GitHub account to sync your profile"}
-                </p>
-              </div>
-              <Button
-                variant={
-                  profile?.connections.github ? "destructive" : "outline"
-                }
-                className="sm:w-auto w-full"
-                onClick={() => handleProviderConnection("github")}
-                disabled={isConnecting || isDisconnecting}
-              >
-                {isConnecting || isDisconnecting ? (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                ) : null}
-                {profile?.connections.github ? "Disconnect" : "Connect"}
-              </Button>
-            </div>
-
-            <Separator />
-
-            {/* Google Connection */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <div className="space-y-1">
-                <p className="font-medium">Google</p>
-                <p className="text-sm text-muted-foreground">
-                  {profile?.connections.google
-                    ? "Your Google account is connected"
-                    : "Use your Google account for quick sign-in"}
-                </p>
-              </div>
-              <Button
-                variant={
-                  profile?.connections.google ? "destructive" : "outline"
-                }
-                className="sm:w-auto w-full"
-                onClick={() => handleProviderConnection("google")}
-                disabled={isConnecting || isDisconnecting}
-              >
-                {isConnecting || isDisconnecting ? (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                ) : null}
-                {profile?.connections.google ? "Disconnect" : "Connect"}
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
       </div>
     </div>
   );
