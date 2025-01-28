@@ -30,6 +30,7 @@ export interface CodeRunRequest {
 export async function runCode(
   request: CodeRunRequest
 ): Promise<CodeExecutionResponse> {
+  // TODO: add auth
   const executingApi = axios.create({
     baseURL: "http://localhost:3002",
     headers: {

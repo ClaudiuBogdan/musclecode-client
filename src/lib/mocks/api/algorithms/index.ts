@@ -1,13 +1,6 @@
 import { http, HttpResponse } from "msw";
 import { useMockAlgorithmsStore } from "../../store/algorithms";
-import axios from "axios";
-
-const apiClient = axios.create({
-  baseURL: "http://localhost:3000",
-  headers: {
-    "Content-Type": "application/json",
-  },
-});
+import { apiClient } from "@/lib/api/client";
 
 export const all = http.get("/api/algorithms", async () => {
   try {

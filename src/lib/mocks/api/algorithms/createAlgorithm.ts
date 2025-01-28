@@ -1,14 +1,7 @@
 import { http } from "msw";
 import { HttpResponse } from "msw";
 import { CreateAlgorithmPayload } from "@/types/newAlgorithm";
-import axios from "axios";
-
-const apiClient = axios.create({
-  baseURL: "http://localhost:3000",
-  headers: {
-    "Content-Type": "application/json",
-  },
-});
+import { apiClient } from "@/lib/api/client";
 
 export const createAlgorithmApi = http.post(
   "/api/algorithms",

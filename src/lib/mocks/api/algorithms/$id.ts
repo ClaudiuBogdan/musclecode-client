@@ -1,12 +1,5 @@
+import { apiClient } from "@/lib/api/client";
 import { http, HttpResponse } from "msw";
-import axios from "axios";
-
-const apiClient = axios.create({
-  baseURL: "http://localhost:3000",
-  headers: {
-    "Content-Type": "application/json",
-  },
-});
 
 export const byId = [
   http.get("/api/algorithms/:id", async ({ params }) => {
