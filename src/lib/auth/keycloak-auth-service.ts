@@ -26,7 +26,7 @@ export class KeycloakAuthService implements AuthService {
   async init(): Promise<boolean> {
     try {
       const authenticated = await this.keycloak.init({
-        onLoad: "check-sso",
+        onLoad: "login-required",
         pkceMethod: "S256",
         checkLoginIframe: false,
         enableLogging: import.meta.env.DEV,

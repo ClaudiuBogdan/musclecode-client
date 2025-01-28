@@ -59,6 +59,8 @@ export const useAuthStore = create<AuthState>()(
               user: null,
               token: null,
             });
+            // TODO: review this flow. This was just a quick fix to get the login page to show after logout.
+            get().login();
           }
         } catch (error) {
           console.error("[AuthStore] Initialization error:", error);
@@ -111,6 +113,7 @@ export const useAuthStore = create<AuthState>()(
           console.log("[AuthStore] Clearing auth state");
           set({
             isAuthenticated: false,
+            loading: false,
             user: null,
             token: null,
           });
