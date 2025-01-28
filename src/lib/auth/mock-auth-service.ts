@@ -1,6 +1,7 @@
 import { AuthService, AuthUser } from "./types";
 import { AuthErrorCode, createAuthError } from "./errors";
 import { TokenStorage } from "./token-storage";
+import type Keycloak from "keycloak-js";
 
 export class MockAuthService implements AuthService {
   private authenticated = false;
@@ -66,5 +67,9 @@ export class MockAuthService implements AuthService {
 
   async hasRole(role: string): Promise<boolean> {
     return this.mockUser.roles.includes(role);
+  }
+
+  getKeycloakInstance(): Keycloak | null {
+    return null;
   }
 }

@@ -13,8 +13,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
-import { createLazyFileRoute } from '@tanstack/react-router'
-import { Textarea } from '@/components/ui/textarea'
+import { createLazyFileRoute } from "@tanstack/react-router";
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Separator } from '@/components/ui/separator'
 import { toast } from 'sonner'
@@ -169,17 +168,18 @@ function ProfileSettings() {
           <CardHeader className="px-0">
             <div className="flex flex-col sm:flex-row items-center gap-6 sm:gap-8">
               <Avatar className="h-24 w-24 sm:h-32 sm:w-32">
-                <AvatarImage src={profile?.avatar} alt={profile?.name} />
+                <AvatarImage
+                  src={profile?.avatar || undefined}
+                  alt={`${profile?.firstName} ${profile?.lastName}`}
+                />
                 <AvatarFallback className="text-2xl">
-                  {profile?.name
-                    ?.split(" ")
-                    .map((n) => n[0])
-                    .join("")}
+                  {profile?.firstName?.[0]}
+                  {profile?.lastName?.[0]}
                 </AvatarFallback>
               </Avatar>
               <div className="text-center sm:text-left">
                 <CardTitle className="text-2xl sm:text-3xl">
-                  {profile?.name}
+                  {profile?.firstName} {profile?.lastName}
                 </CardTitle>
                 <CardDescription className="mt-2 text-base">
                   {profile?.email}
@@ -203,51 +203,51 @@ function ProfileSettings() {
               <div className="space-y-4">
                 <div className="grid gap-6 sm:grid-cols-2">
                   <div className="space-y-2">
-                    <Label htmlFor="name">Full Name</Label>
+                    <Label htmlFor="firstName">First Name</Label>
                     <Input
-                      id="name"
-                      {...register("name")}
-                      aria-invalid={!!errors.name}
+                      id="firstName"
+                      {...register("firstName")}
+                      aria-invalid={!!errors.firstName}
                     />
-                    {errors.name && (
+                    {errors.firstName && (
                       <p className="text-sm text-destructive">
-                        {errors.name.message}
+                        {errors.firstName.message}
                       </p>
                     )}
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="email">Email</Label>
+                    <Label htmlFor="lastName">Last Name</Label>
                     <Input
-                      id="email"
-                      type="email"
-                      {...register("email")}
-                      aria-invalid={!!errors.email}
+                      id="lastName"
+                      {...register("lastName")}
+                      aria-invalid={!!errors.lastName}
                     />
-                    {errors.email && (
+                    {errors.lastName && (
                       <p className="text-sm text-destructive">
-                        {errors.email.message}
+                        {errors.lastName.message}
                       </p>
                     )}
                   </div>
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="bio">Bio</Label>
-                  <Textarea
-                    id="bio"
-                    {...register("bio")}
-                    placeholder="Tell us about yourself"
-                    className="resize-none"
-                    rows={3}
+                  <Label htmlFor="email">Email</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    {...register("email")}
+                    disabled
+                    aria-invalid={!!errors.email}
                   />
-                  {errors.bio && (
+                  {errors.email && (
                     <p className="text-sm text-destructive">
-                      {errors.bio.message}
+                      {errors.email.message}
                     </p>
                   )}
                   <p className="text-sm text-muted-foreground">
-                    Brief description for your profile. URLs are hyperlinked.
+                    Your email address is managed through your authentication
+                    provider
                   </p>
                 </div>
               </div>

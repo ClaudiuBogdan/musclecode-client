@@ -125,4 +125,8 @@ export class KeycloakAuthService implements AuthService {
   async hasRole(role: string): Promise<boolean> {
     return this.keycloak.hasRealmRole(role);
   }
+
+  getKeycloakInstance(): Keycloak {
+    return this.keycloak;
+  }
 }

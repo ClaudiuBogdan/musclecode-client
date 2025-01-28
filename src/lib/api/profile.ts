@@ -1,12 +1,31 @@
 import { z } from "zod";
-import { apiClient } from "./client";
 import { ApiError } from "@/types/api";
+import { getAuthService } from "@/lib/auth/auth-service";
+
+// Keycloak UserInfo type
+interface KeycloakUserInfo {
+  sub?: string;
+  name?: string;
+  given_name?: string;
+  family_name?: string;
+  preferred_username?: string;
+  email?: string;
+  email_verified?: boolean;
+  picture?: string;
+  attributes?: {
+    bio?: string[];
+    picture?: string[];
+    github_id?: string[];
+    google_id?: string[];
+  };
+}
 
 export const profileSchema = z.object({
-  name: z.string().min(2, "Name must be at least 2 characters"),
+  firstName: z.string().min(2, "First name must be at least 2 characters"),
+  lastName: z.string().min(2, "Last name must be at least 2 characters"),
   email: z.string().email("Invalid email address"),
   bio: z.string().max(160, "Bio must be less than 160 characters").optional(),
-  avatar: z.string().url("Invalid URL").optional(),
+  avatar: z.string().url("Invalid URL").optional().nullable(),
   connections: z
     .object({
       github: z.boolean().default(false),
@@ -16,21 +35,6 @@ export const profileSchema = z.object({
 });
 
 export type Profile = z.infer<typeof profileSchema>;
-
-// Mock data for development
-const mockProfile: Profile = {
-  name: "John Doe",
-  email: "john@example.com",
-  bio: "Software engineer passionate about building great products",
-  avatar: "https://avatars.githubusercontent.com/u/1234567",
-  connections: {
-    github: false,
-    google: false,
-  },
-};
-
-// Helper function to simulate API delay
-const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 // Helper function to handle API errors
 const handleApiError = (error: unknown): never => {
@@ -49,34 +53,121 @@ const handleApiError = (error: unknown): never => {
 
 export async function fetchProfile(): Promise<Profile> {
   try {
-    // TODO: Replace with actual API call when backend is ready
-    if (process.env.NODE_ENV === "development") {
-      await delay(500); // Simulate network delay
-      return mockProfile;
+    const authService = getAuthService();
+    const keycloak = authService.getKeycloakInstance();
+
+    if (!keycloak) {
+      throw new ApiError("Keycloak instance not found", 500);
     }
 
-    const { data } = await apiClient.get<Profile>("/api/profile");
-    return profileSchema.parse(data);
+    // Get user info from Keycloak
+    const userInfo = (await keycloak.loadUserInfo()) as KeycloakUserInfo;
+    console.log("[Profile API] Raw user info from Keycloak:", userInfo);
+
+    // Get avatar URL, ensuring it's either a valid URL or null
+    const avatarUrl =
+      userInfo.attributes?.picture?.[0] || userInfo.picture || null;
+
+    // Extract first and last name from Keycloak user info
+    let firstName = userInfo.given_name || "";
+    let lastName = userInfo.family_name || "";
+
+    // If given_name and family_name are not available, try to split the full name
+    if (!firstName && !lastName && userInfo.name) {
+      const nameParts = userInfo.name.trim().split(/\s+/);
+      if (nameParts.length === 1) {
+        firstName = nameParts[0];
+        lastName = "User"; // Default last name if only one name is provided
+      } else {
+        firstName = nameParts[0];
+        lastName = nameParts.slice(1).join(" ");
+      }
+    }
+
+    // If still no name, use preferred_username or defaults
+    if (!firstName) {
+      firstName = userInfo.preferred_username?.split("@")[0] || "Unknown";
+    }
+    if (!lastName) {
+      lastName = "User";
+    }
+
+    // Extract profile data from Keycloak user info
+    const profile: Profile = {
+      firstName,
+      lastName,
+      email: userInfo.email || "",
+      bio: userInfo.attributes?.bio?.[0] || "",
+      avatar: avatarUrl,
+      connections: {
+        github: !!userInfo.attributes?.github_id?.[0],
+        google: !!userInfo.attributes?.google_id?.[0],
+      },
+    };
+    console.log("[Profile API] Transformed profile data:", profile);
+
+    try {
+      const validatedProfile = profileSchema.parse(profile);
+      console.log("[Profile API] Validated profile:", validatedProfile);
+      return validatedProfile;
+    } catch (validationError) {
+      console.error(
+        "[Profile API] Profile validation failed:",
+        validationError
+      );
+      throw validationError;
+    }
   } catch (error) {
+    console.error("[Profile API] Error fetching profile:", error);
     throw handleApiError(error);
   }
 }
 
 export async function updateProfile(data: Partial<Profile>): Promise<Profile> {
   try {
-    // TODO: Replace with actual API call when backend is ready
-    if (process.env.NODE_ENV === "development") {
-      await delay(800); // Simulate network delay
-      const updatedProfile = { ...mockProfile, ...data };
-      return profileSchema.parse(updatedProfile);
+    const authService = getAuthService();
+    const keycloak = authService.getKeycloakInstance();
+
+    if (!keycloak) {
+      throw new ApiError("Keycloak instance not found", 500);
     }
 
-    const { data: responseData } = await apiClient.patch<Profile>(
-      "/api/profile",
-      data
+    // Get access token
+    const token = await authService.getToken();
+
+    // Update user profile using the Account REST API
+    const response = await fetch(
+      `${keycloak.authServerUrl}/realms/${keycloak.realm}/account/`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          firstName: data.firstName,
+          lastName: data.lastName,
+          attributes: {
+            bio: data.bio ? [data.bio] : undefined,
+            picture: data.avatar ? [data.avatar] : undefined,
+          },
+        }),
+      }
     );
-    return profileSchema.parse(responseData);
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      console.error("[Profile API] Failed to update profile:", errorData);
+      throw new ApiError(
+        errorData.error_description || "Failed to update profile",
+        response.status
+      );
+    }
+
+    // Return updated profile
+    return fetchProfile();
   } catch (error) {
+    console.error("[Profile API] Update profile error:", error);
     throw handleApiError(error);
   }
 }
@@ -85,23 +176,20 @@ export async function connectProvider(
   provider: "github" | "google"
 ): Promise<Profile> {
   try {
-    // TODO: Replace with actual API call when backend is ready
-    if (process.env.NODE_ENV === "development") {
-      await delay(1000); // Simulate network delay
-      const updatedProfile = {
-        ...mockProfile,
-        connections: {
-          ...mockProfile.connections,
-          [provider]: true,
-        },
-      };
-      return profileSchema.parse(updatedProfile);
+    const authService = getAuthService();
+    const keycloak = authService.getKeycloakInstance();
+
+    if (!keycloak) {
+      throw new ApiError("Keycloak instance not found", 500);
     }
 
-    const { data } = await apiClient.post<Profile>(
-      `/api/profile/connect/${provider}`
-    );
-    return profileSchema.parse(data);
+    // Initiate social login
+    await keycloak.login({
+      idpHint: provider,
+    });
+
+    // Return updated profile after connection
+    return fetchProfile();
   } catch (error) {
     throw handleApiError(error);
   }
@@ -111,23 +199,39 @@ export async function disconnectProvider(
   provider: "github" | "google"
 ): Promise<Profile> {
   try {
-    // TODO: Replace with actual API call when backend is ready
-    if (process.env.NODE_ENV === "development") {
-      await delay(1000); // Simulate network delay
-      const updatedProfile = {
-        ...mockProfile,
-        connections: {
-          ...mockProfile.connections,
-          [provider]: false,
-        },
-      };
-      return profileSchema.parse(updatedProfile);
+    const authService = getAuthService();
+    const keycloak = authService.getKeycloakInstance();
+
+    if (!keycloak) {
+      throw new ApiError("Keycloak instance not found", 500);
     }
 
-    const { data } = await apiClient.post<Profile>(
-      `/api/profile/disconnect/${provider}`
+    // Get the current user ID
+    const userId = keycloak.subject;
+    if (!userId) {
+      throw new ApiError("User ID not found", 401);
+    }
+
+    // Get access token for admin API
+    const token = await authService.getToken();
+
+    // Remove social provider from user
+    const response = await fetch(
+      `${keycloak.authServerUrl}/admin/realms/${keycloak.realm}/users/${userId}/federated-identity/${provider}`,
+      {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
     );
-    return profileSchema.parse(data);
+
+    if (!response.ok) {
+      throw new ApiError("Failed to disconnect provider", response.status);
+    }
+
+    // Return updated profile
+    return fetchProfile();
   } catch (error) {
     throw handleApiError(error);
   }
