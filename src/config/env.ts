@@ -15,18 +15,25 @@ const envSchema = z.object({
   VITE_KEYCLOAK_CLIENT_ID: z.string().min(1),
   VITE_USE_MOCK_AUTH: z
     .enum(["true", "false"])
+    .optional()
     .transform((val) => val === "true"),
   VITE_AUTH_ENABLED: z
     .enum(["true", "false"])
+    .optional()
     .transform((val) => val === "true"),
-  VITE_DEV: z.boolean(),
+
+  // Environment
+  MODE: z.enum(["development", "production"]).optional().default("production"),
 });
 
 export type Env = z.infer<typeof envSchema>;
 
 function validateEnv(): Env {
   try {
-    return envSchema.parse(env);
+    return envSchema.parse({
+      ...import.meta.env,
+      MODE: import.meta.env.MODE,
+    });
   } catch (error) {
     if (error instanceof z.ZodError) {
       const issues = error.issues.map((issue) => {
