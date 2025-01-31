@@ -20,7 +20,7 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { Link } from "@tanstack/react-router";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useDailyAlgorithms } from "@/services/algorithms/hooks/useDailyAlgorithms";
 import { Progress } from "@/components/ui/progress";
 import { motion, AnimatePresence } from "framer-motion";
@@ -29,18 +29,13 @@ import { categories, difficulties } from "../algorithms/data";
 export default function AlgorithmGymDashboard() {
   const { data: dailyAlgorithms, isLoading, error } = useDailyAlgorithms();
   const [hoveredExercise, setHoveredExercise] = useState<string | null>(null);
-  const [streak, setStreak] = useState(0);
+  // const [streak, setStreak] = useState(0);
 
   const firstAlgorithmId = dailyAlgorithms?.[0]?.id;
   const completedAlgorithms =
     dailyAlgorithms?.filter((algo) => algo.completed).length || 0;
   const totalAlgorithms = dailyAlgorithms?.length || 0;
   const progressPercentage = (completedAlgorithms / totalAlgorithms) * 100;
-
-  useEffect(() => {
-    // Simulating a streak calculation
-    setStreak(Math.floor(Math.random() * 30) + 1);
-  }, []);
 
   const difficultyIcons = difficulties;
   const categoryIcons = categories;

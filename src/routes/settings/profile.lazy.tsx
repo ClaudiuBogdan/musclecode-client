@@ -79,37 +79,35 @@ function ProfileSettings() {
   });
 
   // Provider connection mutations
-  const { mutate: connectProviderMutation, isPending: isConnecting } =
-    useMutation({
-      mutationFn: connectProvider,
-      onSuccess: (data) => {
-        queryClient.setQueryData(["profile"], data);
-        toast.success("Provider connected successfully");
-      },
-      onError: (error: unknown) => {
-        if (error instanceof ApiError) {
-          toast.error(error.message);
-        } else {
-          toast.error("Failed to connect provider");
-        }
-      },
-    });
+  const { mutate: connectProviderMutation } = useMutation({
+    mutationFn: connectProvider,
+    onSuccess: (data) => {
+      queryClient.setQueryData(["profile"], data);
+      toast.success("Provider connected successfully");
+    },
+    onError: (error: unknown) => {
+      if (error instanceof ApiError) {
+        toast.error(error.message);
+      } else {
+        toast.error("Failed to connect provider");
+      }
+    },
+  });
 
-  const { mutate: disconnectProviderMutation, isPending: isDisconnecting } =
-    useMutation({
-      mutationFn: disconnectProvider,
-      onSuccess: (data) => {
-        queryClient.setQueryData(["profile"], data);
-        toast.success("Provider disconnected successfully");
-      },
-      onError: (error: unknown) => {
-        if (error instanceof ApiError) {
-          toast.error(error.message);
-        } else {
-          toast.error("Failed to disconnect provider");
-        }
-      },
-    });
+  const { mutate: disconnectProviderMutation } = useMutation({
+    mutationFn: disconnectProvider,
+    onSuccess: (data) => {
+      queryClient.setQueryData(["profile"], data);
+      toast.success("Provider disconnected successfully");
+    },
+    onError: (error: unknown) => {
+      if (error instanceof ApiError) {
+        toast.error(error.message);
+      } else {
+        toast.error("Failed to disconnect provider");
+      }
+    },
+  });
 
   const onSubmit = useCallback(
     (data: Profile) => {
@@ -118,16 +116,16 @@ function ProfileSettings() {
     [updateProfileMutation]
   );
 
-  const handleProviderConnection = useCallback(
-    (provider: "github" | "google") => {
-      if (profile?.connections[provider]) {
-        disconnectProviderMutation(provider);
-      } else {
-        connectProviderMutation(provider);
-      }
-    },
-    [profile?.connections, connectProviderMutation, disconnectProviderMutation]
-  );
+ useCallback(
+   (provider: "github" | "google") => {
+     if (profile?.connections[provider]) {
+       disconnectProviderMutation(provider);
+     } else {
+       connectProviderMutation(provider);
+     }
+   },
+   [profile?.connections, connectProviderMutation, disconnectProviderMutation]
+ );
 
   // Handle loading state
   if (isLoadingProfile) {

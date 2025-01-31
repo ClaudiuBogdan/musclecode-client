@@ -9,6 +9,7 @@ import {
   DailyAlgorithm,
 } from "@/types/algorithm";
 import axios from "axios";
+import { getAuthService } from "../auth/auth-service";
 
 export interface GetAlgorithmResponse {
   id: string;
@@ -27,21 +28,37 @@ export interface CodeRunRequest {
   files: AlgorithmFile[];
 }
 
+export const executionApi = axios.create({
+  baseURL: process.env.VITE_EXECUTION_API_URL,
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
+
+executionApi.interceptors.request.use(async (config) => {
+  try {
+    const authService = getAuthService();
+    const token = await authService.getToken();
+
+    if (!token) {
+      throw new Error("No authentication token available");
+    }
+    config.headers.Authorization = `Bearer ${token}`;
+    return config;
+  } catch (error) {
+    // If we can't get a token, we should redirect to login or handle appropriately
+    console.error("[API Client] Failed to get authentication token:", error);
+    throw error;
+  }
+});
+
 export async function runCode(
-  request: CodeRunRequest
+  payload: CodeRunRequest
 ): Promise<CodeExecutionResponse> {
-  // TODO: add auth
-  const executingApi = axios.create({
-    baseURL: "http://localhost:3002",
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
-  const { data } = await executingApi.post<CodeExecutionResponse>("/execute", {
-    ...request,
-    submissionId: "submissionId-123",
-    userId: "userId-123",
-  });
+  const { data } = await executionApi.post<CodeExecutionResponse>(
+    "/execute",
+    payload
+  );
   return data;
 }
 

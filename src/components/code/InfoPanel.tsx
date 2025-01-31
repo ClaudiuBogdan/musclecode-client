@@ -42,8 +42,8 @@ export const InfoPanel: React.FC<InfoPanelProps> = ({
   const handleTabChange = (value: TabValue | string) => {
     // Update the URL when tab changes
     navigate({
-      to: ".", // Keep current route
-      search: { tab: value },
+      to: ".",
+      search: (prev) => ({ ...prev, tab: value }),
       replace: true,
     });
   };

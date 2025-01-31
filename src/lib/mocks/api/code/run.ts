@@ -1,6 +1,6 @@
 import { http, HttpResponse } from "msw";
-import axios from "axios";
 import { AlgorithmFile } from "@/types/algorithm";
+import { executionApi } from "@/lib/api/code";
 
 interface RunCodeRequest {
   files: AlgorithmFile[];
@@ -14,14 +14,7 @@ export const runCode = http.post("/api/code/run", async ({ request }) => {
     (await request.json()) as RunCodeRequest;
 
   try {
-    const apiClient = axios.create({
-      baseURL: "http://localhost:3002",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-
-    const response = await apiClient.post("/execute", {
+    const response = await executionApi.post("/execute", {
       userId,
       submissionId,
       files,

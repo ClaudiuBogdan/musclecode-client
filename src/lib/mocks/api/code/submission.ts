@@ -1,13 +1,6 @@
 import { http, HttpResponse } from "msw";
 import { Submission } from "@/types/algorithm";
-import axios from "axios";
-
-const apiClient = axios.create({
-  baseURL: "http://localhost:3000",
-  headers: {
-    "Content-Type": "application/json",
-  },
-});
+import { apiClient } from "@/lib/api/client";
 
 export const codeSubmissions = http.post(
   "/api/algorithms/:id/submissions",

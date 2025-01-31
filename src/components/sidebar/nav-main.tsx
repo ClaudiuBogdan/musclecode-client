@@ -76,7 +76,8 @@ export function NavMain() {
   const matches = useMatches();
   const currentPath =
     matches.length > 0 ? matches[matches.length - 1].pathname : "/";
-  const { collapsed } = useSidebar();
+  const { state } = useSidebar();
+  const collapsed = state === "collapsed";
 
   const isActive = (url: string) => {
     if (url === "/") {
