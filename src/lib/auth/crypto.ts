@@ -1,3 +1,5 @@
+import { env } from "@/config/env";
+
 // We'll use AES-GCM for encryption with a 256-bit key
 const ALGORITHM = "AES-GCM";
 const KEY_LENGTH = 256;
@@ -41,8 +43,7 @@ export async function encrypt(data: string): Promise<string> {
 
     // Use a constant password in development
     // In production, this should be an environment variable
-    const password =
-      import.meta.env.VITE_ENCRYPTION_KEY || "development-key-only";
+    const password = env.VITE_ENCRYPTION_KEY;
 
     // Get encryption key
     const key = await getKey(password, salt);
@@ -91,8 +92,7 @@ export async function decrypt(encryptedData: string): Promise<string> {
     const encrypted = data.slice(SALT_LENGTH + IV_LENGTH);
 
     // Use the same password as encryption
-    const password =
-      import.meta.env.VITE_ENCRYPTION_KEY || "development-key-only";
+    const password = env.VITE_ENCRYPTION_KEY || "development-key-only";
 
     // Get decryption key
     const key = await getKey(password, salt);

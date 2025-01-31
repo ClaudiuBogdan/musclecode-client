@@ -68,7 +68,7 @@ export const authConfig = {
     // ... existing config
     initOptions: {
       pkceMethod: 'S256',
-      enableLogging: import.meta.env.DEV,
+      enableLogging: env.DEV,
       idpHint: '', // Will be used for direct social login
     }
   }

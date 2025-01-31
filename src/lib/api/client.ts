@@ -2,9 +2,10 @@
 import axios from "axios";
 import { ApiError } from "@/types/api";
 import { getAuthService } from "../auth/auth-service";
+import { env } from "@/config/env";
 
 export const apiClient = axios.create({
-  baseURL: import.meta.env.VITE_API_URL,
+  baseURL: env.VITE_API_URL,
   headers: {
     "Content-Type": "application/json",
   },

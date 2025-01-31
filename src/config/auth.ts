@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { env } from "./env";
 
 const authConfigSchema = z.object({
   enabled: z.boolean(),
@@ -14,12 +15,11 @@ export type AuthConfig = z.infer<typeof authConfigSchema>;
 
 // Auth is disabled in development by default
 export const authConfig = authConfigSchema.parse({
-  enabled:
-    import.meta.env.PROD || import.meta.env.VITE_AUTH_ENABLED !== "false",
+  enabled: !env.VITE_DEV || env.VITE_AUTH_ENABLED,
   keycloak: {
-    url: import.meta.env.VITE_KEYCLOAK_URL,
-    realm: import.meta.env.VITE_KEYCLOAK_REALM,
-    clientId: import.meta.env.VITE_KEYCLOAK_CLIENT_ID,
+    url: env.VITE_KEYCLOAK_URL,
+    realm: env.VITE_KEYCLOAK_REALM,
+    clientId: env.VITE_KEYCLOAK_CLIENT_ID,
   },
   publicPaths: ["/login", "/", "/about", "/unauthorized"],
 });

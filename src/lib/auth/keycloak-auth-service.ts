@@ -3,6 +3,7 @@ import { AuthService, AuthUser } from "./types";
 import { AuthErrorCode, createAuthError } from "./errors";
 import { authConfig } from "@/config/auth";
 import { TokenStorage } from "./token-storage";
+import { env } from "@/config/env";
 
 export class KeycloakAuthService implements AuthService {
   private static instance: KeycloakAuthService | null = null;
@@ -29,7 +30,7 @@ export class KeycloakAuthService implements AuthService {
         onLoad: "login-required",
         pkceMethod: "S256",
         checkLoginIframe: false,
-        enableLogging: import.meta.env.DEV,
+        enableLogging: env.VITE_DEV,
       });
 
       if (authenticated) {
