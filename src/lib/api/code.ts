@@ -10,6 +10,7 @@ import {
 } from "@/types/algorithm";
 import axios from "axios";
 import { getAuthService } from "../auth/auth-service";
+import { env } from "@/config/env";
 
 export interface GetAlgorithmResponse {
   id: string;
@@ -29,7 +30,7 @@ export interface CodeRunRequest {
 }
 
 export const executionApi = axios.create({
-  baseURL: process.env.VITE_EXECUTION_API_URL,
+  baseURL: env.VITE_EXECUTION_API_URL,
   headers: {
     "Content-Type": "application/json",
   },
