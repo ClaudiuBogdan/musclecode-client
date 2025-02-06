@@ -1,6 +1,10 @@
 import { z } from "zod";
 
 const envSchema = z.object({
+  VITE_APP_VERSION: z.string().min(1),
+  VITE_APP_NAME: z.string().min(1),
+  VITE_APP_ENVIRONMENT: z.string().min(1),
+
   // API Configuration
   VITE_OPENAI_API_URL: z.string().url(),
   VITE_OPENAI_API_KEY: z.string().min(1),
@@ -21,6 +25,11 @@ const envSchema = z.object({
     .enum(["true", "false"])
     .optional()
     .transform((val) => val === "true"),
+
+  // Telemetry Configuration
+  VITE_LOG_LEVEL: z.enum(["debug", "info", "warn", "error"]).default("info"),
+  VITE_LOG_ENDPOINT: z.string().url(),
+  VITE_TRACE_ENDPOINT: z.string().url(),
 
   // Environment
   MODE: z.enum(["development", "production"]).optional().default("production"),
