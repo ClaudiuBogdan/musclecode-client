@@ -39,12 +39,19 @@ export const executionApi = axios.create({
 executionApi.interceptors.request.use(async (config) => {
   try {
     const authService = getAuthService();
-    const token = await authService.getToken();
+
+    const [user, token] = await Promise.all([
+      authService.getUser(),
+      authService.getToken(),
+    ]);
 
     if (!token) {
       throw new Error("No authentication token available");
     }
+
     config.headers.Authorization = `Bearer ${token}`;
+    config.headers["X-User-Id"] = user?.id;
+    
     return config;
   } catch (error) {
     // If we can't get a token, we should redirect to login or handle appropriately

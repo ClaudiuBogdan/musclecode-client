@@ -54,7 +54,17 @@ const corsUrls = [
 registerInstrumentations({
   instrumentations: [
     new DocumentLoadInstrumentation(),
-    new UserInteractionInstrumentation(),
+    new UserInteractionInstrumentation({
+      eventNames: [
+        "click",
+        "mousedown",
+        "submit",
+        "focus",
+        "blur",
+        "input",
+        "keypress",
+      ],
+    }),
     new XMLHttpRequestInstrumentation({
       // @ts-expect-error - it should accept regexes
       propagateTraceHeaderCorsUrls: corsUrls,
@@ -65,6 +75,8 @@ registerInstrumentations({
     }),
   ],
 });
+
+// Link the traces using the userid.
 
 // Register provider with proper context management
 provider.register({
