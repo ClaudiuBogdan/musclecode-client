@@ -32,7 +32,10 @@ const envSchema = z.object({
   VITE_TRACE_ENDPOINT: z.string().url(),
 
   // Environment
-  MODE: z.enum(["development", "production"]).optional().default("production"),
+  NODE_ENV: z
+    .enum(["development", "production"])
+    .optional()
+    .default("production"),
 });
 
 export type Env = z.infer<typeof envSchema>;

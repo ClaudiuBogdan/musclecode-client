@@ -8,7 +8,7 @@ let authService: AuthService | null = null;
 export function getAuthService(): AuthService {
   if (!authService) {
     console.log("[AuthService] Initializing new auth service instance");
-    const isDev = env.MODE === "development";
+    const isDev = env.NODE_ENV === "development";
     const useMock = isDev && env.VITE_USE_MOCK_AUTH;
 
     console.log("[AuthService] Environment:", { isDev, useMock });

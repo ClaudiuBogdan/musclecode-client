@@ -30,7 +30,7 @@ export class KeycloakAuthService implements AuthService {
         onLoad: "login-required",
         pkceMethod: "S256",
         checkLoginIframe: false,
-        enableLogging: env.MODE === "development",
+        enableLogging: env.NODE_ENV === "development",
       });
 
       if (authenticated) {
