@@ -1306,6 +1306,17 @@
     "@opentelemetry/sdk-metrics-base" "0.25.0"
     "@opentelemetry/sdk-trace-base" "0.25.0"
 
+"@opentelemetry/exporter-logs-otlp-http@^0.57.1":
+  version "0.57.1"
+  resolved "https://registry.yarnpkg.com/@opentelemetry/exporter-logs-otlp-http/-/exporter-logs-otlp-http-0.57.1.tgz#adf97fdef688e84dd02b05aa0afb35fb0f798e5c"
+  integrity sha512-u8Cr6yDX57/n89aSJwAQNHQIYodcl6o8jTcaPKNktMvNfd7ny3R7aE7GKBC5Wg0zejP9heBgyN0OGwrPhptx7A==
+  dependencies:
+    "@opentelemetry/api-logs" "0.57.1"
+    "@opentelemetry/core" "1.30.1"
+    "@opentelemetry/otlp-exporter-base" "0.57.1"
+    "@opentelemetry/otlp-transformer" "0.57.1"
+    "@opentelemetry/sdk-logs" "0.57.1"
+
 "@opentelemetry/exporter-trace-otlp-http@^0.57.1":
   version "0.57.1"
   resolved "https://registry.yarnpkg.com/@opentelemetry/exporter-trace-otlp-http/-/exporter-trace-otlp-http-0.57.1.tgz#111ffc7fb23143958bb095d435aeaacfa56df83f"
@@ -1425,7 +1436,7 @@
     "@opentelemetry/core" "1.30.1"
     "@opentelemetry/semantic-conventions" "1.28.0"
 
-"@opentelemetry/sdk-logs@0.57.1":
+"@opentelemetry/sdk-logs@0.57.1", "@opentelemetry/sdk-logs@^0.57.1":
   version "0.57.1"
   resolved "https://registry.yarnpkg.com/@opentelemetry/sdk-logs/-/sdk-logs-0.57.1.tgz#e77ca16d3cd001d558eb04028eacb350eb5e060d"
   integrity sha512-jGdObb/BGWu6Peo3cL3skx/Rl1Ak/wDDO3vpPrrThGbqE7isvkCsX6uE+OAt8Ayjm9YC8UGkohWbLR09JmM0FA==

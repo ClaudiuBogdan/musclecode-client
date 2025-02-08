@@ -1,5 +1,8 @@
 import { PlayIcon } from "@radix-ui/react-icons";
 import { Button } from "@/components/ui/button";
+import { createLogger } from "@/lib/logger";
+
+const logger = createLogger({ context: "RunButton" });
 
 interface RunButtonProps {
   onRun: () => void;
@@ -8,9 +11,14 @@ interface RunButtonProps {
 }
 
 export function RunButton({ onRun, disabled, className }: RunButtonProps) {
+  const handleRun = () => {
+    logger.info("Run button clicked");
+    onRun();
+  };
+
   return (
     <Button
-      onClick={onRun}
+      onClick={handleRun}
       disabled={disabled}
       className={`
         gap-2 min-w-[120px] font-medium relative

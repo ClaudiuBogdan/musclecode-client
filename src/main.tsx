@@ -3,7 +3,7 @@ import ReactDOM from "react-dom/client";
 import { RouterProvider, createRouter } from "@tanstack/react-router";
 import "./index.css";
 
-import "./telemetry/tracer";
+import "./lib/tracing/tracer";
 
 // Import the generated route tree
 import { routeTree } from "./routeTree.gen";
