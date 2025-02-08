@@ -1,6 +1,8 @@
 import { PlayIcon } from "@radix-ui/react-icons";
 import { Button } from "@/components/ui/button";
 import { createLogger } from "@/lib/logger";
+import { posthog } from "posthog-js";
+import { tracingStore } from "@/stores/tracing";
 
 const logger = createLogger({ context: "RunButton" });
 
@@ -12,7 +14,12 @@ interface RunButtonProps {
 
 export function RunButton({ onRun, disabled, className }: RunButtonProps) {
   const handleRun = () => {
+    const context = tracingStore.getState().getContext();
     logger.info("Run button clicked");
+    posthog.capture("Run Button Clicked", {
+      ...context,
+    });
+
     onRun();
   };
 

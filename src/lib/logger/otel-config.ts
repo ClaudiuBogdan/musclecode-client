@@ -32,7 +32,7 @@ const serviceVersion = env.VITE_APP_VERSION || "0.0.0";
 const resource = new Resource({
   [ATTR_SERVICE_NAME]: serviceName,
   [ATTR_SERVICE_VERSION]: serviceVersion,
-  [SEMRESATTRS_DEPLOYMENT_ENVIRONMENT]: env.NODE_ENV,
+  [SEMRESATTRS_DEPLOYMENT_ENVIRONMENT]: env.VITE_APP_ENVIRONMENT,
 });
 
 // Construct the OTLP URL from the environment (e.g., VITE_LOG_ENDPOINT)

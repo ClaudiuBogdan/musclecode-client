@@ -1,12 +1,15 @@
-import { StrictMode } from 'react'
+import { StrictMode } from "react";
 import ReactDOM from "react-dom/client";
 import { RouterProvider, createRouter } from "@tanstack/react-router";
+import { PostHogProvider } from "posthog-js/react";
+
 import "./index.css";
 
 import "./lib/tracing/tracer";
 
 // Import the generated route tree
 import { routeTree } from "./routeTree.gen";
+import { env } from "./config/env";
 
 // Create a new router instance
 const router = createRouter({ routeTree });
@@ -18,23 +21,17 @@ declare module "@tanstack/react-router" {
   }
 }
 
-async function enableMocking() {
-  if (process.env.NODE_ENV !== "development") {
-    return;
-  }
-
-  // TODO: Enable this when we have a proper backend
-  // const { worker } = await import("./lib/mocks/browser");
-  // return worker.start({
-  //   onUnhandledRequest: "bypass",
-  // });
-}
-
 // Initialize MSW and then render the app
-enableMocking().then(() => {
-  ReactDOM.createRoot(document.getElementById("root")!).render(
-    <StrictMode>
+ReactDOM.createRoot(document.getElementById("root")!).render(
+  <StrictMode>
+    <PostHogProvider
+      apiKey={env.VITE_POSTHOG_API_KEY}
+      options={{
+        api_host: env.VITE_POSTHOG_HOST,
+        person_profiles: env.VITE_POSTHOG_PERSON_PROFILES,
+      }}
+    >
       <RouterProvider router={router} />
-    </StrictMode>
-  );
-});
+    </PostHogProvider>
+  </StrictMode>
+);

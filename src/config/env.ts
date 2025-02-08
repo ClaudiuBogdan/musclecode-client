@@ -36,6 +36,11 @@ const envSchema = z.object({
     .enum(["development", "production"])
     .optional()
     .default("production"),
+
+  // PostHog
+  VITE_POSTHOG_API_KEY: z.string().min(1),
+  VITE_POSTHOG_HOST: z.string().url(),
+  VITE_POSTHOG_PERSON_PROFILES: z.enum(["identified_only", "always"]),
 });
 
 export type Env = z.infer<typeof envSchema>;

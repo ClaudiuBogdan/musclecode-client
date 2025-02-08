@@ -22,7 +22,7 @@ import { UserIdSpanProcessor } from "./UserIdSpanProcessor";
 const resource = new Resource({
   [ATTR_SERVICE_NAME]: env.VITE_APP_NAME || "musclecode-client",
   [ATTR_SERVICE_VERSION]: env.VITE_APP_VERSION,
-  environment: env.NODE_ENV,
+  environment: env.VITE_APP_ENVIRONMENT,
   [ATTR_TELEMETRY_SDK_NAME]: "opentelemetry",
   [ATTR_TELEMETRY_SDK_LANGUAGE]: "webjs",
 });
