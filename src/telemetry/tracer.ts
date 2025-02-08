@@ -16,6 +16,7 @@ import { env } from "@/config/env";
 import { UserInteractionInstrumentation } from "@opentelemetry/instrumentation-user-interaction";
 import { W3CTraceContextPropagator } from "@opentelemetry/core";
 import { ZoneContextManager } from "@opentelemetry/context-zone";
+import { UserIdSpanProcessor } from "./UserIdSpanProcessor";
 
 // Create a Resource describing this service
 const resource = new Resource({
@@ -39,7 +40,7 @@ const exporter = new OTLPTraceExporter(collectorOptions);
 // Initialize the Web Tracer Provider with resource info
 const provider = new WebTracerProvider({
   resource: resource,
-  spanProcessors: [new BatchSpanProcessor(exporter)],
+  spanProcessors: [new UserIdSpanProcessor(), new BatchSpanProcessor(exporter)],
 });
 
 const propagator = new W3CTraceContextPropagator();
