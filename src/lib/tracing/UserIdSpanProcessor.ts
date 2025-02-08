@@ -1,4 +1,4 @@
-import { SpanProcessor } from "@opentelemetry/sdk-trace-base";
+import { ReadableSpan, SpanProcessor } from "@opentelemetry/sdk-trace-base";
 import { Span } from "@opentelemetry/api";
 import { useAuthStore } from "@/stores/auth";
 export class UserIdSpanProcessor implements SpanProcessor {
@@ -8,9 +8,13 @@ export class UserIdSpanProcessor implements SpanProcessor {
     if (userId) {
       span.setAttribute("user.id", userId);
     }
+    console.log("start traceId", span.spanContext().traceId);
   }
 
-  onEnd(): void {}
+  onEnd(span: ReadableSpan): void {
+    const traceId = span.spanContext().traceId;
+    console.log("end traceId", traceId);
+  }
 
   shutdown(): Promise<void> {
     return Promise.resolve();
