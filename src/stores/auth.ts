@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { getAuthService } from "@/lib/auth/auth-service";
 import type { AuthUser } from "@/lib/auth/types";
+import posthog from "posthog-js";
 
 interface AuthState {
   isAuthenticated: boolean;
@@ -64,6 +65,13 @@ export const useAuthStore = create<AuthState>()(
             console.log("[AuthStore] Setting authenticated state with:", {
               user,
             });
+
+            if (user) {
+              posthog.identify(user.id, {
+                email: user.username,
+              });
+            }
+
             set({
               isAuthenticated: true,
               user,
@@ -105,6 +113,11 @@ export const useAuthStore = create<AuthState>()(
               "[AuthStore] Setting authenticated state after login:",
               { user }
             );
+            if (user) {
+              posthog.identify(user.id, {
+                email: user.username,
+              });
+            }
             set({
               isAuthenticated: true,
               user,
