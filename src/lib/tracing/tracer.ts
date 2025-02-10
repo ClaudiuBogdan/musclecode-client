@@ -17,6 +17,7 @@ import { UserInteractionInstrumentation } from "@opentelemetry/instrumentation-u
 import { W3CTraceContextPropagator } from "@opentelemetry/core";
 import { ZoneContextManager } from "@opentelemetry/context-zone";
 import { UserIdSpanProcessor } from "./UserIdSpanProcessor";
+import { userInteractionConfig } from "./userInteractionConfig";
 
 // Create a Resource describing this service
 const resource = new Resource({
@@ -55,17 +56,7 @@ const corsUrls = [
 registerInstrumentations({
   instrumentations: [
     new DocumentLoadInstrumentation(),
-    new UserInteractionInstrumentation({
-      eventNames: [
-        "click",
-        "mousedown",
-        "submit",
-        "focus",
-        "blur",
-        "input",
-        "keypress",
-      ],
-    }),
+    new UserInteractionInstrumentation(userInteractionConfig),
     new XMLHttpRequestInstrumentation({
       // @ts-expect-error - it should accept regexes
       propagateTraceHeaderCorsUrls: corsUrls,
