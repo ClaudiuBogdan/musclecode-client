@@ -25,10 +25,6 @@ export const userInteractionConfig: UserInteractionConfig = {
       return true;
     }
 
-    const textElement = getElementText(element) || "";
-
-    console.log("Adding span attributes: " + textElement);
-
     // Add basic element information
     span.setAttribute("ui.tag", element.tagName.toLowerCase());
     span.setAttribute("ui.id", element.id || "");
