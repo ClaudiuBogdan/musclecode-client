@@ -43,8 +43,8 @@ apiClient.interceptors.response.use(
       status: error.response?.status ?? 500,
     };
 
-    // If we get a 401/403, the token might be invalid
-    if (error.response?.status === 401 || error.response?.status === 403) {
+    // If we get a 401, the token might be invalid
+    if (error.response?.status === 401) {
       const authService = getAuthService();
       await authService.logout();
     }

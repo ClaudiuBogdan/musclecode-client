@@ -25,11 +25,15 @@ declare module "@tanstack/react-router" {
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <PostHogProvider
-      apiKey={env.VITE_POSTHOG_API_KEY}
-      options={{
-        api_host: env.VITE_POSTHOG_HOST,
-        person_profiles: env.VITE_POSTHOG_PERSON_PROFILES,
-      }}
+      apiKey={env.VITE_POSTHOG_API_KEY || ""}
+      options={
+        env.VITE_POSTHOG_ENABLED
+          ? {
+              api_host: env.VITE_POSTHOG_HOST,
+              person_profiles: env.VITE_POSTHOG_PERSON_PROFILES,
+            }
+          : undefined
+      }
     >
       <RouterProvider router={router} />
     </PostHogProvider>
