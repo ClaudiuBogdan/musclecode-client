@@ -38,9 +38,15 @@ const envSchema = z.object({
     .default("production"),
 
   // PostHog
-  VITE_POSTHOG_API_KEY: z.string().min(1),
-  VITE_POSTHOG_HOST: z.string().url(),
-  VITE_POSTHOG_PERSON_PROFILES: z.enum(["identified_only", "always"]),
+  VITE_POSTHOG_ENABLED: z
+    .enum(["true", "false"])
+    .optional()
+    .transform((val) => val === "true"),
+  VITE_POSTHOG_API_KEY: z.string().min(1).optional(),
+  VITE_POSTHOG_HOST: z.string().url().optional(),
+  VITE_POSTHOG_PERSON_PROFILES: z
+    .enum(["identified_only", "always"])
+    .optional(),
 });
 
 export type Env = z.infer<typeof envSchema>;
