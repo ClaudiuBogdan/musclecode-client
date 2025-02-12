@@ -50,7 +50,7 @@ export class MockAuthService implements AuthService {
     }
 
     try {
-      return await TokenStorage.getToken();
+      return (await TokenStorage.getToken()) || ""; 
     } catch {
       // If token is not in storage, store it and return
       await TokenStorage.setToken(this.mockToken);
