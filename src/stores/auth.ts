@@ -19,7 +19,6 @@ interface AuthState {
   checkAuth: () => Promise<boolean>;
   hasRole: (role: string) => Promise<boolean>;
   refreshToken: () => Promise<void>;
-  handleVisibilityChange: () => Promise<void>;
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -41,18 +40,6 @@ export const useAuthStore = create<AuthState>()(
           console.log("[AuthStore] Initializing");
           set({ loading: true, error: null });
           const authService = getAuthService();
-
-          // Set up visibility change listener
-          if (typeof document !== "undefined") {
-            document.addEventListener("visibilitychange", () => {
-              if (document.visibilityState === "visible") {
-                get().handleVisibilityChange();
-              }
-            });
-
-            // Immediately check token status
-            await get().handleVisibilityChange();
-          }
 
           const authenticated = await authService.init();
 
@@ -197,22 +184,6 @@ export const useAuthStore = create<AuthState>()(
           await get().login();
         } finally {
           set({ refreshing: false });
-        }
-      },
-
-      handleVisibilityChange: async () => {
-        try {
-          const authService = getAuthService();
-          const isAuthenticated = await authService.isAuthenticated();
-
-          if (isAuthenticated) {
-            await get().refreshToken();
-          } else {
-            console.log("[AuthStore] Not authenticated on visibility change");
-            await get().login();
-          }
-        } catch (error) {
-          console.error("[AuthStore] Visibility change handler error:", error);
         }
       },
     }),

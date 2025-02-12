@@ -26,19 +26,25 @@ export class KeycloakAuthService implements AuthService {
 
   async init(): Promise<boolean> {
     try {
+      const token = await TokenStorage.getToken();
+      const refreshToken = await TokenStorage.getRefreshToken();
       const authenticated = await this.keycloak.init({
         onLoad: "login-required",
         pkceMethod: "S256",
         checkLoginIframe: false,
+        token: token,
+        refreshToken: refreshToken,
         enableLogging: env.NODE_ENV === "development",
       });
 
       if (authenticated) {
         this.setupTokenRefresh();
-        // Store the initial token
-        const token = this.keycloak.token;
-        if (token) {
-          await TokenStorage.setToken(token);
+        // Store both tokens
+        if (this.keycloak.token && this.keycloak.refreshToken) {
+          await TokenStorage.setToken(
+            this.keycloak.token,
+            this.keycloak.refreshToken
+          );
         }
       }
 
@@ -55,9 +61,12 @@ export class KeycloakAuthService implements AuthService {
         .updateToken(70)
         .then(async (refreshed) => {
           if (refreshed) {
-            const token = this.keycloak.token;
-            if (token) {
-              await TokenStorage.setToken(token);
+            // Store both tokens after refresh
+            if (this.keycloak.token && this.keycloak.refreshToken) {
+              await TokenStorage.setToken(
+                this.keycloak.token,
+                this.keycloak.refreshToken
+              );
             }
           }
         })
@@ -98,14 +107,43 @@ export class KeycloakAuthService implements AuthService {
 
   async getToken(): Promise<string> {
     try {
-      // Always get the token from secure storage
-      return await TokenStorage.getToken();
-    } catch {
-      // If token is not in storage but keycloak has it, store it
-      const token = this.keycloak.token;
-      if (token) {
-        await TokenStorage.setToken(token);
+      const token = await TokenStorage.getToken();
+
+      // If we have a token in storage and it's not expired, return it
+      if (token && !this.keycloak.isTokenExpired()) {
         return token;
+      }
+
+      // If token is expired or not in storage, try to refresh
+      const refreshToken = await TokenStorage.getRefreshToken();
+      if (refreshToken) {
+        const refreshed = await this.keycloak.updateToken(30);
+        if (refreshed && this.keycloak.token && this.keycloak.refreshToken) {
+          await TokenStorage.setToken(
+            this.keycloak.token,
+            this.keycloak.refreshToken
+          );
+          return this.keycloak.token;
+        }
+      }
+
+      // If we have a valid token in Keycloak but not in storage, store and return it
+      if (
+        this.keycloak.token &&
+        this.keycloak.refreshToken &&
+        !this.keycloak.isTokenExpired()
+      ) {
+        await TokenStorage.setToken(
+          this.keycloak.token,
+          this.keycloak.refreshToken
+        );
+        return this.keycloak.token;
+      }
+
+      throw createAuthError(AuthErrorCode.TOKEN_INVALID);
+    } catch (error) {
+      if (error instanceof Error && error.name === 'AuthError') {
+        throw error;
       }
       throw createAuthError(AuthErrorCode.TOKEN_INVALID);
     }

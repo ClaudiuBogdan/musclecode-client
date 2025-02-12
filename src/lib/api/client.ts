@@ -12,8 +12,8 @@ export const apiClient = axios.create({
 });
 
 apiClient.interceptors.request.use(async (config) => {
+  const authService = getAuthService();
   try {
-    const authService = getAuthService();
     const [user, token] = await Promise.all([
       authService.getUser(),
       authService.getToken(),
@@ -25,7 +25,7 @@ apiClient.interceptors.request.use(async (config) => {
 
     config.headers.Authorization = `Bearer ${token}`;
     config.headers["X-User-Id"] = user?.id;
-    
+
     return config;
   } catch (error) {
     // If we can't get a token, we should redirect to login or handle appropriately
