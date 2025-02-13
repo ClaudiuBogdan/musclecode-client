@@ -23,6 +23,11 @@ export const algorithmStorageWithTTL: PersistStorage<StoreState> = {
         return state;
       }
 
+      if (state?.state?.metadata?.isLoading) {
+        logger.debug("Algorithm Store Is Loading", { key: name });
+        state.state.metadata.isLoading = false;
+      }
+
       const now = Date.now();
       const algorithms = state.state.algorithms;
       const expiredIds: string[] = [];

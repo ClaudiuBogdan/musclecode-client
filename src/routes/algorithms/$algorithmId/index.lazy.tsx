@@ -28,7 +28,6 @@ import {
   selectIsSubmitting,
   selectNextAlgorithm,
   selectTimerState,
-  selectRatingSchedule,
 } from "@/stores/algorithm/selectors";
 
 export const Route = createLazyFileRoute("/algorithms/$algorithmId/")({
@@ -73,9 +72,16 @@ function Algorithm() {
   const timerState = useAlgorithmStore((state) =>
     selectTimerState(state, algorithmId)
   );
-  const ratingSchedule = useAlgorithmStore((state) =>
-    selectRatingSchedule(state, algorithmId)
-  );
+  // TODO: FIXME
+  const ratingSchedule = {
+    again: 0,
+    hard: 0,
+    good: 0,
+    easy: 0,
+  };
+  // const ratingSchedule = useAlgorithmStore((state) =>
+  //   selectRatingSchedule(state, algorithmId)
+  // );
 
   // Actions
   const {
@@ -86,7 +92,6 @@ function Algorithm() {
     getCode,
     resetCode,
     initializeAlgorithm,
-    pauseTimer,
     startTimer,
     resumeTimer,
   } = useAlgorithmStore();
@@ -96,14 +101,7 @@ function Algorithm() {
       await initializeAlgorithm(algorithmId);
     };
     loadAlgorithm();
-
-    // Handle timer cleanup on unmount
-    return () => {
-      if (algorithmId) {
-        pauseTimer(algorithmId);
-      }
-    };
-  }, [algorithmId, initializeAlgorithm, pauseTimer]);
+  }, [algorithmId, initializeAlgorithm]);
 
   useEffect(() => {
     if (executionError) {
@@ -193,9 +191,7 @@ function Algorithm() {
   if (!activeLanguage || !activeTab) {
     return (
       <div className="flex h-screen items-center justify-center">
-        <div className="text-lg text-red-500">
-          Algorithm configuration error
-        </div>
+        <div className="text-lg text-gray-500">Initializing algorithm...</div>
       </div>
     );
   }
