@@ -3,7 +3,7 @@ import { ErrorBoundary } from "react-error-boundary";
 import { useAuthStore } from "@/stores/auth";
 import { authConfig } from "@/config/auth";
 import { AuthLoading } from "./AuthLoading";
-import { AuthErrorBoundary } from "./AuthErrorBoundary";
+import { AppErrorBoundary } from "./AppErrorBoundary";
 
 interface AuthProviderProps {
   children: React.ReactNode;
@@ -12,7 +12,6 @@ interface AuthProviderProps {
 export function AuthProvider({ children }: AuthProviderProps) {
   const initialize = useAuthStore((state) => state.initialize);
   const loading = useAuthStore((state) => state.loading);
-  const error = useAuthStore((state) => state.error);
 
   useEffect(() => {
     if (authConfig.enabled) {
@@ -26,7 +25,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   return (
     <ErrorBoundary
-      FallbackComponent={AuthErrorBoundary}
+      FallbackComponent={AppErrorBoundary}
       onReset={() => {
         // Reset the error state
         useAuthStore.setState({ error: null });
@@ -36,14 +35,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         }
       }}
     >
-      {error ? (
-        <AuthErrorBoundary
-          error={error}
-          resetErrorBoundary={() => useAuthStore.setState({ error: null })}
-        />
-      ) : (
-        children
-      )}
+      {children}
     </ErrorBoundary>
   );
 }

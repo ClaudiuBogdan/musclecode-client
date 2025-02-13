@@ -5,34 +5,62 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { useAuthStore } from "@/stores/auth";
 import { AuthError, isAuthErrorRequiringLogout } from "@/lib/auth/errors";
+import { AppError } from "@/lib/errors/types";
+import { useErrorHandler } from "@/contexts/ErrorContext";
 
-interface AuthErrorBoundaryProps {
+interface AppErrorBoundaryProps {
   error: Error;
   resetErrorBoundary: () => void;
 }
 
-export function AuthErrorBoundary({
+export function AppErrorBoundary({
   error,
   resetErrorBoundary,
-}: AuthErrorBoundaryProps) {
+}: AppErrorBoundaryProps) {
   const navigate = useNavigate();
   const logout = useAuthStore((state) => state.logout);
+  const { handleError, clearError } = useErrorHandler();
 
   useEffect(() => {
     if (isAuthErrorRequiringLogout(error)) {
       logout();
     }
-  }, [error, logout]);
+    // Handle error on mount
+    handleError(error);
+
+    // Cleanup on unmount
+    return () => {
+      clearError();
+    };
+  }, [error, logout, handleError, clearError]);
 
   const handleRetry = () => {
+    clearError();
     resetErrorBoundary();
   };
 
   const handleGoHome = () => {
+    clearError();
+    resetErrorBoundary();
     navigate({ to: "/" });
   };
 
   const getErrorTitle = () => {
+    if (AppError.isAppError(error)) {
+      switch (error.type) {
+        case "auth":
+          return "Authentication Error";
+        case "api":
+          return "API Error";
+        case "validation":
+          return "Validation Error";
+        case "network":
+          return "Network Error";
+        default:
+          return "Application Error";
+      }
+    }
+
     if (AuthError.isAuthError(error)) {
       if (error.code.includes("session") || error.code.includes("token")) {
         return "Session Error";
@@ -46,8 +74,29 @@ export function AuthErrorBoundary({
       if (error.code.includes("server")) {
         return "Server Error";
       }
+      return "Authentication Error";
     }
-    return "Authentication Error";
+
+    return "Application Error";
+  };
+
+  const getErrorMessage = () => {
+    if (AppError.isAppError(error)) {
+      return error.message;
+    }
+
+    if (AuthError.isAuthError(error)) {
+      return error.message;
+    }
+
+    return "An unexpected error occurred. Please try again later.";
+  };
+
+  const isRecoverable = () => {
+    if (AppError.isAppError(error)) {
+      return error.isRecoverable;
+    }
+    return !isAuthErrorRequiringLogout(error);
   };
 
   return (
@@ -56,15 +105,13 @@ export function AuthErrorBoundary({
         <AlertCircle className="h-4 w-4" />
         <AlertTitle>{getErrorTitle()}</AlertTitle>
         <AlertDescription className="mt-2">
-          <p className="mb-4">{error.message}</p>
+          <p className="mb-4">{getErrorMessage()}</p>
           <div className="flex gap-4">
-            <Button
-              variant="outline"
-              onClick={handleRetry}
-              disabled={isAuthErrorRequiringLogout(error)}
-            >
-              Try Again
-            </Button>
+            {isRecoverable() && (
+              <Button variant="outline" onClick={handleRetry}>
+                Try Again
+              </Button>
+            )}
             <Button variant="default" onClick={handleGoHome}>
               Go to Home
             </Button>
