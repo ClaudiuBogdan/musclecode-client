@@ -32,9 +32,16 @@ import {
 } from "../ui/select";
 import { categories as predefinedCategories } from "../algorithms/data";
 import { Code2 } from "lucide-react";
+import { createLogger } from "@/lib/logger";
+
+const logger = createLogger("AlgorithmForm");
 
 // Helper function to convert a string to kebab case
 function toKebabCase(str: string): string {
+  logger.debug("String Transform Started", {
+    operation: "kebabCase",
+    inputLength: str.length,
+  });
   return str
     .toLowerCase()
     .replace(/\s+/g, "-")
@@ -43,12 +50,22 @@ function toKebabCase(str: string): string {
 
 // Helper function to merge categories and ensure no duplicates
 function mergeCategories(serverCategories: string[] = []) {
+  logger.debug("Category Merge Started", {
+    sourceStats: {
+      predefined: predefinedCategories.length,
+      server: serverCategories.length,
+    },
+  });
   const merged = new Map(predefinedCategories.map((cat) => [cat.value, cat]));
 
   // Add server categories that don't exist in predefined list
   serverCategories.forEach((category) => {
     const value = toKebabCase(category);
     if (!merged.has(value)) {
+      logger.debug("Category Added", {
+        source: "server",
+        categoryType: value,
+      });
       merged.set(value, {
         value,
         label: category,
@@ -57,7 +74,14 @@ function mergeCategories(serverCategories: string[] = []) {
     }
   });
 
-  return Array.from(merged.values());
+  const mergedCategories = Array.from(merged.values());
+  logger.debug("Category Merge Completed", {
+    stats: {
+      total: mergedCategories.length,
+      added: mergedCategories.length - predefinedCategories.length,
+    },
+  });
+  return mergedCategories;
 }
 
 export interface ValidationResult {
@@ -132,8 +156,6 @@ export function AlgorithmForm({
   const [showResetDialog, setShowResetDialog] = useState(false);
   const currentCategory = algorithm.metadata.category;
 
-  console.log("currentCategory", currentCategory);
-
   // Merge predefined and server categories
   const allCategories = useMemo(
     () => mergeCategories(serverCategories),
@@ -142,6 +164,10 @@ export function AlgorithmForm({
 
   // Sort categories with current category first
   const sortedCategories = useMemo(() => {
+    logger.debug("Sorting categories", {
+      currentCategory,
+      totalCategories: allCategories.length,
+    });
     if (!currentCategory) {
       return allCategories;
     }
@@ -154,6 +180,7 @@ export function AlgorithmForm({
     if (currentCategoryData) {
       categories.unshift(currentCategoryData);
     }
+    logger.debug("Sorted categories", { sortedCount: categories.length });
     return categories;
   }, [currentCategory, allCategories]);
 
@@ -164,9 +191,21 @@ export function AlgorithmForm({
   );
 
   const handleSave = useCallback(async () => {
+    logger.debug("Save Operation Started", {
+      validationState: {
+        isValid: validation.isValid,
+        firstErrorTab: validation.firstErrorTab,
+      },
+    });
+
     if (!validation.isValid) {
       // Switch to the first tab with errors
       if (validation.firstErrorTab) {
+        logger.info("Form Validation Failed", {
+          targetTab: validation.firstErrorTab,
+          errorCount: validation.getErrorsForTab(validation.firstErrorTab)
+            .length,
+        });
         setActiveTab(validation.firstErrorTab);
         // Show all errors in the current tab
         const errors = validation.getErrorsForTab(validation.firstErrorTab);
@@ -182,26 +221,36 @@ export function AlgorithmForm({
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : "Failed to save algorithm";
+      logger.error("Save Operation Failed", {
+        error: error instanceof Error ? error : new Error(errorMessage),
+        mode,
+        hasContent: Boolean(algorithm.metadata.title),
+      });
       showToast.error(errorMessage);
     }
-  }, [validation, onSave]);
+  }, [validation, onSave, mode, algorithm.metadata.title]);
 
   const handleTagsChange = useCallback(
     (value: string) => {
+      logger.debug("Tags Update Started", {
+        stats: {
+          inputLength: value.length,
+          tagCount: value.split(",").length,
+        },
+      });
       const tags = value
         .split(",")
         .map((tag) => tag.trim())
         .filter(Boolean);
+      logger.debug("Tags Update Completed", {
+        stats: {
+          validTags: tags.length,
+        },
+      });
       onTagsChange(tags);
     },
     [onTagsChange]
   );
-
-  const handleReset = useCallback(() => {
-    onReset();
-    setShowResetDialog(false);
-    showToast.success("Algorithm state reset successfully");
-  }, [onReset]);
 
   const hasContent = Boolean(
     algorithm.metadata.title ||
@@ -209,6 +258,18 @@ export function AlgorithmForm({
       algorithm.description ||
       algorithm.files.length > 0
   );
+
+  const handleReset = useCallback(() => {
+    logger.info("Form Reset Triggered", {
+      formState: {
+        mode,
+        hasContent,
+      },
+    });
+    onReset();
+    setShowResetDialog(false);
+    showToast.success("Algorithm state reset successfully");
+  }, [onReset, mode, hasContent]);
 
   return (
     <>
