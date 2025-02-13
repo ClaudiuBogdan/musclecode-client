@@ -1,4 +1,8 @@
 import { env } from "@/config/env";
+import { AuthErrorCode, createAuthError } from "./errors";
+import { createLogger } from "@/lib/logger";
+
+const logger = createLogger({ context: "Crypto" });
 
 // We'll use AES-GCM for encryption with a 256-bit key
 const ALGORITHM = "AES-GCM";
@@ -72,8 +76,11 @@ export async function encrypt(data: string): Promise<string> {
     // Convert to base64 for storage
     return btoa(String.fromCharCode(...result));
   } catch (error) {
-    console.error("Encryption failed:", error);
-    throw error;
+    logger.error("Encryption Failed", {
+      error: error instanceof Error ? error.message : "Unknown error",
+      stack: error instanceof Error ? error.stack : undefined,
+    });
+    throw createAuthError(AuthErrorCode.TOKEN_STORAGE_ERROR);
   }
 }
 
@@ -111,7 +118,10 @@ export async function decrypt(encryptedData: string): Promise<string> {
     const decoder = new TextDecoder();
     return decoder.decode(decryptedData);
   } catch (error) {
-    console.error("Decryption failed:", error);
-    throw error;
+    logger.error("Decryption Failed", {
+      error: error instanceof Error ? error.message : "Unknown error",
+      stack: error instanceof Error ? error.stack : undefined,
+    });
+    throw createAuthError(AuthErrorCode.TOKEN_STORAGE_ERROR);
   }
 }

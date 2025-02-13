@@ -1,5 +1,8 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
+import { createLogger } from "@/lib/logger";
+
+const logger = createLogger({ context: "LayoutStore" });
 
 interface LayoutState {
   sizes: [number, number];
@@ -24,14 +27,22 @@ export const useLayoutStore = create<LayoutState>()(
       },
       setSizes: (sizes: [number, number]) => {
         if (Math.abs(sizes[0] + sizes[1] - 100) > 1) {
-          console.error("Invalid sizes", sizes);
+          logger.error("Invalid Layout Sizes", {
+            sizes,
+            sum: sizes[0] + sizes[1],
+            expectedSum: 100,
+          });
           return;
         }
         set({ sizes });
       },
       setEditorSizes: (sizes: [number, number]) => {
         if (Math.abs(sizes[0] + sizes[1] - 100) > 1) {
-          console.error("Invalid sizes", sizes);
+          logger.error("Invalid Editor Sizes", {
+            sizes,
+            sum: sizes[0] + sizes[1],
+            expectedSum: 100,
+          });
           return;
         }
         set({ editorSizes: sizes });

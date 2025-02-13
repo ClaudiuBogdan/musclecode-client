@@ -3,6 +3,9 @@ import axios from "axios";
 import { ApiError } from "@/types/api";
 import { getAuthService } from "../auth/auth-service";
 import { env } from "@/config/env";
+import { createLogger } from "../logger";
+
+const logger = createLogger("ApiClient");
 
 export const apiClient = axios.create({
   baseURL: env.VITE_API_URL,
@@ -29,7 +32,10 @@ apiClient.interceptors.request.use(async (config) => {
     return config;
   } catch (error) {
     // If we can't get a token, we should redirect to login or handle appropriately
-    console.error("[API Client] Failed to get authentication token:", error);
+    logger.error("Authentication Token Retrieval Failed", {
+      error: error instanceof Error ? error.message : String(error),
+      operation: "requestInterceptor",
+    });
     throw error;
   }
 });
@@ -45,6 +51,11 @@ apiClient.interceptors.response.use(
 
     // If we get a 401, the token might be invalid
     if (error.response?.status === 401) {
+      logger.error("Authentication Token Invalid", {
+        status: error.response.status,
+        message: error.response?.data?.message,
+        operation: "responseInterceptor",
+      });
       const authService = getAuthService();
       await authService.logout();
     }

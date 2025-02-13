@@ -3,8 +3,11 @@ import { v4 as uuidv4 } from "uuid";
 import { streamMessage } from "../lib/api/chat";
 import { Message, ChatStore, Thread } from "../types/chat";
 import { createJSONStorage, persist } from "zustand/middleware";
+import { createLogger } from "@/lib/logger";
 
 const STREAM_TIMEOUT_MS = 5 * 60 * 1000; // 5 minutes
+
+const logger = createLogger({ context: "ChatStore" });
 
 const useChatStore = create<ChatStore>()(
   persist(
@@ -166,9 +169,16 @@ const useChatStore = create<ChatStore>()(
             get().completeStream(assistantMessageId);
           } catch (streamError) {
             if ((streamError as Error).message === "Stream aborted") {
-              console.warn("Stream was aborted by the user.");
+              logger.info("Stream was aborted by the user.");
             } else {
-              console.error("Stream error:", streamError);
+              logger.error("Stream Error", {
+                error:
+                  streamError instanceof Error
+                    ? streamError.message
+                    : "Unknown stream error",
+                stack:
+                  streamError instanceof Error ? streamError.stack : undefined,
+              });
               set((state) => {
                 const thread = state.threads[activeThreadId];
                 const messages = thread.messages.map((msg) =>
@@ -194,7 +204,10 @@ const useChatStore = create<ChatStore>()(
             set({ abortController: null });
           }
         } catch (error) {
-          console.error("Send message error:", error);
+          logger.error("Message Send Failed", {
+            error: error instanceof Error ? error.message : "Unknown error",
+            stack: error instanceof Error ? error.stack : undefined,
+          });
           set((state) => ({
             ...state,
             status: "error",
@@ -206,6 +219,7 @@ const useChatStore = create<ChatStore>()(
       stopStreaming: () => {
         const { abortController } = get();
         if (abortController) {
+          logger.info("Aborting Stream");
           abortController.abort();
           set({ abortController: null, status: "idle" });
         }
@@ -343,7 +357,12 @@ const useChatStore = create<ChatStore>()(
             };
           });
         } catch (error) {
-          console.error("Error parsing stream token:", error);
+          logger.error("Stream Token Parse Failed", {
+            error: error instanceof Error ? error.message : "Unknown error",
+            stack: error instanceof Error ? error.stack : undefined,
+            token,
+          });
+          return null;
         }
       },
 

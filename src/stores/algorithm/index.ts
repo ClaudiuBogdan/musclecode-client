@@ -15,6 +15,9 @@ import { getAlgorithm } from "@/lib/api/code";
 import { createInitialState } from "./__tests__/utils/testStore";
 import { CodeLanguage } from "@/types/algorithm";
 import { algorithmStorageWithTTL } from "./storage";
+import { createLogger } from "@/lib/logger";
+
+const logger = createLogger({ context: "AlgorithmStore" });
 
 export const createAlgorithmSlice: StateCreator<
   AlgorithmState & StoreActions,
@@ -199,7 +202,11 @@ export const createAlgorithmSlice: StateCreator<
         });
       }
     } catch (error) {
-      console.error("Failed to initialize algorithm:", error);
+      logger.error("Algorithm Initialization Failed", {
+        error: error instanceof Error ? error.message : "Unknown error",
+        stack: error instanceof Error ? error.stack : undefined,
+        id: algorithmId,
+      });
       set((state: AlgorithmState) => {
         state.metadata.error =
           error instanceof Error

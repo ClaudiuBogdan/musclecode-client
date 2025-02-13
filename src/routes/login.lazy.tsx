@@ -2,6 +2,9 @@ import { useEffect } from "react";
 import { createLazyFileRoute, useNavigate } from "@tanstack/react-router";
 import { useAuthStore } from "@/stores/auth";
 import { authConfig } from "@/config/auth";
+import { createLogger } from "@/lib/logger";
+
+const logger = createLogger("LoginPage");
 
 export const Route = createLazyFileRoute("/login")({
   component: LoginPage,
@@ -17,28 +20,28 @@ function LoginPage() {
   const { redirect = "/" } = Route.useSearch() as SearchParams;
 
   useEffect(() => {
-    console.log("[LoginPage] Effect triggered", {
+    logger.debug("Login Flow Started", {
       isAuthenticated,
       authEnabled: authConfig.enabled,
-      redirect,
+      redirectPath: redirect,
     });
 
     if (!authConfig.enabled) {
-      console.log("[LoginPage] Auth disabled, redirecting to home");
+      logger.info("Auth Disabled", { action: "redirect", destination: "/" });
       navigate({ to: "/" });
       return;
     }
 
     if (isAuthenticated) {
-      console.log(
-        "[LoginPage] Already authenticated, redirecting to",
-        redirect
-      );
+      logger.info("User Already Authenticated", {
+        action: "redirect",
+        destination: redirect,
+      });
       navigate({ to: redirect });
       return;
     }
 
-    console.log("[LoginPage] Not authenticated, initiating login");
+    logger.info("Login Required", { action: "initiate_login" });
     login();
   }, [isAuthenticated, login, navigate, redirect]);
 

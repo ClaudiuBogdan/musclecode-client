@@ -6,6 +6,9 @@ import { withAlgorithm } from "../utils/stateUtils";
 import { saveSubmission } from "@/lib/api/code";
 import { saveNotes } from "@/lib/api/algorithm";
 import { debounce } from "@/lib/utils/debounce";
+import { createLogger } from "@/lib/logger";
+
+const logger = createLogger({ context: "SubmissionSlice" });
 
 // Create a debounced save notes function
 const debouncedSaveNotes = debounce(saveNotes, 1000);
@@ -57,9 +60,15 @@ export const createSubmissionSlice: StateCreator<
 
         return true;
       } catch (error) {
-        console.error("Failed to submit code:", error);
+        logger.error("Code Submission Failed", {
+          error: error instanceof Error ? error.message : "Unknown error",
+          stack: error instanceof Error ? error.stack : undefined,
+          algorithmId,
+        });
         set((state) => {
           state.algorithms[algorithmId].userProgress.isSubmitting = false;
+          state.metadata.error =
+            error instanceof Error ? error.message : "Failed to submit code";
           return state;
         });
         return false;
@@ -93,13 +102,19 @@ export const createSubmissionSlice: StateCreator<
         );
       })
       .catch((error) => {
-        console.error("Failed to save notes:", error);
+        logger.error("Notes Save Failed", {
+          error: error instanceof Error ? error.message : "Unknown error",
+          stack: error instanceof Error ? error.stack : undefined,
+          algorithmId,
+        });
         set((state) =>
           withAlgorithm(state, algorithmId, (state) => {
             state.algorithms[algorithmId].userProgress.notes = {
               content: notes,
               state: "error",
             };
+            state.metadata.error =
+              error instanceof Error ? error.message : "Failed to save notes";
             return state;
           })
         );

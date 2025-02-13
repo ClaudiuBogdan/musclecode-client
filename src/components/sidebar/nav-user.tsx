@@ -26,6 +26,9 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { ThemeSwitcher } from "./theme-switcher";
+import { createLogger } from "@/lib/logger";
+
+const logger = createLogger("NavUser");
 
 export function NavUser({
   user,
@@ -41,9 +44,10 @@ export function NavUser({
 
   const handleLogout = async () => {
     try {
+      logger.info("Logout Triggered");
       await logout();
     } catch (error) {
-      console.error("Logout failed:", error);
+      logger.error("Logout Failed", error as Error);
     }
   };
 

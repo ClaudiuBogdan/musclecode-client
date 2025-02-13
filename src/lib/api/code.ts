@@ -11,6 +11,9 @@ import {
 import axios from "axios";
 import { getAuthService } from "../auth/auth-service";
 import { env } from "@/config/env";
+import { createLogger } from "../logger";
+
+const logger = createLogger("ExecutionApi");
 
 export interface GetAlgorithmResponse {
   id: string;
@@ -51,11 +54,16 @@ executionApi.interceptors.request.use(async (config) => {
 
     config.headers.Authorization = `Bearer ${token}`;
     config.headers["X-User-Id"] = user?.id;
-    
+
     return config;
   } catch (error) {
     // If we can't get a token, we should redirect to login or handle appropriately
-    console.error("[API Client] Failed to get authentication token:", error);
+    logger.error("Authentication Failed", {
+      endpoint: config.url,
+      method: config.method,
+      error: error instanceof Error ? error.message : "Unknown error",
+      stack: error instanceof Error ? error.stack : undefined,
+    });
     throw error;
   }
 });

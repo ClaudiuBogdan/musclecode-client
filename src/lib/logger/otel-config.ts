@@ -25,8 +25,8 @@ import {
 import { env } from "@/config/env"; // shared configuration for the React app
 
 // Set service metadata based on environment configuration
-const serviceName = env.VITE_APP_NAME || "musclecode-client";
-const serviceVersion = env.VITE_APP_VERSION || "0.0.0";
+const serviceName = env.VITE_APP_NAME;
+const serviceVersion = env.VITE_APP_VERSION;
 
 // Create a Resource to describe this service
 const resource = new Resource({

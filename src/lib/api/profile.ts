@@ -1,6 +1,9 @@
 import { z } from "zod";
 import { ApiError } from "@/types/api";
 import { getAuthService } from "@/lib/auth/auth-service";
+import { createLogger } from "@/lib/logger";
+
+const logger = createLogger("ProfileApi");
 
 // Keycloak UserInfo type
 interface KeycloakUserInfo {
@@ -62,7 +65,14 @@ export async function fetchProfile(): Promise<Profile> {
 
     // Get user info from Keycloak
     const userInfo = (await keycloak.loadUserInfo()) as KeycloakUserInfo;
-    console.log("[Profile API] Raw user info from Keycloak:", userInfo);
+
+    logger.debug("User Info Received", {
+      hasName: !!userInfo.name,
+      hasGivenName: !!userInfo.given_name,
+      hasFamilyName: !!userInfo.family_name,
+      hasPreferredUsername: !!userInfo.preferred_username,
+      hasAvatar: !!(userInfo.attributes?.picture?.[0] || userInfo.picture),
+    });
 
     // Get avatar URL, ensuring it's either a valid URL or null
     const avatarUrl =
@@ -104,21 +114,38 @@ export async function fetchProfile(): Promise<Profile> {
         google: !!userInfo.attributes?.google_id?.[0],
       },
     };
-    console.log("[Profile API] Transformed profile data:", profile);
+
+    logger.debug("Profile Data Transformed", {
+      hasEmail: !!profile.email,
+      hasBio: !!profile.bio,
+      hasAvatar: !!profile.avatar,
+      connections: profile.connections,
+    });
 
     try {
       const validatedProfile = profileSchema.parse(profile);
-      console.log("[Profile API] Validated profile:", validatedProfile);
+      logger.info("Profile Validation Successful", {
+        hasConnections: Object.values(validatedProfile.connections).some(
+          Boolean
+        ),
+      });
       return validatedProfile;
     } catch (validationError) {
-      console.error(
-        "[Profile API] Profile validation failed:",
-        validationError
-      );
+      logger.error("Profile Validation Failed", {
+        error:
+          validationError instanceof Error
+            ? validationError.message
+            : "Unknown validation error",
+        stack:
+          validationError instanceof Error ? validationError.stack : undefined,
+      });
       throw validationError;
     }
   } catch (error) {
-    console.error("[Profile API] Error fetching profile:", error);
+    logger.error("Profile Fetch Failed", {
+      error: error instanceof Error ? error.message : "Unknown error",
+      stack: error instanceof Error ? error.stack : undefined,
+    });
     throw handleApiError(error);
   }
 }
@@ -157,17 +184,27 @@ export async function updateProfile(data: Partial<Profile>): Promise<Profile> {
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-      console.error("[Profile API] Failed to update profile:", errorData);
+      logger.error("Profile Update Failed", {
+        status: response.status,
+        error: errorData.error_description || "Unknown error",
+      });
       throw new ApiError(
         errorData.error_description || "Failed to update profile",
         response.status
       );
     }
 
+    logger.info("Profile Update Successful", {
+      updatedFields: Object.keys(data),
+    });
+
     // Return updated profile
     return fetchProfile();
   } catch (error) {
-    console.error("[Profile API] Update profile error:", error);
+    logger.error("Profile Update Error", {
+      error: error instanceof Error ? error.message : "Unknown error",
+      stack: error instanceof Error ? error.stack : undefined,
+    });
     throw handleApiError(error);
   }
 }
@@ -183,6 +220,10 @@ export async function connectProvider(
       throw new ApiError("Keycloak instance not found", 500);
     }
 
+    logger.info("Provider Connection Started", {
+      provider,
+    });
+
     // Initiate social login
     await keycloak.login({
       idpHint: provider,
@@ -191,6 +232,11 @@ export async function connectProvider(
     // Return updated profile after connection
     return fetchProfile();
   } catch (error) {
+    logger.error("Provider Connection Failed", {
+      provider,
+      error: error instanceof Error ? error.message : "Unknown error",
+      stack: error instanceof Error ? error.stack : undefined,
+    });
     throw handleApiError(error);
   }
 }
@@ -212,6 +258,10 @@ export async function disconnectProvider(
       throw new ApiError("User ID not found", 401);
     }
 
+    logger.info("Provider Disconnection Started", {
+      provider,
+    });
+
     // Get access token for admin API
     const token = await authService.getToken();
 
@@ -227,12 +277,25 @@ export async function disconnectProvider(
     );
 
     if (!response.ok) {
+      logger.error("Provider Disconnection Failed", {
+        provider,
+        status: response.status,
+      });
       throw new ApiError("Failed to disconnect provider", response.status);
     }
+
+    logger.info("Provider Disconnection Successful", {
+      provider,
+    });
 
     // Return updated profile
     return fetchProfile();
   } catch (error) {
+    logger.error("Provider Disconnection Error", {
+      provider,
+      error: error instanceof Error ? error.message : "Unknown error",
+      stack: error instanceof Error ? error.stack : undefined,
+    });
     throw handleApiError(error);
   }
 }

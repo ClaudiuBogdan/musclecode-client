@@ -1,13 +1,15 @@
 import { http, HttpResponse } from "msw";
 import { Submission } from "@/types/algorithm";
 import { apiClient } from "@/lib/api/client";
+import { createLogger } from "@/lib/logger";
+
+const logger = createLogger({ context: "MockSubmissionApi" });
 
 export const codeSubmissions = http.post(
   "/api/algorithms/:id/submissions",
   async ({ request, params }) => {
     try {
       const submissionId = params.id as string;
-
       const submission = (await request.json()) as Submission;
 
       const response = await apiClient.post(
@@ -21,7 +23,11 @@ export const codeSubmissions = http.post(
       }
       return HttpResponse.json(data);
     } catch (error) {
-      console.error(error);
+      logger.error("Mock Submission Failed", {
+        error: error instanceof Error ? error.message : "Unknown error",
+        stack: error instanceof Error ? error.stack : undefined,
+        submissionId: params.id,
+      });
       return HttpResponse.json(
         { error: "Failed to submit code" },
         { status: 500 }
@@ -40,7 +46,11 @@ export const getSubmission = http.get(
       );
       return HttpResponse.json(response.data);
     } catch (error) {
-      console.error(error);
+      logger.error("Mock Get Submission Failed", {
+        error: error instanceof Error ? error.message : "Unknown error",
+        stack: error instanceof Error ? error.stack : undefined,
+        submissionId: params.id,
+      });
       return HttpResponse.json(
         { error: "Failed to get submission" },
         { status: 500 }

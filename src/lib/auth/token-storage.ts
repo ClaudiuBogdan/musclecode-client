@@ -1,6 +1,7 @@
 import { createAuthError } from "./errors";
 import { encrypt, decrypt } from "./crypto";
 import { AuthErrorCode } from "./errors";
+import { createLogger } from "../logger";
 
 interface TokenData {
   token: string;
@@ -8,12 +9,17 @@ interface TokenData {
   timestamp: number;
 }
 
+const logger = createLogger("TokenStorage");
+
 export class TokenStorage {
   private static readonly TOKEN_KEY = "auth_token";
 
   static async setToken(token: string, refreshToken?: string): Promise<void> {
     try {
-      console.log("[TokenStorage] Storing new token");
+      logger.info("Token Storage Started", {
+        hasRefreshToken: !!refreshToken,
+      });
+
       const data: TokenData = {
         token,
         refreshToken: refreshToken ?? null,
@@ -22,52 +28,71 @@ export class TokenStorage {
 
       const encryptedData = await encrypt(JSON.stringify(data));
       localStorage.setItem(this.TOKEN_KEY, encryptedData);
-      console.log("[TokenStorage] Token stored successfully");
+      logger.info("Token Storage Completed");
     } catch (error) {
-      console.error("[TokenStorage] Failed to store token:", error);
+      logger.error(
+        "Token Storage Failed",
+        error instanceof Error ? error : new Error("Unknown error")
+      );
       throw createAuthError(AuthErrorCode.TOKEN_STORAGE_ERROR);
     }
   }
 
   static async getToken(): Promise<string | undefined> {
     try {
-      console.log("[TokenStorage] Retrieving token");
+      logger.debug("Token Retrieval Started");
       const encryptedData = localStorage.getItem(this.TOKEN_KEY);
 
       if (!encryptedData) {
-        console.log("[TokenStorage] No token found in storage");
+        logger.info("Token Not Found");
         return undefined;
       }
 
       const decryptedData = await decrypt(encryptedData);
       const data: TokenData = JSON.parse(decryptedData);
 
-      console.log("[TokenStorage] Token retrieved successfully");
+      logger.info("Token Retrieved Successfully", {
+        tokenAge: Date.now() - data.timestamp,
+      });
       return data.token;
     } catch (error) {
-      console.error("[TokenStorage] Error retrieving token:", error);
+      logger.error(
+        "Token Retrieval Failed",
+        error instanceof Error ? error : new Error("Unknown error")
+      );
       return undefined;
     }
   }
 
   static async getRefreshToken(): Promise<string | undefined> {
     try {
+      logger.debug("Refresh Token Retrieval Started");
       const encryptedData = localStorage.getItem(this.TOKEN_KEY);
+
       if (!encryptedData) {
+        logger.info("Refresh Token Not Found");
         return undefined;
       }
 
       const decryptedData = await decrypt(encryptedData);
       const data: TokenData = JSON.parse(decryptedData);
+
+      logger.info("Refresh Token Retrieved", {
+        hasRefreshToken: !!data.refreshToken,
+      });
       return data.refreshToken ?? undefined;
     } catch (error) {
-      console.error("[TokenStorage] Error retrieving refresh token:", error);
+      logger.error(
+        "Refresh Token Retrieval Failed",
+        error instanceof Error ? error : new Error("Unknown error")
+      );
       return undefined;
     }
   }
 
   static removeToken(): void {
-    console.log("[TokenStorage] Removing token from storage");
+    logger.info("Token Removal Started");
     localStorage.removeItem(this.TOKEN_KEY);
+    logger.info("Token Removal Completed");
   }
 }

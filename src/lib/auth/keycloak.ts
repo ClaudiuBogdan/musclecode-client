@@ -2,6 +2,9 @@ import Keycloak from "keycloak-js";
 import { authConfig } from "@/config/auth";
 import { AuthErrorCode, createAuthError } from "./errors";
 import { mockUser } from "./mock-user";
+import { createLogger } from "@/lib/logger";
+
+const logger = createLogger({ context: "KeycloakService" });
 
 export class KeycloakService {
   private static instance: KeycloakService;
@@ -50,7 +53,10 @@ export class KeycloakService {
 
       return authenticated;
     } catch (error) {
-      console.error("Failed to initialize Keycloak:", error);
+      logger.error("Keycloak Initialization Failed", {
+        error: error instanceof Error ? error.message : "Unknown error",
+        stack: error instanceof Error ? error.stack : undefined,
+      });
       throw createAuthError(AuthErrorCode.INIT_FAILED);
     }
   }
@@ -115,7 +121,10 @@ export class KeycloakService {
     try {
       await this.keycloak?.logout();
     } catch (error) {
-      console.error("Logout failed:", error);
+      logger.error("Keycloak Logout Failed", {
+        error: error instanceof Error ? error.message : "Unknown error",
+        stack: error instanceof Error ? error.stack : undefined,
+      });
       // Don't throw on logout error, just log it
     }
   }

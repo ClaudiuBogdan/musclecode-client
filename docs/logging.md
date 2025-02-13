@@ -32,11 +32,6 @@ export const createLogger = (context: string) => ({
     });
   }
 });
-
-// Component-specific logger instances
-export const apiLogger = createLogger("API");
-export const authLogger = createLogger("Auth");
-export const formLogger = createLogger("Form");
 ```
 
 ## Static Event Types with Structured Context
@@ -62,12 +57,12 @@ The core principle of our logging strategy is to use *static event types* combin
 ### API Calls
 ```typescript
 // ✅ Good - Static event type with structured context
-apiLogger.info("API Request Started", {
+logger.info("API Request Started", {
   endpoint: "/user/profile",
   method: "GET"
 });
 
-apiLogger.debug("Cache Miss", { 
+logger.debug("Cache Miss", { 
   key: "user:123",
   ttl: "300s" 
 });
@@ -76,7 +71,7 @@ apiLogger.debug("Cache Miss", {
 try {
   await fetchData();
 } catch (error) {
-  apiLogger.error("API Request Failed", error, {
+  logger.error("API Request Failed", error, {
     retryCount: 3,
     statusCode: error.response?.status
   });
@@ -86,13 +81,13 @@ try {
 ### User Actions
 ```typescript
 // ✅ Good - Essential context only
-authLogger.info("Login Attempt", {
+logger.info("Login Attempt", {
   provider: "google",
   deviceType: "mobile"
 });
 
 // ✅ Good - Targeted validation info
-formLogger.info("Settings Updated", {
+logger.info("Settings Updated", {
   changedFields: ["theme", "notifications"],
   validationErrors: 0
 });
@@ -126,29 +121,29 @@ const emitLog = (
 // ❌ Bad - Dynamic message string
 logger.info(`User ${userId} logged in`);
 // ✅ Good - Static event type with structured data
-authLogger.info("User Logged In", { userId });
+logger.info("User Logged In", { userId });
 
 // ❌ Bad - High cardinality, potentially sensitive data
 logger.debug("State Update", { fullState: store.getState() });
 // ✅ Good - Essential context only
-formLogger.debug("State Changed", { 
+logger.debug("State Changed", { 
   changedKeys: ["theme", "language"]
 });
 
 // ❌ Bad - Free-form text in extraInfo
-apiLogger.info("API Error", { 
+logger.info("API Error", { 
   details: `Failed to load user data for ${email}` 
 });
 // ✅ Good - Structured error data
-apiLogger.error("API Request Failed", error, {
+logger.error("API Request Failed", error, {
   operation: "loadUserData",
   statusCode: 404
 });
 
 // ❌ Bad - Large objects, high cardinality
-userLogger.info("User Action", { userData: userObject });
+logger.info("User Action", { userData: userObject });
 // ✅ Good - Selected relevant fields
-userLogger.info("User Profile Updated", {
+logger.info("User Profile Updated", {
   updatedFields: ["displayName", "avatar"]
 });
 ```

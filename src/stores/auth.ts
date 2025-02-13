@@ -3,6 +3,9 @@ import { persist } from "zustand/middleware";
 import { getAuthService } from "@/lib/auth/auth-service";
 import type { AuthUser } from "@/lib/auth/types";
 import posthog from "posthog-js";
+import { createLogger } from "@/lib/logger";
+
+const logger = createLogger("AuthStore");
 
 interface AuthState {
   isAuthenticated: boolean;
@@ -34,23 +37,23 @@ export const useAuthStore = create<AuthState>()(
       initialize: async () => {
         try {
           if (get().loading) {
-            console.log("[AuthStore] Already loading");
+            logger.debug("Initialize Skipped", { reason: "Already Loading" });
             return;
           }
-          console.log("[AuthStore] Initializing");
+          logger.info("Auth Initialize Started");
           set({ loading: true, error: null });
           const authService = getAuthService();
 
           const authenticated = await authService.init();
-
-          console.log("[AuthStore] Initialization result:", { authenticated });
+          logger.debug("Auth Initialize Progress", { authenticated });
 
           if (authenticated) {
             const user = await authService.getUser();
             const token = await authService.getToken();
 
-            console.log("[AuthStore] Setting authenticated state with:", {
-              user,
+            logger.info("User Authenticated", {
+              userId: user?.id,
+              hasToken: !!token,
             });
 
             if (user) {
@@ -65,7 +68,7 @@ export const useAuthStore = create<AuthState>()(
               token,
             });
           } else {
-            console.log("[AuthStore] Not authenticated after init");
+            logger.info("User Not Authenticated");
             set({
               isAuthenticated: false,
               user: null,
@@ -74,7 +77,7 @@ export const useAuthStore = create<AuthState>()(
             get().login();
           }
         } catch (error) {
-          console.error("[AuthStore] Initialization error:", error);
+          logger.error("Auth Initialize Failed", error as Error);
           set({ error: error as Error });
         } finally {
           set({ loading: false });
@@ -83,23 +86,23 @@ export const useAuthStore = create<AuthState>()(
 
       login: async () => {
         try {
-          console.log("[AuthStore] Starting login");
+          logger.info("Login Started");
           set({ loading: true, error: null });
           const authService = getAuthService();
           await authService.login();
 
-          // After login, we need to initialize the state again
           const authenticated = await authService.isAuthenticated();
-          console.log("[AuthStore] Login result:", { authenticated });
+          logger.debug("Login Progress", { authenticated });
 
           if (authenticated) {
             const user = await authService.getUser();
             const token = await authService.getToken();
 
-            console.log(
-              "[AuthStore] Setting authenticated state after login:",
-              { user }
-            );
+            logger.info("Login Successful", {
+              userId: user?.id,
+              hasToken: !!token,
+            });
+
             if (user) {
               posthog.identify(user.id, {
                 email: user.username,
@@ -112,7 +115,7 @@ export const useAuthStore = create<AuthState>()(
             });
           }
         } catch (error) {
-          console.error("[AuthStore] Login error:", error);
+          logger.error("Login Failed", error as Error);
           set({ error: error as Error });
         } finally {
           set({ loading: false });
@@ -121,12 +124,12 @@ export const useAuthStore = create<AuthState>()(
 
       logout: async () => {
         try {
-          console.log("[AuthStore] Starting logout");
+          logger.info("Logout Started");
           set({ loading: true, error: null });
           const authService = getAuthService();
           await authService.logout();
 
-          console.log("[AuthStore] Clearing auth state");
+          logger.info("Logout Successful");
           set({
             isAuthenticated: false,
             loading: false,
@@ -134,7 +137,7 @@ export const useAuthStore = create<AuthState>()(
             token: null,
           });
         } catch (error) {
-          console.error("[AuthStore] Logout error:", error);
+          logger.error("Logout Failed", error as Error);
           set({ error: error as Error });
         } finally {
           set({ loading: false });
@@ -144,33 +147,42 @@ export const useAuthStore = create<AuthState>()(
       checkAuth: async () => {
         const authService = getAuthService();
         const isAuthenticated = await authService.isAuthenticated();
-        console.log("[AuthStore] Checking auth:", { isAuthenticated });
+        logger.debug("Auth Check Completed", { isAuthenticated });
         return isAuthenticated;
       },
 
       hasRole: async (role: string) => {
         const authService = getAuthService();
-        return authService.hasRole(role);
+        const hasRole = await authService.hasRole(role);
+        logger.debug("Role Check Completed", { role, hasRole });
+        return hasRole;
       },
 
       refreshToken: async () => {
         try {
           if (get().refreshing) {
-            console.log("[AuthStore] Token refresh already in progress");
+            logger.debug("Token Refresh Skipped", {
+              reason: "Already Refreshing",
+            });
             return;
           }
 
+          logger.info("Token Refresh Started");
           set({ refreshing: true });
           const authService = getAuthService();
           const keycloak = authService.getKeycloakInstance();
 
           if (keycloak) {
             const refreshed = await keycloak.updateToken(70);
-            console.log("[AuthStore] Token refresh result:", { refreshed });
+            logger.debug("Token Refresh Progress", { refreshed });
 
             if (refreshed) {
               const token = await authService.getToken();
               const user = await authService.getUser();
+              logger.info("Token Refresh Successful", {
+                userId: user?.id,
+                hasToken: !!token,
+              });
               set({
                 token,
                 user,
@@ -179,8 +191,7 @@ export const useAuthStore = create<AuthState>()(
             }
           }
         } catch (error) {
-          console.error("[AuthStore] Token refresh error:", error);
-          // If refresh fails, we'll try to re-authenticate
+          logger.error("Token Refresh Failed", error as Error);
           await get().login();
         } finally {
           set({ refreshing: false });
