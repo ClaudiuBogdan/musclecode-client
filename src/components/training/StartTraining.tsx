@@ -31,7 +31,7 @@ export default function AlgorithmGymDashboard() {
   const [hoveredExercise, setHoveredExercise] = useState<string | null>(null);
   // const [streak, setStreak] = useState(0);
 
-  const firstAlgorithmId = dailyAlgorithms?.[0]?.id;
+  const firstAlgorithmId = dailyAlgorithms?.[0]?.algorithmPreview.id;
   const completedAlgorithms =
     dailyAlgorithms?.filter((algo) => algo.completed).length || 0;
   const totalAlgorithms = dailyAlgorithms?.length || 0;
