@@ -54,7 +54,7 @@ export async function createAlgorithm(
 ): Promise<AlgorithmTemplate> {
   logger.debug("Creating Algorithm", {
     title: payload.title,
-    category: payload.category,
+    categories: payload.categories,
     difficulty: payload.difficulty,
   });
 
@@ -69,7 +69,7 @@ export async function createAlgorithm(
     id: uuidv4(),
     title: payload.title,
     description: payload.description,
-    category: payload.category,
+    categories: payload.categories,
     summary: payload.summary,
     tags: payload.tags,
     difficulty: payload.difficulty,
@@ -91,7 +91,7 @@ export async function createAlgorithm(
     logger.info("Algorithm Created", {
       algorithmId: algorithm.id,
       title: algorithm.title,
-      category: algorithm.category,
+      categories: algorithm.categories,
     });
 
     return algorithm;

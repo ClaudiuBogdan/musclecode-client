@@ -39,11 +39,11 @@ export function useAlgorithmValidation(algorithm: NewAlgorithm) {
     }
 
     // Category validation
-    if (!algorithm.metadata.category?.trim()) {
+    if (algorithm.metadata.categories?.length === 0) {
       validationErrors.push({
         tab: "metadata",
-        field: "category",
-        message: "Category is required",
+        field: "categories",
+        message: "At least one category is required",
       });
     }
 

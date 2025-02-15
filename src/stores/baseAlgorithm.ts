@@ -23,7 +23,7 @@ export interface BaseAlgorithmActions {
   setTitle: (title: string) => void;
   setDifficulty: (difficulty: "easy" | "medium" | "hard") => void;
   setSummary: (summary: string) => void;
-  setCategory: (category: string) => void;
+  setCategories: (categories: string[]) => void;
   setTags: (tags: string[]) => void;
 
   // Description actions
@@ -45,7 +45,7 @@ export const createBaseAlgorithmSlice: StateCreator<
   algorithm: {
     metadata: {
       title: "",
-      category: "",
+      categories: [],
       summary: "",
       difficulty: "easy",
       tags: [],
@@ -78,9 +78,9 @@ export const createBaseAlgorithmSlice: StateCreator<
       return state;
     }),
 
-  setCategory: (category) =>
+  setCategories: (categories) =>
     set((state) => {
-      state.algorithm.metadata.category = category;
+      state.algorithm.metadata.categories = categories;
       state.error = null;
       return state;
     }),

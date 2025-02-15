@@ -6,7 +6,7 @@ export const seedAlgorithms = (): AlgorithmTemplate[] => {
     {
       id: "1",
       title: "Bubble Sort",
-      category: "Sorting",
+      categories: ["Sorting"],
       tags: ["sorting", "bubble sort"],
       summary:
         "A simple sorting algorithm that repeatedly steps through the list, compares adjacent elements and swaps them if they are in the wrong order.",

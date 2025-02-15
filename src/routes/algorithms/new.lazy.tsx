@@ -18,7 +18,7 @@ function RouteComponent() {
     setTitle,
     setDifficulty,
     setSummary,
-    setCategory,
+    setCategories: setCategory,
     setTags,
     setDescription,
     addLanguage,
@@ -61,7 +61,7 @@ function RouteComponent() {
       onTitleChange={setTitle}
       onDifficultyChange={setDifficulty}
       onSummaryChange={setSummary}
-      onCategoryChange={setCategory}
+      onCategoriesChange={setCategory}
       onTagsChange={setTags}
       onDescriptionChange={setDescription}
       onLanguageAdd={addLanguage}

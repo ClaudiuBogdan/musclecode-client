@@ -161,13 +161,17 @@ export default function AlgorithmGymDashboard() {
                             {algorithmPreview.title}
                           </CardTitle>
                           {(() => {
-                            const icon =
-                              categoryIcons.find(
-                                (cat) => cat.value === algorithmPreview.category
-                              )?.icon || Brain;
-                            return React.createElement(icon, {
-                              className: "w-6 h-6",
-                            });
+                            const icons = algorithmPreview.categories.map(
+                              (category) =>
+                                categoryIcons.find(
+                                  (cat) => cat.value === category
+                                )?.icon || Brain
+                            );
+                            return icons.map((icon) =>
+                              React.createElement(icon, {
+                                className: "w-6 h-6",
+                              })
+                            );
                           })()}
                         </CardHeader>
                         <CardContent>
@@ -216,7 +220,7 @@ export default function AlgorithmGymDashboard() {
                             )}
                           </div>
                           <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
-                            {algorithmPreview.category}
+                            {algorithmPreview.categories}
                           </p>
                         </CardContent>
                         <div className="absolute bottom-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">

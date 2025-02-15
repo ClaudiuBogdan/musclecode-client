@@ -4,7 +4,7 @@ export interface NewAlgorithmMetadata {
   title: string;
   difficulty: "easy" | "medium" | "hard";
   tags: string[];
-  category: string;
+  categories: string[];
   summary: string;
 }
 
@@ -22,7 +22,7 @@ export interface ValidationError {
 
 export interface CreateAlgorithmPayload {
   title: string;
-  category: string;
+  categories: string[];
   summary: string;
   tags: string[];
   description: string;

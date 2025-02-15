@@ -22,7 +22,7 @@ const initialState: BaseAlgorithmState = {
       title: "",
       difficulty: "easy",
       tags: [],
-      category: "",
+      categories: [],
       summary: "",
     },
     description: "",
@@ -58,7 +58,7 @@ export const useNewAlgorithmStore = create<
 
           const payload: CreateAlgorithmPayload = {
             title: algorithm.metadata.title.trim(),
-            category: algorithm.metadata.category,
+            categories: algorithm.metadata.categories,
             summary: algorithm.metadata.summary.trim(),
             difficulty: algorithm.metadata.difficulty,
             tags: algorithm.metadata.tags,

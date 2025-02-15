@@ -28,7 +28,7 @@ export interface AlgorithmFile {
 export interface AlgorithmTemplate {
   id: string;
   title: string;
-  category: string;
+  categories: string[];
   summary: string;
   description: string;
   difficulty: "easy" | "medium" | "hard";
@@ -68,7 +68,7 @@ export interface AlgorithmUserProgress {
 
 export type AlgorithmPreview = Pick<
   AlgorithmTemplate,
-  "id" | "title" | "category" | "difficulty" | "tags"
+  "id" | "title" | "categories" | "difficulty" | "tags"
 >;
 
 export interface RatingSchedule {

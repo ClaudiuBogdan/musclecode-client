@@ -13,7 +13,7 @@ export const createAlgorithmApi = http.post(
       const payload = (await request.json()) as CreateAlgorithmPayload;
       logger.debug("Algorithm Creation Started", {
         title: payload.title,
-        category: payload.category,
+        categories: payload.categories,
         difficulty: payload.difficulty,
       });
 
@@ -21,7 +21,7 @@ export const createAlgorithmApi = http.post(
 
       logger.info("Algorithm Creation Completed", {
         title: payload.title,
-        category: payload.category,
+        categories: payload.categories,
       });
 
       return HttpResponse.json(response.data);

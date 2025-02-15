@@ -23,16 +23,10 @@ import { cn } from "@/lib/utils";
 import { showToast } from "@/utils/toast";
 import { ValidationError } from "@/types/newAlgorithm";
 import { MAX_SUMMARY_LENGTH, MAX_TITLE_LENGTH } from "@/stores/baseAlgorithm";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../ui/select";
 import { categories as predefinedCategories } from "../algorithms/data";
 import { Code2 } from "lucide-react";
 import { createLogger } from "@/lib/logger";
+import { MultiSelect } from "@/components/ui/multi-select";
 
 const logger = createLogger("AlgorithmForm");
 
@@ -109,7 +103,7 @@ export interface AlgorithmFormProps {
   onDifficultyChange: (difficulty: "easy" | "medium" | "hard") => void;
   onSummaryChange: (summary: string) => void;
   onTagsChange: (tags: string[]) => void;
-  onCategoryChange: (category: string) => void;
+  onCategoriesChange: (categories: string[]) => void;
   // Description handlers
   onDescriptionChange: (content: string) => void;
 
@@ -137,7 +131,7 @@ export function AlgorithmForm({
   onDifficultyChange,
   onSummaryChange,
   onTagsChange,
-  onCategoryChange,
+  onCategoriesChange: onCategoryChange,
 
   // Description handlers
   onDescriptionChange,
@@ -154,7 +148,7 @@ export function AlgorithmForm({
 }: AlgorithmFormProps & { serverCategories?: string[] }) {
   const [activeTab, setActiveTab] = useState("metadata");
   const [showResetDialog, setShowResetDialog] = useState(false);
-  const currentCategory = algorithm.metadata.category;
+  const currentCategories = algorithm.metadata.categories;
 
   // Merge predefined and server categories
   const allCategories = useMemo(
@@ -162,33 +156,26 @@ export function AlgorithmForm({
     [serverCategories]
   );
 
-  // Sort categories with current category first
+  // Sort categories with current categories first
   const sortedCategories = useMemo(() => {
     logger.debug("Sorting categories", {
-      currentCategory,
+      currentCategories,
       totalCategories: allCategories.length,
     });
-    if (!currentCategory) {
-      return allCategories;
-    }
-    const categories = allCategories.filter(
-      (category) => category.value !== currentCategory
-    );
-    const currentCategoryData = allCategories.find(
-      (category) => category.value === currentCategory
-    );
-    if (currentCategoryData) {
-      categories.unshift(currentCategoryData);
-    }
+
+    const categories = [...allCategories];
+    // Move current categories to the top
+    categories.sort((a, b) => {
+      const aSelected = currentCategories.includes(a.value);
+      const bSelected = currentCategories.includes(b.value);
+      if (aSelected && !bSelected) return -1;
+      if (!aSelected && bSelected) return 1;
+      return 0;
+    });
+
     logger.debug("Sorted categories", { sortedCount: categories.length });
     return categories;
-  }, [currentCategory, allCategories]);
-
-  // Get the current category data for display
-  const selectedCategory = useMemo(
-    () => allCategories.find((cat) => cat.value === currentCategory),
-    [allCategories, currentCategory]
-  );
+  }, [currentCategories, allCategories]);
 
   const handleSave = useCallback(async () => {
     logger.debug("Save Operation Started", {
@@ -401,12 +388,15 @@ export function AlgorithmForm({
                   />
                 </div>
                 <div>
-                  <Label htmlFor="category" className="flex items-center gap-1">
-                    Category
+                  <Label
+                    htmlFor="categories"
+                    className="flex items-center gap-1"
+                  >
+                    Categories
                     <span className="text-destructive">*</span>
                   </Label>
                   <div className="flex flex-col gap-1.5">
-                    {validation.getErrorsForField("category").map((error) => (
+                    {validation.getErrorsForField("categories").map((error) => (
                       <span
                         key={error.message}
                         className="text-sm text-destructive"
@@ -414,43 +404,17 @@ export function AlgorithmForm({
                         {error.message}
                       </span>
                     ))}
-                    <Select
-                      value={currentCategory || undefined}
-                      onValueChange={onCategoryChange}
-                    >
-                      <SelectTrigger
-                        className={cn(
-                          "w-full",
-                          validation.getErrorsForField("category").length > 0 &&
-                            "border-destructive focus-visible:ring-destructive"
-                        )}
-                      >
-                        <SelectValue placeholder="Select category">
-                          {selectedCategory ? (
-                            <div className="flex items-center gap-2">
-                              <selectedCategory.icon className="h-4 w-4 shrink-0" />
-                              <span className="truncate">
-                                {selectedCategory.label}
-                              </span>
-                            </div>
-                          ) : null}
-                        </SelectValue>
-                      </SelectTrigger>
-                      <SelectContent>
-                        {sortedCategories.map((category) => (
-                          <SelectItem
-                            key={category.value}
-                            value={category.value}
-                            className="flex w-full items-center gap-2 pr-8"
-                          >
-                            <div className="flex items-center gap-2 truncate">
-                              <category.icon className="h-4 w-4 shrink-0" />
-                              <span className="truncate">{category.label}</span>
-                            </div>
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <MultiSelect
+                      options={sortedCategories}
+                      selected={currentCategories}
+                      onChange={onCategoryChange}
+                      placeholder="Select categories"
+                      searchPlaceholder="Search categories..."
+                      emptyText="No categories found."
+                      error={
+                        validation.getErrorsForField("categories").length > 0
+                      }
+                    />
                   </div>
                 </div>
                 <div>

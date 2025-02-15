@@ -61,7 +61,7 @@ describe("Algorithm Slice", () => {
         id: algorithmId,
         title: "Test Algorithm",
         description: "Test Description",
-        category: "test",
+        categories: ["test"],
         summary: "Test Summary",
         difficulty: "easy" as const,
         tags: ["test"],

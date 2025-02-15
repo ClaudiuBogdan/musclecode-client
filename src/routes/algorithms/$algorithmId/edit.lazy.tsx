@@ -30,7 +30,7 @@ export default function EditAlgorithm() {
     algorithm,
     setTitle,
     setSummary,
-    setCategory,
+    setCategories: setCategory,
     setDifficulty,
     setTags,
     setDescription,
@@ -60,7 +60,7 @@ export default function EditAlgorithm() {
       setTags(existingAlgorithm.tags);
 
       // Set category
-      setCategory(existingAlgorithm.category);
+      setCategory(existingAlgorithm.categories);
 
       // Set metadata
       setTitle(existingAlgorithm.title);
@@ -128,7 +128,7 @@ export default function EditAlgorithm() {
       onReset={handleReset}
       onCancel={handleCancel}
       onSummaryChange={setSummary}
-      onCategoryChange={setCategory}
+      onCategoriesChange={setCategory}
       onTagsChange={setTags}
     />
   );
