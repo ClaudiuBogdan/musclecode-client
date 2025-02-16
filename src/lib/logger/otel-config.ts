@@ -11,9 +11,9 @@
  */
 
 import {
+  BatchLogRecordProcessor,
   LoggerProvider,
   LogRecord,
-  SimpleLogRecordProcessor,
 } from "@opentelemetry/sdk-logs";
 import { OTLPLogExporter } from "@opentelemetry/exporter-logs-otlp-http";
 import { Resource } from "@opentelemetry/resources";
@@ -51,13 +51,20 @@ const otlpLogExporter = new OTLPLogExporter({
   timeoutMillis: 30000,
 });
 
+// Configure batch processing with optimized parameters
+const batchProcessor = new BatchLogRecordProcessor(otlpLogExporter, {
+  maxQueueSize: 1000, // Maximum queue size before dropping logs
+  maxExportBatchSize: 100, // Maximum batch size per export
+  scheduledDelayMillis: 5000, // Maximum wait time before exporting
+  exportTimeoutMillis: 30000, // Maximum time to wait for export to complete
+});
+
 // Instantiate the LoggerProvider and register the exporter with a simple log record processor.
 const loggerProvider = new LoggerProvider({
   resource,
 });
-loggerProvider.addLogRecordProcessor(
-  new SimpleLogRecordProcessor(otlpLogExporter)
-);
+loggerProvider.addLogRecordProcessor(batchProcessor);
+
 
 // Retrieve the OpenTelemetry logger for our service.
 const otelLogger = loggerProvider.getLogger(serviceName);
