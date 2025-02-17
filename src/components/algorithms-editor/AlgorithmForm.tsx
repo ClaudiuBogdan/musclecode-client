@@ -404,6 +404,7 @@ export function AlgorithmForm({
                         {error.message}
                       </span>
                     ))}
+                    {/* // TODO: FIXME: fix this */}
                     <MultiSelect
                       options={sortedCategories}
                       selected={currentCategories}

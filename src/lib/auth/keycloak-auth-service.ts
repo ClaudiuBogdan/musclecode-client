@@ -18,7 +18,7 @@ export class KeycloakAuthService implements AuthService {
       realm: authConfig.keycloak.realm,
       clientId: authConfig.keycloak.clientId,
     });
-    logger.debug("Keycloak Instance Created", {
+    logger.verbose("Keycloak Instance Created", {
       realm: authConfig.keycloak.realm,
       clientId: authConfig.keycloak.clientId,
     });
@@ -38,7 +38,7 @@ export class KeycloakAuthService implements AuthService {
       const token = await TokenStorage.getToken();
       const refreshToken = await TokenStorage.getRefreshToken();
 
-      logger.debug("Keycloak Init Configuration", {
+      logger.verbose("Keycloak Init Configuration", {
         hasToken: !!token,
         hasRefreshToken: !!refreshToken,
         enableLogging: env.NODE_ENV === "development",
@@ -62,7 +62,7 @@ export class KeycloakAuthService implements AuthService {
             this.keycloak.token,
             this.keycloak.refreshToken
           );
-          logger.debug("Tokens Stored Successfully");
+          logger.verbose("Tokens Stored Successfully");
         }
       } else {
         logger.info("Keycloak Authentication Failed");
@@ -129,7 +129,7 @@ export class KeycloakAuthService implements AuthService {
     try {
       const token = await TokenStorage.getToken();
       const isAuth = !!this.keycloak.authenticated && !!token;
-      logger.debug("Authentication Check", {
+      logger.verbose("Authentication Check", {
         hasToken: !!token,
         isKeycloakAuthenticated: !!this.keycloak.authenticated,
         isAuthenticated: isAuth,
@@ -147,7 +147,7 @@ export class KeycloakAuthService implements AuthService {
     try {
       const token = await TokenStorage.getToken();
 
-      logger.debug("Token Status Check", {
+      logger.verbose("Token Status Check", {
         hasStoredToken: !!token,
         isTokenExpired: this.keycloak.isTokenExpired(),
       });
@@ -182,7 +182,7 @@ export class KeycloakAuthService implements AuthService {
           this.keycloak.token,
           this.keycloak.refreshToken
         );
-        logger.debug("Storing Valid Keycloak Tokens");
+        logger.verbose("Storing Valid Keycloak Tokens");
         return this.keycloak.token;
       }
 
@@ -204,7 +204,7 @@ export class KeycloakAuthService implements AuthService {
 
   async getUser(): Promise<AuthUser | null> {
     if (!(await this.isAuthenticated())) {
-      logger.debug("Get User Failed - Not Authenticated");
+      logger.verbose("Get User Failed - Not Authenticated");
       return null;
     }
 
@@ -214,7 +214,7 @@ export class KeycloakAuthService implements AuthService {
       roles: this.keycloak.realmAccess?.roles ?? [],
     };
 
-    logger.debug("User Info Retrieved", {
+    logger.verbose("User Info Retrieved", {
       hasId: !!user.id,
       hasUsername: !!user.username,
       rolesCount: user.roles.length,
@@ -225,7 +225,7 @@ export class KeycloakAuthService implements AuthService {
 
   async hasRole(role: string): Promise<boolean> {
     const hasRole = this.keycloak.hasRealmRole(role);
-    logger.debug("Role Check", {
+    logger.verbose("Role Check", {
       role,
       hasRole,
     });

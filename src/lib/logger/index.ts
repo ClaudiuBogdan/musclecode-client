@@ -1,3 +1,4 @@
+import { env } from "@/config/env";
 import { emitLog } from "./otel-config";
 import { useAuthStore } from "@/stores/auth";
 
@@ -5,6 +6,18 @@ interface ExtraInfo {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [key: string]: any;
 }
+
+enum LogLevel {
+  VERBOSE = 0,
+  DEBUG = 1,
+  INFO = 2,
+  WARN = 3,
+  ERROR = 4,
+}
+
+const logLevel =
+  LogLevel[env.VITE_LOG_LEVEL?.toUpperCase() as keyof typeof LogLevel] ??
+  LogLevel.INFO;
 
 /**
  * A simple logger interface that writes to the console and emits logs via OpenTelemetry.
@@ -21,7 +34,15 @@ export const createLogger = (args: { context: string } | string) => {
   };
 
   return {
+    verbose(message: string, extraInfo?: ExtraInfo) {
+      if (LogLevel.VERBOSE < logLevel) return;
+      const attributes = getAttributes({
+        message,
+      });
+      emitLog("verbose", { message, extraInfo }, attributes);
+    },
     debug(message: string, extraInfo?: ExtraInfo) {
+      if (LogLevel.DEBUG < logLevel) return;
       const attributes = getAttributes({
         message,
       });
@@ -32,6 +53,7 @@ export const createLogger = (args: { context: string } | string) => {
       emitLog("debug", body, attributes);
     },
     info(message: string, extraInfo?: ExtraInfo) {
+      if (LogLevel.INFO < logLevel) return;
       const attributes = getAttributes({
         message,
       });
@@ -42,6 +64,7 @@ export const createLogger = (args: { context: string } | string) => {
       emitLog("info", body, attributes);
     },
     warn(message: string, extraInfo?: ExtraInfo) {
+      if (LogLevel.WARN < logLevel) return;
       const attributes = getAttributes({
         message,
       });

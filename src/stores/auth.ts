@@ -37,15 +37,15 @@ export const useAuthStore = create<AuthState>()(
       initialize: async () => {
         try {
           if (get().loading) {
-            logger.debug("Initialize Skipped", { reason: "Already Loading" });
+            logger.verbose("Initialize Skipped", { reason: "Already Loading" });
             return;
           }
-          logger.info("Auth Initialize Started");
+          logger.verbose("Auth Initialize Started");
           set({ loading: true, error: null });
           const authService = getAuthService();
 
           const authenticated = await authService.init();
-          logger.debug("Auth Initialize Progress", { authenticated });
+          logger.verbose("Auth Initialize Progress", { authenticated });
 
           if (authenticated) {
             const user = await authService.getUser();

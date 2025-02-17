@@ -27,7 +27,9 @@ const envSchema = z.object({
     .transform((val) => val === "true"),
 
   // Telemetry Configuration
-  VITE_LOG_LEVEL: z.enum(["debug", "info", "warn", "error"]).default("info"),
+  VITE_LOG_LEVEL: z
+    .enum(["verbose", "debug", "info", "warn", "error"])
+    .default("info"),
   VITE_LOG_ENDPOINT: z.string().url(),
   VITE_TRACE_ENDPOINT: z.string().url(),
 

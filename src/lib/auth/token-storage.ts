@@ -16,7 +16,7 @@ export class TokenStorage {
 
   static async setToken(token: string, refreshToken?: string): Promise<void> {
     try {
-      logger.info("Token Storage Started", {
+      logger.verbose("Token Storage Started", {
         hasRefreshToken: !!refreshToken,
       });
 
@@ -28,7 +28,7 @@ export class TokenStorage {
 
       const encryptedData = await encrypt(JSON.stringify(data));
       localStorage.setItem(this.TOKEN_KEY, encryptedData);
-      logger.info("Token Storage Completed");
+      logger.verbose("Token Storage Completed");
     } catch (error) {
       logger.error(
         "Token Storage Failed",
@@ -40,18 +40,18 @@ export class TokenStorage {
 
   static async getToken(): Promise<string | undefined> {
     try {
-      logger.debug("Token Retrieval Started");
+      logger.verbose("Token Retrieval Started");
       const encryptedData = localStorage.getItem(this.TOKEN_KEY);
 
       if (!encryptedData) {
-        logger.info("Token Not Found");
+        logger.verbose("Token Not Found");
         return undefined;
       }
 
       const decryptedData = await decrypt(encryptedData);
       const data: TokenData = JSON.parse(decryptedData);
 
-      logger.info("Token Retrieved Successfully", {
+      logger.verbose("Token Retrieved Successfully", {
         tokenAge: Date.now() - data.timestamp,
       });
       return data.token;
@@ -66,18 +66,18 @@ export class TokenStorage {
 
   static async getRefreshToken(): Promise<string | undefined> {
     try {
-      logger.debug("Refresh Token Retrieval Started");
+      logger.verbose("Refresh Token Retrieval Started");
       const encryptedData = localStorage.getItem(this.TOKEN_KEY);
 
       if (!encryptedData) {
-        logger.info("Refresh Token Not Found");
+        logger.verbose("Refresh Token Not Found");
         return undefined;
       }
 
       const decryptedData = await decrypt(encryptedData);
       const data: TokenData = JSON.parse(decryptedData);
 
-      logger.info("Refresh Token Retrieved", {
+      logger.verbose("Refresh Token Retrieved", {
         hasRefreshToken: !!data.refreshToken,
       });
       return data.refreshToken ?? undefined;
@@ -91,8 +91,8 @@ export class TokenStorage {
   }
 
   static removeToken(): void {
-    logger.info("Token Removal Started");
+    logger.verbose("Token Removal Started");
     localStorage.removeItem(this.TOKEN_KEY);
-    logger.info("Token Removal Completed");
+    logger.verbose("Token Removal Completed");
   }
 }
