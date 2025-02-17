@@ -8,6 +8,7 @@ import {
   User,
   LayoutDashboard,
   Code2,
+  Library,
 } from "lucide-react";
 import { Link, useMatches } from "@tanstack/react-router";
 import { cn } from "@/lib/utils";
@@ -37,6 +38,11 @@ const mainItems = [
     title: "Algorithms",
     url: "/algorithms",
     icon: Code2,
+  },
+  {
+    title: "Collections",
+    url: "/collections",
+    icon: Library,
   },
 ];
 

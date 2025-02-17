@@ -5,12 +5,37 @@ import { Globe, Lock, Plus } from "lucide-react";
 import { CollectionCard } from "./CollectionCard";
 import { Collection } from "@/types/collection";
 import { Link } from "@tanstack/react-router";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface CollectionsGridProps {
   publicCollections: Collection[];
   userCollections: Collection[];
   onCopyCollection: (id: string) => void;
   onDeleteCollection: (id: string) => void;
+  isLoading?: boolean;
+}
+
+function CollectionCardSkeleton() {
+  return (
+    <div className="rounded-lg border bg-card text-card-foreground shadow-sm">
+      <div className="p-6 space-y-4">
+        <div className="flex justify-between items-start">
+          <div className="space-y-2">
+            <Skeleton className="h-6 w-48" />
+            <Skeleton className="h-4 w-64" />
+          </div>
+          <Skeleton className="h-6 w-20" />
+        </div>
+        <div className="flex gap-2">
+          <Skeleton className="h-5 w-16" />
+          <Skeleton className="h-5 w-16" />
+        </div>
+      </div>
+      <div className="p-6 border-t">
+        <Skeleton className="h-9 w-28" />
+      </div>
+    </div>
+  );
 }
 
 export function CollectionsGrid({
@@ -18,6 +43,7 @@ export function CollectionsGrid({
   userCollections,
   onCopyCollection,
   onDeleteCollection,
+  isLoading,
 }: CollectionsGridProps) {
   const [activeTab, setActiveTab] = useState<"public" | "private">("public");
 
@@ -52,7 +78,13 @@ export function CollectionsGrid({
           </div>
 
           <TabsContent value="public" className="mt-6">
-            {publicCollections.length === 0 ? (
+            {isLoading ? (
+              <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                {Array.from({ length: 6 }).map((_, i) => (
+                  <CollectionCardSkeleton key={i} />
+                ))}
+              </div>
+            ) : publicCollections.length === 0 ? (
               <EmptyState
                 title="No public collections"
                 description="Check back later for new collections"
@@ -72,7 +104,13 @@ export function CollectionsGrid({
           </TabsContent>
 
           <TabsContent value="private" className="mt-6">
-            {userCollections.length === 0 ? (
+            {isLoading ? (
+              <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                {Array.from({ length: 3 }).map((_, i) => (
+                  <CollectionCardSkeleton key={i} />
+                ))}
+              </div>
+            ) : userCollections.length === 0 ? (
               <EmptyState
                 title="No collections yet"
                 description="Create your first collection or copy a public one"

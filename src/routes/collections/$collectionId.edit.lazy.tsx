@@ -1,6 +1,6 @@
 import { createLazyFileRoute } from "@tanstack/react-router";
 import { useCollectionsStore } from "@/stores/collections";
-import { useEffect } from "react";
+import { useCollection } from "@/hooks/useCollection";
 import {
   CollectionForm,
   CollectionFormData,
@@ -14,14 +14,22 @@ export const Route = createLazyFileRoute("/collections/$collectionId/edit")({
 function EditCollectionPage() {
   const { collectionId } = Route.useParams();
   const navigate = useNavigate();
-  const { userCollections, fetchUserCollections, updateCollection, isLoading } =
-    useCollectionsStore();
+  const { data: collection, isLoading: isLoadingCollection } =
+    useCollection(collectionId);
+  const { updateCollection, isLoading: isUpdating } = useCollectionsStore();
 
-  useEffect(() => {
-    fetchUserCollections();
-  }, [fetchUserCollections]);
-
-  const collection = userCollections.find((c) => c.id === collectionId);
+  if (isLoadingCollection) {
+    return (
+      <div className="container py-8">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold tracking-tight">Edit Collection</h1>
+          <p className="mt-2 text-muted-foreground">
+            Loading collection details...
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   if (!collection) {
     return (
@@ -46,6 +54,14 @@ function EditCollectionPage() {
     }
   };
 
+  const initialData = {
+    name: collection.name,
+    description: collection.description,
+    isPublic: collection.isPublic,
+    algorithms: collection.algorithms.map((a) => a.id),
+    tags: collection.tags,
+  };
+
   return (
     <div className="container py-8">
       <div className="mb-8">
@@ -57,9 +73,9 @@ function EditCollectionPage() {
 
       <div className="mx-auto max-w-2xl">
         <CollectionForm
-          initialData={collection}
+          initialData={initialData}
           onSubmit={handleSubmit}
-          isLoading={isLoading}
+          isLoading={isUpdating}
         />
       </div>
     </div>

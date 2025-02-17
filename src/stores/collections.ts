@@ -11,38 +11,22 @@ interface CollectionFormData {
 }
 
 interface CollectionsState {
-  publicCollections: Collection[];
   userCollections: Collection[];
   isLoading: boolean;
   error: string | null;
 
   // Actions
-  fetchPublicCollections: () => Promise<void>;
   fetchUserCollections: () => Promise<void>;
   createCollection: (data: CollectionFormData) => Promise<void>;
-  updateCollection: (id: string, data: Partial<Collection>) => Promise<void>;
+  updateCollection: (id: string, data: CollectionFormData) => Promise<void>;
   deleteCollection: (id: string) => Promise<void>;
   copyCollection: (id: string) => Promise<void>;
 }
 
 export const useCollectionsStore = create<CollectionsState>((set) => ({
-  publicCollections: [],
   userCollections: [],
   isLoading: false,
   error: null,
-
-  fetchPublicCollections: async () => {
-    try {
-      set({ isLoading: true, error: null });
-      const response = await apiClient.get<Collection[]>("/collections/public");
-      set({ publicCollections: response.data });
-    } catch (error) {
-      set({ error: "Failed to fetch public collections" });
-      console.error(error);
-    } finally {
-      set({ isLoading: false });
-    }
-  },
 
   fetchUserCollections: async () => {
     try {

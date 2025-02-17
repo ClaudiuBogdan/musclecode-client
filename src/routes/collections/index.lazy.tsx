@@ -1,6 +1,7 @@
 import { createLazyFileRoute } from "@tanstack/react-router";
 import { CollectionsGrid } from "@/components/collections/CollectionsGrid";
 import { useCollectionsStore } from "@/stores/collections";
+import { usePublicCollections } from "@/hooks/usePublicCollections";
 import { useEffect } from "react";
 
 export const Route = createLazyFileRoute("/collections/")({
@@ -8,19 +9,19 @@ export const Route = createLazyFileRoute("/collections/")({
 });
 
 function CollectionsPage() {
+  const { data: publicCollections = [], isLoading: isLoadingPublic } =
+    usePublicCollections();
   const {
-    publicCollections,
     userCollections,
-    fetchPublicCollections,
     fetchUserCollections,
     copyCollection,
     deleteCollection,
+    isLoading: isLoadingUser,
   } = useCollectionsStore();
 
   useEffect(() => {
-    fetchPublicCollections();
     fetchUserCollections();
-  }, [fetchPublicCollections, fetchUserCollections]);
+  }, [fetchUserCollections]);
 
   return (
     <div className="container py-8">
@@ -36,6 +37,7 @@ function CollectionsPage() {
         userCollections={userCollections}
         onCopyCollection={copyCollection}
         onDeleteCollection={deleteCollection}
+        isLoading={isLoadingPublic || isLoadingUser}
       />
     </div>
   );

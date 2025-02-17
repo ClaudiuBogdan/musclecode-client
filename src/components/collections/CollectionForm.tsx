@@ -14,7 +14,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
-import { Collection } from "@/types/collection";
 import { AlgorithmSelector } from "@/components/algorithms/AlgorithmSelector";
 
 const collectionFormSchema = z.object({
@@ -34,7 +33,7 @@ const collectionFormSchema = z.object({
 export type CollectionFormData = z.infer<typeof collectionFormSchema>;
 
 interface CollectionFormProps {
-  initialData?: Partial<Collection>;
+  initialData?: CollectionFormData;
   onSubmit: (data: CollectionFormData) => void;
   isLoading?: boolean;
 }
@@ -50,7 +49,7 @@ export function CollectionForm({
       name: initialData?.name || "",
       description: initialData?.description || "",
       isPublic: initialData?.isPublic || false,
-      algorithms: initialData?.algorithms?.map((a) => a.id) || [],
+      algorithms: initialData?.algorithms || [],
       tags: initialData?.tags || [],
     },
   });
