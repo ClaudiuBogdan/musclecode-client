@@ -177,6 +177,32 @@ export const createAlgorithmSlice: StateCreator<
           const prevAlgorithmState = state.algorithms[algorithmId];
           state.algorithms[algorithmId] = {
             ...prevAlgorithmState,
+            code: {
+              ...prevAlgorithmState.code,
+              activeTab: prevAlgorithmState.code.activeTab || firstFile,
+              activeLanguage:
+                prevAlgorithmState.code.activeLanguage || firstLanguage,
+              storedCode: {
+                ...prevAlgorithmState.code.storedCode,
+                [firstLanguage]: {
+                  ...prevAlgorithmState.code.storedCode[firstLanguage],
+                  [firstFile]:
+                    prevAlgorithmState.code.storedCode[firstLanguage][
+                      firstFile
+                    ],
+                },
+              },
+              initialStoredCode: {
+                ...prevAlgorithmState.code.initialStoredCode,
+                [firstLanguage]: {
+                  ...prevAlgorithmState.code.initialStoredCode[firstLanguage],
+                  [firstFile]:
+                    prevAlgorithmState.code.initialStoredCode[firstLanguage][
+                      firstFile
+                    ],
+                },
+              },
+            },
             userProgress: {
               ...prevAlgorithmState.userProgress,
               isSubmitting: false,
