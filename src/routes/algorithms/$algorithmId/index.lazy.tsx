@@ -11,7 +11,6 @@ import { useLayoutStore } from "@/stores/layout";
 import { InfoPanel } from "@/components/code/InfoPanel";
 import { TopBar } from "@/components/code/layout/TopBar";
 import { ButtonBar } from "@/components/code/layout/ButtonBar";
-import { Toaster } from "@/components/ui/Toaster";
 import {
   ResizablePanelGroup,
   ResizablePanel,
@@ -271,7 +270,6 @@ function Algorithm() {
           </ResizablePanel>
         </ResizablePanelGroup>
       </div>
-      <Toaster />
     </>
   );
 }

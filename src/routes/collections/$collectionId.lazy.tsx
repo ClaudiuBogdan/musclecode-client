@@ -6,8 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Copy } from "lucide-react";
 import { AlgorithmCard } from "@/components/algorithms/AlgorithmCard";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useToast } from "@/hooks/use-toast";
 import { createLogger } from "@/lib/logger";
+import { showToast } from "@/utils/toast";
 export const Route = createLazyFileRoute("/collections/$collectionId")({
   component: CollectionDetailsPage,
 });
@@ -15,7 +15,6 @@ export const Route = createLazyFileRoute("/collections/$collectionId")({
 const logger = createLogger("CollectionDetailsPage");
 
 function CollectionDetailsPage() {
-  const { toast } = useToast();
   const { collectionId } = Route.useParams();
   const { data: collection, isLoading } = useCollection(collectionId);
   const { data: publicCollections = [] } = usePublicCollections();
@@ -27,19 +26,12 @@ function CollectionDetailsPage() {
     try {
       logger.info("Copying collection", { collectionId: collection.id });
       await copyCollectionMutation.mutateAsync(collection.id);
-      toast({
-        title: "Collection copied",
-        description: "The collection has been added to your collections.",
-      });
+      showToast.success("Collection copied");
     } catch (error) {
       logger.error("Failed to copy collection", {
         error: error instanceof Error ? error.message : String(error),
       });
-      toast({
-        title: "Failed to copy collection",
-        description: "Please try again later.",
-        variant: "destructive",
-      });
+      showToast.error("Failed to copy collection");
     }
   };
 

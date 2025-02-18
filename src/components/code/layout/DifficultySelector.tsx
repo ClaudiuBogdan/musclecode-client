@@ -20,7 +20,7 @@ import {
   selectUserProgressNotes,
 } from "@/stores/algorithm/selectors";
 import { Rating, RatingSchedule } from "@/types/algorithm";
-import { useToast } from "@/hooks/use-toast";
+import { showToast } from "@/utils/toast";
 
 interface DifficultySelectorProps {
   algorithmId: string;
@@ -67,7 +67,6 @@ export const DifficultySelector: React.FC<DifficultySelectorProps> = ({
   onReset,
 }) => {
   const router = useRouter();
-  const { toast } = useToast();
   const isSubmitting = useAlgorithmStore((state) =>
     selectIsSubmitting(state, algorithmId)
   );
@@ -86,19 +85,11 @@ export const DifficultySelector: React.FC<DifficultySelectorProps> = ({
   const handleSubmit = async (difficulty: Rating) => {
     const hasSubmitted = await submit(algorithmId, difficulty);
     if (!hasSubmitted) {
-      toast({
-        title: "Submission Failed",
-        description: "Failed to save your progress. Please try again.",
-        variant: "destructive",
-      });
+      showToast.error("Submission Failed");
       return;
     }
 
-    toast({
-      title: "Submission Saved",
-      description: "Your progress has been saved successfully.",
-      variant: "default",
-    });
+    showToast.success("Submission Saved");
 
     onReset();
 
