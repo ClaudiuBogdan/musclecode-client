@@ -10,7 +10,9 @@ export function useUserCollections() {
     queryKey: ["collections", "me"],
     queryFn: async () => {
       try {
-        const response = await apiClient.get<Collection[]>("/collections/me");
+        const response = await apiClient.get<Collection[]>(
+          "/api/v1/collections/me"
+        );
         return response.data;
       } catch (error) {
         logger.error("Failed to fetch user collections", {

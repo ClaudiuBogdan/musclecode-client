@@ -27,7 +27,7 @@ const collectionFormSchema = z.object({
     .min(10, "Description must be at least 10 characters")
     .max(500, "Description must be less than 500 characters"),
   isPublic: z.boolean().default(false),
-  algorithms: z.array(z.string()).min(1, "Select at least one algorithm"),
+  algorithmIds: z.array(z.string()).min(1, "Select at least one algorithm"),
   tags: z.array(z.string()),
 });
 
@@ -52,7 +52,7 @@ export function CollectionForm({
       name: initialData?.name || "",
       description: initialData?.description || "",
       isPublic: initialData?.isPublic || false,
-      algorithms: initialData?.algorithms || [],
+      algorithmIds: initialData?.algorithmIds || [],
       tags: initialData?.tags || [],
     },
   });
@@ -120,7 +120,7 @@ export function CollectionForm({
 
         <FormField
           control={form.control}
-          name="algorithms"
+          name="algorithmIds"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Algorithms</FormLabel>
