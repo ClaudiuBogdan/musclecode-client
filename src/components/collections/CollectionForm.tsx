@@ -15,6 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { AlgorithmSelector } from "@/components/algorithms/AlgorithmSelector";
+import { AlgorithmTemplate } from "@/types/algorithm";
 
 const collectionFormSchema = z.object({
   name: z
@@ -36,12 +37,14 @@ interface CollectionFormProps {
   initialData?: CollectionFormData;
   onSubmit: (data: CollectionFormData) => void;
   isLoading?: boolean;
+  availableAlgorithms?: AlgorithmTemplate[];
 }
 
 export function CollectionForm({
   initialData,
   onSubmit,
   isLoading,
+  availableAlgorithms = [],
 }: CollectionFormProps) {
   const form = useForm<CollectionFormData>({
     resolver: zodResolver(collectionFormSchema),
@@ -123,8 +126,9 @@ export function CollectionForm({
               <FormLabel>Algorithms</FormLabel>
               <FormControl>
                 <AlgorithmSelector
-                  selectedIds={field.value}
-                  onSelectedIdsChange={field.onChange}
+                  value={field.value}
+                  onChange={field.onChange}
+                  algorithms={availableAlgorithms}
                 />
               </FormControl>
               <FormDescription>

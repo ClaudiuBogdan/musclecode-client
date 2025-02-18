@@ -1,10 +1,17 @@
 import { createLazyFileRoute } from "@tanstack/react-router";
-import { useCollectionsStore } from "@/stores/collections";
+import { useNavigate } from "@tanstack/react-router";
+import { useAlgorithmTemplates } from "@/hooks/useAlgorithmTemplates";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { apiClient } from "@/lib/api/client";
+import { Collection } from "@/types/collection";
 import {
   CollectionForm,
   CollectionFormData,
 } from "@/components/collections/CollectionForm";
-import { useNavigate } from "@tanstack/react-router";
+import { createLogger } from "@/lib/logger";
+import { showToast } from "@/utils/toast";
+
+const logger = createLogger("NewCollectionPage");
 
 export const Route = createLazyFileRoute("/collections/new")({
   component: NewCollectionPage,
@@ -12,15 +19,45 @@ export const Route = createLazyFileRoute("/collections/new")({
 
 function NewCollectionPage() {
   const navigate = useNavigate();
-  const { createCollection, isLoading } = useCollectionsStore();
+  const queryClient = useQueryClient();
+  const { data: algorithmTemplates = [], isLoading: isLoadingTemplates } =
+    useAlgorithmTemplates();
+
+  const createCollectionMutation = useMutation({
+    mutationFn: async (data: CollectionFormData) => {
+      const response = await apiClient.post<Collection>(
+        "/api/v1/collections",
+        data
+      );
+      return response.data;
+    },
+    onSuccess: (newCollection) => {
+      // Invalidate user collections list
+      queryClient.invalidateQueries({ queryKey: ["collections", "me"] });
+
+      // Optimistically update the user collections cache
+      queryClient.setQueryData<Collection[]>(
+        ["collections", "me"],
+        (oldCollections = []) => [...oldCollections, newCollection]
+      );
+
+      logger.info("Collection created successfully", {
+        collectionId: newCollection.id,
+      });
+      showToast.success("Collection created successfully");
+    },
+    onError: (error) => {
+      logger.error("Failed to create collection", {
+        error: error instanceof Error ? error.message : String(error),
+      });
+      showToast.error("Failed to create collection");
+    },
+  });
 
   const handleSubmit = async (data: CollectionFormData) => {
-    try {
-      await createCollection(data);
-      navigate({ to: "/collections" });
-    } catch (error) {
-      console.error("Failed to create collection:", error);
-    }
+    logger.info("Creating collection");
+    await createCollectionMutation.mutateAsync(data);
+    navigate({ to: "/collections" });
   };
 
   return (
@@ -33,7 +70,11 @@ function NewCollectionPage() {
       </div>
 
       <div className="mx-auto max-w-2xl">
-        <CollectionForm onSubmit={handleSubmit} isLoading={isLoading} />
+        <CollectionForm
+          onSubmit={handleSubmit}
+          isLoading={isLoadingTemplates || createCollectionMutation.isPending}
+          availableAlgorithms={algorithmTemplates}
+        />
       </div>
     </div>
   );

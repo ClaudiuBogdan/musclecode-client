@@ -1,11 +1,16 @@
 import { createLazyFileRoute } from "@tanstack/react-router";
-import { useCollectionsStore } from "@/stores/collections";
 import { useCollection } from "@/hooks/useCollection";
+import { useAlgorithmTemplates } from "@/hooks/useAlgorithmTemplates";
+import { useUpdateCollection } from "@/hooks/useUpdateCollection";
 import {
   CollectionForm,
   CollectionFormData,
 } from "@/components/collections/CollectionForm";
 import { useNavigate } from "@tanstack/react-router";
+import { createLogger } from "@/lib/logger";
+import { showToast } from "@/utils/toast";
+
+const logger = createLogger("EditCollectionPage");
 
 export const Route = createLazyFileRoute("/collections/$collectionId/edit")({
   component: EditCollectionPage,
@@ -14,11 +19,19 @@ export const Route = createLazyFileRoute("/collections/$collectionId/edit")({
 function EditCollectionPage() {
   const { collectionId } = Route.useParams();
   const navigate = useNavigate();
+
   const { data: collection, isLoading: isLoadingCollection } =
     useCollection(collectionId);
-  const { updateCollection, isLoading: isUpdating } = useCollectionsStore();
+  const { data: algorithmTemplates = [], isLoading: isLoadingTemplates } =
+    useAlgorithmTemplates();
+  const updateCollectionMutation = useUpdateCollection();
 
-  if (isLoadingCollection) {
+  const isLoading =
+    isLoadingCollection ||
+    isLoadingTemplates ||
+    updateCollectionMutation.isPending;
+
+  if (isLoadingCollection || isLoadingTemplates) {
     return (
       <div className="container py-8">
         <div className="mb-8">
@@ -47,10 +60,15 @@ function EditCollectionPage() {
 
   const handleSubmit = async (data: CollectionFormData) => {
     try {
-      await updateCollection(collectionId, data);
+      logger.info("Updating collection", { collectionId });
+      await updateCollectionMutation.mutateAsync({ id: collectionId, data });
+      showToast.success("Collection updated successfully");
       navigate({ to: "/collections/$collectionId", params: { collectionId } });
     } catch (error) {
-      console.error("Failed to update collection:", error);
+      logger.error("Failed to update collection", {
+        error: error instanceof Error ? error.message : String(error),
+      });
+      showToast.error("Failed to update collection");
     }
   };
 
@@ -75,7 +93,8 @@ function EditCollectionPage() {
         <CollectionForm
           initialData={initialData}
           onSubmit={handleSubmit}
-          isLoading={isUpdating}
+          isLoading={isLoading}
+          availableAlgorithms={algorithmTemplates}
         />
       </div>
     </div>

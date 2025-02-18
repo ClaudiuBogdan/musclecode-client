@@ -1,126 +1,131 @@
-import { useEffect, useState } from "react";
-import { Check, ChevronsUpDown } from "lucide-react";
+import { useState } from "react";
+import { Check, ChevronsUpDown, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import {
   Command,
   CommandEmpty,
   CommandGroup,
   CommandInput,
   CommandItem,
+  CommandList,
 } from "@/components/ui/command";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { AlgorithmPreview } from "@/types/algorithm";
-import { apiClient } from "@/lib/api/client";
+import { AlgorithmTemplate } from "@/types/algorithm";
 
 interface AlgorithmSelectorProps {
-  selectedIds: string[];
-  onSelectedIdsChange: (ids: string[]) => void;
+  value: string[];
+  onChange: (ids: string[]) => void;
+  algorithms?: AlgorithmTemplate[];
 }
 
 export function AlgorithmSelector({
-  selectedIds,
-  onSelectedIdsChange,
+  value = [],
+  onChange,
+  algorithms = [],
 }: AlgorithmSelectorProps) {
   const [open, setOpen] = useState(false);
-  const [algorithms, setAlgorithms] = useState<AlgorithmPreview[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchAlgorithms = async () => {
-      try {
-        const response = await apiClient.get<AlgorithmPreview[]>("/algorithms");
-        setAlgorithms(response.data);
-      } catch (error) {
-        console.error("Failed to fetch algorithms:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchAlgorithms();
-  }, []);
-
-  const selectedAlgorithms = algorithms.filter((a) =>
-    selectedIds.includes(a.id)
+  const [search, setSearch] = useState("");
+  
+  const selectedAlgorithms = algorithms.filter((a) => value.includes(a.id));
+  const filteredAlgorithms = algorithms.filter(
+    (alg) =>
+      alg.title.toLowerCase().includes(search.toLowerCase()) ||
+      alg.difficulty.toLowerCase().includes(search.toLowerCase())
   );
 
+  const toggleAlgorithm = (id: string) => {
+    onChange(
+      value.includes(id) ? value.filter((i) => i !== id) : [...value, id]
+    );
+  };
+
   return (
-    <div className="flex flex-col gap-4">
+    <div className="space-y-2">
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button
             variant="outline"
             role="combobox"
             aria-expanded={open}
-            className="w-full justify-between"
-            disabled={loading}
+            className="w-full justify-between h-11 px-4 rounded-lg"
           >
-            {loading
-              ? "Loading algorithms..."
-              : selectedIds.length === 0
-                ? "Select algorithms..."
-                : `${selectedIds.length} algorithm${
-                    selectedIds.length === 1 ? "" : "s"
-                  } selected`}
-            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+            <span className="truncate">
+              {selectedAlgorithms.length > 0
+                ? `${selectedAlgorithms.length} selected`
+                : "Select algorithms..."}
+            </span>
+            <ChevronsUpDown className="ml-2 h-4 w-4 opacity-50 shrink-0" />
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-[400px] p-0">
-          <Command>
-            <CommandInput placeholder="Search algorithms..." />
-            <CommandEmpty>No algorithms found.</CommandEmpty>
-            <CommandGroup>
-              <ScrollArea className="h-[300px]">
-                {algorithms.map((algorithm) => (
-                  <CommandItem
-                    key={algorithm.id}
-                    onSelect={() => {
-                      const isSelected = selectedIds.includes(algorithm.id);
-                      onSelectedIdsChange(
-                        isSelected
-                          ? selectedIds.filter((id) => id !== algorithm.id)
-                          : [...selectedIds, algorithm.id]
-                      );
-                    }}
-                  >
-                    <Check
-                      className={cn(
-                        "mr-2 h-4 w-4",
-                        selectedIds.includes(algorithm.id)
-                          ? "opacity-100"
-                          : "opacity-0"
-                      )}
-                    />
-                    <div className="flex flex-col gap-1">
-                      <div>{algorithm.title}</div>
-                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                        <span
-                          className={cn(
-                            "capitalize",
-                            algorithm.difficulty === "easy"
-                              ? "text-green-500"
-                              : algorithm.difficulty === "medium"
-                                ? "text-yellow-500"
-                                : "text-red-500"
-                          )}
-                        >
-                          {algorithm.difficulty}
-                        </span>
-                        <span>•</span>
-                        <span>{algorithm.categories.join(", ")}</span>
-                      </div>
-                    </div>
-                  </CommandItem>
-                ))}
-              </ScrollArea>
-            </CommandGroup>
+
+        <PopoverContent
+          className="w-[var(--radix-popover-trigger-width)] p-0 rounded-lg shadow-lg"
+          align="start"
+          sideOffset={4}
+        >
+          <Command shouldFilter={false}>
+            <div className="px-2 pt-2">
+              <CommandInput
+                placeholder="Search algorithms..."
+                value={search}
+                onValueChange={setSearch}
+                className="rounded-lg px-2 py-1"
+              />
+            </div>
+            <CommandList>
+              <CommandEmpty className="py-4 text-sm text-muted-foreground text-center">
+                No algorithms found
+              </CommandEmpty>
+              <CommandGroup>
+                <ScrollArea className="h-[280px]">
+                  <div className="p-2 space-y-1">
+                    {filteredAlgorithms.map((algorithm) => (
+                      <CommandItem
+                        key={algorithm.id}
+                        value={`${algorithm.title} ${algorithm.difficulty}`}
+                        onSelect={() => toggleAlgorithm(algorithm.id)}
+                        className="px-3 py-2 rounded-md aria-selected:bg-accent/50"
+                      >
+                        <div className="flex items-center space-x-3">
+                          <Check
+                            className={cn(
+                              "h-4 w-4 shrink-0 text-primary",
+                              value.includes(algorithm.id)
+                                ? "opacity-100"
+                                : "opacity-0"
+                            )}
+                          />
+                          <div className="flex-1 min-w-0">
+                            <p className="truncate text-sm font-medium">
+                              {algorithm.title}
+                            </p>
+                            <span
+                              className={cn(
+                                "inline-block mt-1 px-2 py-0.5 rounded-full text-xs leading-none",
+                                algorithm.difficulty === "easy" &&
+                                  "bg-green-100 text-green-800",
+                                algorithm.difficulty === "medium" &&
+                                  "bg-yellow-100 text-yellow-800",
+                                algorithm.difficulty === "hard" &&
+                                  "bg-red-100 text-red-800"
+                              )}
+                            >
+                              {algorithm.difficulty}
+                            </span>
+                          </div>
+                        </div>
+                      </CommandItem>
+                    ))}
+                  </div>
+                </ScrollArea>
+              </CommandGroup>
+            </CommandList>
           </Command>
         </PopoverContent>
       </Popover>
@@ -128,29 +133,20 @@ export function AlgorithmSelector({
       {selectedAlgorithms.length > 0 && (
         <div className="flex flex-wrap gap-2">
           {selectedAlgorithms.map((algorithm) => (
-            <Badge
+            <div
               key={algorithm.id}
-              variant="secondary"
-              className="gap-1"
-              onClick={() =>
-                onSelectedIdsChange(
-                  selectedIds.filter((id) => id !== algorithm.id)
-                )
-              }
+              className="flex items-center pl-3 pr-1.5 py-1 rounded-full bg-accent text-sm group transition-colors"
             >
-              {algorithm.title}
+              <span className="mr-1.5 truncate max-w-[160px]">
+                {algorithm.title}
+              </span>
               <button
-                className="ml-1 rounded-full outline-none ring-offset-background focus:ring-2 focus:ring-ring focus:ring-offset-2"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onSelectedIdsChange(
-                    selectedIds.filter((id) => id !== algorithm.id)
-                  );
-                }}
+                onClick={() => toggleAlgorithm(algorithm.id)}
+                className="rounded-full p-1 hover:bg-muted/50 transition-colors"
               >
-                ×
+                <X className="h-3.5 w-3.5 opacity-70 group-hover:opacity-100" />
               </button>
-            </Badge>
+            </div>
           ))}
         </div>
       )}
