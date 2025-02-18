@@ -13,6 +13,8 @@ interface CollectionsGridProps {
   onCopyCollection: (id: string) => void;
   onDeleteCollection: (id: string) => void;
   isLoading?: boolean;
+  activeTab?: "public" | "private";
+  onTabChange?: (tab: "public" | "private") => void;
 }
 
 function CollectionCardSkeleton() {
@@ -44,30 +46,44 @@ export function CollectionsGrid({
   onCopyCollection,
   onDeleteCollection,
   isLoading,
+  activeTab = "private",
+  onTabChange,
 }: CollectionsGridProps) {
-  const [activeTab, setActiveTab] = useState<"public" | "private">("public");
+  const [internalActiveTab, setInternalActiveTab] = useState<
+    "public" | "private"
+  >(activeTab);
+
+  const currentTab = onTabChange ? activeTab : internalActiveTab;
+  const handleTabChange = (value: string) => {
+    const tab = value as "public" | "private";
+    if (onTabChange) {
+      onTabChange(tab);
+    } else {
+      setInternalActiveTab(tab);
+    }
+  };
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <Tabs
-          value={activeTab}
-          onValueChange={(value) => setActiveTab(value as "public" | "private")}
+          value={currentTab}
+          onValueChange={handleTabChange}
           className="w-full"
         >
           <div className="flex items-center justify-between">
             <TabsList>
-              <TabsTrigger value="public" className="gap-2">
-                <Globe className="h-4 w-4" />
-                Public Collections
-              </TabsTrigger>
               <TabsTrigger value="private" className="gap-2">
                 <Lock className="h-4 w-4" />
                 My Collections
               </TabsTrigger>
+              <TabsTrigger value="public" className="gap-2">
+                <Globe className="h-4 w-4" />
+                Public Collections
+              </TabsTrigger>
             </TabsList>
 
-            {activeTab === "private" && (
+            {currentTab === "private" && (
               <Button asChild>
                 <Link to="/collections/new" className="gap-2">
                   <Plus className="h-4 w-4" />

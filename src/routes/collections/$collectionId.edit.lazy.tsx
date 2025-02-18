@@ -76,7 +76,7 @@ function EditCollectionPage() {
     name: collection.name,
     description: collection.description,
     isPublic: collection.isPublic,
-    algorithms: collection.algorithms.map((a) => a.id),
+    algorithmIds: collection.algorithms.map((a) => a.id),
     tags: collection.tags,
   };
 

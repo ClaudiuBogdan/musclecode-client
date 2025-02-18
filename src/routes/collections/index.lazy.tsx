@@ -5,6 +5,7 @@ import { usePublicCollections } from "@/hooks/usePublicCollections";
 import { useCopyCollection } from "@/hooks/useCopyCollection";
 import { createLogger } from "@/lib/logger";
 import { showToast } from "@/utils/toast";
+import { useState } from "react";
 
 const logger = createLogger("CollectionsPage");
 
@@ -13,8 +14,12 @@ export const Route = createLazyFileRoute("/collections/")({
 });
 
 function CollectionsPage() {
+  const [activeTab, setActiveTab] = useState<"public" | "private">("private");
+
   const { data: publicCollections = [], isLoading: isLoadingPublic } =
-    usePublicCollections();
+    usePublicCollections({
+      enabled: activeTab === "public",
+    });
   const { data: userCollections = [], isLoading: isLoadingUser } =
     useUserCollections();
   const copyCollectionMutation = useCopyCollection();
@@ -47,8 +52,12 @@ function CollectionsPage() {
         onCopyCollection={handleCopyCollection}
         onDeleteCollection={() => {}} // We'll implement this later
         isLoading={
-          isLoadingPublic || isLoadingUser || copyCollectionMutation.isPending
+          (activeTab === "public" && isLoadingPublic) ||
+          isLoadingUser ||
+          copyCollectionMutation.isPending
         }
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
       />
     </div>
   );

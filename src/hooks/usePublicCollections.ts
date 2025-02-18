@@ -2,7 +2,13 @@ import { useQuery } from "@tanstack/react-query";
 import { Collection } from "@/types/collection";
 import { apiClient } from "@/lib/api/client";
 
-export function usePublicCollections() {
+interface UsePublicCollectionsOptions {
+  enabled?: boolean;
+}
+
+export function usePublicCollections(
+  options: UsePublicCollectionsOptions = {}
+) {
   return useQuery({
     queryKey: ["collections", "public"],
     queryFn: async () => {
@@ -11,5 +17,6 @@ export function usePublicCollections() {
       );
       return response.data;
     },
+    enabled: options.enabled,
   });
 }
