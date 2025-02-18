@@ -105,7 +105,7 @@ export const useCollectionsStore = create<CollectionsState>((set) => ({
     try {
       set({ isLoading: true, error: null });
       const response = await apiClient.post<Collection>(
-        `/collections/public/${id}/copy`
+        `api/v1/collections/${id}/copy`
       );
       set((state) => ({
         userCollections: [...state.userCollections, response.data],

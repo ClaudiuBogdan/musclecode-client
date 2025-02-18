@@ -170,6 +170,7 @@ export default function AlgorithmGymDashboard() {
                             return icons.map((icon) =>
                               React.createElement(icon, {
                                 className: "w-6 h-6",
+                                key: icon.toString(),
                               })
                             );
                           })()}

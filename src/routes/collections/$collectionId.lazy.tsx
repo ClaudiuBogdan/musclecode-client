@@ -1,21 +1,47 @@
 import { createLazyFileRoute } from "@tanstack/react-router";
-import { useCollectionsStore } from "@/stores/collections";
 import { useCollection } from "@/hooks/useCollection";
 import { usePublicCollections } from "@/hooks/usePublicCollections";
+import { useCopyCollection } from "@/hooks/useCopyCollection";
 import { Button } from "@/components/ui/button";
 import { Copy } from "lucide-react";
 import { AlgorithmCard } from "@/components/algorithms/AlgorithmCard";
 import { Skeleton } from "@/components/ui/skeleton";
-
+import { useToast } from "@/hooks/use-toast";
+import { createLogger } from "@/lib/logger";
 export const Route = createLazyFileRoute("/collections/$collectionId")({
   component: CollectionDetailsPage,
 });
 
+const logger = createLogger("CollectionDetailsPage");
+
 function CollectionDetailsPage() {
+  const { toast } = useToast();
   const { collectionId } = Route.useParams();
   const { data: collection, isLoading } = useCollection(collectionId);
   const { data: publicCollections = [] } = usePublicCollections();
-  const { copyCollection } = useCollectionsStore();
+  const copyCollectionMutation = useCopyCollection();
+
+  const handleCopyCollection = async () => {
+    if (!collection) return;
+
+    try {
+      logger.info("Copying collection", { collectionId: collection.id });
+      await copyCollectionMutation.mutateAsync(collection.id);
+      toast({
+        title: "Collection copied",
+        description: "The collection has been added to your collections.",
+      });
+    } catch (error) {
+      logger.error("Failed to copy collection", {
+        error: error instanceof Error ? error.message : String(error),
+      });
+      toast({
+        title: "Failed to copy collection",
+        description: "Please try again later.",
+        variant: "destructive",
+      });
+    }
+  };
 
   if (isLoading) {
     return (
@@ -71,11 +97,14 @@ function CollectionDetailsPage() {
 
         {isPublicCollection && (
           <Button
-            onClick={() => copyCollection(collection.id)}
+            onClick={handleCopyCollection}
+            disabled={copyCollectionMutation.isPending}
             className="gap-2"
           >
             <Copy className="h-4 w-4" />
-            Copy Collection
+            {copyCollectionMutation.isPending
+              ? "Copying..."
+              : "Copy Collection"}
           </Button>
         )}
       </div>
