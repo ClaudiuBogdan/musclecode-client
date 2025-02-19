@@ -112,31 +112,36 @@ function CollectionDetailsPage() {
 
   return (
     <>
-      <div className="container py-8">
-        <div className="mb-8 flex items-start justify-between">
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">
+      <div className="container px-4 md:px-8 py-12 max-w-7xl mx-auto">
+        <div className="mb-12 flex flex-col md:flex-row items-start justify-between gap-6">
+          <div className="space-y-3 flex-1">
+            <div className="inline-block bg-primary/10 text-primary px-4 py-2 rounded-full text-sm mb-4">
+              {isPublicCollection ? "Public Collection" : "Personal Collection"}
+            </div>
+            <h1 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
               {collection.name}
             </h1>
-            <p className="mt-2 text-muted-foreground">
-              {collection.description}
+            <p className="text-lg text-muted-foreground leading-relaxed max-w-3xl">
+              {collection.description ||
+                "A curated set of algorithm challenges"}
             </p>
           </div>
 
-          <div className="flex gap-2">
+          <div className="flex gap-3 flex-wrap md:flex-nowrap">
             {isPublicCollection ? (
               <Button
                 onClick={handleCopyCollection}
                 disabled={copyCollectionMutation.isPending}
-                className="gap-2"
+                className="gap-2 transition-all hover:shadow-md"
+                size="lg"
               >
-                <Copy className="h-4 w-4" />
+                <Copy className="h-5 w-5" />
                 {copyCollectionMutation.isPending
                   ? "Copying..."
-                  : "Copy Collection"}
+                  : "Duplicate Collection"}
               </Button>
             ) : (
-              <>
+              <div className="flex gap-3">
                 <Button
                   onClick={() =>
                     navigate({
@@ -145,50 +150,58 @@ function CollectionDetailsPage() {
                     })
                   }
                   variant="outline"
-                  className="gap-2"
+                  className="gap-2 border-primary/30 hover:border-primary/50"
+                  size="lg"
                 >
-                  <Pencil className="h-4 w-4" />
-                  Edit
+                  <Pencil className="h-5 w-5" />
+                  Edit Collection
                 </Button>
                 <Button
                   onClick={() => setShowDeleteDialog(true)}
                   disabled={deleteCollectionMutation.isPending}
                   variant="destructive"
-                  className="gap-2"
+                  className="gap-2 transition-all hover:shadow-md"
+                  size="lg"
                 >
-                  <Trash2 className="h-4 w-4" />
+                  <Trash2 className="h-5 w-5" />
                   {deleteCollectionMutation.isPending
                     ? "Deleting..."
-                    : "Delete Collection"}
+                    : "Delete"}
                 </Button>
-              </>
+              </div>
             )}
           </div>
         </div>
 
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {collection.algorithms.map((algorithm) => (
-            <AlgorithmCard key={algorithm.id} algorithm={algorithm} />
+            <AlgorithmCard
+              key={algorithm.id}
+              algorithm={algorithm}
+              className="hover:scale-[1.02] transition-transform duration-200"
+            />
           ))}
         </div>
       </div>
 
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-        <AlertDialogContent>
+        <AlertDialogContent className="backdrop-blur-md bg-background/95">
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete Collection</AlertDialogTitle>
-            <AlertDialogDescription>
-              Are you sure you want to delete this collection? This action
-              cannot be undone.
+            <AlertDialogTitle className="text-2xl font-bold">
+              Confirm Deletion
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-base leading-relaxed">
+              This will permanently delete the "{collection.name}" collection
+              and remove all associated data. This action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel className="mt-4">Cancel</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDeleteCollection}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              className="bg-destructive hover:bg-destructive/90 transition-colors"
             >
-              Delete
+              Confirm Delete
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

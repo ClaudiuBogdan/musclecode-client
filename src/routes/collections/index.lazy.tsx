@@ -38,26 +38,35 @@ function CollectionsPage() {
   };
 
   return (
-    <div className="container py-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold tracking-tight">Collections</h1>
-        <p className="mt-2 text-muted-foreground">
-          Browse and manage your algorithm collections
-        </p>
-      </div>
+    <div className="container px-4 md:px-8 xl:px-0 py-8 max-w-7xl mx-auto">
+      <div className="mb-10 space-y-2">
+        <div className="flex items-center justify-between gap-4 mb-8">
+          <div className="space-y-1">
+            <h1 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
+              Algorithm Collections
+            </h1>
+            <p className="text-lg text-muted-foreground max-w-3xl leading-relaxed">
+              Organize and curate your learning progress. Create personal
+              collections or explore community-shared resources.
+            </p>
+          </div>
+        </div>
 
-      <CollectionsGrid
-        publicCollections={publicCollections}
-        userCollections={userCollections}
-        onCopyCollection={handleCopyCollection}
-        isLoading={
-          (activeTab === "public" && isLoadingPublic) ||
-          isLoadingUser ||
-          copyCollectionMutation.isPending
-        }
-        activeTab={activeTab}
-        onTabChange={setActiveTab}
-      />
+        <div className="rounded-xl border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 p-6">
+          <CollectionsGrid
+            publicCollections={publicCollections}
+            userCollections={userCollections}
+            onCopyCollection={handleCopyCollection}
+            isLoading={
+              (activeTab === "public" && isLoadingPublic) ||
+              isLoadingUser ||
+              copyCollectionMutation.isPending
+            }
+            activeTab={activeTab}
+            onTabChange={setActiveTab}
+          />
+        </div>
+      </div>
     </div>
   );
 }
