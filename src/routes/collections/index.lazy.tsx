@@ -6,6 +6,13 @@ import { useCopyCollection } from "@/hooks/useCopyCollection";
 import { createLogger } from "@/lib/logger";
 import { showToast } from "@/utils/toast";
 import { useState } from "react";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+} from "@/components/ui/card";
 
 const logger = createLogger("CollectionsPage");
 
@@ -13,7 +20,7 @@ export const Route = createLazyFileRoute("/collections/")({
   component: CollectionsPage,
 });
 
-function CollectionsPage() {
+export function CollectionsPage() {
   const [activeTab, setActiveTab] = useState<"public" | "private">("private");
 
   const { data: publicCollections = [], isLoading: isLoadingPublic } =
@@ -38,21 +45,20 @@ function CollectionsPage() {
   };
 
   return (
-    <div className="container px-4 md:px-8 xl:px-0 py-8 max-w-7xl mx-auto">
-      <div className="mb-10 space-y-2">
-        <div className="flex items-center justify-between gap-4 mb-8">
+    <div className="container px-4 md:px-8 py-12 max-w-7xl mx-auto">
+      <Card className="rounded-xl border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 shadow-sm">
+        <CardHeader className="p-6 pb-2">
           <div className="space-y-1">
-            <h1 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
+            <CardTitle className="text-4xl font-bold tracking-tight bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
               Algorithm Collections
-            </h1>
-            <p className="text-lg text-muted-foreground max-w-3xl leading-relaxed">
+            </CardTitle>
+            <CardDescription className="text-lg text-muted-foreground leading-relaxed max-w-3xl">
               Organize and curate your learning progress. Create personal
               collections or explore community-shared resources.
-            </p>
+            </CardDescription>
           </div>
-        </div>
-
-        <div className="rounded-xl border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 p-6">
+        </CardHeader>
+        <CardContent className="p-6 pt-0">
           <CollectionsGrid
             publicCollections={publicCollections}
             userCollections={userCollections}
@@ -65,8 +71,8 @@ function CollectionsPage() {
             activeTab={activeTab}
             onTabChange={setActiveTab}
           />
-        </div>
-      </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }

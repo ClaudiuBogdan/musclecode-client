@@ -83,7 +83,7 @@ export function CollectionsGrid({
 
             {currentTab === "private" && (
               <Button asChild>
-                <Link to="/collections/new" className="gap-2">
+                <Link to="/collections/new" className="gap-2 dark:text-white">
                   <Plus className="h-4 w-4" />
                   New Collection
                 </Link>
