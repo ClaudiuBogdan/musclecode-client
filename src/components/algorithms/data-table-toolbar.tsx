@@ -20,20 +20,20 @@ export function DataTableToolbar<TData>({
   const isFiltered = table.getState().columnFilters.length > 0;
 
   return (
-    <div className="flex items-center justify-between gap-2">
+    <div className="flex items-center justify-between gap-4 p-1">
       <div className="flex flex-1 items-center space-x-2">
         <Input
-          placeholder="Filter algorithms..."
+          placeholder="Search algorithms..."
           value={(table.getColumn("title")?.getFilterValue() as string) ?? ""}
           onChange={(event) =>
             table.getColumn("title")?.setFilterValue(event.target.value)
           }
-          className="h-8 w-[150px] lg:w-[250px]"
+          className="h-9 w-[200px] lg:w-[300px] rounded-lg border-muted-foreground/30 focus:ring-1 focus:ring-primary"
         />
-        {table.getColumn("category") && (
+        {table.getColumn("categories") && (
           <DataTableFacetedFilter
-            column={table.getColumn("category")}
-            title="Category"
+            column={table.getColumn("categories")}
+            title="Categories"
             options={categories}
           />
         )}
@@ -57,9 +57,8 @@ export function DataTableToolbar<TData>({
       </div>
       <Link to="/algorithms/new">
         <Button
-          variant="outline"
           size="sm"
-          className="ml-auto hidden h-8 lg:flex"
+          className="h-9 rounded-lg bg-gradient-to-r from-primary to-primary/90 text-white shadow-sm hover:shadow-md transition-all"
         >
           New Algorithm
         </Button>

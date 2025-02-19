@@ -1,6 +1,7 @@
-import { ColumnDef } from "@tanstack/react-table"
-import { Badge } from "@/components/ui/badge"
+import { ColumnDef } from "@tanstack/react-table";
+import { Badge } from "@/components/ui/badge";
 import { Link } from "@tanstack/react-router";
+import { cn } from "@/lib/utils";
 
 import { categories, difficulties } from "./data";
 import { DataTableColumnHeader } from "./data-table-column-header";
@@ -16,9 +17,9 @@ export const columns: ColumnDef<AlgorithmPreview>[] = [
     cell: ({ row }) => (
       <Link
         to={`/algorithms/${row.original.id}/view`}
-        className="flex space-x-2"
+        className="group flex items-center space-x-3"
       >
-        <span className="max-w-[500px] truncate font-medium">
+        <span className="max-w-[300px] truncate font-medium group-hover:text-primary transition-colors">
           {row.getValue("title")}
         </span>
       </Link>
@@ -34,17 +35,24 @@ export const columns: ColumnDef<AlgorithmPreview>[] = [
         (d) => d.value === row.getValue("difficulty")
       );
 
-      if (!difficulty) {
-        return null;
-      }
-
       return (
-        <div className="flex items-center">
-          {difficulty.icon && (
-            <difficulty.icon className="mr-2 h-4 w-4 text-muted-foreground" />
+        <Badge
+          variant="outline"
+          className={cn(
+            "rounded-full px-3 py-1 text-xs font-medium",
+            difficulty?.value === "easy" &&
+              "bg-green-100 text-green-800 border-green-200",
+            difficulty?.value === "medium" &&
+              "bg-yellow-100 text-yellow-800 border-yellow-200",
+            difficulty?.value === "hard" &&
+              "bg-red-100 text-red-800 border-red-200"
           )}
-          <span>{difficulty.label}</span>
-        </div>
+        >
+          {difficulty?.icon && (
+            <difficulty.icon className="mr-1.5 h-3.5 w-3.5" />
+          )}
+          {difficulty?.label}
+        </Badge>
       );
     },
     filterFn: (row, id, value) => {
@@ -52,32 +60,29 @@ export const columns: ColumnDef<AlgorithmPreview>[] = [
     },
   },
   {
-    accessorKey: "category",
+    accessorKey: "categories",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Category" />
+      <DataTableColumnHeader column={column} title="Categories" />
     ),
     cell: ({ row }) => {
-      const category = categories.find(
-        (category) => category.value === row.getValue("category")
-      );
+      const algorithmCategories: string[] = row.getValue("categories");
 
-      if (!category) {
-        return null;
-      }
-
-      return (
-        <div className="flex w-[100px] items-center">
-          <Badge variant="outline">
-            {category.icon && (
-              <category.icon className="mr-2 h-4 w-4 text-muted-foreground" />
+      return algorithmCategories.map((value) => {
+        const category = categories.find((c) => c.value === value);
+        return (
+          <div className="flex items-center space-x-2" key={value}>
+            {category?.icon && (
+              <category.icon className="h-4 w-4 text-muted-foreground" />
             )}
-            {category.label}
-          </Badge>
-        </div>
-      );
+            <span className="text-sm text-muted-foreground">
+              {category?.label}
+            </span>
+          </div>
+        );
+      });
     },
-    filterFn: (row, id, value) => {
-      return value.includes(row.getValue(id));
+    filterFn: (row, _, value) => {
+      return value.some((v: string) => row.original.categories.includes(v));
     },
   },
   {

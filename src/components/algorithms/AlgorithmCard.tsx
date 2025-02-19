@@ -2,14 +2,21 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { AlgorithmPreview } from "@/types/algorithm";
 import { Link } from "@tanstack/react-router";
+import { cn } from "@/lib/utils";
 
 interface AlgorithmCardProps {
   algorithm: AlgorithmPreview;
+  className?: string;
 }
 
-export function AlgorithmCard({ algorithm }: AlgorithmCardProps) {
+export function AlgorithmCard({ algorithm, className }: AlgorithmCardProps) {
   return (
-    <Card className="group relative overflow-hidden transition-all hover:shadow-lg dark:hover:shadow-primary/5">
+    <Card
+      className={cn(
+        "group relative overflow-hidden transition-all hover:shadow-lg dark:hover:shadow-primary/5",
+        className
+      )}
+    >
       <CardHeader>
         <Link
           to="/algorithms/$algorithmId"
