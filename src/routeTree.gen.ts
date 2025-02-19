@@ -21,6 +21,7 @@ import { Route as SettingsProfileImport } from './routes/settings/profile'
 const UnauthorizedLazyImport = createFileRoute('/unauthorized')()
 const IndexLazyImport = createFileRoute('/')()
 const SettingsIndexLazyImport = createFileRoute('/settings/')()
+const OnboardingIndexLazyImport = createFileRoute('/onboarding/')()
 const CollectionsIndexLazyImport = createFileRoute('/collections/')()
 const AlgorithmsIndexLazyImport = createFileRoute('/algorithms/')()
 const SettingsSecurityLazyImport = createFileRoute('/settings/security')()
@@ -73,6 +74,14 @@ const SettingsIndexLazyRoute = SettingsIndexLazyImport.update({
   getParentRoute: () => rootRoute,
 } as any).lazy(() =>
   import('./routes/settings/index.lazy').then((d) => d.Route),
+)
+
+const OnboardingIndexLazyRoute = OnboardingIndexLazyImport.update({
+  id: '/onboarding/',
+  path: '/onboarding/',
+  getParentRoute: () => rootRoute,
+} as any).lazy(() =>
+  import('./routes/onboarding/index.lazy').then((d) => d.Route),
 )
 
 const CollectionsIndexLazyRoute = CollectionsIndexLazyImport.update({
@@ -282,6 +291,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CollectionsIndexLazyImport
       parentRoute: typeof rootRoute
     }
+    '/onboarding/': {
+      id: '/onboarding/'
+      path: '/onboarding'
+      fullPath: '/onboarding'
+      preLoaderRoute: typeof OnboardingIndexLazyImport
+      parentRoute: typeof rootRoute
+    }
     '/settings/': {
       id: '/settings/'
       path: '/settings'
@@ -342,6 +358,7 @@ export interface FileRoutesByFullPath {
   '/settings/security': typeof SettingsSecurityLazyRoute
   '/algorithms': typeof AlgorithmsIndexLazyRoute
   '/collections': typeof CollectionsIndexLazyRoute
+  '/onboarding': typeof OnboardingIndexLazyRoute
   '/settings': typeof SettingsIndexLazyRoute
   '/algorithms/$algorithmId/edit': typeof AlgorithmsAlgorithmIdEditLazyRoute
   '/algorithms/$algorithmId/view': typeof AlgorithmsAlgorithmIdViewLazyRoute
@@ -363,6 +380,7 @@ export interface FileRoutesByTo {
   '/settings/security': typeof SettingsSecurityLazyRoute
   '/algorithms': typeof AlgorithmsIndexLazyRoute
   '/collections': typeof CollectionsIndexLazyRoute
+  '/onboarding': typeof OnboardingIndexLazyRoute
   '/settings': typeof SettingsIndexLazyRoute
   '/algorithms/$algorithmId/edit': typeof AlgorithmsAlgorithmIdEditLazyRoute
   '/algorithms/$algorithmId/view': typeof AlgorithmsAlgorithmIdViewLazyRoute
@@ -385,6 +403,7 @@ export interface FileRoutesById {
   '/settings/security': typeof SettingsSecurityLazyRoute
   '/algorithms/': typeof AlgorithmsIndexLazyRoute
   '/collections/': typeof CollectionsIndexLazyRoute
+  '/onboarding/': typeof OnboardingIndexLazyRoute
   '/settings/': typeof SettingsIndexLazyRoute
   '/algorithms/$algorithmId/edit': typeof AlgorithmsAlgorithmIdEditLazyRoute
   '/algorithms/$algorithmId/view': typeof AlgorithmsAlgorithmIdViewLazyRoute
@@ -408,6 +427,7 @@ export interface FileRouteTypes {
     | '/settings/security'
     | '/algorithms'
     | '/collections'
+    | '/onboarding'
     | '/settings'
     | '/algorithms/$algorithmId/edit'
     | '/algorithms/$algorithmId/view'
@@ -428,6 +448,7 @@ export interface FileRouteTypes {
     | '/settings/security'
     | '/algorithms'
     | '/collections'
+    | '/onboarding'
     | '/settings'
     | '/algorithms/$algorithmId/edit'
     | '/algorithms/$algorithmId/view'
@@ -448,6 +469,7 @@ export interface FileRouteTypes {
     | '/settings/security'
     | '/algorithms/'
     | '/collections/'
+    | '/onboarding/'
     | '/settings/'
     | '/algorithms/$algorithmId/edit'
     | '/algorithms/$algorithmId/view'
@@ -470,6 +492,7 @@ export interface RootRouteChildren {
   SettingsSecurityLazyRoute: typeof SettingsSecurityLazyRoute
   AlgorithmsIndexLazyRoute: typeof AlgorithmsIndexLazyRoute
   CollectionsIndexLazyRoute: typeof CollectionsIndexLazyRoute
+  OnboardingIndexLazyRoute: typeof OnboardingIndexLazyRoute
   SettingsIndexLazyRoute: typeof SettingsIndexLazyRoute
   AlgorithmsAlgorithmIdEditLazyRoute: typeof AlgorithmsAlgorithmIdEditLazyRoute
   AlgorithmsAlgorithmIdViewLazyRoute: typeof AlgorithmsAlgorithmIdViewLazyRoute
@@ -491,6 +514,7 @@ const rootRouteChildren: RootRouteChildren = {
   SettingsSecurityLazyRoute: SettingsSecurityLazyRoute,
   AlgorithmsIndexLazyRoute: AlgorithmsIndexLazyRoute,
   CollectionsIndexLazyRoute: CollectionsIndexLazyRoute,
+  OnboardingIndexLazyRoute: OnboardingIndexLazyRoute,
   SettingsIndexLazyRoute: SettingsIndexLazyRoute,
   AlgorithmsAlgorithmIdEditLazyRoute: AlgorithmsAlgorithmIdEditLazyRoute,
   AlgorithmsAlgorithmIdViewLazyRoute: AlgorithmsAlgorithmIdViewLazyRoute,
@@ -521,6 +545,7 @@ export const routeTree = rootRoute
         "/settings/security",
         "/algorithms/",
         "/collections/",
+        "/onboarding/",
         "/settings/",
         "/algorithms/$algorithmId/edit",
         "/algorithms/$algorithmId/view",
@@ -564,6 +589,9 @@ export const routeTree = rootRoute
     },
     "/collections/": {
       "filePath": "collections/index.lazy.tsx"
+    },
+    "/onboarding/": {
+      "filePath": "onboarding/index.lazy.tsx"
     },
     "/settings/": {
       "filePath": "settings/index.lazy.tsx"

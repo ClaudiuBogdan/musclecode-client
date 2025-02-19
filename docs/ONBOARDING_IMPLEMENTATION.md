@@ -9,18 +9,17 @@ This document outlines the implementation plan for the user onboarding flow in M
 src/
 ├── routes/
 │   ├── onboarding/
-│   │   ├── index.lazy.tsx        # Main onboarding route
-│   │   └── components/           # Onboarding-specific components
-│   │       ├── WelcomeStep.tsx
-│   │       ├── ConceptsStep.tsx
-│   │       ├── GoalsStep.tsx
-│   │       ├── QuizStep.tsx
-│   │       └── SummaryStep.tsx
+│   │   └── index.lazy.tsx        # Main onboarding route
 ├── components/
 │   ├── onboarding/
 │   │   ├── OnboardingLayout.tsx  # Layout wrapper with progress
 │   │   ├── StepIndicator.tsx     # Progress indicator
-│   │   └── SkipButton.tsx        # Common skip functionality
+│   │   ├── SkipButton.tsx        # Common skip functionality
+│   │   ├── WelcomeStep.tsx
+│   │   ├── ConceptsStep.tsx
+│   │   ├── GoalsStep.tsx
+│   │   ├── QuizStep.tsx
+│   │   └── SummaryStep.tsx
 ├── hooks/
 │   ├── useOnboarding.ts          # Main onboarding state management
 │   └── useOnboardingQuiz.ts      # Quiz-specific logic
