@@ -11,7 +11,6 @@ interface CollectionsGridProps {
   publicCollections: Collection[];
   userCollections: Collection[];
   onCopyCollection: (id: string) => void;
-  onDeleteCollection: (id: string) => void;
   isLoading?: boolean;
   activeTab?: "public" | "private";
   onTabChange?: (tab: "public" | "private") => void;
@@ -44,7 +43,6 @@ export function CollectionsGrid({
   publicCollections,
   userCollections,
   onCopyCollection,
-  onDeleteCollection,
   isLoading,
   activeTab = "private",
   onTabChange,
@@ -112,6 +110,7 @@ export function CollectionsGrid({
                   <CollectionCard
                     key={collection.id}
                     collection={collection}
+                    isOwner={false}
                     onCopy={onCopyCollection}
                   />
                 ))}
@@ -146,7 +145,7 @@ export function CollectionsGrid({
                   <CollectionCard
                     key={collection.id}
                     collection={collection}
-                    onDelete={onDeleteCollection}
+                    isOwner={true}
                   />
                 ))}
               </div>

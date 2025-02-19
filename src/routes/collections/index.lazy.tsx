@@ -50,7 +50,6 @@ function CollectionsPage() {
         publicCollections={publicCollections}
         userCollections={userCollections}
         onCopyCollection={handleCopyCollection}
-        onDeleteCollection={() => {}} // We'll implement this later
         isLoading={
           (activeTab === "public" && isLoadingPublic) ||
           isLoadingUser ||
