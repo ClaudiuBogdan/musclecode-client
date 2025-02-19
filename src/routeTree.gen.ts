@@ -30,10 +30,10 @@ const SettingsNotificationsLazyImport = createFileRoute(
 )()
 const SettingsBillingLazyImport = createFileRoute('/settings/billing')()
 const CollectionsNewLazyImport = createFileRoute('/collections/new')()
-const CollectionsCollectionIdLazyImport = createFileRoute(
-  '/collections/$collectionId',
-)()
 const AlgorithmsNewLazyImport = createFileRoute('/algorithms/new')()
+const CollectionsCollectionIdIndexLazyImport = createFileRoute(
+  '/collections/$collectionId/',
+)()
 const AlgorithmsAlgorithmIdIndexLazyImport = createFileRoute(
   '/algorithms/$algorithmId/',
 )()
@@ -131,15 +131,6 @@ const CollectionsNewLazyRoute = CollectionsNewLazyImport.update({
   import('./routes/collections/new.lazy').then((d) => d.Route),
 )
 
-const CollectionsCollectionIdLazyRoute =
-  CollectionsCollectionIdLazyImport.update({
-    id: '/collections/$collectionId',
-    path: '/collections/$collectionId',
-    getParentRoute: () => rootRoute,
-  } as any).lazy(() =>
-    import('./routes/collections/$collectionId.lazy').then((d) => d.Route),
-  )
-
 const AlgorithmsNewLazyRoute = AlgorithmsNewLazyImport.update({
   id: '/algorithms/new',
   path: '/algorithms/new',
@@ -156,6 +147,17 @@ const SettingsProfileRoute = SettingsProfileImport.update({
   import('./routes/settings/profile.lazy').then((d) => d.Route),
 )
 
+const CollectionsCollectionIdIndexLazyRoute =
+  CollectionsCollectionIdIndexLazyImport.update({
+    id: '/collections/$collectionId/',
+    path: '/collections/$collectionId/',
+    getParentRoute: () => rootRoute,
+  } as any).lazy(() =>
+    import('./routes/collections/$collectionId/index.lazy').then(
+      (d) => d.Route,
+    ),
+  )
+
 const AlgorithmsAlgorithmIdIndexLazyRoute =
   AlgorithmsAlgorithmIdIndexLazyImport.update({
     id: '/algorithms/$algorithmId/',
@@ -167,11 +169,11 @@ const AlgorithmsAlgorithmIdIndexLazyRoute =
 
 const CollectionsCollectionIdEditLazyRoute =
   CollectionsCollectionIdEditLazyImport.update({
-    id: '/edit',
-    path: '/edit',
-    getParentRoute: () => CollectionsCollectionIdLazyRoute,
+    id: '/collections/$collectionId/edit',
+    path: '/collections/$collectionId/edit',
+    getParentRoute: () => rootRoute,
   } as any).lazy(() =>
-    import('./routes/collections/$collectionId.edit.lazy').then((d) => d.Route),
+    import('./routes/collections/$collectionId/edit.lazy').then((d) => d.Route),
   )
 
 const AlgorithmsAlgorithmIdViewLazyRoute =
@@ -229,13 +231,6 @@ declare module '@tanstack/react-router' {
       path: '/algorithms/new'
       fullPath: '/algorithms/new'
       preLoaderRoute: typeof AlgorithmsNewLazyImport
-      parentRoute: typeof rootRoute
-    }
-    '/collections/$collectionId': {
-      id: '/collections/$collectionId'
-      path: '/collections/$collectionId'
-      fullPath: '/collections/$collectionId'
-      preLoaderRoute: typeof CollectionsCollectionIdLazyImport
       parentRoute: typeof rootRoute
     }
     '/collections/new': {
@@ -310,10 +305,10 @@ declare module '@tanstack/react-router' {
     }
     '/collections/$collectionId/edit': {
       id: '/collections/$collectionId/edit'
-      path: '/edit'
+      path: '/collections/$collectionId/edit'
       fullPath: '/collections/$collectionId/edit'
       preLoaderRoute: typeof CollectionsCollectionIdEditLazyImport
-      parentRoute: typeof CollectionsCollectionIdLazyImport
+      parentRoute: typeof rootRoute
     }
     '/algorithms/$algorithmId/': {
       id: '/algorithms/$algorithmId/'
@@ -322,24 +317,17 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AlgorithmsAlgorithmIdIndexLazyImport
       parentRoute: typeof rootRoute
     }
+    '/collections/$collectionId/': {
+      id: '/collections/$collectionId/'
+      path: '/collections/$collectionId'
+      fullPath: '/collections/$collectionId'
+      preLoaderRoute: typeof CollectionsCollectionIdIndexLazyImport
+      parentRoute: typeof rootRoute
+    }
   }
 }
 
 // Create and export the route tree
-
-interface CollectionsCollectionIdLazyRouteChildren {
-  CollectionsCollectionIdEditLazyRoute: typeof CollectionsCollectionIdEditLazyRoute
-}
-
-const CollectionsCollectionIdLazyRouteChildren: CollectionsCollectionIdLazyRouteChildren =
-  {
-    CollectionsCollectionIdEditLazyRoute: CollectionsCollectionIdEditLazyRoute,
-  }
-
-const CollectionsCollectionIdLazyRouteWithChildren =
-  CollectionsCollectionIdLazyRoute._addFileChildren(
-    CollectionsCollectionIdLazyRouteChildren,
-  )
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexLazyRoute
@@ -347,7 +335,6 @@ export interface FileRoutesByFullPath {
   '/unauthorized': typeof UnauthorizedLazyRoute
   '/settings/profile': typeof SettingsProfileRoute
   '/algorithms/new': typeof AlgorithmsNewLazyRoute
-  '/collections/$collectionId': typeof CollectionsCollectionIdLazyRouteWithChildren
   '/collections/new': typeof CollectionsNewLazyRoute
   '/settings/billing': typeof SettingsBillingLazyRoute
   '/settings/notifications': typeof SettingsNotificationsLazyRoute
@@ -360,6 +347,7 @@ export interface FileRoutesByFullPath {
   '/algorithms/$algorithmId/view': typeof AlgorithmsAlgorithmIdViewLazyRoute
   '/collections/$collectionId/edit': typeof CollectionsCollectionIdEditLazyRoute
   '/algorithms/$algorithmId': typeof AlgorithmsAlgorithmIdIndexLazyRoute
+  '/collections/$collectionId': typeof CollectionsCollectionIdIndexLazyRoute
 }
 
 export interface FileRoutesByTo {
@@ -368,7 +356,6 @@ export interface FileRoutesByTo {
   '/unauthorized': typeof UnauthorizedLazyRoute
   '/settings/profile': typeof SettingsProfileRoute
   '/algorithms/new': typeof AlgorithmsNewLazyRoute
-  '/collections/$collectionId': typeof CollectionsCollectionIdLazyRouteWithChildren
   '/collections/new': typeof CollectionsNewLazyRoute
   '/settings/billing': typeof SettingsBillingLazyRoute
   '/settings/notifications': typeof SettingsNotificationsLazyRoute
@@ -381,6 +368,7 @@ export interface FileRoutesByTo {
   '/algorithms/$algorithmId/view': typeof AlgorithmsAlgorithmIdViewLazyRoute
   '/collections/$collectionId/edit': typeof CollectionsCollectionIdEditLazyRoute
   '/algorithms/$algorithmId': typeof AlgorithmsAlgorithmIdIndexLazyRoute
+  '/collections/$collectionId': typeof CollectionsCollectionIdIndexLazyRoute
 }
 
 export interface FileRoutesById {
@@ -390,7 +378,6 @@ export interface FileRoutesById {
   '/unauthorized': typeof UnauthorizedLazyRoute
   '/settings/profile': typeof SettingsProfileRoute
   '/algorithms/new': typeof AlgorithmsNewLazyRoute
-  '/collections/$collectionId': typeof CollectionsCollectionIdLazyRouteWithChildren
   '/collections/new': typeof CollectionsNewLazyRoute
   '/settings/billing': typeof SettingsBillingLazyRoute
   '/settings/notifications': typeof SettingsNotificationsLazyRoute
@@ -403,6 +390,7 @@ export interface FileRoutesById {
   '/algorithms/$algorithmId/view': typeof AlgorithmsAlgorithmIdViewLazyRoute
   '/collections/$collectionId/edit': typeof CollectionsCollectionIdEditLazyRoute
   '/algorithms/$algorithmId/': typeof AlgorithmsAlgorithmIdIndexLazyRoute
+  '/collections/$collectionId/': typeof CollectionsCollectionIdIndexLazyRoute
 }
 
 export interface FileRouteTypes {
@@ -413,7 +401,6 @@ export interface FileRouteTypes {
     | '/unauthorized'
     | '/settings/profile'
     | '/algorithms/new'
-    | '/collections/$collectionId'
     | '/collections/new'
     | '/settings/billing'
     | '/settings/notifications'
@@ -426,6 +413,7 @@ export interface FileRouteTypes {
     | '/algorithms/$algorithmId/view'
     | '/collections/$collectionId/edit'
     | '/algorithms/$algorithmId'
+    | '/collections/$collectionId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -433,7 +421,6 @@ export interface FileRouteTypes {
     | '/unauthorized'
     | '/settings/profile'
     | '/algorithms/new'
-    | '/collections/$collectionId'
     | '/collections/new'
     | '/settings/billing'
     | '/settings/notifications'
@@ -446,6 +433,7 @@ export interface FileRouteTypes {
     | '/algorithms/$algorithmId/view'
     | '/collections/$collectionId/edit'
     | '/algorithms/$algorithmId'
+    | '/collections/$collectionId'
   id:
     | '__root__'
     | '/'
@@ -453,7 +441,6 @@ export interface FileRouteTypes {
     | '/unauthorized'
     | '/settings/profile'
     | '/algorithms/new'
-    | '/collections/$collectionId'
     | '/collections/new'
     | '/settings/billing'
     | '/settings/notifications'
@@ -466,6 +453,7 @@ export interface FileRouteTypes {
     | '/algorithms/$algorithmId/view'
     | '/collections/$collectionId/edit'
     | '/algorithms/$algorithmId/'
+    | '/collections/$collectionId/'
   fileRoutesById: FileRoutesById
 }
 
@@ -475,7 +463,6 @@ export interface RootRouteChildren {
   UnauthorizedLazyRoute: typeof UnauthorizedLazyRoute
   SettingsProfileRoute: typeof SettingsProfileRoute
   AlgorithmsNewLazyRoute: typeof AlgorithmsNewLazyRoute
-  CollectionsCollectionIdLazyRoute: typeof CollectionsCollectionIdLazyRouteWithChildren
   CollectionsNewLazyRoute: typeof CollectionsNewLazyRoute
   SettingsBillingLazyRoute: typeof SettingsBillingLazyRoute
   SettingsNotificationsLazyRoute: typeof SettingsNotificationsLazyRoute
@@ -486,7 +473,9 @@ export interface RootRouteChildren {
   SettingsIndexLazyRoute: typeof SettingsIndexLazyRoute
   AlgorithmsAlgorithmIdEditLazyRoute: typeof AlgorithmsAlgorithmIdEditLazyRoute
   AlgorithmsAlgorithmIdViewLazyRoute: typeof AlgorithmsAlgorithmIdViewLazyRoute
+  CollectionsCollectionIdEditLazyRoute: typeof CollectionsCollectionIdEditLazyRoute
   AlgorithmsAlgorithmIdIndexLazyRoute: typeof AlgorithmsAlgorithmIdIndexLazyRoute
+  CollectionsCollectionIdIndexLazyRoute: typeof CollectionsCollectionIdIndexLazyRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
@@ -495,8 +484,6 @@ const rootRouteChildren: RootRouteChildren = {
   UnauthorizedLazyRoute: UnauthorizedLazyRoute,
   SettingsProfileRoute: SettingsProfileRoute,
   AlgorithmsNewLazyRoute: AlgorithmsNewLazyRoute,
-  CollectionsCollectionIdLazyRoute:
-    CollectionsCollectionIdLazyRouteWithChildren,
   CollectionsNewLazyRoute: CollectionsNewLazyRoute,
   SettingsBillingLazyRoute: SettingsBillingLazyRoute,
   SettingsNotificationsLazyRoute: SettingsNotificationsLazyRoute,
@@ -507,7 +494,9 @@ const rootRouteChildren: RootRouteChildren = {
   SettingsIndexLazyRoute: SettingsIndexLazyRoute,
   AlgorithmsAlgorithmIdEditLazyRoute: AlgorithmsAlgorithmIdEditLazyRoute,
   AlgorithmsAlgorithmIdViewLazyRoute: AlgorithmsAlgorithmIdViewLazyRoute,
+  CollectionsCollectionIdEditLazyRoute: CollectionsCollectionIdEditLazyRoute,
   AlgorithmsAlgorithmIdIndexLazyRoute: AlgorithmsAlgorithmIdIndexLazyRoute,
+  CollectionsCollectionIdIndexLazyRoute: CollectionsCollectionIdIndexLazyRoute,
 }
 
 export const routeTree = rootRoute
@@ -525,7 +514,6 @@ export const routeTree = rootRoute
         "/unauthorized",
         "/settings/profile",
         "/algorithms/new",
-        "/collections/$collectionId",
         "/collections/new",
         "/settings/billing",
         "/settings/notifications",
@@ -536,7 +524,9 @@ export const routeTree = rootRoute
         "/settings/",
         "/algorithms/$algorithmId/edit",
         "/algorithms/$algorithmId/view",
-        "/algorithms/$algorithmId/"
+        "/collections/$collectionId/edit",
+        "/algorithms/$algorithmId/",
+        "/collections/$collectionId/"
       ]
     },
     "/": {
@@ -553,12 +543,6 @@ export const routeTree = rootRoute
     },
     "/algorithms/new": {
       "filePath": "algorithms/new.lazy.tsx"
-    },
-    "/collections/$collectionId": {
-      "filePath": "collections/$collectionId.lazy.tsx",
-      "children": [
-        "/collections/$collectionId/edit"
-      ]
     },
     "/collections/new": {
       "filePath": "collections/new.lazy.tsx"
@@ -591,11 +575,13 @@ export const routeTree = rootRoute
       "filePath": "algorithms/$algorithmId/view.lazy.tsx"
     },
     "/collections/$collectionId/edit": {
-      "filePath": "collections/$collectionId.edit.lazy.tsx",
-      "parent": "/collections/$collectionId"
+      "filePath": "collections/$collectionId/edit.lazy.tsx"
     },
     "/algorithms/$algorithmId/": {
       "filePath": "algorithms/$algorithmId/index.lazy.tsx"
+    },
+    "/collections/$collectionId/": {
+      "filePath": "collections/$collectionId/index.lazy.tsx"
     }
   }
 }

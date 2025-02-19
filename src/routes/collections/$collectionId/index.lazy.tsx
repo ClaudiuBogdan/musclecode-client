@@ -1,39 +1,39 @@
-import { createLazyFileRoute } from "@tanstack/react-router";
-import { useCollection } from "@/hooks/useCollection";
-import { usePublicCollections } from "@/hooks/usePublicCollections";
-import { useCopyCollection } from "@/hooks/useCopyCollection";
-import { Button } from "@/components/ui/button";
-import { Copy } from "lucide-react";
-import { AlgorithmCard } from "@/components/algorithms/AlgorithmCard";
-import { Skeleton } from "@/components/ui/skeleton";
-import { createLogger } from "@/lib/logger";
-import { showToast } from "@/utils/toast";
-export const Route = createLazyFileRoute("/collections/$collectionId")({
+import { createLazyFileRoute } from '@tanstack/react-router'
+import { useCollection } from '@/hooks/useCollection'
+import { usePublicCollections } from '@/hooks/usePublicCollections'
+import { useCopyCollection } from '@/hooks/useCopyCollection'
+import { Button } from '@/components/ui/button'
+import { Copy } from 'lucide-react'
+import { AlgorithmCard } from '@/components/algorithms/AlgorithmCard'
+import { Skeleton } from '@/components/ui/skeleton'
+import { createLogger } from '@/lib/logger'
+import { showToast } from '@/utils/toast'
+export const Route = createLazyFileRoute('/collections/$collectionId/')({
   component: CollectionDetailsPage,
-});
+})
 
-const logger = createLogger("CollectionDetailsPage");
+const logger = createLogger('CollectionDetailsPage')
 
 function CollectionDetailsPage() {
-  const { collectionId } = Route.useParams();
-  const { data: collection, isLoading } = useCollection(collectionId);
-  const { data: publicCollections = [] } = usePublicCollections();
-  const copyCollectionMutation = useCopyCollection();
+  const { collectionId } = Route.useParams()
+  const { data: collection, isLoading } = useCollection(collectionId)
+  const { data: publicCollections = [] } = usePublicCollections()
+  const copyCollectionMutation = useCopyCollection()
 
   const handleCopyCollection = async () => {
-    if (!collection) return;
+    if (!collection) return
 
     try {
-      logger.info("Copying collection", { collectionId: collection.id });
-      await copyCollectionMutation.mutateAsync(collection.id);
-      showToast.success("Collection copied");
+      logger.info('Copying collection', { collectionId: collection.id })
+      await copyCollectionMutation.mutateAsync(collection.id)
+      showToast.success('Collection copied')
     } catch (error) {
-      logger.error("Failed to copy collection", {
+      logger.error('Failed to copy collection', {
         error: error instanceof Error ? error.message : String(error),
-      });
-      showToast.error("Failed to copy collection");
+      })
+      showToast.error('Failed to copy collection')
     }
-  };
+  }
 
   if (isLoading) {
     return (
@@ -57,7 +57,7 @@ function CollectionDetailsPage() {
           ))}
         </div>
       </div>
-    );
+    )
   }
 
   if (!collection) {
@@ -70,12 +70,12 @@ function CollectionDetailsPage() {
           </p>
         </div>
       </div>
-    );
+    )
   }
 
   const isPublicCollection = publicCollections.some(
-    (c) => c.id === collectionId
-  );
+    (c) => c.id === collectionId,
+  )
 
   return (
     <div className="container py-8">
@@ -95,8 +95,8 @@ function CollectionDetailsPage() {
           >
             <Copy className="h-4 w-4" />
             {copyCollectionMutation.isPending
-              ? "Copying..."
-              : "Copy Collection"}
+              ? 'Copying...'
+              : 'Copy Collection'}
           </Button>
         )}
       </div>
@@ -107,5 +107,5 @@ function CollectionDetailsPage() {
         ))}
       </div>
     </div>
-  );
+  )
 }

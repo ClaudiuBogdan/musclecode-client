@@ -16,19 +16,31 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { AlgorithmSelector } from "@/components/algorithms/AlgorithmSelector";
 import { AlgorithmTemplate } from "@/types/algorithm";
+import { Loader2 } from "lucide-react";
 
 const collectionFormSchema = z.object({
   name: z
     .string()
+    .trim()
     .min(3, "Name must be at least 3 characters")
     .max(50, "Name must be less than 50 characters"),
   description: z
     .string()
+    .trim()
     .min(10, "Description must be at least 10 characters")
     .max(500, "Description must be less than 500 characters"),
   isPublic: z.boolean().default(false),
-  algorithmIds: z.array(z.string()).min(1, "Select at least one algorithm"),
-  tags: z.array(z.string()),
+  algorithmIds: z
+    .array(z.string())
+    .min(1, "Select at least one algorithm")
+    .max(50, "Maximum 50 algorithms allowed per collection"),
+  tags: z
+    .array(z.string().trim())
+    .min(0)
+    .max(10, "Maximum 10 tags allowed")
+    .refine((tags) => tags.every((tag) => tag.length > 0), {
+      message: "Tags cannot be empty",
+    }),
 });
 
 export type CollectionFormData = z.infer<typeof collectionFormSchema>;
@@ -57,9 +69,20 @@ export function CollectionForm({
     },
   });
 
+  const handleSubmit = async (data: CollectionFormData) => {
+    // Clean the data before submitting
+    const cleanedData = {
+      ...data,
+      name: data.name.trim(),
+      description: data.description.trim(),
+      tags: data.tags.map((tag) => tag.trim()).filter((tag) => tag.length > 0),
+    };
+    await onSubmit(cleanedData);
+  };
+
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-8">
         <FormField
           control={form.control}
           name="name"
@@ -67,7 +90,11 @@ export function CollectionForm({
             <FormItem>
               <FormLabel>Name</FormLabel>
               <FormControl>
-                <Input placeholder="Data Structures 101" {...field} />
+                <Input
+                  placeholder="Data Structures 101"
+                  {...field}
+                  disabled={isLoading}
+                />
               </FormControl>
               <FormDescription>
                 Give your collection a descriptive name
@@ -86,7 +113,9 @@ export function CollectionForm({
               <FormControl>
                 <Textarea
                   placeholder="A collection of fundamental data structures..."
+                  className="min-h-[100px]"
                   {...field}
+                  disabled={isLoading}
                 />
               </FormControl>
               <FormDescription>
@@ -112,6 +141,7 @@ export function CollectionForm({
                 <Switch
                   checked={field.value}
                   onCheckedChange={field.onChange}
+                  disabled={isLoading}
                 />
               </FormControl>
             </FormItem>
@@ -129,6 +159,7 @@ export function CollectionForm({
                   value={field.value}
                   onChange={field.onChange}
                   algorithms={availableAlgorithms}
+                  disabled={isLoading}
                 />
               </FormControl>
               <FormDescription>
@@ -139,12 +170,17 @@ export function CollectionForm({
           )}
         />
 
-        <Button type="submit" disabled={isLoading}>
-          {isLoading
-            ? "Saving..."
-            : initialData
-              ? "Update Collection"
-              : "Create Collection"}
+        <Button type="submit" disabled={isLoading} className="w-full sm:w-auto">
+          {isLoading ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              <span>Saving Changes...</span>
+            </>
+          ) : initialData ? (
+            "Update Collection"
+          ) : (
+            "Create Collection"
+          )}
         </Button>
       </form>
     </Form>

@@ -22,16 +22,18 @@ interface AlgorithmSelectorProps {
   value: string[];
   onChange: (ids: string[]) => void;
   algorithms?: AlgorithmTemplate[];
+  disabled?: boolean;
 }
 
 export function AlgorithmSelector({
   value = [],
   onChange,
   algorithms = [],
+  disabled = false,
 }: AlgorithmSelectorProps) {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
-  
+
   const selectedAlgorithms = algorithms.filter((a) => value.includes(a.id));
   const filteredAlgorithms = algorithms.filter(
     (alg) =>
@@ -40,6 +42,7 @@ export function AlgorithmSelector({
   );
 
   const toggleAlgorithm = (id: string) => {
+    if (disabled) return;
     onChange(
       value.includes(id) ? value.filter((i) => i !== id) : [...value, id]
     );
@@ -54,6 +57,7 @@ export function AlgorithmSelector({
             role="combobox"
             aria-expanded={open}
             className="w-full justify-between h-11 px-4 rounded-lg"
+            disabled={disabled}
           >
             <span className="truncate">
               {selectedAlgorithms.length > 0
