@@ -12,7 +12,7 @@ interface ButtonBarProps {
   hasPassed: boolean;
   isExecuting: boolean;
   isSubmitting: boolean;
-  ratingSchedule: RatingSchedule;
+  ratingSchedule?: RatingSchedule;
   onRun: () => void;
   onReset: () => void;
 }
@@ -75,7 +75,7 @@ export const ButtonBar: React.FC<ButtonBarProps> = ({
         </div>
       </div>
 
-      {hasPassed && (
+      {hasPassed && ratingSchedule && (
         <DifficultySelector
           onReset={handleReset}
           algorithmId={algorithmId}

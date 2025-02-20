@@ -50,6 +50,6 @@ export const selectAvailableFiles = (
   const algorithm = state.algorithms[algorithmId];
   if (!algorithm) return [];
 
-  const files = algorithm.code.storedCode[language] ?? {};
+  const files = algorithm.code.storedCode[language];
   return Object.keys(files).map((name) => ({ name, readOnly: false }));
 };

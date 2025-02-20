@@ -78,7 +78,7 @@ export const DifficultySelector: React.FC<DifficultySelectorProps> = ({
 
   DIFFICULTIES.forEach((difficulty) => {
     difficulty.nextReviewDate = new Date(
-      Date.now() + ratingSchedule[difficulty.value]
+      Date.now() + ratingSchedule[difficulty.value] * 24 * 60 * 60 * 1000
     );
   });
 
