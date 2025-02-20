@@ -5,6 +5,9 @@ import { Card } from "../ui/card";
 import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
 import { Label } from "../ui/label";
 import { useOnboarding } from "../../hooks/useOnboarding";
+import { Loader2, AlertCircle } from "lucide-react";
+import { Alert, AlertDescription } from "../ui/alert";
+import { toast } from "sonner";
 
 interface Question {
   id: string;
@@ -77,30 +80,56 @@ const questions: Question[] = [
 ];
 
 export function QuizStep({ onNext, onBack }: StepProps) {
-  const { updateOnboarding } = useOnboarding();
+  const { submitQuiz, skipOnboarding, isLoading } = useOnboarding();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [answers, setAnswers] = useState<
     Record<string, Question["options"][number]["level"]>
   >({});
 
   const handleSubmit = () => {
-    const score = Object.values(answers).reduce((acc, level) => {
-      return acc + (level === "confident" ? 2 : level === "familiar" ? 1 : 0);
-    }, 0);
+    setIsSubmitting(true);
+    setError(null);
 
-    updateOnboarding({
-      quizResults: {
-        algorithmKnowledge: answers,
-        score,
-        completedAt: new Date().toISOString(),
+    submitQuiz(answers, {
+      onSuccess: () => {
+        onNext();
+      },
+      onError: (error) => {
+        const errorMessage =
+          error instanceof Error
+            ? error.message
+            : "Failed to submit your quiz answers. Please try again.";
+        setError(errorMessage);
+        toast.error("Error", {
+          description: errorMessage,
+        });
+      },
+      onSettled: () => {
+        setIsSubmitting(false);
       },
     });
-    onNext();
   };
 
   const isComplete = questions.every((q) => answers[q.id]);
 
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-8">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
+      {error && (
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      )}
+
       <div className="text-center max-w-2xl mx-auto">
         <h2 className="text-2xl font-bold tracking-tight mb-2">
           Quick Knowledge Check
@@ -145,11 +174,25 @@ export function QuizStep({ onNext, onBack }: StepProps) {
       </div>
 
       <div className="flex items-center justify-end gap-4">
-        <Button variant="outline" onClick={onBack}>
+        <Button variant="outline" onClick={onBack} disabled={isSubmitting}>
           Back
         </Button>
-        <Button onClick={handleSubmit} disabled={!isComplete}>
-          Continue
+        <Button onClick={handleSubmit} disabled={isSubmitting || !isComplete}>
+          {isSubmitting ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Saving...
+            </>
+          ) : (
+            "Continue"
+          )}
+        </Button>
+        <Button
+          variant="ghost"
+          onClick={skipOnboarding}
+          disabled={isSubmitting}
+        >
+          Skip
         </Button>
       </div>
     </div>

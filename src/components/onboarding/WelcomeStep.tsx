@@ -1,7 +1,10 @@
 import { StepProps } from "../../lib/onboarding/types";
 import { Button } from "../ui/button";
+import { useOnboarding } from "../../hooks/useOnboarding";
 
-export function WelcomeStep({ onNext, onSkip }: StepProps) {
+export function WelcomeStep({ onNext }: StepProps) {
+  const { skipOnboarding } = useOnboarding();
+
   return (
     <div className="space-y-6 max-w-2xl mx-auto text-center">
       <h1 className="text-3xl font-bold tracking-tight">
@@ -41,7 +44,7 @@ export function WelcomeStep({ onNext, onSkip }: StepProps) {
       </div>
 
       <div className="flex items-center justify-center gap-4">
-        <Button variant="outline" onClick={onSkip}>
+        <Button variant="outline" onClick={skipOnboarding}>
           Skip Setup
         </Button>
         <Button onClick={onNext}>Get Started</Button>

@@ -1,7 +1,11 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { OnboardingState } from "../lib/onboarding/types";
+import {
+  OnboardingState,
+  UserGoals,
+  QuizResults,
+} from "../lib/onboarding/types";
 import { useRouter } from "@tanstack/react-router";
-import { mockApi } from "../lib/onboarding/mock-api";
+import { onboardingApi } from "../lib/onboarding/api";
 
 export const useOnboarding = () => {
   const queryClient = useQueryClient();
@@ -9,22 +13,29 @@ export const useOnboarding = () => {
 
   const { data: onboardingState, isLoading } = useQuery({
     queryKey: ["onboarding"],
-    queryFn: () => mockApi.getOnboardingState(),
+    queryFn: () => onboardingApi.getOnboardingState(),
   });
 
   const { mutate: updateOnboarding } = useMutation({
     mutationFn: (data: Partial<OnboardingState>) =>
-      mockApi.updateOnboardingState(data),
+      onboardingApi.updateOnboardingState(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["onboarding"] });
     },
   });
 
-  const { mutate: skipOnboarding } = useMutation({
-    mutationFn: () => mockApi.completeOnboarding(),
+  const { mutate: saveGoals } = useMutation({
+    mutationFn: (goals: UserGoals) => onboardingApi.saveUserGoals(goals),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["onboarding"] });
-      router.navigate({ to: "/" });
+    },
+  });
+
+  const { mutate: submitQuiz } = useMutation({
+    mutationFn: (answers: QuizResults["algorithmKnowledge"]) =>
+      onboardingApi.submitQuiz(answers),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["onboarding"] });
     },
   });
 
@@ -43,7 +54,9 @@ export const useOnboarding = () => {
     if (currentIndex < steps.length - 1) {
       updateOnboarding({ currentStep: steps[currentIndex + 1] });
     } else {
-      skipOnboarding();
+      // When reaching the end, mark onboarding as completed and redirect
+      updateOnboarding({ isCompleted: true });
+      router.navigate({ to: "/" });
     }
   };
 
@@ -64,12 +77,19 @@ export const useOnboarding = () => {
     }
   };
 
+  const skipOnboarding = () => {
+    updateOnboarding({ isCompleted: true });
+    router.navigate({ to: "/" });
+  };
+
   return {
     onboardingState,
     isLoading,
     updateOnboarding,
-    skipOnboarding,
+    saveGoals,
+    submitQuiz,
     handleNext,
     handleBack,
+    skipOnboarding,
   };
 };

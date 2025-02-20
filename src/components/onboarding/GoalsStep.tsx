@@ -4,6 +4,9 @@ import { Button } from "../ui/button";
 import { Label } from "../ui/label";
 import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
 import { useOnboarding } from "../../hooks/useOnboarding";
+import { Loader2, AlertCircle } from "lucide-react";
+import { Alert, AlertDescription } from "../ui/alert";
+import { toast } from "sonner";
 
 const timeCommitments = [
   { value: "low", label: "15-30 minutes daily" },
@@ -44,7 +47,9 @@ const experienceLevels = [
 ] as const;
 
 export function GoalsStep({ onNext, onBack }: StepProps) {
-  const { updateOnboarding } = useOnboarding();
+  const { saveGoals, skipOnboarding, isLoading } = useOnboarding();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [timeCommitment, setTimeCommitment] =
     useState<(typeof timeCommitments)[number]["value"]>("medium");
   const [learningStyle, setLearningStyle] =
@@ -53,19 +58,54 @@ export function GoalsStep({ onNext, onBack }: StepProps) {
     useState<(typeof experienceLevels)[number]["value"]>("beginner");
 
   const handleSubmit = () => {
-    updateOnboarding({
-      goals: {
+    setIsSubmitting(true);
+    setError(null);
+
+    saveGoals(
+      {
         timeCommitment,
         learningPreference: learningStyle,
         experienceLevel,
         focusAreas: [], // This will be determined by the quiz
       },
-    });
-    onNext();
+      {
+        onSuccess: () => {
+          onNext();
+        },
+        onError: (error) => {
+          const errorMessage =
+            error instanceof Error
+              ? error.message
+              : "Failed to save your goals. Please try again.";
+          setError(errorMessage);
+          toast.error("Error", {
+            description: errorMessage,
+          });
+        },
+        onSettled: () => {
+          setIsSubmitting(false);
+        },
+      }
+    );
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-8">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
+      {error && (
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      )}
+
       <div className="text-center max-w-2xl mx-auto">
         <h2 className="text-2xl font-bold tracking-tight mb-2">
           Customize Your Learning Journey
@@ -151,10 +191,26 @@ export function GoalsStep({ onNext, onBack }: StepProps) {
       </div>
 
       <div className="flex items-center justify-end gap-4">
-        <Button variant="outline" onClick={onBack}>
+        <Button variant="outline" onClick={onBack} disabled={isSubmitting}>
           Back
         </Button>
-        <Button onClick={handleSubmit}>Continue</Button>
+        <Button onClick={handleSubmit} disabled={isSubmitting}>
+          {isSubmitting ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Saving...
+            </>
+          ) : (
+            "Continue"
+          )}
+        </Button>
+        <Button
+          variant="ghost"
+          onClick={skipOnboarding}
+          disabled={isSubmitting}
+        >
+          Skip
+        </Button>
       </div>
     </div>
   );

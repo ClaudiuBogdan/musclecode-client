@@ -1,8 +1,11 @@
 import { StepProps } from "../../lib/onboarding/types";
 import { Button } from "../ui/button";
 import { Card } from "../ui/card";
+import { useOnboarding } from "../../hooks/useOnboarding";
 
 export function ConceptsStep({ onNext, onBack }: StepProps) {
+  const { skipOnboarding } = useOnboarding();
+
   return (
     <div className="space-y-6">
       <div className="text-center max-w-2xl mx-auto">
@@ -71,6 +74,9 @@ export function ConceptsStep({ onNext, onBack }: StepProps) {
           Back
         </Button>
         <Button onClick={onNext}>Continue</Button>
+        <Button variant="ghost" onClick={skipOnboarding}>
+          Skip
+        </Button>
       </div>
     </div>
   );
