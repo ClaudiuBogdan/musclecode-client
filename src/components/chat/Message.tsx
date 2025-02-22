@@ -75,7 +75,7 @@ export const Message: React.FC<MessageProps> = ({ message }) => {
             </AvatarFallback>
           </Avatar>
         ) : null}
-        <div className="flex flex-col gap-2 flex-1">
+        <div className="flex flex-col gap-2 flex-1 overflow-x-auto">
           <AnimatePresence mode="wait">
             {isEditing ? (
               <EditMessage

@@ -68,7 +68,7 @@ export const ChatThread: React.FC<ChatThreadProps> = ({ className }) => {
         <div
           ref={threadRef}
           data-thread-id={thread?.id}
-          className="flex-1 overflow-y-auto space-y-4 p-4"
+          className="flex-1 space-y-4 p-4"
         >
           {messages.map((message) => (
             <Message key={message.id} message={message} />
