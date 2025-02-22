@@ -91,6 +91,7 @@ export const Markdown: FC<MarkdownProps> = ({
             PreTag="div"
             showLineNumbers={false}
             customStyle={{
+              overflowX: "auto",
               padding: "0.5rem",
               fontSize: "0.875rem",
               lineHeight: 1.5,
@@ -109,15 +110,29 @@ export const Markdown: FC<MarkdownProps> = ({
     ? {
         // @ts-expect-error - remarkMath types are not properly exposed
         math: ({ children }: MathComponentProps) => (
-          <div className="my-4 [&>.katex]:text-base [&>.katex]:block">
+          <span className="my-4 [&>.katex]:text-base [&>.katex]:block">
             {children}
-          </div>
+          </span>
         ),
         inlineMath: ({ children }: MathComponentProps) => (
           <span className="[&>.katex]:text-sm [&>.katex]:inline">
             {children}
           </span>
         ),
+        mi: ({ children }: MathComponentProps) => (
+          <span className="katex-mathml">{children}</span>
+        ),
+        mo: ({ children }: MathComponentProps) => (
+          <span className="katex-mathml">{children}</span>
+        ),
+        mn: ({ children }: MathComponentProps) => (
+          <span className="katex-mathml">{children}</span>
+        ),
+        mrow: ({ children }: MathComponentProps) => (
+          <span className="katex-mathml">{children}</span>
+        ),
+        semantics: () => null,
+        annotation: () => null,
       }
     : {};
 
@@ -127,12 +142,14 @@ export const Markdown: FC<MarkdownProps> = ({
           return (
             <details
               className={cn(
-                "group border rounded-xl my-4 overflow-hidden",
-                "transition-[max-height] duration-300 ease-[cubic-bezier(0.25,0.1,0.25,1)]",
-                "open:max-h-[1000px] max-h-[60px]",
+                "group border rounded-xl my-4",
+                "transition-all duration-300 ease-out",
+                "[&[open]>summary>svg]:rotate-90",
+                "[&[open]>div]:animate-in [&[open]>div]:fade-in-0 [&[open]>div]:slide-in-from-top-2",
+                "[&:not([open])>div]:animate-out [&:not([open])>div]:fade-out-0 [&:not([open])>div]:slide-out-to-top-2",
                 isDarkMode
-                  ? "border-zinc-700 open:border-zinc-500"
-                  : "border-border open:border-primary"
+                  ? "border-zinc-700 hover:border-zinc-500"
+                  : "border-border hover:border-primary"
               )}
               {...props}
             >
@@ -144,7 +161,7 @@ export const Markdown: FC<MarkdownProps> = ({
           return (
             <summary
               className={cn(
-                "flex items-center cursor-pointer p-4 select-none",
+                "flex items-center gap-3 cursor-pointer py-4 px-4",
                 "transition-all duration-200 ease-out",
                 "hover:bg-accent/50 active:bg-accent/70",
                 "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
@@ -152,29 +169,15 @@ export const Markdown: FC<MarkdownProps> = ({
               )}
               {...props}
             >
-              <ChevronRight className="h-5 w-5 mr-2 transition-transform duration-300 group-open:rotate-90 text-muted-foreground" />
-              <span className="font-semibold text-foreground text-base">
-                {children}
-              </span>
+              <ChevronRight
+                className={cn(
+                  "h-5 w-5 shrink-0 transition-transform duration-200",
+                  "text-muted-foreground"
+                )}
+              />
+              <Markdown content={String(children).trim()} />
             </summary>
           );
-        },
-        div({ children, className, ...props }) {
-          if (className === "accordion-content") {
-            return (
-              <div
-                className={cn(
-                  "p-4 pt-0 overflow-hidden",
-                  "animate-[contentShow_300ms_cubic-bezier(0.16,1,0.3,1)]",
-                  className
-                )}
-                {...props}
-              >
-                {children}
-              </div>
-            );
-          }
-          return <div {...props}>{children}</div>;
         },
       }
     : {};
@@ -186,11 +189,9 @@ export const Markdown: FC<MarkdownProps> = ({
   };
 
   const processedContent = enableDetails
-    ? content.replace(/<details>([\s\S]*?)<\/details>/g, (match) =>
-        match
-          .replace(/<summary>/g, "<summary>")
-          .replace(/<\/summary>/g, '</summary><div class="accordion-content">')
-          .replace(/<\/details>/g, "</div></details>")
+    ? content.replace(
+        /<details>([\s\S]*?)<\/details>/g,
+        (match) => `\n${match}\n`
       )
     : content;
 
@@ -203,6 +204,7 @@ export const Markdown: FC<MarkdownProps> = ({
         "prose-p:text-foreground",
         "prose-strong:text-foreground",
         "prose-code:text-foreground",
+        "prose-code:before:content-[''] prose-code:after:content-['']",
         "prose-pre:bg-secondary",
         "prose-ul:text-foreground",
         "prose-li:text-foreground",
