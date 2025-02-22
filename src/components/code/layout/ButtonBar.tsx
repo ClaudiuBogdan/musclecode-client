@@ -12,7 +12,7 @@ interface ButtonBarProps {
   hasPassed: boolean;
   isExecuting: boolean;
   isSubmitting: boolean;
-  ratingSchedule?: RatingSchedule;
+  ratingSchedule: RatingSchedule | null;
   onRun: () => void;
   onReset: () => void;
 }
