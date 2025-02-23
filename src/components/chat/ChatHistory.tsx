@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useCallback } from "react";
 import { Clock, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -46,6 +46,13 @@ export const ChatHistory: React.FC<ChatHistoryProps> = ({
     return { title: title.substring(0, 50), preview };
   };
 
+  const memoizedOnSelectThread = useCallback(
+    (threadId: string) => {
+      onSelectThread(threadId);
+    },
+    [onSelectThread]
+  );
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -74,7 +81,7 @@ export const ChatHistory: React.FC<ChatHistoryProps> = ({
               return (
                 <DropdownMenuItem
                   key={thread.id}
-                  onSelect={() => onSelectThread(thread.id)}
+                  onSelect={() => memoizedOnSelectThread(thread.id)}
                   className="flex flex-col items-start p-3 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer border-b border-gray-100 dark:border-gray-700 last:border-0"
                 >
                   <div className="flex items-center justify-between w-full mb-1">

@@ -1,11 +1,18 @@
-import React, { useRef, useEffect, useState } from "react";
+import React, {
+  useRef,
+  useEffect,
+  useState,
+  useCallback,
+  useMemo,
+} from "react";
 import { Message } from "./Message";
 import useChatStore from "@/stores/chat";
 import { cn } from "@/lib/utils";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "./EmptyState";
+import { useVirtualizer } from "@tanstack/react-virtual";
 
 interface ChatThreadProps {
   className?: string;
@@ -13,36 +20,45 @@ interface ChatThreadProps {
 
 export const ChatThread: React.FC<ChatThreadProps> = ({ className }) => {
   const { getActiveThread } = useChatStore();
+
   const thread = getActiveThread();
-  const messages = thread?.messages || [];
+  const messages = useMemo(() => thread?.messages || [], [thread?.messages]);
   const totalMessages = messages.length;
   const lastMessageLength = messages[totalMessages - 1]?.content.length || 0;
 
-  const threadRef = useRef<HTMLDivElement>(null);
+  const parentRef = useRef<HTMLDivElement>(null);
   const [showScrollButton, setShowScrollButton] = useState(false);
 
-  const scrollToBottom = () => {
-    if (!threadRef.current) {
-      return;
-    }
-    threadRef.current.scrollTo({
-      top: threadRef.current.scrollHeight,
+  const virtualizer = useVirtualizer({
+    count: messages.length,
+    useAnimationFrameWithResizeObserver: true,
+    getScrollElement: () => parentRef.current,
+    estimateSize: useCallback(() => 100, []),
+    overscan: 5,
+    scrollMargin: 100,
+  });
+
+  const scrollToBottom = useCallback(() => {
+    if (!parentRef.current) return;
+
+    virtualizer.scrollToIndex(messages.length - 1, {
+      align: "end",
     });
-  };
+  }, [messages.length, virtualizer]);
 
   // Scroll to bottom if user sends new message
   useEffect(() => {
     scrollToBottom();
-  }, [totalMessages]);
+  }, [totalMessages, scrollToBottom]);
 
-  // Show scroll icon
+  // Show scroll icon and handle scroll position
   useEffect(() => {
-    const threadElement = threadRef.current;
+    const threadElement = parentRef.current;
     if (!threadElement) return;
 
     const getIsNearBottom = () => {
       const { scrollTop, scrollHeight, clientHeight } = threadElement;
-      return scrollHeight - scrollTop - clientHeight < 25;
+      return scrollHeight - scrollTop - clientHeight < 100;
     };
 
     const isNearBottom = getIsNearBottom();
@@ -54,47 +70,71 @@ export const ChatThread: React.FC<ChatThreadProps> = ({ className }) => {
       const isNearBottom = getIsNearBottom();
       setShowScrollButton(!isNearBottom);
     };
+
     threadElement.addEventListener("scroll", handleScroll);
     return () => {
       threadElement.removeEventListener("scroll", handleScroll);
     };
   }, [lastMessageLength]);
 
+  // Memoize empty state to prevent unnecessary re-renders
+  const emptyState = useMemo(() => <EmptyState />, []);
+
   return (
     <div className={cn("relative flex flex-col h-full", className)}>
       {messages.length === 0 ? (
-        <EmptyState />
+        emptyState
       ) : (
         <div
-          ref={threadRef}
+          ref={parentRef}
           data-thread-id={thread?.id}
-          className="flex-1 space-y-4 p-4"
+          className="flex-1 overflow-auto px-4"
         >
-          {messages.map((message) => (
-            <Message key={message.id} message={message} />
-          ))}
+          <div
+            style={{
+              height: `${virtualizer.getTotalSize()}px`,
+              width: "100%",
+              position: "relative",
+            }}
+          >
+            {virtualizer.getVirtualItems().map((virtualItem) => (
+              <div
+                key={messages[virtualItem.index].id}
+                data-index={virtualItem.index}
+                ref={virtualizer.measureElement}
+                style={{
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  width: "100%",
+                  transform: `translateY(${virtualItem.start}px)`,
+                }}
+                className="py-2"
+              >
+                <Message message={messages[virtualItem.index]} />
+              </div>
+            ))}
+          </div>
         </div>
       )}
-      <AnimatePresence>
-        {showScrollButton && messages.length > 0 && (
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 10 }}
-            transition={{ duration: 0.2 }}
-            className="absolute bottom-4 right-4"
+      {showScrollButton && messages.length > 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 10 }}
+          transition={{ duration: 0.2 }}
+          className="absolute bottom-4 right-4 z-10"
+        >
+          <Button
+            variant="secondary"
+            size="icon"
+            onClick={scrollToBottom}
+            className="rounded-full shadow-md"
           >
-            <Button
-              variant="secondary"
-              size="icon"
-              onClick={scrollToBottom}
-              className="rounded-full shadow-md"
-            >
-              <ChevronDown className="h-4 w-4" />
-            </Button>
-          </motion.div>
-        )}
-      </AnimatePresence>
+            <ChevronDown className="h-4 w-4" />
+          </Button>
+        </motion.div>
+      )}
     </div>
   );
 };

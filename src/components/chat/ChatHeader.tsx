@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from "react";
 import { PlusCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -21,6 +21,17 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({ className }) => {
     ? getThreadsByAlgorithm(activeAlgorithmId)
     : [];
 
+  const handleStartNewChat = useCallback(() => {
+    startNewChat();
+  }, [startNewChat]);
+
+  const handleSelectThread = useCallback(
+    (threadId: string) => {
+      setActiveThreadId(threadId);
+    },
+    [setActiveThreadId]
+  );
+
   return (
     <header
       className={cn(
@@ -28,12 +39,12 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({ className }) => {
         className
       )}
     >
-      <ChatHistory threads={threads} onSelectThread={setActiveThreadId} />
+      <ChatHistory threads={threads} onSelectThread={handleSelectThread} />
 
       <Button
         variant="ghost"
         size="sm"
-        onClick={startNewChat}
+        onClick={handleStartNewChat}
         className="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white"
       >
         <PlusCircle className="h-5 w-5 mr-1" />
@@ -42,4 +53,3 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({ className }) => {
     </header>
   );
 };
-

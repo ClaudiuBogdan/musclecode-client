@@ -4,16 +4,16 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Copy, RotateCcw, Edit2, BotIcon } from "lucide-react";
 import useChatStore from "@/stores/chat";
-import { motion, AnimatePresence } from "framer-motion";
 import { showToast } from "@/utils/toast";
 import { EditMessage } from "./EditMessage";
 import { Markdown } from "@/components/ui/markdown";
+import React, { useCallback } from "react";
 
 interface MessageProps {
   message: MessageType;
 }
 
-export const Message: React.FC<MessageProps> = ({ message }) => {
+export const Message: React.FC<MessageProps> = React.memo(({ message }) => {
   const {
     retryMessage,
     editMessage,
@@ -26,33 +26,36 @@ export const Message: React.FC<MessageProps> = ({ message }) => {
   const isEditing = editingMessageId === message.id;
   const isLoading = status === "loading";
 
-  const handleCopy = async () => {
+  const handleCopy = useCallback(async () => {
     await navigator.clipboard.writeText(message.content);
     showToast.success("Message copied to clipboard");
-  };
+  }, [message.content]);
 
-  const handleRetry = () => {
+  const handleRetry = useCallback(() => {
     retryMessage(message.id);
-  };
+  }, [message.id, retryMessage]);
 
-  const handleEdit = () => {
+  const handleEdit = useCallback(() => {
     setEditMessageId(message.id);
-  };
+  }, [message.id, setEditMessageId]);
 
-  const handleSaveEdit = async (editedContent: string) => {
-    if (editedContent.trim() !== message.content) {
-      try {
-        await editMessage(message.id, editedContent);
-      } catch {
-        return;
+  const handleSaveEdit = useCallback(
+    async (editedContent: string) => {
+      if (editedContent.trim() !== message.content) {
+        try {
+          await editMessage(message.id, editedContent);
+        } catch {
+          return;
+        }
       }
-    }
-    setEditMessageId(null);
-  };
+      setEditMessageId(null);
+    },
+    [message.id, message.content, editMessage, setEditMessageId]
+  );
 
-  const handleCancelEdit = () => {
+  const handleCancelEdit = useCallback(() => {
     setEditMessageId(null);
-  };
+  }, [setEditMessageId]);
 
   return (
     <div
@@ -76,42 +79,36 @@ export const Message: React.FC<MessageProps> = ({ message }) => {
           </Avatar>
         ) : null}
         <div className="flex flex-col gap-2 flex-1 overflow-x-auto">
-          <AnimatePresence mode="wait">
-            {isEditing ? (
-              <EditMessage
+          {isEditing ? (
+            <EditMessage
+              content={message.content}
+              onSave={handleSaveEdit}
+              onCancel={handleCancelEdit}
+            />
+          ) : (
+            <div
+              className={cn(
+                "rounded-lg p-3 min-w-20",
+                isUser
+                  ? "bg-blue-500 text-white prose-white [&_code]:text-white [&_code]:bg-blue-600/50"
+                  : "bg-white dark:bg-gray-800 text-gray-800 dark:text-white [&_code]:bg-gray-100 dark:[&_code]:bg-gray-700"
+              )}
+            >
+              <Markdown
                 content={message.content}
-                onSave={handleSaveEdit}
-                onCancel={handleCancelEdit}
-              />
-            ) : (
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 10 }}
-                transition={{ duration: 0.2 }}
                 className={cn(
-                  "rounded-lg p-3 min-w-20",
                   isUser
-                    ? "bg-blue-500 text-white prose-white [&_code]:text-white [&_code]:bg-blue-600/50"
-                    : "bg-white dark:bg-gray-800 text-gray-800 dark:text-white [&_code]:bg-gray-100 dark:[&_code]:bg-gray-700"
+                    ? "[&_.hljs]:!bg-blue-600/50 [&_pre]:!bg-blue-600/50"
+                    : ""
                 )}
-              >
-                <Markdown
-                  content={message.content}
-                  className={cn(
-                    isUser
-                      ? "[&_.hljs]:!bg-blue-600/50 [&_pre]:!bg-blue-600/50"
-                      : ""
-                  )}
-                />
-                {message.status === "error" && (
-                  <p className="text-xs text-red-500 mt-1">
-                    Error: Failed to send message
-                  </p>
-                )}
-              </motion.div>
-            )}
-          </AnimatePresence>
+              />
+              {message.status === "error" && (
+                <p className="text-xs text-red-500 mt-1">
+                  Failed to send message. Please try again.
+                </p>
+              )}
+            </div>
+          )}
           <div
             className={cn(
               "flex gap-2 opacity-0 transition-opacity group-hover:opacity-100 focus-within:opacity-100",
@@ -151,4 +148,4 @@ export const Message: React.FC<MessageProps> = ({ message }) => {
       </div>
     </div>
   );
-};
+});
