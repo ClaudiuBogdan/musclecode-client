@@ -88,22 +88,16 @@ export const Message: React.FC<MessageProps> = React.memo(({ message }) => {
           ) : (
             <div
               className={cn(
-                "rounded-lg p-3 min-w-20",
-                isUser
-                  ? "bg-blue-500 text-white prose-white [&_code]:text-white [&_code]:bg-blue-600/50"
-                  : "bg-white dark:bg-gray-800 text-gray-800 dark:text-white [&_code]:bg-gray-100 dark:[&_code]:bg-gray-700"
+                "rounded-lg p-3 min-w-20 shadow-sm",
+                "bg-gray-50 dark:bg-secondary"
               )}
             >
               <Markdown
                 content={message.content}
-                className={cn(
-                  isUser
-                    ? "[&_.hljs]:!bg-blue-600/50 [&_pre]:!bg-blue-600/50"
-                    : ""
-                )}
+                className={cn("prose-sm max-w-none")}
               />
               {message.status === "error" && (
-                <p className="text-xs text-red-500 mt-1">
+                <p className="text-xs text-red-400 dark:text-red-300 mt-1">
                   Failed to send message. Please try again.
                 </p>
               )}
