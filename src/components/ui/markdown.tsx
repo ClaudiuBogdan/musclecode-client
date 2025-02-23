@@ -10,12 +10,18 @@ import {
   vscDarkPlus,
   vs,
 } from "react-syntax-highlighter/dist/esm/styles/prism";
-import { Copy, ChevronRight } from "lucide-react";
+import { Copy, ChevronRight, Expand } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { detectLanguage, cleanTheme } from "@/lib/code-detection";
 import { useTheme } from "@/components/theme/theme-provider";
 import "katex/dist/katex.min.css";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 interface MarkdownProps {
   content: string;
@@ -34,14 +40,30 @@ interface MathComponentProps {
 const CodeBlock: FC<
   React.PropsWithChildren<{ isDarkMode: boolean; className?: string }>
 > = React.memo(({ className, children, isDarkMode, ...props }) => {
+  const [isDialogOpen, setIsDialogOpen] = React.useState(false);
   const content = String(children);
   const match = /language-(\w+)/.exec(className || "");
   const isInline = !match && !className;
 
-  const style = {
-    ...(isDarkMode ? vscDarkPlus : vs),
-    ...cleanTheme,
-  };
+  const customStyles = useMemo(() => {
+    return {
+      margin: 0,
+      height: "100%",
+      overflow: "auto",
+      fontSize: "0.875rem",
+      lineHeight: 1.5,
+      backgroundColor: "inherit",
+      color: isDarkMode ? "#d4d4d4" : "#1e1e1e",
+      boxSizing: "border-box" as const,
+    };
+  }, [isDarkMode]);
+
+  const style = useMemo(() => {
+    return {
+      ...(isDarkMode ? vscDarkPlus : vs),
+      ...cleanTheme,
+    };
+  }, [isDarkMode]);
 
   if (isInline) {
     return (
@@ -59,27 +81,58 @@ const CodeBlock: FC<
 
   return (
     <div className={cn("relative my-2 font-mono text-sm group rounded-md")}>
-      <Button
-        variant="ghost"
-        size="sm"
-        className="absolute right-2 top-2 opacity-100 md:opacity-0 transition-opacity group-hover:opacity-100 z-10 text-muted-foreground hover:bg-background"
-        onClick={() => navigator.clipboard.writeText(content)}
-      >
-        <Copy className="h-4 w-4" />
-      </Button>
+      <div className="absolute right-2 top-2 flex gap-2 opacity-100 md:opacity-0 transition-opacity group-hover:opacity-100 z-10">
+        <Button
+          variant="ghost"
+          size="sm"
+          className="text-muted-foreground hover:bg-background"
+          onClick={() => setIsDialogOpen(true)}
+        >
+          <Expand className="h-4 w-4" />
+        </Button>
+        <Button
+          variant="ghost"
+          size="sm"
+          className="text-muted-foreground hover:bg-background"
+          onClick={() => navigator.clipboard.writeText(content)}
+        >
+          <Copy className="h-4 w-4" />
+        </Button>
+      </div>
+
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent className="max-w-[90vw] h-[90vh] flex flex-col p-0">
+          <DialogHeader className="px-4 pt-4 pb-2">
+            <DialogTitle>Code Preview</DialogTitle>
+          </DialogHeader>
+          <div className="relative flex-1 flex flex-col overflow-hidden">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="absolute right-4 top-4 z-20 h-8 w-8 p-2"
+              onClick={() => navigator.clipboard.writeText(content)}
+            >
+              <Copy className="h-4 w-4" />
+            </Button>
+            <SyntaxHighlighter
+              language={detectLanguage(content)}
+              style={style}
+              PreTag="div"
+              showLineNumbers={true}
+              customStyle={customStyles}
+            >
+              {content}
+            </SyntaxHighlighter>
+          </div>
+        </DialogContent>
+      </Dialog>
+
       <SyntaxHighlighter
         language={detectLanguage(content)}
         style={style}
         PreTag="div"
         showLineNumbers={false}
-        customStyle={{
-          overflowX: "auto",
-          padding: "0.5rem",
-          fontSize: "0.875rem",
-          lineHeight: 1.5,
-          backgroundColor: "inherit",
-          color: isDarkMode ? "#d4d4d4" : "#1e1e1e",
-        }}
+        customStyle={customStyles}
       >
         {content}
       </SyntaxHighlighter>
