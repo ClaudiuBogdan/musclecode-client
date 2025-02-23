@@ -60,13 +60,13 @@ export const Message: React.FC<MessageProps> = React.memo(({ message }) => {
   return (
     <div
       className={cn(
-        "flex group max-w-2xl mx-auto",
+        "flex group max-w-[95%] mx-auto",
         isUser ? "justify-end" : "justify-start"
       )}
     >
       <div
         className={cn(
-          "flex items-start space-x-2 max-w-[80%]",
+          "flex items-start space-x-2 max-w-[95%]",
           isUser && "flex-row-reverse space-x-reverse",
           isEditing && "w-full"
         )}

@@ -4,6 +4,7 @@ import React, {
   useState,
   useCallback,
   useMemo,
+  useLayoutEffect,
 } from "react";
 import { Message } from "./Message";
 import useChatStore from "@/stores/chat";
@@ -35,7 +36,7 @@ export const ChatThread: React.FC<ChatThreadProps> = ({ className }) => {
     getScrollElement: () => parentRef.current,
     estimateSize: useCallback(() => 100, []),
     overscan: 5,
-    scrollMargin: 100,
+    scrollMargin: 50,
   });
 
   const scrollToBottom = useCallback(() => {
@@ -47,7 +48,7 @@ export const ChatThread: React.FC<ChatThreadProps> = ({ className }) => {
   }, [messages.length, virtualizer]);
 
   // Scroll to bottom if user sends new message
-  useEffect(() => {
+  useLayoutEffect(() => {
     scrollToBottom();
   }, [totalMessages, scrollToBottom]);
 
