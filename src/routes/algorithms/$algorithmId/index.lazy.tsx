@@ -217,7 +217,10 @@ function Algorithm() {
                   setActiveTabAction(algorithmId, tab)
                 }
                 onLanguageChange={handleLanguageChange}
+                onCodeReset={handleReset}
                 getFiles={getFiles}
+                isExecuting={isExecuting}
+                isSubmitting={isSubmitting}
               />
 
               <ResizablePanelGroup

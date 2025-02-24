@@ -56,13 +56,6 @@ export const ButtonBar: React.FC<ButtonBarProps> = ({
           className="hover:bg-[#2D2D2D] transition-colors duration-150"
         />
         <div className="flex gap-2">
-          {hasCodeChanges && (
-            <ResetButton
-              disabled={isExecuting || isSubmitting}
-              onClick={handleReset}
-              className="hover:bg-[#2D2D2D] transition-colors duration-150"
-            />
-          )}
           {!hasPassed && !!nextAlgorithmId && (
             <SkipButton
               disabled={isExecuting}
