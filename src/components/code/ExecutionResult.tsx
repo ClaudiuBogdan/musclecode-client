@@ -267,10 +267,10 @@ export function ExecutionResult({
   // Check for runtime execution error without test results
   if (result.type === "execution error" && !result.result.output.length) {
     return (
-      <div className="h-full">
+      <div className="h-full flex flex-col">
         <ExecutionSummary result={result} />
-        <div className="p-4">
-          <div className="text-yellow-400 font-mono text-sm whitespace-pre-wrap bg-yellow-950/30 p-3 rounded">
+        <div className="flex-1 relative overflow-auto text-red-400 font-mono text-sm whitespace-pre-wrap  bg-yellow-950/30 rounded">
+          <div className="absolute p-8">
             {result.stderr ||
               result.message ||
               "An error occurred during execution"}
