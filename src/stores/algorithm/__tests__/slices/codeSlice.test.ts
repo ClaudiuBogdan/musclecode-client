@@ -60,7 +60,7 @@ describe("Code Slice", () => {
       extension: getLanguageExtension(language),
       language,
       readOnly: false,
-      required: true,
+      hidden: false,
     };
     return createTestStore(state);
   };
@@ -89,11 +89,11 @@ describe("Code Slice", () => {
         it(`should correctly set code for ${language}/${tab}`, () => {
           store = setupStoreWithCode(DEFAULT_ALGORITHM_ID, language, tab, "");
 
-          store.getState().setCode(DEFAULT_ALGORITHM_ID, code);
+          store.getState().setCode(DEFAULT_ALGORITHM_ID, language, tab, code);
 
           const updatedCode = store
             .getState()
-            .getCode(DEFAULT_ALGORITHM_ID, language, tab);
+            .getActiveFile(DEFAULT_ALGORITHM_ID, language, tab);
           expect(updatedCode).toBe(code);
         });
       });
@@ -111,22 +111,36 @@ describe("Code Slice", () => {
           language: "python",
           extension: "py",
           readOnly: false,
-          required: true,
+          hidden: false,
         };
         store = createTestStore(initialState);
 
-        store.getState().setCode(DEFAULT_ALGORITHM_ID, DEFAULT_TEST_CODE);
+        store
+          .getState()
+          .setCode(
+            DEFAULT_ALGORITHM_ID,
+            "python",
+            "solution.py",
+            DEFAULT_TEST_CODE
+          );
 
         expect(
           store
             .getState()
-            .getCode(DEFAULT_ALGORITHM_ID, "python", "solution.py")
+            .getActiveFile(DEFAULT_ALGORITHM_ID, "python", "solution.py")
         ).toBe(pythonCode);
       });
 
       it("should throw error for non-existent algorithm", () => {
         expect(() => {
-          store.getState().setCode("non-existent", DEFAULT_TEST_CODE);
+          store
+            .getState()
+            .setCode(
+              "non-existent",
+              "python",
+              "solution.py",
+              DEFAULT_TEST_CODE
+            );
         }).toThrow("Algorithm with id non-existent not found");
       });
     });
@@ -138,7 +152,14 @@ describe("Code Slice", () => {
           state.algorithms[DEFAULT_ALGORITHM_ID].code;
 
         // Setup modified state using proper actions
-        store.getState().setCode(DEFAULT_ALGORITHM_ID, DEFAULT_TEST_CODE);
+        store
+          .getState()
+          .setCode(
+            DEFAULT_ALGORITHM_ID,
+            "python",
+            "solution.py",
+            DEFAULT_TEST_CODE
+          );
 
         // Create a mock execution result
         const mockExecutionResult: CodeExecutionResponse = {
@@ -207,14 +228,14 @@ describe("Code Slice", () => {
             language,
             extension: getLanguageExtension(language),
             readOnly: false,
-            required: true,
+            hidden: false,
           };
         });
         store = createTestStore(initialState);
 
         testCases.forEach(({ language, tab, code }) => {
           expect(
-            store.getState().getCode(DEFAULT_ALGORITHM_ID, language, tab)
+            store.getState().getActiveFile(DEFAULT_ALGORITHM_ID, language, tab)
           ).toBe(code);
         });
       });
@@ -223,7 +244,7 @@ describe("Code Slice", () => {
         expect(
           store
             .getState()
-            .getCode(DEFAULT_ALGORITHM_ID, "javascript", "nonexistent.js")
+            .getActiveFile(DEFAULT_ALGORITHM_ID, "javascript", "nonexistent.js")
         ).toBe("");
       });
     });

@@ -32,7 +32,9 @@ export const createExecutionSlice: StateCreator<
       });
 
       try {
-        const files = Object.values(storedCode[activeLanguage]);
+        const files = Object.values(storedCode[activeLanguage]).filter(
+          (file) => !file.hidden
+        );
 
         const timeoutPromise = new Promise((_, reject) => {
           setTimeout(

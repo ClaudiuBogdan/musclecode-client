@@ -1,20 +1,25 @@
-import { CodeLanguage, Rating } from "@/types/algorithm";
-import { FileName, AlgorithmId } from "./state";
+import { AlgorithmFile, CodeLanguage, Rating } from "@/types/algorithm";
+import { FileId, AlgorithmId } from "./state";
 
 export interface CodeActions {
-  setCode: (algorithmId: AlgorithmId, code: string) => void;
-  setActiveLanguage: (algorithmId: AlgorithmId, language: CodeLanguage) => void;
-  setActiveTab: (algorithmId: AlgorithmId, tab: FileName) => void;
-  resetCode: (algorithmId: AlgorithmId) => void;
-  getCode: (
+  setCode: (
     algorithmId: AlgorithmId,
     language: CodeLanguage,
-    tab: FileName
-  ) => string;
+    fileId: string,
+    code: string
+  ) => void;
+  setActiveLanguage: (algorithmId: AlgorithmId, language: CodeLanguage) => void;
+  setActiveTab: (algorithmId: AlgorithmId, tab: FileId) => void;
+  resetCode: (algorithmId: AlgorithmId) => void;
+  getActiveFile: (
+    algorithmId: AlgorithmId,
+    language: CodeLanguage,
+    fileId: FileId
+  ) => AlgorithmFile;
   getFiles: (
     algorithmId: AlgorithmId,
     language: CodeLanguage
-  ) => Array<{ name: string; readOnly?: boolean }>;
+  ) => Array<AlgorithmFile>;
 }
 
 export interface TimerActions {

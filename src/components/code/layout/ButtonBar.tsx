@@ -50,13 +50,11 @@ export const ButtonBar: React.FC<ButtonBarProps> = ({
   return (
     <div className="flex overflow-y-hidden items-center justify-start gap-4 px-3 py-1.5 border-t border-[#1E1E1E] bg-[#1E1E1E] shadow-[0_-1px_2px_rgba(0,0,0,0.2)]">
       <div className="flex justify-between w-full gap-3">
-        {!hasPassed && (
-          <RunButton
-            onRun={onRun}
-            disabled={isExecuting || isSubmitting}
-            className="hover:bg-[#2D2D2D] transition-colors duration-150"
-          />
-        )}
+        <RunButton
+          onRun={onRun}
+          disabled={isExecuting || isSubmitting}
+          className="hover:bg-[#2D2D2D] transition-colors duration-150"
+        />
         <div className="flex gap-2">
           {hasCodeChanges && (
             <ResetButton

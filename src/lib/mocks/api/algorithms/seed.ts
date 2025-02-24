@@ -55,7 +55,7 @@ Sorted array: [11, 12, 22, 25, 34, 64, 90]
             "export function bubbleSort(arr: number[]): number[] {\n  const n = arr.length;\n  for (let i = 0; i < n - 1; i++) {\nfor (let j = 0; j < n - i - 1; j++) {\n  if (arr[j] > arr[j + 1]) {\n// Swap elements\n[arr[j], arr[j + 1]] = [arr[j + 1], arr[j]];\n  }\n}\n  }\n  return arr;\n}",
           language: "typescript",
           extension: "ts",
-          required: true,
+          hidden: false,
         },
         {
           id: uuidv4(),
@@ -75,7 +75,7 @@ Sorted array: [11, 12, 22, 25, 34, 64, 90]
             "def bubble_sort(arr):\n  n = len(arr)\n  for i in range(n):\n    for j in range(0, n - i - 1):\n      if arr[j] > arr[j + 1]:\n        arr[j], arr[j + 1] = arr[j + 1], arr[j]\n  return arr\n\nif __name__ == '__main__':\n    print(bubble_sort([64, 34, 25, 12, 22, 11, 90]))",
           language: "python",
           extension: "py",
-          required: true,
+          hidden: false,
         },
         {
           id: uuidv4(),
@@ -86,6 +86,7 @@ Sorted array: [11, 12, 22, 25, 34, 64, 90]
           language: "python",
           extension: "py",
           readOnly: true,
+          hidden: false,
         },
       ],
     },

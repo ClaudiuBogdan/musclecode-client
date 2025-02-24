@@ -4,7 +4,7 @@ import { FileIcon } from "lucide-react";
 
 interface EditorTabsProps {
   activeTab: string;
-  files: Array<{ name: string }>;
+  files: Array<{ id: string; name: string; hidden?: boolean }>;
   onTabChange: (tab: string) => void;
   className?: string;
   tabClassName?: string;
@@ -23,20 +23,24 @@ export const EditorTabs: React.FC<EditorTabsProps> = ({
 }) => {
   return (
     <div className={clsx("flex", className)}>
-      {files.map((file) => (
-        <button
-          key={file.name}
-          onClick={() => onTabChange(file.name)}
-          className={clsx(
-            tabClassName,
-            "focus:outline-none",
-            activeTab === file.name ? activeTabClassName : inactiveTabClassName
-          )}
-        >
-          <FileIcon size={16} />
-          {file.name}
-        </button>
-      ))}
+      {files
+        .filter((file) => !file.hidden)
+        .map((file) => (
+          <button
+            key={file.id}
+            onClick={() => onTabChange(file.name)}
+            className={clsx(
+              tabClassName,
+              "focus:outline-none",
+              activeTab === file.name
+                ? activeTabClassName
+                : inactiveTabClassName
+            )}
+          >
+            <FileIcon size={16} />
+            {file.name}
+          </button>
+        ))}
     </div>
   );
 };

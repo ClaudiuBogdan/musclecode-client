@@ -112,12 +112,12 @@ export const createBaseAlgorithmSlice: StateCreator<
       const files: AlgorithmFile[] = [
         {
           id: uuidv4(),
-          name: "solution",
-          type: "solution",
+          name: "exercise",
+          type: "exercise",
           language,
-          content: getLanguageTemplate(language, "solution"),
+          content: getLanguageTemplate(language, "exercise"),
           readOnly: false,
-          required: true,
+          hidden: false,
           extension: getLanguageExtension(language),
         },
         {
@@ -127,7 +127,7 @@ export const createBaseAlgorithmSlice: StateCreator<
           name: "test",
           type: "test",
           readOnly: true,
-          required: true,
+          hidden: false,
           extension: getLanguageExtension(language),
         },
       ];
@@ -217,57 +217,79 @@ export const createBaseAlgorithmSlice: StateCreator<
 
 function getLanguageTemplate(
   language: CodeLanguage,
-  type: "solution" | "test"
+  type: "exercise" | "solution" | "test"
 ): string {
   switch (language) {
     case "typescript":
-      return type === "solution"
+      return type === "exercise"
         ? `function solution() {
   // Your solution here
 }`
-        : `test('solution', () => {
+        : type === "test"
+          ? `test('solution', () => {
   // Your test here
-});`;
+});`
+          : `function solution() {
+  // Your solution here
+}`;
 
     case "python":
-      return type === "solution"
+      return type === "exercise"
         ? `def solution():
     # Your solution here
     pass`
-        : `def test_solution():
+        : type === "test"
+          ? `def test_solution():
     # Your test here
+    pass`
+          : `def solution():
+    # Your solution here
     pass`;
 
     case "javascript":
-      return type === "solution"
+      return type === "exercise"
         ? `function solution() {
   // Your solution here
 }`
-        : `test('solution', () => {
+        : type === "test"
+          ? `test('solution', () => {
   // Your test here
-});`;
+});`
+          : `function solution() {
+  // Your solution here
+}`;
 
     case "java":
-      return type === "solution"
+      return type === "exercise"
         ? `public class Solution {
     public static void solution() {
         // Your solution here
     }
 }`
-        : `public class Test {
+        : type === "test"
+          ? `public class Test {
     @Test
     public void testSolution() {
         // Your test here
     }
+}`
+          : `public class Solution {
+    public static void solution() {
+        // Your solution here
+    }
 }`;
 
     case "cpp":
-      return type === "solution"
+      return type === "exercise"
         ? `void solution() {
     // Your solution here
 }`
-        : `TEST_CASE("solution") {
+        : type === "test"
+          ? `TEST_CASE("solution") {
     // Your test here
+}`
+          : `void solution() {
+    // Your solution here
 }`;
 
     default:

@@ -12,7 +12,7 @@ interface TopBarProps {
   getFiles: (
     algorithmId: string,
     language: CodeLanguage
-  ) => Array<{ name: string }>;
+  ) => Array<{ id: string; name: string; hidden?: boolean }>;
 }
 
 export const TopBar: React.FC<TopBarProps> = ({

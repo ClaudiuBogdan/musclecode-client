@@ -1,4 +1,4 @@
-export type AlgorithmFileType = "solution" | "test";
+export type AlgorithmFileType = "exercise" | "solution" | "test";
 
 export type AlgorithmId = string;
 
@@ -22,7 +22,7 @@ export interface AlgorithmFile {
   language: CodeLanguage;
   extension: string;
   readOnly?: boolean;
-  required?: boolean;
+  hidden?: boolean;
 }
 
 export interface AlgorithmTemplate {

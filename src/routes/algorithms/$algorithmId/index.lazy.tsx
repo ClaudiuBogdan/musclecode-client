@@ -83,7 +83,7 @@ function Algorithm() {
     getFiles,
     setActiveTab: setActiveTabAction,
     runCode,
-    getCode,
+    getActiveFile,
     resetCode,
     initializeAlgorithm,
     startTimer,
@@ -108,10 +108,10 @@ function Algorithm() {
 
   const handleCodeChange = useCallback(
     (value: string) => {
-      if (!algorithmId) return;
-      setCode(algorithmId, value);
+      if (!algorithmId || !activeLanguage || !activeTab) return;
+      setCode(algorithmId, activeLanguage, activeTab, value);
     },
-    [algorithmId, setCode]
+    [algorithmId, activeLanguage, activeTab, setCode]
   );
 
   const handleLanguageChange = (language: CodeLanguage) => {
@@ -192,7 +192,7 @@ function Algorithm() {
 
   const nextAlgorithmId = nextAlgorithm?.id;
   const hasPassed = executionResult?.result?.completed ?? false;
-  const currentCode = getCode(algorithmId, activeLanguage, activeTab);
+  const activeFile = getActiveFile(algorithmId, activeLanguage, activeTab);
 
   return (
     <>
@@ -230,12 +230,18 @@ function Algorithm() {
                 <ResizablePanel defaultSize={editorSizes[0]} minSize={30}>
                   <div className="flex h-full flex-col">
                     <div className="flex-1">
-                      <CodeEditor
-                        initialValue={currentCode}
-                        lang={activeLanguage}
-                        onChange={handleCodeChange}
-                        onFocus={handleTimerManagement}
-                      />
+                      {/* TODO: fix undo when editing multiple files. Only the active tab should be focues */}
+                      {getFiles(algorithmId, activeLanguage).map((file) => (
+                        <CodeEditor
+                          key={file.id}
+                          active={file.id === activeFile.id}
+                          initialValue={file.content}
+                          lang={file.language}
+                          readOnly={file.readOnly}
+                          onChange={handleCodeChange}
+                          onFocus={handleTimerManagement}
+                        />
+                      ))}
                     </div>
                     <ButtonBar
                       algorithmId={algorithmId}

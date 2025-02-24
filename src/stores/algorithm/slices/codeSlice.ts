@@ -1,8 +1,11 @@
 import { StateCreator } from "zustand";
 import { AlgorithmState, CodeActions, StoreActions } from "../types";
 import { withAlgorithm } from "../utils/stateUtils";
-import { v4 as uuidv4 } from "uuid";
-import { getLanguageExtension } from "@/lib/utils/algorithm";
+import { createLogger } from "@/lib/logger";
+
+const logger = createLogger({
+  context: "CodeSlice",
+});
 
 export const createCodeSlice: StateCreator<
   AlgorithmState & StoreActions,
@@ -10,24 +13,25 @@ export const createCodeSlice: StateCreator<
   [],
   CodeActions
 > = (set, get) => ({
-  setCode: (algorithmId, code) =>
+  setCode: (algorithmId, language, fileId, code) =>
     set((state) =>
       withAlgorithm(state, algorithmId, (state) => {
         const algorithm = state.algorithms[algorithmId];
-        const { activeLanguage, activeTab } = algorithm.code;
-        const existingFile =
-          algorithm.code.storedCode[activeLanguage][activeTab];
+        const file = algorithm.code.storedCode[language][fileId];
 
-        // Update existing file or create new one
-        algorithm.code.storedCode[activeLanguage][activeTab] = {
-          id: existingFile?.id || `${algorithmId}-${uuidv4()}`,
-          name: activeTab,
-          type: activeTab.includes("test") ? "test" : "solution",
+        if (!file) {
+          logger.error("File not found", {
+            method: "setCode",
+            algorithmId,
+            language,
+            fileId,
+          });
+          throw new Error("File not found");
+        }
+
+        algorithm.code.storedCode[language][fileId] = {
+          ...file,
           content: code,
-          language: activeLanguage,
-          extension: getLanguageExtension(activeLanguage),
-          readOnly: existingFile?.readOnly || false,
-          required: existingFile?.required || true,
         };
         return state;
       })
@@ -72,11 +76,21 @@ export const createCodeSlice: StateCreator<
       })
     ),
 
-  getCode: (algorithmId, language, tab) => {
+  getActiveFile: (algorithmId, language, tab) => {
     const state = get();
     return withAlgorithm(state, algorithmId, () => {
       const algorithm = state.algorithms[algorithmId];
-      return algorithm.code.storedCode[language]?.[tab]?.content ?? "";
+      const file = algorithm.code.storedCode[language]?.[tab];
+      if (!file) {
+        logger.error("File not found", {
+          method: "getActiveFile",
+          algorithmId,
+          language,
+          tab,
+        });
+        throw new Error("File not found");
+      }
+      return file;
     });
   },
 
@@ -85,10 +99,7 @@ export const createCodeSlice: StateCreator<
     return withAlgorithm(state, algorithmId, () => {
       const algorithm = state.algorithms[algorithmId];
       const files = algorithm.code.storedCode[language] ?? {};
-      return Object.values(files).map(({ name, readOnly }) => ({
-        name,
-        readOnly,
-      }));
+      return Object.values(files);
     });
   },
 });

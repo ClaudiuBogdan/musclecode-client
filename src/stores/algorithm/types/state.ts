@@ -10,13 +10,13 @@ import {
 import { CodeExecutionResponse } from "@/types/testRunner";
 
 export type AlgorithmId = string;
-export type FileName = string;
+export type FileId = string;
 
-export type StoredCode = Record<CodeLanguage, Record<FileName, AlgorithmFile>>;
+export type StoredCode = Record<CodeLanguage, Record<FileId, AlgorithmFile>>;
 
 export interface CodeState {
   activeLanguage: CodeLanguage;
-  activeTab: FileName;
+  activeTab: FileId;
   storedCode: StoredCode;
   initialStoredCode: StoredCode;
 }
