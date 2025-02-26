@@ -14,7 +14,6 @@ const createEmptyFile = (
   language,
   extension: getLanguageExtension(language),
   readOnly: false,
-  required: true,
 });
 
 const createInitialStoredCode = () => {

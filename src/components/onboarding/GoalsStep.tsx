@@ -61,13 +61,14 @@ export function GoalsStep({ onNext, onBack }: StepProps) {
     setIsSubmitting(true);
     setError(null);
 
+    // TODO: FIXME: This is a temporary solution to save the goals
     saveGoals(
       {
         timeCommitment,
         learningPreference: learningStyle,
         experienceLevel,
         focusAreas: [], // This will be determined by the quiz
-      },
+      } as any,
       {
         onSuccess: () => {
           onNext();

@@ -13,6 +13,7 @@ export interface UserGoals {
   studyTime: number;
   experienceLevel: "beginner" | "intermediate" | "advanced";
   preferredTopics: string[];
+  timeCommitment?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -63,6 +64,7 @@ export interface QuizResults {
     topics: QuizAnswer[];
     metadata: QuizMetadata;
   };
+  algorithmKnowledge?: any;
   score: number;
   recommendations: QuizRecommendations;
   createdAt: string;

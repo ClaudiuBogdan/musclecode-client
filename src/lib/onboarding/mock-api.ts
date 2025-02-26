@@ -2,8 +2,12 @@ import { OnboardingState } from "./types";
 
 // In-memory store for the mock API
 let mockOnboardingState: OnboardingState = {
+  id: "mock-id",
+  userId: "mock-user-id",
   currentStep: "welcome",
   isCompleted: false,
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
 };
 
 export const mockApi = {

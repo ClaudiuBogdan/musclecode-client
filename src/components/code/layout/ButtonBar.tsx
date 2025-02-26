@@ -1,10 +1,8 @@
 import { useRouter } from "@tanstack/react-router";
 import { RunButton } from "@/components/code/buttons/RunButton";
 import { SkipButton } from "@/components/code/buttons/SkipButton";
-import { ResetButton } from "@/components/code/buttons/ResetButton";
 import { DifficultySelector } from "./DifficultySelector";
 import { RatingSchedule } from "@/types/algorithm";
-import { useCodeComparison } from "@/hooks/useCodeComparison";
 
 interface ButtonBarProps {
   algorithmId: string;
@@ -28,7 +26,6 @@ export const ButtonBar: React.FC<ButtonBarProps> = ({
   onReset,
 }) => {
   const router = useRouter();
-  const hasCodeChanges = useCodeComparison(algorithmId);
 
   const handleSkip = () => {
     if (nextAlgorithmId) {

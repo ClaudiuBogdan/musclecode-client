@@ -73,7 +73,6 @@ describe("Algorithm Slice", () => {
             content: "function solution() {}",
             type: "solution",
             readOnly: false,
-            required: true,
             extension: "js",
           },
         ],
