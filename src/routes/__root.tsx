@@ -6,8 +6,12 @@ import { AppSidebar } from "@/components/sidebar/app-sidebar";
 import { Toaster } from "sonner";
 import { AuthProvider } from "@/components/auth/AuthProvider";
 import { ErrorProvider } from "@/contexts/ErrorContext";
+import { createRouteGuard } from "@/lib/auth/route-guard";
 
 const queryClient = new QueryClient();
+
+// Create route guards
+const authGuard = createRouteGuard();
 
 export const Route = createRootRoute({
   component: () => (
@@ -33,5 +37,7 @@ export const Route = createRootRoute({
       </QueryClientProvider>
     </ErrorProvider>
   ),
-  // beforeLoad: createRouteGuard(),
+  beforeLoad: async () => {
+    await authGuard();
+  },
 });
