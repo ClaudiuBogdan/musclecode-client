@@ -160,20 +160,18 @@ export default function AlgorithmGymDashboard() {
                           <CardTitle className="text-lg font-semibold text-gold-900 dark:text-gold-900 group-hover:text-gold-900 transition-colors">
                             {algorithmPreview.title}
                           </CardTitle>
-                          {(() => {
-                            const icons = algorithmPreview.categories.map(
-                              (category) =>
-                                categoryIcons.find(
-                                  (cat) => cat.value === category
-                                )?.icon || Brain
-                            );
-                            return icons.map((icon) =>
-                              React.createElement(icon, {
-                                className: "w-6 h-6",
-                                key: icon.toString(),
-                              })
-                            );
-                          })()}
+                          {Array.from(
+                            new Set(
+                              algorithmPreview.categories.map(
+                                (category) =>
+                                  categoryIcons.find(
+                                    (cat) => cat.value === category
+                                  )?.icon || Brain
+                              )
+                            )
+                          ).map((Icon, index) => (
+                            <Icon className="w-6 h-6" key={index} />
+                          ))}
                         </CardHeader>
                         <CardContent>
                           <div className="flex justify-between items-center mb-2">
