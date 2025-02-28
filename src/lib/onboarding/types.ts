@@ -56,6 +56,14 @@ interface QuizRecommendations {
   dailyAlgorithmsCount: number | null;
 }
 
+// Define a more specific type for algorithm knowledge
+export interface AlgorithmKnowledge {
+  [topic: string]: {
+    familiarity: "unknown" | "familiar" | "confident";
+    confidence?: number;
+  };
+}
+
 export interface QuizResults {
   id: string;
   userId: string;
@@ -64,7 +72,7 @@ export interface QuizResults {
     topics: QuizAnswer[];
     metadata: QuizMetadata;
   };
-  algorithmKnowledge?: any;
+  algorithmKnowledge?: AlgorithmKnowledge;
   score: number;
   recommendations: QuizRecommendations;
   createdAt: string;
@@ -83,7 +91,7 @@ export interface OnboardingState {
 }
 
 export interface StepProps {
-  onNext: () => void;
+  onNext?: () => void;
   onBack: () => void;
   onSkip: () => void;
 }

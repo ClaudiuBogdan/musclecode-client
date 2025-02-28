@@ -4,10 +4,10 @@ import { Button } from "../ui/button";
 import { Card } from "../ui/card";
 import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
 import { Label } from "../ui/label";
-import { useOnboarding } from "../../hooks/useOnboarding";
+import { useOnboardingStore } from "../../lib/onboarding/store";
 import { Loader2, AlertCircle } from "lucide-react";
 import { Alert, AlertDescription } from "../ui/alert";
-import { toast } from "sonner";
+import { AlgorithmKnowledge } from "../../lib/onboarding/types";
 
 interface Question {
   id: string;
@@ -79,36 +79,50 @@ const questions: Question[] = [
   },
 ];
 
-export function QuizStep({ onNext, onBack }: StepProps) {
-  const { submitQuiz, skipOnboarding, isLoading } = useOnboarding();
+export function QuizStep({ onBack, onNext }: StepProps) {
+  const { saveStep, skipOnboarding, isLoading } = useOnboardingStore();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [answers, setAnswers] = useState<
     Record<string, Question["options"][number]["level"]>
   >({});
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     setIsSubmitting(true);
     setError(null);
 
-    submitQuiz(answers, {
-      onSuccess: () => {
+    try {
+      // Format answers for the API - convert to AlgorithmKnowledge format
+      const quizData: AlgorithmKnowledge = {};
+
+      // Convert from array format to object format
+      Object.entries(answers).forEach(([topic, familiarity]) => {
+        quizData[topic] = {
+          familiarity,
+          confidence:
+            familiarity === "confident"
+              ? 1.0
+              : familiarity === "familiar"
+                ? 0.5
+                : 0.0,
+        };
+      });
+
+      const success = await saveStep(quizData, "quiz");
+      if (success && onNext) {
         onNext();
-      },
-      onError: (error) => {
-        const errorMessage =
-          error instanceof Error
-            ? error.message
-            : "Failed to submit your quiz answers. Please try again.";
-        setError(errorMessage);
-        toast.error("Error", {
-          description: errorMessage,
-        });
-      },
-      onSettled: () => {
-        setIsSubmitting(false);
-      },
-    });
+      } else {
+        setError("Failed to save your quiz results. Please try again.");
+      }
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "An unexpected error occurred. Please try again."
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const isComplete = questions.every((q) => answers[q.id]);

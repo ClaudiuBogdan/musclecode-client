@@ -1,5 +1,4 @@
 import { createLazyFileRoute } from "@tanstack/react-router";
-import { useOnboarding } from "../../hooks/useOnboarding";
 import { OnboardingLayout } from "../../components/onboarding/OnboardingLayout";
 import { WelcomeStep } from "../../components/onboarding/WelcomeStep";
 import { ConceptsStep } from "../../components/onboarding/ConceptsStep";
@@ -7,12 +6,36 @@ import { GoalsStep } from "../../components/onboarding/GoalsStep";
 import { QuizStep } from "../../components/onboarding/QuizStep";
 import { SummaryStep } from "../../components/onboarding/SummaryStep";
 import { Loader2 } from "lucide-react";
+import { useOnboardingStore } from "../../lib/onboarding/store";
+import { useRouter } from "@tanstack/react-router";
+import { OnboardingStep, StepProps } from "../../lib/onboarding/types";
+import { useEffect } from "react";
+import { NetworkStatusMonitor } from "../../components/onboarding/NetworkStatusMonitor";
 
 function OnboardingPage() {
-  const { onboardingState, isLoading, skipOnboarding, handleNext, handleBack } =
-    useOnboarding();
+  const router = useRouter();
+  const {
+    onboardingState,
+    isLoading,
+    error,
+    goToNextStep,
+    goToPreviousStep,
+    skipOnboarding,
+    fetchOnboardingState,
+  } = useOnboardingStore();
 
-  if (isLoading) {
+  // Always fetch onboarding state when the component mounts
+  useEffect(() => {
+    fetchOnboardingState();
+  }, [fetchOnboardingState]);
+
+  // Handle navigation after completing or skipping onboarding
+  const handleSkip = async () => {
+    await skipOnboarding();
+    router.navigate({ to: "/" });
+  };
+
+  if (isLoading && !onboardingState) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -20,14 +43,14 @@ function OnboardingPage() {
     );
   }
 
-  if (!onboardingState) {
+  if (error && !onboardingState) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center gap-4">
         <p className="text-lg text-muted-foreground">
-          Failed to load onboarding
+          Failed to load onboarding: {error}
         </p>
         <button
-          onClick={() => window.location.reload()}
+          onClick={() => fetchOnboardingState()}
           className="text-primary hover:underline"
         >
           Try again
@@ -36,7 +59,16 @@ function OnboardingPage() {
     );
   }
 
-  const steps = {
+  // If we still don't have onboarding state, show a loading indicator
+  if (!onboardingState) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  const steps: Record<OnboardingStep, React.ComponentType<StepProps>> = {
     welcome: WelcomeStep,
     concepts: ConceptsStep,
     goals: GoalsStep,
@@ -47,16 +79,19 @@ function OnboardingPage() {
   const CurrentStep = steps[onboardingState.currentStep];
 
   return (
-    <OnboardingLayout
-      currentStep={onboardingState.currentStep}
-      onSkip={skipOnboarding}
-    >
-      <CurrentStep
-        onNext={handleNext}
-        onBack={handleBack}
-        onSkip={skipOnboarding}
-      />
-    </OnboardingLayout>
+    <>
+      <NetworkStatusMonitor />
+      <OnboardingLayout
+        currentStep={onboardingState.currentStep}
+        onSkip={handleSkip}
+      >
+        <CurrentStep
+          onNext={goToNextStep}
+          onBack={goToPreviousStep}
+          onSkip={handleSkip}
+        />
+      </OnboardingLayout>
+    </>
   );
 }
 

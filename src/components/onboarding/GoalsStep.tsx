@@ -3,10 +3,11 @@ import { StepProps } from "../../lib/onboarding/types";
 import { Button } from "../ui/button";
 import { Label } from "../ui/label";
 import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
-import { useOnboarding } from "../../hooks/useOnboarding";
-import { Loader2, AlertCircle } from "lucide-react";
+import { useOnboardingStore } from "../../lib/onboarding/store";
+import { Loader2, AlertCircle, WifiOff } from "lucide-react";
 import { Alert, AlertDescription } from "../ui/alert";
 import { toast } from "sonner";
+import { useRouter } from "@tanstack/react-router";
 
 const timeCommitments = [
   { value: "low", label: "15-30 minutes daily" },
@@ -47,9 +48,10 @@ const experienceLevels = [
 ] as const;
 
 export function GoalsStep({ onNext, onBack }: StepProps) {
-  const { saveGoals, skipOnboarding, isLoading } = useOnboarding();
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
+  const { saveStep, skipOnboarding, isLoading, error, clearError } =
+    useOnboardingStore();
+
   const [timeCommitment, setTimeCommitment] =
     useState<(typeof timeCommitments)[number]["value"]>("medium");
   const [learningStyle, setLearningStyle] =
@@ -57,37 +59,47 @@ export function GoalsStep({ onNext, onBack }: StepProps) {
   const [experienceLevel, setExperienceLevel] =
     useState<(typeof experienceLevels)[number]["value"]>("beginner");
 
-  const handleSubmit = () => {
-    setIsSubmitting(true);
-    setError(null);
+  const handleSubmit = async () => {
+    clearError();
 
-    // TODO: FIXME: This is a temporary solution to save the goals
-    saveGoals(
+    // Convert time commitment to study time in minutes
+    const studyTimeMap = {
+      low: 20,
+      medium: 45,
+      high: 90,
+    };
+
+    const studyTime = studyTimeMap[timeCommitment];
+
+    // Attempt to save goals with new simplified approach
+    const success = await saveStep(
       {
         timeCommitment,
-        learningPreference: learningStyle,
+        studyTime,
         experienceLevel,
-        focusAreas: [], // This will be determined by the quiz
-      } as any,
-      {
-        onSuccess: () => {
-          onNext();
-        },
-        onError: (error) => {
-          const errorMessage =
-            error instanceof Error
-              ? error.message
-              : "Failed to save your goals. Please try again.";
-          setError(errorMessage);
-          toast.error("Error", {
-            description: errorMessage,
-          });
-        },
-        onSettled: () => {
-          setIsSubmitting(false);
-        },
-      }
+        learningGoals: ["improve_skills", "prepare_for_interviews"],
+        preferredTopics: [learningStyle], // Use learning style as a preferred topic
+      },
+      "goals"
     );
+
+    if (success && onNext) {
+      onNext();
+    } else {
+      // Error will be set in store and displayed
+      toast.error("Failed to save goals", {
+        description: "Please check your connection and try again.",
+      });
+    }
+  };
+
+  const handleSkip = async () => {
+    await skipOnboarding();
+    router.navigate({ to: "/" });
+  };
+
+  const handleRetry = () => {
+    handleSubmit();
   };
 
   if (isLoading) {
@@ -98,15 +110,29 @@ export function GoalsStep({ onNext, onBack }: StepProps) {
     );
   }
 
-  return (
-    <div className="space-y-6">
-      {error && (
+  // Display error state if there's an error
+  if (error) {
+    return (
+      <div className="space-y-6">
         <Alert variant="destructive">
+          <WifiOff className="h-4 w-4 mr-2" />
           <AlertCircle className="h-4 w-4" />
           <AlertDescription>{error}</AlertDescription>
         </Alert>
-      )}
 
+        <div className="flex flex-col items-center justify-center gap-4 py-8">
+          <p className="text-muted-foreground text-center max-w-md">
+            There was a problem saving your goals. This might be due to network
+            connectivity issues.
+          </p>
+          <Button onClick={handleRetry}>Retry</Button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
       <div className="text-center max-w-2xl mx-auto">
         <h2 className="text-2xl font-bold tracking-tight mb-2">
           Customize Your Learning Journey
@@ -192,24 +218,11 @@ export function GoalsStep({ onNext, onBack }: StepProps) {
       </div>
 
       <div className="flex items-center justify-end gap-4">
-        <Button variant="outline" onClick={onBack} disabled={isSubmitting}>
+        <Button variant="outline" onClick={onBack}>
           Back
         </Button>
-        <Button onClick={handleSubmit} disabled={isSubmitting}>
-          {isSubmitting ? (
-            <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Saving...
-            </>
-          ) : (
-            "Continue"
-          )}
-        </Button>
-        <Button
-          variant="ghost"
-          onClick={skipOnboarding}
-          disabled={isSubmitting}
-        >
+        <Button onClick={handleSubmit}>Continue</Button>
+        <Button variant="ghost" onClick={handleSkip}>
           Skip
         </Button>
       </div>

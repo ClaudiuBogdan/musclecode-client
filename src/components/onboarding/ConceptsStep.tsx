@@ -1,10 +1,10 @@
 import { StepProps } from "../../lib/onboarding/types";
 import { Button } from "../ui/button";
 import { Card } from "../ui/card";
-import { useOnboarding } from "../../hooks/useOnboarding";
+import { useOnboardingStore } from "../../lib/onboarding/store";
 
 export function ConceptsStep({ onNext, onBack }: StepProps) {
-  const { skipOnboarding } = useOnboarding();
+  const { skipOnboarding } = useOnboardingStore();
 
   return (
     <div className="space-y-6">

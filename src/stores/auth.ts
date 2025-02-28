@@ -123,6 +123,7 @@ export const useAuthStore = create<AuthState>()(
       },
 
       logout: async () => {
+        // TODO: remove all the local state: onboarding, local code, etc.
         try {
           logger.info("Logout Started");
           set({ loading: true, error: null });

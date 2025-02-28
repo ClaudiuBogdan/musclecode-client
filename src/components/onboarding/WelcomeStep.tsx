@@ -1,9 +1,9 @@
 import { StepProps } from "../../lib/onboarding/types";
 import { Button } from "../ui/button";
-import { useOnboarding } from "../../hooks/useOnboarding";
+import { useOnboardingStore } from "../../lib/onboarding/store";
 
 export function WelcomeStep({ onNext }: StepProps) {
-  const { skipOnboarding } = useOnboarding();
+  const { skipOnboarding } = useOnboardingStore();
 
   return (
     <div className="space-y-6 max-w-2xl mx-auto text-center">
