@@ -5,52 +5,64 @@ interface StepIndicatorProps {
   currentStep: OnboardingStep;
 }
 
-const steps: { key: OnboardingStep; label: string }[] = [
-  { key: "welcome", label: "Welcome" },
-  { key: "concepts", label: "Core Concepts" },
-  { key: "goals", label: "Your Goals" },
-  { key: "quiz", label: "Knowledge Check" },
-  { key: "summary", label: "Summary" },
+const steps: { id: OnboardingStep; label: string }[] = [
+  { id: "welcome", label: "Welcome" },
+  { id: "goals", label: "Goals" },
+  { id: "quiz", label: "Quiz" },
+  { id: "summary", label: "Summary" },
 ];
 
 export function StepIndicator({ currentStep }: StepIndicatorProps) {
-  const currentIndex = steps.findIndex((step) => step.key === currentStep);
+  const currentIndex = steps.findIndex((step) => step.id === currentStep);
 
   return (
-    <div className="relative">
-      <div className="absolute top-4 left-0 right-0 h-0.5 bg-border" />
-      <ol className="relative z-10 flex justify-between">
-        {steps.map((step, index) => {
-          const isCompleted = index < currentIndex;
-          const isCurrent = index === currentIndex;
+    <div className="flex items-center justify-center space-x-2 py-4">
+      {steps.map((step, index) => {
+        const isActive = index === currentIndex;
+        const isCompleted = index < currentIndex;
 
-          return (
-            <li key={step.key} className="flex flex-col items-center gap-2">
+        return (
+          <div key={step.id} className="flex items-center">
+            {/* Step indicator */}
+            <div
+              className={cn(
+                "flex h-8 w-8 items-center justify-center rounded-full text-xs font-medium",
+                isActive
+                  ? "bg-primary text-primary-foreground"
+                  : isCompleted
+                    ? "bg-primary/20 text-primary"
+                    : "bg-muted text-muted-foreground"
+              )}
+            >
+              {index + 1}
+            </div>
+
+            {/* Step label (only show on larger screens) */}
+            <span
+              className={cn(
+                "ml-2 hidden text-sm sm:inline-block",
+                isActive
+                  ? "font-medium text-foreground"
+                  : isCompleted
+                    ? "text-primary"
+                    : "text-muted-foreground"
+              )}
+            >
+              {step.label}
+            </span>
+
+            {/* Connector line between steps */}
+            {index < steps.length - 1 && (
               <div
                 className={cn(
-                  "h-8 w-8 rounded-full border-2 flex items-center justify-center text-sm font-medium",
-                  {
-                    "border-primary bg-primary text-primary-foreground":
-                      isCompleted || isCurrent,
-                    "border-muted-foreground bg-background":
-                      !isCompleted && !isCurrent,
-                  }
+                  "mx-2 h-0.5 w-4 sm:w-10",
+                  isCompleted ? "bg-primary" : "bg-muted"
                 )}
-              >
-                {isCompleted ? "✓" : index + 1}
-              </div>
-              <span
-                className={cn("text-sm font-medium", {
-                  "text-foreground": isCurrent,
-                  "text-muted-foreground": !isCurrent,
-                })}
-              >
-                {step.label}
-              </span>
-            </li>
-          );
-        })}
-      </ol>
+              />
+            )}
+          </div>
+        );
+      })}
     </div>
   );
 }

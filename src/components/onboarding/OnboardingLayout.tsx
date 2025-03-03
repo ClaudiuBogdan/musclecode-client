@@ -16,37 +16,34 @@ export function OnboardingLayout({
   onSkip,
 }: OnboardingLayoutProps) {
   return (
-    <>
-      {/* Monitor network status and retry operations when connection is restored */}
-      <NetworkStatusMonitor />
+    <div className="min-h-screen flex flex-col">
+      {/* Header with logo and skip button */}
+      <header className="border-b py-4 px-6 flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <span className="font-bold text-xl">MuscleCode</span>
+          <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full">
+            Onboarding
+          </span>
+        </div>
+        {currentStep !== "summary" && (
+          <Button variant="ghost" size="sm" onClick={onSkip}>
+            Skip
+          </Button>
+        )}
+      </header>
 
-      <div className="min-h-screen bg-background flex flex-col">
-        <header className="border-b">
-          <div className="container flex h-16 items-center justify-between px-4">
-            <div className="flex items-center gap-4">
-              <h1 className="text-xl font-semibold">MuscleCode</h1>
-            </div>
-            <Button variant="ghost" onClick={onSkip}>
-              Skip Onboarding
-            </Button>
-          </div>
-        </header>
-
-        <main className="flex-1 container max-w-5xl mx-auto px-4 py-8">
-          <div className="space-y-8">
-            <StepIndicator currentStep={currentStep} />
-            <div className="bg-card rounded-lg border p-6">{children}</div>
-          </div>
-        </main>
-
-        <footer className="border-t">
-          <div className="container h-16 flex items-center justify-center px-4">
-            <p className="text-sm text-muted-foreground">
-              © {new Date().getFullYear()} MuscleCode. All rights reserved.
-            </p>
-          </div>
-        </footer>
+      {/* Step indicator */}
+      <div className="border-b">
+        <StepIndicator currentStep={currentStep} />
       </div>
-    </>
+
+      {/* Main content */}
+      <main className="flex-1 container max-w-4xl py-8 px-4 md:py-12">
+        {children}
+      </main>
+
+      {/* Network status monitor */}
+      <NetworkStatusMonitor />
+    </div>
   );
 }

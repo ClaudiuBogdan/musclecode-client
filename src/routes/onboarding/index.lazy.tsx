@@ -1,7 +1,6 @@
 import { createLazyFileRoute } from "@tanstack/react-router";
 import { OnboardingLayout } from "../../components/onboarding/OnboardingLayout";
 import { WelcomeStep } from "../../components/onboarding/WelcomeStep";
-import { ConceptsStep } from "../../components/onboarding/ConceptsStep";
 import { GoalsStep } from "../../components/onboarding/GoalsStep";
 import { QuizStep } from "../../components/onboarding/QuizStep";
 import { SummaryStep } from "../../components/onboarding/SummaryStep";
@@ -28,6 +27,18 @@ function OnboardingPage() {
   useEffect(() => {
     fetchOnboardingState();
   }, [fetchOnboardingState]);
+
+  const handleGoToNextStep = () => {
+    if (onboardingState?.currentStep) {
+      goToNextStep(onboardingState.currentStep);
+    }
+  };
+
+  const handleGoToPreviousStep = () => {
+    if (onboardingState?.currentStep) {
+      goToPreviousStep(onboardingState.currentStep);
+    }
+  };
 
   // Handle navigation after completing or skipping onboarding
   const handleSkip = async () => {
@@ -70,7 +81,6 @@ function OnboardingPage() {
 
   const steps: Record<OnboardingStep, React.ComponentType<StepProps>> = {
     welcome: WelcomeStep,
-    concepts: ConceptsStep,
     goals: GoalsStep,
     quiz: QuizStep,
     summary: SummaryStep,
@@ -86,8 +96,8 @@ function OnboardingPage() {
         onSkip={handleSkip}
       >
         <CurrentStep
-          onNext={goToNextStep}
-          onBack={goToPreviousStep}
+          onNext={handleGoToNextStep}
+          onBack={handleGoToPreviousStep}
           onSkip={handleSkip}
         />
       </OnboardingLayout>

@@ -3,7 +3,12 @@ import { Button } from "../ui/button";
 import { useOnboardingStore } from "../../lib/onboarding/store";
 
 export function WelcomeStep({ onNext }: StepProps) {
-  const { skipOnboarding } = useOnboardingStore();
+  const { skipOnboarding, saveStep } = useOnboardingStore();
+
+  const handleNext = async () => {
+    await saveStep(null, "welcome");
+    onNext?.();
+  };
 
   return (
     <div className="space-y-6 max-w-2xl mx-auto text-center">
@@ -47,7 +52,7 @@ export function WelcomeStep({ onNext }: StepProps) {
         <Button variant="outline" onClick={skipOnboarding}>
           Skip Setup
         </Button>
-        <Button onClick={onNext}>Get Started</Button>
+        <Button onClick={handleNext}>Get Started</Button>
       </div>
     </div>
   );
