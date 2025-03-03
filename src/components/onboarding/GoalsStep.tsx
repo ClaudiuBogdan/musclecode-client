@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { StepProps } from "../../lib/onboarding/types";
 import { Button } from "../ui/button";
 import { Label } from "../ui/label";
@@ -44,6 +44,9 @@ export function GoalsStep({ onNext, onBack }: StepProps) {
 
   // State for selected collections
   const [selectedCollections, setSelectedCollections] = useState<string[]>([]);
+
+  // State for collections visibility
+  const [showCollections, setShowCollections] = useState(false);
 
   // Get available collections
   const availableCollections = getAvailableCollections();
@@ -97,15 +100,14 @@ export function GoalsStep({ onNext, onBack }: StepProps) {
     handleSubmit();
   };
 
-  const toggleCollection = (collectionId: string) => {
+  const toggleCollection = useCallback((collectionId: string) => {
     setSelectedCollections((prev) => {
       if (prev.includes(collectionId)) {
         return prev.filter((id) => id !== collectionId);
-      } else {
-        return [...prev, collectionId];
       }
+      return [...prev, collectionId];
     });
-  };
+  }, []);
 
   if (isLoading) {
     return (
@@ -214,8 +216,9 @@ export function GoalsStep({ onNext, onBack }: StepProps) {
           <CardHeader>
             <CardTitle>Algorithm Collections</CardTitle>
             <CardDescription>
-              Select the algorithm collections you want to focus on. If none are
-              selected, all collections will be included.
+              {showCollections
+                ? "Select the algorithm collections you want to focus on. If none are selected, all collections will be included."
+                : "Customize which algorithm collections you want to focus on. If none are selected, all will be included."}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -225,32 +228,61 @@ export function GoalsStep({ onNext, onBack }: StepProps) {
                   No collections available. The default collection will include
                   all algorithms.
                 </div>
-              ) : (
-                availableCollections.map((collection) => (
-                  <div
-                    key={collection.id}
-                    className="flex items-start space-x-3 space-y-0"
+              ) : showCollections ? (
+                <>
+                  {availableCollections.map((collection) => (
+                    <button
+                      key={collection.id}
+                      onClick={() => toggleCollection(collection.id)}
+                      className={`flex items-center w-full p-3 rounded-lg border transition-colors gap-3 ${
+                        selectedCollections.includes(collection.id)
+                          ? "border-primary bg-accent/20"
+                          : "border-muted hover:border-primary/50"
+                      }`}
+                    >
+                      <Checkbox
+                        id={`collection-${collection.id}`}
+                        checked={selectedCollections.includes(collection.id)}
+                        onCheckedChange={() => toggleCollection(collection.id)}
+                        className="h-5 w-5 border-2 data-[state=checked]:border-primary data-[state=checked]:bg-primary"
+                      />
+                      <div className="grid gap-1 text-left">
+                        <Label
+                          htmlFor={`collection-${collection.id}`}
+                          className="text-base font-medium leading-tight"
+                        >
+                          {collection.name}
+                        </Label>
+                        {collection.description && (
+                          <p className="text-sm text-muted-foreground line-clamp-2">
+                            {collection.description}
+                          </p>
+                        )}
+                      </div>
+                    </button>
+                  ))}
+                  <Button
+                    onClick={() => setShowCollections(false)}
+                    variant="outline"
+                    className="mt-4"
                   >
-                    <Checkbox
-                      id={`collection-${collection.id}`}
-                      checked={selectedCollections.includes(collection.id)}
-                      onCheckedChange={() => toggleCollection(collection.id)}
-                    />
-                    <div className="grid gap-1.5 leading-none">
-                      <Label
-                        htmlFor={`collection-${collection.id}`}
-                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                      >
-                        {collection.name}
-                      </Label>
-                      {collection.description && (
-                        <p className="text-sm text-muted-foreground">
-                          {collection.description}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                ))
+                    Hide Collections
+                  </Button>
+                </>
+              ) : (
+                <div className="space-y-4">
+                  <p className="text-muted-foreground text-sm">
+                    All collections are selected by default. Click below to
+                    customize.
+                  </p>
+                  <Button
+                    onClick={() => setShowCollections(true)}
+                    variant="outline"
+                    className="w-full"
+                  >
+                    Customize Collections
+                  </Button>
+                </div>
               )}
             </div>
           </CardContent>
