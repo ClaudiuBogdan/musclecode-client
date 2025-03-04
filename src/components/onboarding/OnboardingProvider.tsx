@@ -158,7 +158,7 @@ export function OnboardingProvider() {
           />
         );
       case "summary":
-        return <SummaryStep onBack={handleBack} onSkip={handleSkip} />;
+        return <SummaryStep />;
       default:
         return (
           <WelcomeStep
