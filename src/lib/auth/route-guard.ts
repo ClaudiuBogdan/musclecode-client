@@ -7,7 +7,11 @@ export function createRouteGuard() {
       return;
     }
 
+    const authStore = useAuthStore.getState();
+
     // TODO: This should not be triggered for public routes
-    await useAuthStore.getState().initialize();
+    if (!authStore.isAuthenticated) {
+      await authStore.initialize();
+    }
   };
 }
