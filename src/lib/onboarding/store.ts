@@ -30,6 +30,10 @@ interface OnboardingStore {
   // Filtered quiz questions based on selected collections
   filteredQuizQuestions: QuizGroup[];
 
+  // Helper methods for internal use
+  updateState: (partialState: Partial<OnboardingState>) => void;
+  handleApiError: (error: unknown, action: string) => void;
+
   // Core actions
   fetchOnboardingState: () => Promise<void>;
   saveStep: <T extends keyof StepDataMap>(
@@ -58,12 +62,38 @@ interface OnboardingStore {
 export const useOnboardingStore = create<OnboardingStore>()(
   persist(
     (set, get) => ({
+      // Initial state
       onboardingState: null,
       isLoading: false,
       error: null,
       initialized: false,
       filteredQuizQuestions: [],
 
+      // Helper functions
+      updateState: (partialState: Partial<OnboardingState>) => {
+        const currentState = get().onboardingState;
+        if (!currentState) return;
+
+        set({
+          onboardingState: {
+            ...currentState,
+            ...partialState,
+            updatedAt: new Date().toISOString(),
+          },
+        });
+      },
+
+      handleApiError: (error: unknown, action: string) => {
+        set({
+          error:
+            error instanceof Error
+              ? error.message
+              : `Failed to ${action}. Please try again.`,
+          isLoading: false,
+        });
+      },
+
+      // Core actions
       fetchOnboardingState: async () => {
         if (get().isLoading) return;
 
@@ -71,122 +101,73 @@ export const useOnboardingStore = create<OnboardingStore>()(
 
         try {
           const state = await onboardingApi.getOnboardingState();
-
-          // Initialize with all quiz questions
-          const filteredQuizQuestions = state.quizQuestions || [];
-
           set({
             onboardingState: state,
-            filteredQuizQuestions,
+            filteredQuizQuestions: state.quizQuestions || [],
             isLoading: false,
             initialized: true,
           });
         } catch (error) {
-          set({
-            error:
-              error instanceof Error
-                ? error.message
-                : "Failed to fetch onboarding state. Please check your internet connection.",
-            isLoading: false,
-          });
+          get().handleApiError(error, "fetch onboarding state");
         }
       },
 
-      // Unified save method for different step types
       saveStep: async <T extends keyof StepDataMap>(
         stepData: StepDataMap[T],
         stepType: T
       ) => {
+        const { onboardingState } = get();
+        if (!onboardingState) {
+          set({ error: "No onboarding state available" });
+          return false;
+        }
+
         set({ isLoading: true, error: null });
 
         try {
-          let success: boolean;
-          const currentState = get().onboardingState;
+          let success = false;
 
-          if (!currentState) {
-            throw new Error("No onboarding state available");
-          }
-
-          // Declare variables outside case blocks to avoid linter errors
-          let goalsData: UserGoals;
-          let quizAnswers: QuizAnswer[];
-
+          // Handle API calls based on step type
           switch (stepType) {
             case "welcome":
-              // Save user welcome
               success = await onboardingApi.saveUserWelcome();
-
-              if (success) {
-                // Update the local state to move to the next step
-                set({
-                  onboardingState: {
-                    ...currentState,
-                    currentStep: "goals",
-                    updatedAt: new Date().toISOString(),
-                  },
-                  isLoading: false,
-                });
-              }
+              if (success) get().updateState({ currentStep: "goals" });
               break;
-            case "goals":
-              // Save user goals including study time and selected collections
-              goalsData = stepData as UserGoals;
+
+            case "goals": {
+              const goalsData = stepData as UserGoals;
               success = await onboardingApi.saveUserGoals(goalsData);
-
-              if (success) {
-                // Update the local state with the new goals and move to the next step
-                set({
-                  onboardingState: {
-                    ...currentState,
-                    goals: goalsData,
-                    currentStep: "quiz",
-                    updatedAt: new Date().toISOString(),
-                  },
-                  isLoading: false,
-                });
-              }
+              if (success)
+                get().updateState({ goals: goalsData, currentStep: "quiz" });
               break;
-            case "quiz":
-              // Submit quiz answers
-              quizAnswers = stepData as QuizAnswer[];
+            }
+
+            case "quiz": {
+              const quizAnswers = stepData as QuizAnswer[];
               success = await onboardingApi.submitQuiz(quizAnswers);
-
               if (success) {
-                // Update the local state with the quiz results and move to the next step
-                set({
-                  onboardingState: {
-                    ...currentState,
-                    quizResults: {
-                      answers: quizAnswers,
-                    },
-                    currentStep: "summary",
-                    updatedAt: new Date().toISOString(),
-                  },
-                  isLoading: false,
+                get().updateState({
+                  quizResults: { answers: quizAnswers },
+                  isCompleted: true,
+                  currentStep: "summary",
                 });
               }
               break;
-            default:
-              throw new Error(`Unknown step type: ${stepType}`);
+            }
           }
 
+          set({ isLoading: false });
           return success;
         } catch (error) {
-          set({
-            error:
-              error instanceof Error
-                ? error.message
-                : `Failed to save ${stepType} data. Please try again.`,
-            isLoading: false,
-          });
+          get().handleApiError(error, `save ${stepType} data`);
           return false;
         }
       },
 
-      // Get selected collections from the state
+      // Collection selection methods
       getSelectedCollections: () => {
         const { onboardingState } = get();
-        if (!onboardingState || !onboardingState.collections) return [];
+        if (!onboardingState?.collections) return [];
 
         const selectedIds = onboardingState.goals?.selectedCollections || [];
         return onboardingState.collections.filter((c) =>
@@ -194,150 +175,84 @@ export const useOnboardingStore = create<OnboardingStore>()(
         );
       },
 
-      // Get all available collections
-      getAvailableCollections: () => {
-        const { onboardingState } = get();
-        return onboardingState?.collections || [];
-      },
+      getAvailableCollections: () => get().onboardingState?.collections || [],
 
-      // Filter quiz questions based on selected collections
+      // Quiz filtering
       filterQuizQuestionsByCollections: (collectionIds: string[]) => {
         const { onboardingState } = get();
-        if (!onboardingState || !onboardingState.quizQuestions) {
+        if (!onboardingState?.quizQuestions) {
           set({ filteredQuizQuestions: [] });
           return;
         }
 
         // If no collections selected, use all questions
-        if (!collectionIds.length) {
-          set({ filteredQuizQuestions: onboardingState.quizQuestions });
-          return;
-        }
-
-        // Filter quiz groups based on selected collections
-        // This is a simplified approach - in a real implementation, you might have
-        // a mapping between collections and quiz groups
-        const filteredGroups = onboardingState.quizQuestions.filter((group) =>
-          collectionIds.includes(group.id)
-        );
+        const filteredGroups = !collectionIds.length
+          ? onboardingState.quizQuestions
+          : onboardingState.quizQuestions.filter((group) =>
+              collectionIds.includes(group.collectionId)
+            );
 
         set({ filteredQuizQuestions: filteredGroups });
       },
 
+      // Navigation methods
       goToNextStep: (step: OnboardingStep) => {
-        const currentState = get().onboardingState;
-        if (!currentState) return;
+        const currentIndex = STEPS.indexOf(step);
+        if (currentIndex < 0 || currentIndex >= STEPS.length - 1) return;
 
-        const nextStep = {
-          welcome: "goals",
-          goals: "quiz",
-          quiz: "summary",
-          summary: "summary",
-        }[step] as OnboardingStep;
-
-        if (nextStep) {
-          set({
-            onboardingState: {
-              ...currentState,
-              currentStep: nextStep,
-              updatedAt: new Date().toISOString(),
-            },
-          });
-        }
+        get().updateState({ currentStep: STEPS[currentIndex + 1] });
       },
 
       goToPreviousStep: (step: OnboardingStep) => {
-        const currentState = get().onboardingState;
-        if (!currentState) return;
+        const currentIndex = STEPS.indexOf(step);
+        if (currentIndex <= 0) return;
 
-        const previousStep = {
-          welcome: "welcome",
-          goals: "welcome",
-          quiz: "goals",
-          summary: "quiz",
-        }[step] as OnboardingStep;
-
-        if (previousStep) {
-          set({
-            onboardingState: {
-              ...currentState,
-              currentStep: previousStep,
-              updatedAt: new Date().toISOString(),
-            },
-          });
-        }
+        get().updateState({ currentStep: STEPS[currentIndex - 1] });
       },
 
-      // Skip onboarding
       skipOnboarding: async () => {
-        const currentState = get().onboardingState;
-
-        if (!currentState) {
-          throw new Error("No onboarding state available");
+        if (!get().onboardingState) {
+          set({ error: "No onboarding state available" });
+          return;
         }
 
-        try {
-          set({ isLoading: true, error: null });
-          const success = await onboardingApi.skipStep("summary");
+        set({ isLoading: true, error: null });
 
+        try {
+          const success = await onboardingApi.skipStep("summary");
           if (success) {
-            set({
-              onboardingState: {
-                ...currentState,
-                isCompleted: true,
-                updatedAt: new Date().toISOString(),
-              },
-              isLoading: false,
-            });
+            get().updateState({ isCompleted: true });
           }
+          set({ isLoading: false });
         } catch (error) {
-          set({
-            error:
-              error instanceof Error
-                ? error.message
-                : "Failed to skip onboarding. Please try again.",
-            isLoading: false,
-          });
+          get().handleApiError(error, "skip onboarding");
         }
       },
 
-      // Skip a specific step
       skipStep: async (step: OnboardingStep) => {
-        const currentState = get().onboardingState;
-
-        if (!currentState) {
-          throw new Error("No onboarding state available");
+        if (!get().onboardingState) {
+          set({ error: "No onboarding state available" });
+          return;
         }
 
+        set({ isLoading: true, error: null });
+
         try {
-          set({ isLoading: true, error: null });
           const success = await onboardingApi.skipStep(step);
 
           if (success) {
-            // Find the next step after the skipped one
             const currentIndex = STEPS.indexOf(step);
             const nextStep =
               currentIndex < STEPS.length - 1
                 ? STEPS[currentIndex + 1]
                 : "summary";
 
-            set({
-              onboardingState: {
-                ...currentState,
-                currentStep: nextStep,
-                updatedAt: new Date().toISOString(),
-              },
-              isLoading: false,
-            });
+            get().updateState({ currentStep: nextStep });
           }
+
+          set({ isLoading: false });
         } catch (error) {
-          set({
-            error:
-              error instanceof Error
-                ? error.message
-                : "Failed to skip step. Please try again.",
-            isLoading: false,
-          });
+          get().handleApiError(error, "skip step");
         }
       },
 
@@ -347,10 +262,7 @@ export const useOnboardingStore = create<OnboardingStore>()(
     {
       name: "onboarding-storage",
       partialize: (state) => ({
-        // Only persist the current step for UI state continuity
-        onboardingState: state.onboardingState
-          ? { currentStep: state.onboardingState.currentStep }
-          : null,
+        onboardingState: state.onboardingState,
         initialized: state.initialized,
       }),
     }

@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { NavUser } from "./nav-user";
 import {
   Sidebar,
@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/sidebar";
 import Logo from "./logo";
 import { NavMain } from "./nav-main";
+import { useLocation } from "@tanstack/react-router";
 
 // Sample user data
 const data = {
@@ -21,6 +22,13 @@ const data = {
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const location = useLocation();
+
+  // Hide sidebar on onboarding pages
+  if (location.pathname.includes("/onboarding")) {
+    return null;
+  }
+
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>

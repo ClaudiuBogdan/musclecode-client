@@ -19,6 +19,7 @@ export interface QuizGroup {
   name: string;
   description: string;
   questions: QuizQuestion[];
+  collectionId: string;
 }
 
 export interface QuizAnswer {

@@ -12,10 +12,6 @@ export function WelcomeStep({ onNext }: StepProps) {
 
   return (
     <div className="space-y-6 max-w-2xl mx-auto text-center">
-      <h1 className="text-3xl font-bold tracking-tight">
-        Welcome to MuscleCode 💪
-      </h1>
-
       <p className="text-xl text-muted-foreground">
         Your personal trainer for mastering algorithms and data structures
       </p>

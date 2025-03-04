@@ -3,10 +3,9 @@ import { StepProps } from "../../lib/onboarding/types";
 import { Button } from "../ui/button";
 import { Label } from "../ui/label";
 import { useOnboardingStore } from "../../lib/onboarding/store";
-import { Loader2, AlertCircle, WifiOff } from "lucide-react";
+import { Loader2, AlertCircle, WifiOff, ArrowRight } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
 import { toast } from "sonner";
-import { useRouter } from "@tanstack/react-router";
 import { Checkbox } from "../ui/checkbox";
 import {
   Card,
@@ -22,15 +21,11 @@ const timeCommitments = [
   { value: 30, label: "30 minutes daily" },
   { value: 45, label: "45 minutes daily" },
   { value: 60, label: "60 minutes daily" },
-  { value: 90, label: "90 minutes daily" },
-  { value: 120, label: "2 hours daily" },
 ] as const;
 
-export function GoalsStep({ onNext, onBack }: StepProps) {
-  const router = useRouter();
+export function GoalsStep({ onNext }: StepProps) {
   const {
     saveStep,
-    skipOnboarding,
     isLoading,
     error,
     clearError,
@@ -88,11 +83,6 @@ export function GoalsStep({ onNext, onBack }: StepProps) {
         description: "Please check your connection and try again.",
       });
     }
-  };
-
-  const handleSkip = async () => {
-    await skipOnboarding();
-    router.navigate({ to: "/" });
   };
 
   const handleRetry = () => {
@@ -214,22 +204,26 @@ export function GoalsStep({ onNext, onBack }: StepProps) {
 
         <Card>
           <CardHeader>
-            <CardTitle>Algorithm Collections</CardTitle>
+            <CardTitle>Learning Path</CardTitle>
             <CardDescription>
-              {showCollections
-                ? "Select the algorithm collections you want to focus on. If none are selected, all collections will be included."
-                : "Customize which algorithm collections you want to focus on. If none are selected, all will be included."}
+              We've crafted an optimized learning path covering essential
+              algorithms and data structures to help you succeed
             </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="grid gap-4">
               {availableCollections.length === 0 ? (
                 <div className="text-center py-4 text-muted-foreground">
-                  No collections available. The default collection will include
-                  all algorithms.
+                  Our comprehensive curriculum includes all fundamental
+                  algorithms and data structures.
                 </div>
               ) : showCollections ? (
                 <>
+                  <p className="text-sm text-muted-foreground mb-2">
+                    Select specific algorithm collections to focus on. This is
+                    completely optional - our default path is designed to cover
+                    all essential topics.
+                  </p>
                   {availableCollections.map((collection) => (
                     <button
                       key={collection.id}
@@ -266,22 +260,49 @@ export function GoalsStep({ onNext, onBack }: StepProps) {
                     variant="outline"
                     className="mt-4"
                   >
-                    Hide Collections
+                    Use Recommended Path
                   </Button>
                 </>
               ) : (
                 <div className="space-y-4">
-                  <p className="text-muted-foreground text-sm">
-                    All collections are selected by default. Click below to
-                    customize.
-                  </p>
-                  <Button
-                    onClick={() => setShowCollections(true)}
-                    variant="outline"
-                    className="w-full"
-                  >
-                    Customize Collections
-                  </Button>
+                  <div className="flex items-center p-4 bg-accent/20 rounded-lg border border-accent">
+                    <div className="mr-4 flex-shrink-0">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        className="text-primary"
+                      >
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                        <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                      </svg>
+                    </div>
+                    <div>
+                      <h4 className="text-sm font-medium">
+                        Recommended Learning Path
+                      </h4>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        Our carefully designed curriculum covers all essential
+                        algorithms and data structures
+                      </p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <Button
+                      onClick={() => setShowCollections(true)}
+                      variant="ghost"
+                      size="sm"
+                      className="text-xs text-muted-foreground hover:text-foreground"
+                    >
+                      Advanced: Customize collections
+                    </Button>
+                  </div>
                 </div>
               )}
             </div>
@@ -290,12 +311,9 @@ export function GoalsStep({ onNext, onBack }: StepProps) {
       </div>
 
       <div className="flex items-center justify-end gap-4">
-        <Button variant="outline" onClick={onBack}>
-          Back
-        </Button>
-        <Button onClick={handleSubmit}>Continue</Button>
-        <Button variant="ghost" onClick={handleSkip}>
-          Skip
+        <Button onClick={handleSubmit}>
+          Continue
+          <ArrowRight className="h-4 w-4" />
         </Button>
       </div>
     </div>

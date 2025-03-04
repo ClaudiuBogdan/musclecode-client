@@ -1,4 +1,3 @@
-import { StepProps } from "../../lib/onboarding/types";
 import { Button } from "../ui/button";
 import { useOnboardingStore } from "../../lib/onboarding/store";
 import {
@@ -17,9 +16,8 @@ import {
 } from "../ui/card";
 import { useRouter } from "@tanstack/react-router";
 import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
-import { onboardingApi } from "../../lib/onboarding/api";
 
-export function SummaryStep({ onBack }: StepProps) {
+export function SummaryStep() {
   const router = useRouter();
   const {
     onboardingState,
@@ -36,9 +34,6 @@ export function SummaryStep({ onBack }: StepProps) {
   const handleComplete = async () => {
     clearError();
     try {
-      // Update the onboarding state to mark it as completed
-      // Using a different approach that matches the expected types
-      await onboardingApi.skipStep("summary");
       router.navigate({ to: "/" });
     } catch (error) {
       console.error("Error completing onboarding:", error);
@@ -204,9 +199,6 @@ export function SummaryStep({ onBack }: StepProps) {
           always adjust your preferences later in your profile settings.
         </p>
         <div className="flex items-center gap-4">
-          <Button variant="outline" onClick={onBack}>
-            Back
-          </Button>
           <Button onClick={handleComplete} className="gap-2">
             Start Learning
             <ArrowRight className="h-4 w-4" />
