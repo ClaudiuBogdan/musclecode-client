@@ -67,10 +67,7 @@ export function GoalsStep({ onNext }: StepProps) {
     const success = await saveStep(
       {
         studyTime,
-        selectedCollections:
-          selectedCollections.length > 0
-            ? selectedCollections
-            : availableCollections.map((c) => c.id), // Select all if none selected
+        selectedCollections,
       },
       "goals"
     );
