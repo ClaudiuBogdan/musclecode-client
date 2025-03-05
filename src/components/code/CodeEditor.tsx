@@ -7,7 +7,7 @@ import { go } from "@codemirror/lang-go";
 
 interface CodeEditorProps {
   initialValue?: string;
-  active?: boolean;
+  hidden?: boolean;
   lang?: string;
   readOnly?: boolean;
   onChange?: (value: string) => void;
@@ -16,7 +16,7 @@ interface CodeEditorProps {
 
 export const CodeEditor = ({
   initialValue = "",
-  active = false,
+  hidden = false,
   lang,
   readOnly = false,
   onChange,
@@ -31,10 +31,10 @@ export const CodeEditor = ({
   }, [initialValue]);
 
   useEffect(() => {
-    if (active && editorRef.current) {
+    if (!hidden && editorRef.current) {
       editorRef.current?.view?.focus();
     }
-  }, [active]);
+  }, [hidden]);
 
   const handleChange = useCallback(
     (val: string) => {
@@ -62,8 +62,8 @@ export const CodeEditor = ({
   return (
     <div
       className="h-full w-full relative code-editor"
-      hidden={!active}
-      aria-hidden={!active}
+      hidden={hidden}
+      aria-hidden={hidden}
     >
       <CodeMirror
         ref={editorRef}

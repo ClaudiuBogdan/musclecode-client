@@ -82,7 +82,7 @@ export interface Submission {
   id: string;
   algorithmId: string;
   timeSpent: number;
-  code: string;
+  files: AlgorithmFile[];
   language: string;
   notes: string;
   rating: Rating;

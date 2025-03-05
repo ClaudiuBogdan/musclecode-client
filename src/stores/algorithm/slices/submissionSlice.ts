@@ -35,15 +35,17 @@ export const createSubmissionSlice: StateCreator<
       });
 
       try {
-        const { activeLanguage, activeTab, storedCode } = algorithm.code;
-        const code = storedCode[activeLanguage][activeTab].content;
+        const { activeLanguage, storedCode } = algorithm.code;
+        const files = Object.values(storedCode[activeLanguage]).filter(
+          (file) => !file.hidden
+        );
         const timeSpent = get().getTotalRunningTime(algorithmId);
 
         const submission: Submission = {
           id: uuidv4(),
           algorithmId,
           language: activeLanguage,
-          code,
+          files,
           timeSpent,
           rating: difficulty,
           notes: algorithm.userProgress.submissionNote,

@@ -1,9 +1,11 @@
 import { Submission, Rating } from "@/types/algorithm";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, Clock } from "lucide-react";
-import { CodeEditor } from "../code/CodeEditor";
 import { LanguageBadge } from "./LanguageBadge";
 import { formatTime } from "@/lib/utils/time";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { useState, useEffect } from "react";
+import { CodeEditor } from "../code/CodeEditor";
 
 const difficultyColors: Record<Rating, string> = {
   again: "bg-red-500 text-white",
@@ -17,6 +19,16 @@ interface SubmissionDetailProps {
 }
 
 export function SubmissionDetail({ submission }: SubmissionDetailProps) {
+  const [defaultTab, setDefaultTab] = useState("");
+
+  useEffect(() => {
+    // Find the exercise file to set as default tab
+    const exerciseFile = submission.files.find(
+      (file) => file.type === "exercise"
+    );
+    setDefaultTab(exerciseFile?.id || submission.files[0]?.id || "");
+  }, [submission.files]);
+
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center text-sm">
@@ -40,13 +52,35 @@ export function SubmissionDetail({ submission }: SubmissionDetailProps) {
           </Badge>
         </div>
       </div>
-      <div className="h-[400px] border rounded-md overflow-hidden dark:border-gray-700">
-        <CodeEditor
-          initialValue={submission.code}
-          lang={submission.language}
-          readOnly={true}
-        />
-      </div>
+
+      {submission.files.length > 0 && defaultTab && (
+        <Tabs defaultValue={defaultTab} className="w-full">
+          <TabsList className="mb-2 w-full flex overflow-x-auto">
+            {submission.files.map((file) => (
+              <TabsTrigger
+                key={file.id}
+                value={file.id}
+                className="flex-shrink-0"
+              >
+                {file.name}.{file.extension}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+
+          <div className="h-[400px] border rounded-md overflow-hidden dark:border-gray-700">
+            {submission.files.map((file) => (
+              <TabsContent key={file.id} value={file.id} className="h-full">
+                <CodeEditor
+                  initialValue={file.content}
+                  lang={file.language}
+                  readOnly={true}
+                />
+              </TabsContent>
+            ))}
+          </div>
+        </Tabs>
+      )}
+
       <div className="bg-secondary p-4 rounded-md">
         <h3 className="text-lg font-semibold mb-2">Notes</h3>
         <p className="text-secondary-foreground">

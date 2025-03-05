@@ -237,7 +237,7 @@ function Algorithm() {
                       {getFiles(algorithmId, activeLanguage).map((file) => (
                         <CodeEditor
                           key={file.id}
-                          active={file.id === activeFile.id}
+                          hidden={file.id !== activeFile.id}
                           initialValue={file.content}
                           lang={file.language}
                           readOnly={file.readOnly}
