@@ -2,8 +2,6 @@
 
 import {
   Settings,
-  Shield,
-  Bell,
   CreditCard,
   User,
   LayoutDashboard,
@@ -60,21 +58,22 @@ const settingsItems = {
       url: "/settings/billing",
       icon: CreditCard,
     },
-    {
-      title: "Notifications",
-      url: "/settings/notifications",
-      icon: Bell,
-    },
-    {
-      title: "Security",
-      url: "/settings/security",
-      icon: Shield,
-    },
-    {
-      title: "Preferences",
-      url: "/settings/preferences",
-      icon: Settings,
-    },
+    // TODO: Add notifications
+    // {
+    //   title: "Notifications",
+    //   url: "/settings/notifications",
+    //   icon: Bell,
+    // },
+    // {
+    //   title: "Security",
+    //   url: "/settings/security",
+    //   icon: Shield,
+    // },
+    // {
+    //   title: "Preferences",
+    //   url: "/settings/preferences",
+    //   icon: Settings,
+    // },
   ] as SettingsItem[],
 };
 

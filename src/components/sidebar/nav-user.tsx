@@ -1,6 +1,5 @@
 import {
   BadgeCheck,
-  Bell,
   ChevronsUpDown,
   CreditCard,
   LogOut,
@@ -27,7 +26,7 @@ import {
 } from "@/components/ui/sidebar";
 import { ThemeSwitcher } from "./theme-switcher";
 import { createLogger } from "@/lib/logger";
-
+import posthog from "posthog-js";
 const logger = createLogger("NavUser");
 
 export function NavUser({
@@ -51,6 +50,11 @@ export function NavUser({
     }
   };
 
+  const handleUpgrade = () => {
+    logger.info("Upgrade Triggered");
+    posthog.capture("Upgrade to Pro Button Clicked");
+  };
+
   return (
     <SidebarMenu>
       <SidebarMenuItem>
@@ -62,7 +66,9 @@ export function NavUser({
             >
               <Avatar className="h-8 w-8 rounded-lg">
                 <AvatarImage src={user.avatar} alt={user.name} />
-                <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+                <AvatarFallback className="rounded-lg">
+                  {user.name.slice(0, 2).toUpperCase()}
+                </AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-semibold">{user.name}</span>
@@ -81,7 +87,9 @@ export function NavUser({
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                 <Avatar className="h-8 w-8 rounded-lg">
                   <AvatarImage src={user.avatar} alt={user.name} />
-                  <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+                  <AvatarFallback className="rounded-lg">
+                    {user.name.slice(0, 2).toUpperCase()}
+                  </AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-semibold">{user.name}</span>
@@ -91,7 +99,7 @@ export function NavUser({
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={handleUpgrade}>
                 <Sparkles className="mr-2 h-4 w-4" />
                 <span>Upgrade to Pro</span>
               </DropdownMenuItem>
@@ -110,12 +118,13 @@ export function NavUser({
                   <span>Billing</span>
                 </Link>
               </DropdownMenuItem>
-              <DropdownMenuItem asChild>
+              {/* TODO: Add notifications */}
+              {/* <DropdownMenuItem asChild>
                 <Link to="/settings/notifications">
                   <Bell className="mr-2 h-4 w-4" />
                   <span>Notifications</span>
                 </Link>
-              </DropdownMenuItem>
+              </DropdownMenuItem> */}
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <ThemeSwitcher />
