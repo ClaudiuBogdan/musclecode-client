@@ -8,6 +8,7 @@ import { AuthProvider } from "@/components/auth/AuthProvider";
 import { ErrorProvider } from "@/contexts/ErrorContext";
 import { createRouteGuard } from "@/lib/auth/route-guard";
 import { createOnboardingGuard } from "@/lib/onboarding/route-guard";
+import { HotkeysProvider } from "react-hotkeys-hook";
 
 const queryClient = new QueryClient();
 
@@ -20,21 +21,23 @@ export const Route = createRootRoute({
     <ErrorProvider>
       <QueryClientProvider client={queryClient}>
         <ThemeProvider defaultTheme="dark" storageKey="ui-theme">
-          <SidebarProvider>
-            <AuthProvider>
-              <div className="flex h-screen w-screen overflow-auto">
-                <AppSidebar />
-                <SidebarInset>
-                  <main>
-                    <div>
-                      <Outlet />
-                      <Toaster />
-                    </div>
-                  </main>
-                </SidebarInset>
-              </div>
-            </AuthProvider>
-          </SidebarProvider>
+          <HotkeysProvider>
+            <SidebarProvider>
+              <AuthProvider>
+                <div className="flex h-screen w-screen overflow-auto">
+                  <AppSidebar />
+                  <SidebarInset>
+                    <main>
+                      <div>
+                        <Outlet />
+                        <Toaster />
+                      </div>
+                    </main>
+                  </SidebarInset>
+                </div>
+              </AuthProvider>
+            </SidebarProvider>
+          </HotkeysProvider>
         </ThemeProvider>
       </QueryClientProvider>
     </ErrorProvider>

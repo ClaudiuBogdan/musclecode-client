@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { createLogger } from "@/lib/logger";
 import { posthog } from "posthog-js";
 import { tracingStore } from "@/stores/tracing";
+import { useHotkeys } from "react-hotkeys-hook";
 
 const logger = createLogger({ context: "RunButton" });
 
@@ -13,6 +14,9 @@ interface RunButtonProps {
 }
 
 export function RunButton({ onRun, disabled, className }: RunButtonProps) {
+  const runHotkey = "meta+r";
+  const displayHotkey = navigator.platform.includes("Mac") ? "⌘+R" : "Ctrl+R";
+
   const handleRun = () => {
     const context = tracingStore.getState().getContext();
     logger.info("Run button clicked");
@@ -22,6 +26,19 @@ export function RunButton({ onRun, disabled, className }: RunButtonProps) {
 
     onRun();
   };
+
+  useHotkeys(
+    runHotkey,
+    () => {
+      logger.info("Run hotkey pressed");
+      posthog.capture("Run Hotkey Pressed");
+      onRun();
+    },
+    {
+      preventDefault: true,
+      enableOnContentEditable: true,
+    }
+  );
 
   return (
     <Button
@@ -36,6 +53,9 @@ export function RunButton({ onRun, disabled, className }: RunButtonProps) {
     >
       <PlayIcon className="h-4 w-4" />
       Run
+      <span className="ml-1 text-xs opacity-60 font-normal">
+        {displayHotkey}
+      </span>
     </Button>
   );
 }
