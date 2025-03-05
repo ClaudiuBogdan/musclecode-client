@@ -44,8 +44,14 @@ export interface AlgorithmActions {
   initializeAlgorithm: (algorithmId: AlgorithmId) => Promise<void>;
 }
 
+export interface HintActions {
+  requestHint: (algorithmId: string) => Promise<void>;
+  clearHint: (algorithmId: string) => void;
+}
+
 export type StoreActions = CodeActions &
   TimerActions &
   ExecutionActions &
   SubmissionActions &
+  HintActions &
   AlgorithmActions;

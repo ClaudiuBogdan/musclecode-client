@@ -233,7 +233,6 @@ function Algorithm() {
                 <ResizablePanel defaultSize={editorSizes[0]} minSize={30}>
                   <div className="flex h-full flex-col">
                     <div className="flex-1">
-                      {/* TODO: fix undo when editing multiple files. Only the active tab should be focues */}
                       {getFiles(algorithmId, activeLanguage).map((file) => (
                         <CodeEditor
                           key={file.id}

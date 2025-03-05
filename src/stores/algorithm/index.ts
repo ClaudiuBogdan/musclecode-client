@@ -11,6 +11,7 @@ import { createCodeSlice } from "./slices/codeSlice";
 import { createTimerSlice } from "./slices/timerSlice";
 import { createExecutionSlice } from "./slices/executionSlice";
 import { createSubmissionSlice } from "./slices/submissionSlice";
+import { createHintSlice } from "./slices/hintSlice";
 import { getAlgorithm } from "@/lib/api/code";
 import { createInitialState } from "./__tests__/utils/testStore";
 import { CodeLanguage } from "@/types/algorithm";
@@ -54,6 +55,12 @@ export const createAlgorithmSlice: StateCreator<
             executionResult: null,
             error: null,
           },
+          hint: {
+            isLoading: false,
+            error: null,
+            content: null,
+            lastRequestTime: null,
+          },
           userProgress: {
             isSubmitting: false,
             completed: false,
@@ -76,6 +83,7 @@ export const createAlgorithmSlice: StateCreator<
               easy: 0,
             },
           },
+          _createdAt: Date.now(),
         };
         return state;
       });
@@ -149,6 +157,12 @@ export const createAlgorithmSlice: StateCreator<
               executionResult: null,
               error: null,
             },
+            hint: {
+              isLoading: false,
+              error: null,
+              content: null,
+              lastRequestTime: null,
+            },
             userProgress: {
               isSubmitting: false,
               completed,
@@ -203,6 +217,13 @@ export const createAlgorithmSlice: StateCreator<
                 },
               },
             },
+            hint: {
+              ...prevAlgorithmState.hint,
+              isLoading: false,
+              error: null,
+              content: null,
+              lastRequestTime: null,
+            },
             userProgress: {
               ...prevAlgorithmState.userProgress,
               isSubmitting: false,
@@ -246,6 +267,75 @@ export const createAlgorithmSlice: StateCreator<
       throw error; // Re-throw the error to ensure promise rejection
     }
   },
+
+  resetAlgorithm: (algorithmId: string) => {
+    set((state) => {
+      if (state.algorithms[algorithmId]) {
+        // Reset to initial state but keep the created time
+        const createdAt = state.algorithms[algorithmId]._createdAt;
+        state.algorithms[algorithmId] = {
+          code: {
+            activeLanguage: "javascript",
+            activeTab: "",
+            storedCode: {} as StoredCode,
+            initialStoredCode: {} as StoredCode,
+          },
+          timer: {
+            initialStartTime: Date.now(),
+            pausedAt: null,
+            totalPausedTime: 0,
+          },
+          execution: {
+            isExecuting: false,
+            executionResult: null,
+            error: null,
+          },
+          hint: {
+            isLoading: false,
+            error: null,
+            content: null,
+            lastRequestTime: null,
+          },
+          userProgress: {
+            isSubmitting: false,
+            completed: false,
+            notes: {
+              content: "",
+              state: "saved",
+            },
+            submissionNote: "",
+            lastSubmissionDate: null,
+            submissions: [],
+          },
+          metadata: {
+            algorithmId,
+            template: null,
+            nextAlgorithm: null,
+            ratingSchedule: {
+              again: 0,
+              hard: 0,
+              good: 0,
+              easy: 0,
+            },
+            dailyAlgorithm: null,
+          },
+          _createdAt: createdAt,
+        };
+      }
+    });
+  },
+
+  deleteAlgorithm: (algorithmId: string) => {
+    set((state) => {
+      delete state.algorithms[algorithmId];
+    });
+  },
+
+  deleteAllAlgorithms: () => {
+    set((state) => {
+      state.algorithms = {};
+    });
+  },
 });
 
 export const useAlgorithmStore = create<AlgorithmState & StoreActions>()(
@@ -257,6 +347,7 @@ export const useAlgorithmStore = create<AlgorithmState & StoreActions>()(
       ...createTimerSlice(set, get, api),
       ...createExecutionSlice(set, get, api),
       ...createSubmissionSlice(set, get, api),
+      ...createHintSlice(set, get, api),
     })),
     {
       name: "algorithm-store",
@@ -288,3 +379,13 @@ export const useAlgorithmStore = create<AlgorithmState & StoreActions>()(
     }
   )
 );
+
+// Export all action types and state types
+export * from "./types";
+
+// Export all slices
+export * from "./slices/codeSlice";
+export * from "./slices/timerSlice";
+export * from "./slices/executionSlice";
+export * from "./slices/submissionSlice";
+export * from "./slices/hintSlice";

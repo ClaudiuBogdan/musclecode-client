@@ -6,7 +6,7 @@ import { mockAlgorithmState } from "../utils/testStore";
 import { runCode } from "@/lib/api/code";
 import { CodeExecutionResponse, TestResult } from "@/types/testRunner";
 import { immer } from "zustand/middleware/immer";
-import { createAlgorithmSlice } from "../..";
+import { createAlgorithmSlice, createHintSlice } from "../..";
 import { createCodeSlice } from "../../slices/codeSlice";
 import { createTimerSlice } from "../../slices/timerSlice";
 import { createSubmissionSlice } from "../../slices/submissionSlice";
@@ -34,6 +34,7 @@ const createTestStore = (
         ...createTimerSlice(set, get, api),
         ...createExecutionSlice(set, get, api),
         ...createSubmissionSlice(set, get, api),
+        ...createHintSlice(set, get, api),
       };
     })
   );

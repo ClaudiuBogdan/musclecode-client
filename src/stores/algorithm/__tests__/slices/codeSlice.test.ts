@@ -8,7 +8,7 @@ import { createCodeSlice } from "../../slices/codeSlice";
 import { createTimerSlice } from "../../slices/timerSlice";
 import { createExecutionSlice } from "../../slices/executionSlice";
 import { createSubmissionSlice } from "../../slices/submissionSlice";
-import { createAlgorithmSlice } from "../..";
+import { createAlgorithmSlice, createHintSlice } from "../..";
 import { v4 as uuidv4 } from "uuid";
 import { getLanguageExtension } from "@/lib/utils/algorithm";
 
@@ -29,6 +29,7 @@ const createTestStore = (
       ...createTimerSlice(set, get, api),
       ...createExecutionSlice(set, get, api),
       ...createSubmissionSlice(set, get, api),
+      ...createHintSlice(set, get, api),
     }))
   );
 };

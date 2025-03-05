@@ -33,6 +33,13 @@ export interface ExecutionState {
   error: Error | null;
 }
 
+export interface HintState {
+  isLoading: boolean;
+  error: string | null;
+  content: string | null;
+  lastRequestTime: number | null;
+}
+
 export interface UserProgressState {
   isSubmitting: boolean;
   completed: boolean;
@@ -57,6 +64,7 @@ export interface AlgorithmData {
   code: CodeState;
   timer: TimerState;
   execution: ExecutionState;
+  hint: HintState;
   userProgress: UserProgressState;
   metadata: AlgorithmMetadataState;
   _createdAt: number;

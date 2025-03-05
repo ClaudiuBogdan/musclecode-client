@@ -47,6 +47,12 @@ export const createEmptyAlgorithmData = (): AlgorithmData => {
       storedCode,
       initialStoredCode: JSON.parse(JSON.stringify(storedCode)), // Deep clone
     },
+    hint: {
+      isLoading: false,
+      error: null,
+      content: null,
+      lastRequestTime: null,
+    },
     timer: {
       initialStartTime: Date.now(),
       pausedAt: null,

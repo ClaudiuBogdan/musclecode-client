@@ -5,7 +5,7 @@ import { AlgorithmState, StoreActions } from "../../types";
 import { mockAlgorithmState } from "../utils/testStore";
 import { saveSubmission } from "@/lib/api/code";
 import { AlgorithmFile, Rating } from "@/types/algorithm";
-import { createAlgorithmSlice } from "../..";
+import { createAlgorithmSlice, createHintSlice } from "../..";
 import { createCodeSlice } from "../../slices/codeSlice";
 import { createTimerSlice } from "../../slices/timerSlice";
 import { createExecutionSlice } from "../../slices/executionSlice";
@@ -39,6 +39,7 @@ const createTestStore = (
         ...createTimerSlice(set, get, api),
         ...createExecutionSlice(set, get, api),
         ...createSubmissionSlice(set, get, api),
+        ...createHintSlice(set, get, api),
       };
     })
   );
