@@ -151,6 +151,11 @@ const useMarkdownComponents = (
   return useMemo(() => {
     const components: Components = {
       code: (props) => <CodeBlock isDarkMode={isDarkMode} {...props} />,
+      a: (props) => (
+        <a href={props.href} target="_blank" rel="noopener noreferrer">
+          {props.children}
+        </a>
+      ),
     };
 
     if (enableMath) {
