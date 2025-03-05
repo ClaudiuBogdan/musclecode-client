@@ -2,8 +2,8 @@ import { StepProps } from "../../lib/onboarding/types";
 import { Button } from "../ui/button";
 import { useOnboardingStore } from "../../lib/onboarding/store";
 
-export function WelcomeStep({ onNext }: StepProps) {
-  const { skipOnboarding, saveStep } = useOnboardingStore();
+export function WelcomeStep({ onNext, onSkip }: StepProps) {
+  const { saveStep } = useOnboardingStore();
 
   const handleNext = async () => {
     await saveStep(null, "welcome");
@@ -45,7 +45,7 @@ export function WelcomeStep({ onNext }: StepProps) {
       </div>
 
       <div className="flex items-center justify-center gap-4">
-        <Button variant="outline" onClick={skipOnboarding}>
+        <Button variant="outline" onClick={onSkip}>
           Skip Setup
         </Button>
         <Button onClick={handleNext}>Get Started</Button>
