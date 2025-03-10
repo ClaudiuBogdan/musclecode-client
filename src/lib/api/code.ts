@@ -1,5 +1,5 @@
 import { CodeExecutionResponse } from "@/types/testRunner";
-import { apiClient } from "./client";
+import { apiClient, getAuthHeaders } from "./client";
 import {
   AlgorithmTemplate,
   AlgorithmFile,
@@ -9,7 +9,6 @@ import {
   DailyAlgorithm,
 } from "@/types/algorithm";
 import axios from "axios";
-import { getAuthService } from "../auth/auth-service";
 import { env } from "@/config/env";
 import { createLogger } from "../logger";
 
@@ -40,32 +39,14 @@ export const executionApi = axios.create({
 });
 
 executionApi.interceptors.request.use(async (config) => {
-  try {
-    const authService = getAuthService();
+  // Use the centralized auth headers function
+  const headers = await getAuthHeaders();
 
-    const [user, token] = await Promise.all([
-      authService.getUser(),
-      authService.getToken(),
-    ]);
+  // Apply the headers to the config
+  config.headers.Authorization = headers.Authorization;
+  config.headers["X-User-Id"] = headers["X-User-Id"];
 
-    if (!token) {
-      throw new Error("No authentication token available");
-    }
-
-    config.headers.Authorization = `Bearer ${token}`;
-    config.headers["X-User-Id"] = user?.id;
-
-    return config;
-  } catch (error) {
-    // If we can't get a token, we should redirect to login or handle appropriately
-    logger.error("Authentication Failed", {
-      endpoint: config.url,
-      method: config.method,
-      error: error instanceof Error ? error.message : "Unknown error",
-      stack: error instanceof Error ? error.stack : undefined,
-    });
-    throw error;
-  }
+  return config;
 });
 
 export async function runCode(

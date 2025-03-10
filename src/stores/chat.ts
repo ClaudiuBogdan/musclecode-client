@@ -77,10 +77,14 @@ const useChatStore = create<ChatStore>()(
           throw new Error("No active thread and algorithmId not provided");
         }
 
+        if (!activeAlgorithmId) {
+          throw new Error("No active algorithmId");
+        }
+
         try {
           const abortController = new AbortController();
           const newMessageId = uuidv4();
-          const thread = get().threads[activeThreadId];
+          // const thread = get().threads[activeThreadId];
           const userMessage: Message = {
             id: newMessageId,
             threadId: activeThreadId,
@@ -137,7 +141,13 @@ const useChatStore = create<ChatStore>()(
             lastMessageId: assistantMessageId,
           }));
 
-          const stream = await streamMessage(content, thread.messages);
+          const stream = await streamMessage({
+            messageId: newMessageId,
+            content,
+            threadId: activeThreadId,
+            parentId: newMessageId,
+            algorithmId: activeAlgorithmId,
+          });
           const reader = stream.getReader();
 
           // Create an abortable Promise
@@ -329,7 +339,6 @@ const useChatStore = create<ChatStore>()(
 
       streamToken: (messageId: string, token: string) => {
         try {
-          const data = JSON.parse(token);
           const { threads, activeThreadId } = get();
           if (!activeThreadId) return;
 
@@ -341,7 +350,7 @@ const useChatStore = create<ChatStore>()(
             const thread = state.threads[activeThreadId];
             const messages = thread.messages.map((msg) =>
               msg.id === messageId
-                ? { ...msg, content: msg.content + data.content }
+                ? { ...msg, content: msg.content + token }
                 : msg
             );
             return {

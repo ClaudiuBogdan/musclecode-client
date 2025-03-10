@@ -1,6 +1,5 @@
 import { AlgorithmFile } from "@/types/algorithm";
 import { CodeExecutionResponse } from "@/types/testRunner";
-import { chatCompletion } from "./openai";
 
 interface HintContext {
   description: string;
@@ -97,6 +96,8 @@ Keep your hint under 3 sentences and make it specific to their current progress.
 `;
 
   // Call the OpenAI API using the shared function
-  const hint = await chatCompletion(prompt);
+  // const hint = await chatCompletion(prompt);
+  const hint = "This is a test hint";
+  // TODO: Implement the logic to generate a hint
   return hint;
 }
