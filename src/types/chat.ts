@@ -21,6 +21,35 @@ export interface Message {
   };
 }
 
+// Thread synchronization types
+export interface ClientThreadUpdate {
+  threadId: string;
+  messageCount: number;
+}
+
+export interface SyncThreadsRequest {
+  threads: ClientThreadUpdate[];
+  algorithmId?: string;
+}
+
+export interface ThreadDto {
+  id: string;
+  algorithmId: string;
+  createdAt: number;
+  updatedAt: number;
+  messages: {
+    id: string;
+    content: string;
+    timestamp: number;
+    role: 'user' | 'assistant';
+    parentId: string | null;
+  }[];
+}
+
+export interface SyncThreadsResponse {
+  threads: ThreadDto[];
+}
+
 export interface ChatState {
   threads: Record<string, Thread>;
   activeThreadId: string | null;
@@ -30,6 +59,7 @@ export interface ChatState {
   inputMessage: string;
   editingMessageId: string | null;
   abortController: AbortController | null;
+  isSyncing: boolean;
 }
 
 export interface ChatStore extends ChatState {
@@ -52,4 +82,5 @@ export interface ChatStore extends ChatState {
   voteMessage: (messageId: string, isUpvote: boolean) => void;
   copyMessage: (messageId: string) => Promise<void>;
   updateInputMessage: (message: string) => void;
+  syncThreads: () => Promise<void>;
 }

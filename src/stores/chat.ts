@@ -1,7 +1,13 @@
 import { create } from "zustand";
 import { v4 as uuidv4 } from "uuid";
-import { streamMessage } from "../lib/api/chat";
-import { Message, ChatStore, Thread } from "../types/chat";
+import { streamMessage, syncThreads } from "../lib/api/chat";
+import {
+  Message,
+  ChatStore,
+  Thread,
+  ClientThreadUpdate,
+  ThreadDto,
+} from "../types/chat";
 import { createJSONStorage, persist } from "zustand/middleware";
 import { createLogger } from "@/lib/logger";
 
@@ -20,6 +26,7 @@ const useChatStore = create<ChatStore>()(
       inputMessage: "",
       status: "idle",
       abortController: null,
+      isSyncing: false,
 
       updateInputMessage: (message: string) => {
         set({ inputMessage: message });
@@ -58,6 +65,9 @@ const useChatStore = create<ChatStore>()(
             activeThreadId: activeThread?.id || null,
           };
         });
+
+        // Trigger a sync when algorithm ID changes
+        get().syncThreads();
       },
 
       sendMessage: async (message?: string) => {
@@ -532,6 +542,94 @@ const useChatStore = create<ChatStore>()(
         if (message) {
           await navigator.clipboard.writeText(message.content);
           // TODO: Add toast notification
+        }
+      },
+
+      // Thread synchronization function
+      syncThreads: async () => {
+        const state = get();
+
+        // Prevent multiple syncs from running simultaneously
+        if (state.isSyncing) {
+          logger.info("Sync already in progress, skipping");
+          return;
+        }
+
+        set({ isSyncing: true });
+
+        try {
+          logger.info("Starting thread synchronization");
+
+          // Prepare the client thread updates
+          const clientThreadUpdates: ClientThreadUpdate[] = Object.values(
+            state.threads
+          ).map((thread) => ({
+            threadId: thread.id,
+            messageCount: thread.messages.length,
+          }));
+
+          // Call the sync API
+          const response = await syncThreads({
+            threads: clientThreadUpdates,
+            algorithmId: state.activeAlgorithmId || undefined,
+          });
+
+          // Process the server response
+          if (response.threads && response.threads.length > 0) {
+            logger.info(
+              `Received ${response.threads.length} updated threads from server`
+            );
+
+            // Update local threads with server data
+            const updatedThreads = { ...state.threads };
+
+            response.threads.forEach((threadDto: ThreadDto) => {
+              // Convert server message format to client format
+              const messages: Message[] = threadDto.messages.map((msg) => ({
+                id: msg.id,
+                threadId: threadDto.id,
+                content: msg.content,
+                timestamp: msg.timestamp,
+                sender: msg.role === "user" ? "user" : "assistant",
+                status: "complete",
+                parentId: msg.parentId,
+              }));
+
+              // If thread exists locally, update it
+              if (updatedThreads[threadDto.id]) {
+                updatedThreads[threadDto.id] = {
+                  ...updatedThreads[threadDto.id],
+                  messages,
+                  updatedAt: threadDto.updatedAt,
+                };
+              } else {
+                // If it's a new thread, create it
+                updatedThreads[threadDto.id] = {
+                  id: threadDto.id,
+                  algorithmId: threadDto.algorithmId,
+                  messages,
+                  createdAt: threadDto.createdAt,
+                  updatedAt: threadDto.updatedAt,
+                };
+              }
+            });
+
+            // Update the store with synchronized threads
+            set({
+              threads: updatedThreads,
+            });
+
+            logger.info("Thread synchronization completed successfully");
+          } else {
+            logger.info("No thread updates received from server");
+          }
+        } catch (error) {
+          logger.error("Thread synchronization failed", {
+            error: error instanceof Error ? error.message : "Unknown error",
+            stack: error instanceof Error ? error.stack : undefined,
+          });
+        } finally {
+          set({ isSyncing: false });
         }
       },
     }),

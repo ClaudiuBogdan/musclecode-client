@@ -10,9 +10,6 @@ import {
 } from "@/types/algorithm";
 import axios from "axios";
 import { env } from "@/config/env";
-import { createLogger } from "../logger";
-
-const logger = createLogger("ExecutionApi");
 
 export interface GetAlgorithmResponse {
   id: string;

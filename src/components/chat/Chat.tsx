@@ -4,6 +4,9 @@ import { MessageInput } from "./MessageInput";
 import useChatStore from "@/stores/chat";
 import { Toaster } from "sonner";
 import { ChatHeader } from "./ChatHeader";
+import { createLogger } from "@/lib/logger";
+
+const logger = createLogger({ context: "Chat" });
 
 interface ChatProps {
   algorithmId: string;
@@ -12,8 +15,10 @@ interface ChatProps {
 export const Chat: React.FC<ChatProps> = ({ algorithmId }) => {
   const { setActiveAlgorithmId, activeAlgorithmId } = useChatStore();
 
+  // Set the active algorithm ID when the component mounts or algorithmId changes
   useEffect(() => {
     if (activeAlgorithmId !== algorithmId) {
+      logger.info(`Setting active algorithm ID to ${algorithmId}`);
       setActiveAlgorithmId(algorithmId);
     }
   }, [algorithmId, activeAlgorithmId, setActiveAlgorithmId]);

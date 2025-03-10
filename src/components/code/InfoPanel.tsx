@@ -10,7 +10,11 @@ import { Notes } from "../notes/Notes";
 import Submissions from "../submissions/Submissions";
 import { Chat } from "../chat/Chat";
 import { useNavigate } from "@tanstack/react-router";
-import { useMemo } from "react";
+import { useMemo, useEffect } from "react";
+import useChatStore from "@/stores/chat";
+import { createLogger } from "@/lib/logger";
+
+const logger = createLogger({ context: "InfoPanel" });
 
 interface InfoPanelProps {
   algorithmId: string;
@@ -27,6 +31,17 @@ export const InfoPanel: React.FC<InfoPanelProps> = ({
   className,
 }) => {
   const state = useAlgorithmStore();
+  const { syncThreads } = useChatStore();
+
+  // Trigger thread synchronization when the component mounts
+  useEffect(() => {
+    logger.info("InfoPanel mounted, triggering thread synchronization");
+    syncThreads().catch((error) => {
+      logger.error("Failed to sync threads on InfoPanel mount", {
+        error: error instanceof Error ? error.message : "Unknown error",
+      });
+    });
+  }, [syncThreads]);
 
   const description = useMemo(
     () => selectAlgorithmDescription(state, algorithmId),
