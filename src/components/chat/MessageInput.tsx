@@ -19,12 +19,13 @@ export const MessageInput: React.FC<MessageInputProps> = ({ className }) => {
     stopStreaming,
   } = useChatStore();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const canSend = inputMessage.trim().length > 0 && status === "idle";
+  const newMessageContent = inputMessage.trim();
+  const canSend = newMessageContent.length > 0 && status === "idle";
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (canSend) {
-      sendMessage().catch(() => {
+      sendMessage(newMessageContent).catch(() => {
         // Error handling is managed by the store
       });
       if (textareaRef.current) {

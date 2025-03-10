@@ -36,6 +36,7 @@ export const InfoPanel: React.FC<InfoPanelProps> = ({
   // Trigger thread synchronization when the component mounts
   useEffect(() => {
     logger.info("InfoPanel mounted, triggering thread synchronization");
+    console.log("syncing threads");
     syncThreads().catch((error) => {
       logger.error("Failed to sync threads on InfoPanel mount", {
         error: error instanceof Error ? error.message : "Unknown error",

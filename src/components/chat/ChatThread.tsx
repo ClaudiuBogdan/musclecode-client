@@ -23,7 +23,33 @@ export const ChatThread: React.FC<ChatThreadProps> = ({ className }) => {
   const { getActiveThread } = useChatStore();
 
   const thread = getActiveThread();
-  const messages = useMemo(() => thread?.messages || [], [thread?.messages]);
+  const messages = useMemo(() => {
+    if (!thread?.messages || thread.messages.length === 0) return [];
+
+    // Create a map: key = parentId, value = child message with the most recent timestamp
+    const childMap = new Map();
+    thread.messages.forEach((msg) => {
+      childMap.set(msg.parentId, msg);
+    });
+
+
+    const root = childMap.get(null);
+    if (!root) return [];
+
+    // Construct the branch from the root using the childMap
+    const branch = [root];
+    let current = root;
+    while (childMap.has(current.id)) {
+      const child = childMap.get(current.id);
+      branch.push(child);
+      current = child;
+      if (child.parentId === child.id) {
+        break;
+      }
+    }
+
+    return branch;
+  }, [thread?.messages]);
   const totalMessages = messages.length;
   const lastMessageLength = messages[totalMessages - 1]?.content.length || 0;
 

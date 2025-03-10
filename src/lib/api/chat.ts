@@ -4,10 +4,11 @@ import { SyncThreadsRequest, SyncThreadsResponse } from "@/types/chat";
 
 export async function streamMessage(args: {
   messageId: string;
+  assistantMessageId: string;
   content: string;
   threadId: string;
   algorithmId: string;
-  parentId: string;
+  parentId: string | null;
 }): Promise<ReadableStream<string>> {
   return streamRequest(`api/v1/chat/messages/stream`, "POST", args);
 }

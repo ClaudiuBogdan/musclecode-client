@@ -41,7 +41,7 @@ export interface ThreadDto {
     id: string;
     content: string;
     timestamp: number;
-    role: 'user' | 'assistant';
+    role: "user" | "assistant";
     parentId: string | null;
   }[];
 }
@@ -64,7 +64,7 @@ export interface ChatState {
 
 export interface ChatStore extends ChatState {
   createThread: (algorithmId: string) => string;
-  sendMessage: (message?: string) => Promise<void>;
+  sendMessage: (message: string, parentId?: string | null) => Promise<void>;
   stopStreaming: () => void;
   startNewChat: () => Promise<void>;
   setEditMessageId: (messageId: string | null) => void;

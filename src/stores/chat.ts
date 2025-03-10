@@ -70,12 +70,10 @@ const useChatStore = create<ChatStore>()(
         get().syncThreads();
       },
 
-      sendMessage: async (message?: string) => {
+      sendMessage: async (message: string, parentId?: string | null) => {
         let { activeThreadId } = get();
         const { activeAlgorithmId, inputMessage, status } = get();
         const content = message || inputMessage;
-
-        const lastMessageId = get().lastMessageId;
 
         if (status === "loading") return;
 
@@ -91,10 +89,20 @@ const useChatStore = create<ChatStore>()(
           throw new Error("No active algorithmId");
         }
 
+        const activeThread = get().threads[activeThreadId];
+
+        if (!activeThread) {
+          throw new Error("No active thread");
+        }
+
+        if (!parentId) {
+          parentId =
+            activeThread.messages[activeThread.messages.length - 1]?.id || null;
+        }
+
         try {
           const abortController = new AbortController();
           const newMessageId = uuidv4();
-          // const thread = get().threads[activeThreadId];
           const userMessage: Message = {
             id: newMessageId,
             threadId: activeThreadId,
@@ -102,7 +110,7 @@ const useChatStore = create<ChatStore>()(
             timestamp: Date.now(),
             sender: "user",
             status: "complete",
-            parentId: lastMessageId,
+            parentId,
           };
 
           set((state) => ({
@@ -153,9 +161,10 @@ const useChatStore = create<ChatStore>()(
 
           const stream = await streamMessage({
             messageId: newMessageId,
+            assistantMessageId,
             content,
             threadId: activeThreadId,
-            parentId: newMessageId,
+            parentId,
             algorithmId: activeAlgorithmId,
           });
           const reader = stream.getReader();
@@ -323,13 +332,13 @@ const useChatStore = create<ChatStore>()(
                 updatedAt: Date.now(),
               },
             },
-            lastMessageId: messageId,
+            lastMessageId: message.parentId,
             editingMessageId: null,
           };
         });
 
         // Generate new assistant response
-        await get().sendMessage(newContent);
+        await get().sendMessage(newContent, message.parentId);
       },
 
       switchBranch: (messageId: string) => {
@@ -451,7 +460,7 @@ const useChatStore = create<ChatStore>()(
           };
         });
 
-        get().sendMessage(parentMessage.content);
+        get().sendMessage(parentMessage.content, parentMessage.id);
       },
 
       getConversationThread: (threadId: string) => {
@@ -636,6 +645,15 @@ const useChatStore = create<ChatStore>()(
     {
       name: "chat-store",
       storage: createJSONStorage(() => localStorage),
+      partialize(state) {
+        return {
+          threads: state.threads,
+          activeThreadId: state.activeThreadId,
+          activeAlgorithmId: state.activeAlgorithmId,
+          lastMessageId: state.lastMessageId,
+          editingMessageId: state.editingMessageId,
+        };
+      },
       onRehydrateStorage: () => (state) => {
         // Reset status to idle on rehydration
         if (state) {
