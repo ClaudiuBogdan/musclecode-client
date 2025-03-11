@@ -2,6 +2,7 @@ export interface Thread {
   id: string;
   algorithmId: string;
   messages: Message[];
+  type: "hint" | "chat";
   createdAt: number;
   updatedAt: number;
 }
@@ -14,17 +15,34 @@ export interface Message {
   sender: "user" | "assistant";
   status: "pending" | "streaming" | "complete" | "error";
   parentId: string | null;
-  votes?: {
-    upvotes: number;
-    downvotes: number;
-    userVote?: "up" | "down";
-  };
 }
 
 // Thread synchronization types
 export interface ClientThreadUpdate {
   threadId: string;
   messageCount: number;
+}
+
+export interface ContextFile {
+  name: string;
+  description: string;
+  content: string;
+}
+
+export interface MessageContext {
+  prompt?: "hint-prompt";
+  files?: ContextFile[];
+}
+
+export interface MessageStreamDto {
+  messageId: string;
+  assistantMessageId: string;
+  content: string;
+  type: "chat" | "hint";
+  threadId: string;
+  algorithmId: string;
+  parentId: string | null;
+  context?: MessageContext;
 }
 
 export interface SyncThreadsRequest {
@@ -35,6 +53,7 @@ export interface SyncThreadsRequest {
 export interface ThreadDto {
   id: string;
   algorithmId: string;
+  type: "hint" | "chat";
   createdAt: number;
   updatedAt: number;
   messages: {
@@ -64,6 +83,7 @@ export interface ChatState {
 
 export interface ChatStore extends ChatState {
   createThread: (algorithmId: string) => string;
+  sendHintMessage: (message: MessageStreamDto) => Promise<string>;
   sendMessage: (message: string, parentId?: string | null) => Promise<void>;
   stopStreaming: () => void;
   startNewChat: () => Promise<void>;
@@ -79,8 +99,8 @@ export interface ChatStore extends ChatState {
   findLatestLeafMessage: (threadId: string) => string | null;
   getThreadsByAlgorithm: (algorithmId: string) => Thread[];
   setActiveThreadId: (threadId: string) => void;
-  voteMessage: (messageId: string, isUpvote: boolean) => void;
   copyMessage: (messageId: string) => Promise<void>;
   updateInputMessage: (message: string) => void;
   syncThreads: () => Promise<void>;
+  focusHintChat: () => void;
 }

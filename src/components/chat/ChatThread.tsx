@@ -32,7 +32,6 @@ export const ChatThread: React.FC<ChatThreadProps> = ({ className }) => {
       childMap.set(msg.parentId, msg);
     });
 
-
     const root = childMap.get(null);
     if (!root) return [];
 
@@ -129,6 +128,7 @@ export const ChatThread: React.FC<ChatThreadProps> = ({ className }) => {
                 key={messages[virtualItem.index].id}
                 data-index={virtualItem.index}
                 ref={virtualizer.measureElement}
+                hidden={messages[virtualItem.index].content.trim() === ""}
                 style={{
                   position: "absolute",
                   top: 0,

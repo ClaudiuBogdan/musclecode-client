@@ -17,6 +17,7 @@ import { createInitialState } from "./__tests__/utils/testStore";
 import { CodeLanguage } from "@/types/algorithm";
 import { algorithmStorageWithTTL } from "./storage";
 import { createLogger } from "@/lib/logger";
+import useChatStore from "../chat";
 
 const logger = createLogger({ context: "AlgorithmStore" });
 
@@ -87,6 +88,8 @@ export const createAlgorithmSlice: StateCreator<
         };
         return state;
       });
+
+      useChatStore.getState().setActiveAlgorithmId(algorithmId);
 
       const response = await getAlgorithm(algorithmId);
 

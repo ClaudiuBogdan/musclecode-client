@@ -9,6 +9,7 @@ interface HintDisplayProps {
   isLoading: boolean;
   error: string | null;
   onClose: () => void;
+  onChatFocus?: () => void;
 }
 
 export const HintDisplay: React.FC<HintDisplayProps> = ({
@@ -16,6 +17,7 @@ export const HintDisplay: React.FC<HintDisplayProps> = ({
   isLoading,
   error,
   onClose,
+  onChatFocus,
 }) => {
   if (!isLoading && !content && !error) {
     return null;
@@ -66,6 +68,11 @@ export const HintDisplay: React.FC<HintDisplayProps> = ({
       {content && !isLoading && !error && (
         <CardFooter className="pt-0 pb-4 text-xs text-gray-400">
           Apply this hint and try again!
+          {onChatFocus && (
+            <Button variant="link" size="sm" onClick={onChatFocus}>
+              Ask a question
+            </Button>
+          )}
         </CardFooter>
       )}
     </Card>

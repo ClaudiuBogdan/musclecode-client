@@ -7,6 +7,7 @@ import { HintDisplay } from "@/components/code/hints/HintDisplay";
 import { DifficultySelector } from "./DifficultySelector";
 import { RatingSchedule } from "@/types/algorithm";
 import { useAlgorithmStore } from "@/stores/algorithm";
+import useChatStore from "@/stores/chat";
 
 interface ButtonBarProps {
   algorithmId: string;
@@ -37,7 +38,7 @@ export const ButtonBar: React.FC<ButtonBarProps> = ({
   const hintState = useAlgorithmStore(
     (state) => state.algorithms[algorithmId]?.hint
   );
-
+  const { focusHintChat } = useChatStore();
   const hintContent = hintState?.content;
   const isHintLoading = hintState?.isLoading || false;
   const hintError = hintState?.error;
@@ -58,7 +59,7 @@ export const ButtonBar: React.FC<ButtonBarProps> = ({
   const handleReset = () => {
     onReset();
   };
-  
+
   const handleHintRequest = () => {
     setShowHint(true);
     requestHint(algorithmId);
@@ -67,6 +68,19 @@ export const ButtonBar: React.FC<ButtonBarProps> = ({
   const handleHintClose = () => {
     setShowHint(false);
     clearHint(algorithmId);
+  };
+
+  const handleHintChatFocus = () => {
+    setShowHint(false);
+    focusHintChat();
+    router.navigate({
+      // @ts-expect-error - TODO: fix this
+      search: (search) => ({
+        ...search,
+        tab: "chat",
+      }),
+      replace: true,
+    });
   };
 
   return (
@@ -111,6 +125,7 @@ export const ButtonBar: React.FC<ButtonBarProps> = ({
             isLoading={isHintLoading}
             error={hintError}
             onClose={handleHintClose}
+            onChatFocus={handleHintChatFocus}
           />
         </div>
       )}

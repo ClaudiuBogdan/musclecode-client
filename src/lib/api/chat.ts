@@ -1,16 +1,35 @@
 import { streamRequest } from "./client";
 import { apiClient } from "./client";
-import { SyncThreadsRequest, SyncThreadsResponse } from "@/types/chat";
+import {
+  MessageStreamDto,
+  SyncThreadsRequest,
+  SyncThreadsResponse,
+} from "@/types/chat";
 
-export async function streamMessage(args: {
-  messageId: string;
-  assistantMessageId: string;
-  content: string;
-  threadId: string;
-  algorithmId: string;
-  parentId: string | null;
-}): Promise<ReadableStream<string>> {
-  return streamRequest(`api/v1/chat/messages/stream`, "POST", args);
+export async function streamMessage(
+  args: MessageStreamDto
+): Promise<ReadableStream<string>> {
+  return streamRequest(
+    `api/v1/chat/messages/stream`,
+    "POST",
+    args as unknown as Record<string, unknown>
+  );
+}
+
+export async function sendMessage(args: MessageStreamDto): Promise<string> {
+  const stream = await streamMessage(args);
+  const reader = stream.getReader();
+  let finalMessage = "";
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      finalMessage += value;
+    }
+  } finally {
+    reader.releaseLock();
+  }
+  return finalMessage;
 }
 
 /**

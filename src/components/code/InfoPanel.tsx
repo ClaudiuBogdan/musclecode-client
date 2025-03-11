@@ -36,7 +36,6 @@ export const InfoPanel: React.FC<InfoPanelProps> = ({
   // Trigger thread synchronization when the component mounts
   useEffect(() => {
     logger.info("InfoPanel mounted, triggering thread synchronization");
-    console.log("syncing threads");
     syncThreads().catch((error) => {
       logger.error("Failed to sync threads on InfoPanel mount", {
         error: error instanceof Error ? error.message : "Unknown error",
@@ -115,7 +114,7 @@ export const InfoPanel: React.FC<InfoPanelProps> = ({
           value="chat"
           className="flex-grow m-0 overflow-auto border-none outline-none"
         >
-          <Chat algorithmId={algorithmId} />
+          <Chat />
         </TabsContent>
       </Tabs>
     </div>

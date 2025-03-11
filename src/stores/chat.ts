@@ -1,12 +1,13 @@
 import { create } from "zustand";
 import { v4 as uuidv4 } from "uuid";
-import { streamMessage, syncThreads } from "../lib/api/chat";
+import { sendMessage, streamMessage, syncThreads } from "../lib/api/chat";
 import {
   Message,
   ChatStore,
   Thread,
   ClientThreadUpdate,
   ThreadDto,
+  MessageStreamDto,
 } from "../types/chat";
 import { createJSONStorage, persist } from "zustand/middleware";
 import { createLogger } from "@/lib/logger";
@@ -40,6 +41,7 @@ const useChatStore = create<ChatStore>()(
           id: threadId,
           algorithmId,
           messages: [],
+          type: "chat",
           createdAt: timestamp,
           updatedAt: timestamp,
         };
@@ -163,6 +165,7 @@ const useChatStore = create<ChatStore>()(
             messageId: newMessageId,
             assistantMessageId,
             content,
+            type: "chat",
             threadId: activeThreadId,
             parentId,
             algorithmId: activeAlgorithmId,
@@ -243,6 +246,74 @@ const useChatStore = create<ChatStore>()(
           }));
           throw new Error("Failed to send message");
         }
+      },
+
+      sendHintMessage: async (
+        hintMessage: MessageStreamDto
+      ): Promise<string> => {
+        const algorithmId = get().activeAlgorithmId;
+        if (!algorithmId) {
+          throw new Error("No active algorithmId");
+        }
+
+        const thread = getHintThread();
+
+        const lastMessageId =
+          thread.messages[thread.messages.length - 1]?.id || null;
+
+        hintMessage.parentId = lastMessageId;
+        hintMessage.threadId = thread.id;
+        hintMessage.algorithmId = algorithmId;
+
+        const assistantMessage = await sendMessage(hintMessage);
+
+        // update the hint thread with the new hint and assistant messages
+        set((state) => {
+          const existingHintThread = state.threads[thread.id];
+          const hintMsg = {
+            id: hintMessage.messageId,
+            threadId: thread.id,
+            content: hintMessage.content,
+            timestamp: Date.now(),
+            sender: "user" as const,
+            status: "complete" as const,
+            parentId: hintMessage.parentId,
+          };
+          const assistantMsg = {
+            id: hintMessage.assistantMessageId,
+            threadId: thread.id,
+            content: assistantMessage,
+            timestamp: Date.now(),
+            sender: "assistant" as const,
+            status: "complete" as const,
+            parentId: hintMsg.id,
+          };
+
+          // TODO: find a better way to update the thread
+          const updatedThread = existingHintThread
+            ? ({
+                ...existingHintThread,
+                messages: [
+                  ...existingHintThread.messages,
+                  hintMsg,
+                  assistantMsg,
+                ],
+                updatedAt: Date.now(),
+              } as Thread)
+            : ({
+                ...thread,
+                messages: [hintMsg, assistantMsg],
+                updatedAt: Date.now(),
+              } as Thread);
+          return {
+            threads: {
+              ...state.threads,
+              [thread.id]: updatedThread,
+            },
+          };
+        });
+
+        return assistantMessage;
       },
 
       stopStreaming: () => {
@@ -493,53 +564,6 @@ const useChatStore = create<ChatStore>()(
         );
       },
 
-      voteMessage: (messageId: string, isUpvote: boolean) => {
-        set((state) => {
-          const { threads, activeThreadId } = state;
-          if (!activeThreadId) return state;
-
-          const thread = threads[activeThreadId];
-          const messages = thread.messages.map((msg) => {
-            if (msg.id === messageId) {
-              const currentVotes = msg.votes || { upvotes: 0, downvotes: 0 };
-              const currentUserVote = currentVotes.userVote;
-
-              // Remove previous vote if exists
-              if (currentUserVote) {
-                if (currentUserVote === "up") currentVotes.upvotes--;
-                if (currentUserVote === "down") currentVotes.downvotes--;
-              }
-
-              // Add new vote
-              if (isUpvote) {
-                currentVotes.upvotes++;
-                currentVotes.userVote = "up";
-              } else {
-                currentVotes.downvotes++;
-                currentVotes.userVote = "down";
-              }
-
-              return {
-                ...msg,
-                votes: currentVotes,
-              };
-            }
-            return msg;
-          });
-
-          return {
-            ...state,
-            threads: {
-              ...threads,
-              [activeThreadId]: {
-                ...thread,
-                messages,
-              },
-            },
-          };
-        });
-      },
-
       copyMessage: async (messageId: string) => {
         const state = get();
         const { threads, activeThreadId } = state;
@@ -617,6 +641,7 @@ const useChatStore = create<ChatStore>()(
                   id: threadDto.id,
                   algorithmId: threadDto.algorithmId,
                   messages,
+                  type: threadDto.type,
                   createdAt: threadDto.createdAt,
                   updatedAt: threadDto.updatedAt,
                 };
@@ -641,6 +666,11 @@ const useChatStore = create<ChatStore>()(
           set({ isSyncing: false });
         }
       },
+
+      focusHintChat: () => {
+        const thread = getHintThread();
+        set({ activeThreadId: thread.id });
+      },
     }),
     {
       name: "chat-store",
@@ -664,5 +694,34 @@ const useChatStore = create<ChatStore>()(
     }
   )
 );
+
+const getHintThread = () => {
+  const timeLimit = Date.now() - 1000 * 60 * 60 * 24; // 24 hours
+  const state = useChatStore.getState();
+  const algorithmId = state.activeAlgorithmId;
+  if (!algorithmId) {
+    throw new Error("No active algorithmId");
+  }
+
+  const thread = Object.values(state.threads).find(
+    (thread) =>
+      thread.algorithmId === algorithmId &&
+      thread.type === "hint" &&
+      thread.createdAt > timeLimit
+  );
+
+  if (thread) {
+    return thread;
+  }
+
+  return {
+    id: uuidv4(),
+    algorithmId,
+    messages: [],
+    type: "hint",
+    createdAt: Date.now(),
+    updatedAt: Date.now(),
+  };
+};
 
 export default useChatStore;
