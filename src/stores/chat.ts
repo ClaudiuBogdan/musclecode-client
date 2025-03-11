@@ -56,15 +56,12 @@ const useChatStore = create<ChatStore>()(
       },
 
       setActiveAlgorithmId: (algorithmId: string) => {
+        if (algorithmId === get().activeAlgorithmId) return;
         set((state) => {
-          const activeThread = state
-            .getThreadsByAlgorithm(algorithmId)
-            .sort((a, b) => a.updatedAt - b.updatedAt)[0];
-
           return {
             ...state,
             activeAlgorithmId: algorithmId,
-            activeThreadId: activeThread?.id || null,
+            activeThreadId: null,
           };
         });
 
