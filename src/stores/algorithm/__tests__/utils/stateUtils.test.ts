@@ -279,7 +279,7 @@ describe("State Utils", () => {
         modifiedState.algorithms[testAlgorithmId].metadata.description
       ).toBe(newDescription);
       expect(
-        testState.algorithms[testAlgorithmId].metadata.template?.description
+        testState.algorithms[testAlgorithmId].metadata.template?.lessons
       ).toBe("");
     });
   });

@@ -1,4 +1,4 @@
-import { Submission } from "@/types/algorithm";
+import { AlgorithmLesson, Submission } from "@/types/algorithm";
 import { AlgorithmState } from "../types";
 
 export const selectIsLoading = (state: AlgorithmState): boolean => {
@@ -19,12 +19,12 @@ export const selectAlgorithmMetadata = (
   return algorithm?.metadata ?? null;
 };
 
-export const selectAlgorithmDescription = (
+export const selectAlgorithmLessons = (
   state: AlgorithmState,
   algorithmId: string
-): string => {
+): AlgorithmLesson[] => {
   const metadata = selectAlgorithmMetadata(state, algorithmId);
-  return metadata?.template?.description ?? "";
+  return metadata?.template?.lessons ?? []; // This may cause infinite loop. The array pointer should be the same
 };
 
 export const selectAlgorithmSubmissions = (

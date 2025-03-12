@@ -67,7 +67,7 @@ export default function EditAlgorithm() {
       setDifficulty(existingAlgorithm.difficulty);
 
       // Set description
-      setDescription(existingAlgorithm.description);
+      setDescription(existingAlgorithm.lessons);
 
       addFile(existingAlgorithm.files);
     }

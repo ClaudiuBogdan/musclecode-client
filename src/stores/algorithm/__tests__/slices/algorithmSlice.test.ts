@@ -61,7 +61,7 @@ describe("Algorithm Slice", () => {
       algorithmTemplate: {
         id: algorithmId,
         title: "Test Algorithm",
-        description: "Test Description",
+        lessons: "Test Description",
         categories: ["test"],
         summary: "Test Summary",
         difficulty: "easy" as const,
@@ -122,7 +122,7 @@ describe("Algorithm Slice", () => {
       const finalState = store.getState();
       expect(finalState.metadata.isLoading).toBe(false);
       expect(
-        finalState.algorithms[algorithmId].metadata.template?.description
+        finalState.algorithms[algorithmId].metadata.template?.lessons
       ).toBe("Test Description");
       expect(
         finalState.algorithms[algorithmId].code.storedCode.javascript[
@@ -176,7 +176,7 @@ describe("Algorithm Slice", () => {
       expect(finalState.metadata.error).toBeNull();
       expect(finalState.algorithms[algorithmId]).toBeDefined();
       expect(
-        finalState.algorithms[algorithmId].metadata.template?.description
+        finalState.algorithms[algorithmId].metadata.template?.lessons
       ).toBe("Test Description");
     });
 

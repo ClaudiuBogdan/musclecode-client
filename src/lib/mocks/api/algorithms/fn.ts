@@ -68,7 +68,7 @@ export async function createAlgorithm(
   const algorithm: AlgorithmTemplate = {
     id: uuidv4(),
     title: payload.title,
-    description: payload.description,
+    lessons: payload.description,
     categories: payload.categories,
     summary: payload.summary,
     tags: payload.tags,

@@ -30,11 +30,17 @@ export interface AlgorithmTemplate {
   title: string;
   categories: string[];
   summary: string;
-  description: string;
+  lessons: AlgorithmLesson[];
   difficulty: "easy" | "medium" | "hard";
   tags: string[];
   files: AlgorithmFile[];
 }
+
+export interface AlgorithmLesson {
+  id: string;
+  title: string;
+  content: string; // Markdown
+};
 
 export interface AlgorithmUserData {
   id: string;

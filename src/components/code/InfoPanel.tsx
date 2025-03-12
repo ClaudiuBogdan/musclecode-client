@@ -2,7 +2,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ProblemDescription } from "@/components/code/ProblemDescription";
 import { useAlgorithmStore } from "@/stores/algorithm";
 import {
-  selectAlgorithmDescription,
+  selectAlgorithmLessons,
   selectAlgorithmSubmissions,
 } from "@/stores/algorithm/selectors";
 import { cn } from "@/lib/utils";
@@ -43,8 +43,8 @@ export const InfoPanel: React.FC<InfoPanelProps> = ({
     });
   }, [syncThreads]);
 
-  const description = useMemo(
-    () => selectAlgorithmDescription(state, algorithmId),
+  const lessons = useMemo(
+    () => selectAlgorithmLessons(state, algorithmId),
     [state, algorithmId]
   );
   const submissions = useMemo(
@@ -96,7 +96,7 @@ export const InfoPanel: React.FC<InfoPanelProps> = ({
           value="description"
           className="flex-grow m-0 overflow-auto border-none outline-none"
         >
-          <ProblemDescription problemDescription={description} />
+          <ProblemDescription lessons={lessons} />
         </TabsContent>
         <TabsContent
           value="notes"

@@ -1,0 +1,9 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+For UI components, use shadcn
+For style, use tailwindcss
+For UI animations, use framer-motion
+For package manager, use yarn
