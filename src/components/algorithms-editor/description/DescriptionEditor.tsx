@@ -17,6 +17,8 @@ import {
 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import { cn } from "@/lib/utils";
+import { vscodeDark } from "@uiw/codemirror-theme-vscode";
+import "@/components/notes/src/style.css";
 
 interface DescriptionEditorProps {
   isPreview?: boolean;
@@ -167,7 +169,7 @@ export const DescriptionEditor = ({
               "h-full overflow-auto rounded-md",
               hasError ? "border-2 border-destructive" : "border"
             )}
-            theme={theme === "light" ? "light" : "dark"}
+            theme={theme === "light" ? "light" : vscodeDark}
             extensions={[
               markdown({
                 base: markdownLanguage,

@@ -24,9 +24,9 @@ export const ProblemDescription: FC<ProblemDescriptionProps> = ({ lessons }) => 
   };
 
   return (
-    <div className="p-4 flex flex-col h-full relative">
+    <div className="flex flex-col h-full relative">
       {/* Current Step Content */}
-      <div className="flex-1 overflow-y-auto pb-[2rem] mb-[2.25rem]">
+      <div className="flex-1 overflow-y-auto p-4 pb-[2rem] mb-[2.25rem]">
         <Markdown content={lessons[currentStep].content} />
       </div>
       {/* Navigation fixed at the bottom */}
