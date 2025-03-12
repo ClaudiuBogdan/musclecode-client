@@ -16,7 +16,7 @@ const Logo: FC = () => {
         <div className="flex items-center gap-2 p-0 ml-1">
           <Collapsible asChild defaultOpen={true} className="group/collapsible">
             <SidebarMenuButton size={"lg"} className="p-0">
-              <Link href="/" className="flex justify-start gap-2">
+              <Link to="/" className="flex justify-start gap-2">
                 <Dumbbell className="h-6 w-6 text-black dark:text-white" />
                 <span className="font-semibold text-lg group-data-[collapsible=icon]:hidden whitespace-nowrap">
                   Muscle Code

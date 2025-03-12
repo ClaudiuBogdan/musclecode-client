@@ -16,7 +16,8 @@ export const columns: ColumnDef<AlgorithmPreview>[] = [
     ),
     cell: ({ row }) => (
       <Link
-        to={`/algorithms/${row.original.id}/view`}
+        to={`/algorithms/$algorithmId/view`}
+        params={{ algorithmId: row.original.id }}
         className="group flex items-center space-x-3"
       >
         <span className="max-w-[300px] truncate font-medium group-hover:text-primary transition-colors">

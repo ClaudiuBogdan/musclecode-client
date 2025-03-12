@@ -35,10 +35,16 @@ export function DataTableRowActions<TData>({
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-[160px]">
-        <Link to={`/algorithms/${algorithm.id}/view`}>
+        <Link
+          to={`/algorithms/$algorithmId/view`}
+          params={{ algorithmId: algorithm.id }}
+        >
           <DropdownMenuItem>View</DropdownMenuItem>
         </Link>
-        <Link to={`/algorithms/${algorithm.id}/edit`}>
+        <Link
+          to={`/algorithms/$algorithmId/edit`}
+          params={{ algorithmId: algorithm.id }}
+        >
           <DropdownMenuItem>Edit</DropdownMenuItem>
         </Link>
         {/* <DropdownMenuItem>Make a copy</DropdownMenuItem> */}
