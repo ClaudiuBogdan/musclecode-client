@@ -72,22 +72,49 @@ export function useAlgorithmValidation(algorithm: NewAlgorithm) {
       });
     }
 
-    // Description tab validation
-    if (!algorithm.description.trim()) {
+    // Lessons tab validation
+    if (algorithm.lessons.length === 0) {
       validationErrors.push({
         tab: "description",
-        field: "content",
-        message: "Description is required",
+        field: "lessons",
+        message: "At least one lesson is required",
       });
     }
 
-    if (algorithm.description.length > 10000) {
-      validationErrors.push({
-        tab: "description",
-        field: "content",
-        message: "Description must be less than 10,000 characters",
-      });
-    }
+    // Validate each lesson
+    algorithm.lessons.forEach((lesson) => {
+      if (!lesson.title.trim()) {
+        validationErrors.push({
+          tab: "description",
+          field: "lessons",
+          message: "Lesson title is required",
+        });
+      }
+
+      if (lesson.title.length > 100) {
+        validationErrors.push({
+          tab: "description",
+          field: "lessons",
+          message: `Lesson title must be less than 100 characters`,
+        });
+      }
+
+      if (!lesson.content.trim()) {
+        validationErrors.push({
+          tab: "description",
+          field: "lessons",
+          message: "Lesson content is required",
+        });
+      }
+
+      if (lesson.content.length > 10000) {
+        validationErrors.push({
+          tab: "description",
+          field: "lessons",
+          message: `Lesson content must be less than 10,000 characters`,
+        });
+      }
+    });
 
     // Solutions tab validation
     if (algorithm.files.length === 0) {

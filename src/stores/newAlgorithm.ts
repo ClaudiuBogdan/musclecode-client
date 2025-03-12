@@ -25,7 +25,7 @@ const initialState: BaseAlgorithmState = {
       categories: [],
       summary: "",
     },
-    description: "",
+    lessons: [],
     files: [],
   },
 };
@@ -62,7 +62,7 @@ export const useNewAlgorithmStore = create<
             summary: algorithm.metadata.summary.trim(),
             difficulty: algorithm.metadata.difficulty,
             tags: algorithm.metadata.tags,
-            description: algorithm.description.trim(),
+            lessons: algorithm.lessons,
             files: algorithm.files,
           };
 

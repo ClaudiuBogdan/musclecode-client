@@ -1,7 +1,7 @@
 import { NewAlgorithm } from "@/types/newAlgorithm";
 import { CodeLanguage } from "@/types/algorithm";
 import { useCallback, useMemo, useState } from "react";
-import { Loader2, RotateCcw, AlertCircle } from "lucide-react";
+import { Loader2, RotateCcw, AlertCircle, Plus, Trash2 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -22,7 +22,11 @@ import {
 import { cn } from "@/lib/utils";
 import { showToast } from "@/utils/toast";
 import { ValidationError } from "@/types/newAlgorithm";
-import { MAX_SUMMARY_LENGTH, MAX_TITLE_LENGTH } from "@/stores/baseAlgorithm";
+import {
+  MAX_SUMMARY_LENGTH,
+  MAX_TITLE_LENGTH,
+  MAX_LESSON_TITLE_LENGTH,
+} from "@/stores/baseAlgorithm";
 import { categories as predefinedCategories } from "../algorithms/data";
 import { Code2 } from "lucide-react";
 import { createLogger } from "@/lib/logger";
@@ -104,8 +108,11 @@ export interface AlgorithmFormProps {
   onSummaryChange: (summary: string) => void;
   onTagsChange: (tags: string[]) => void;
   onCategoriesChange: (categories: string[]) => void;
-  // Description handlers
-  onDescriptionChange: (content: string) => void;
+
+  // Lesson handlers
+  onLessonAdd: (title: string, content: string) => void;
+  onLessonUpdate: (lessonId: string, title: string, content: string) => void;
+  onLessonRemove: (lessonId: string) => void;
 
   // Language handlers
   onLanguageAdd: (language: CodeLanguage) => void;
@@ -133,8 +140,10 @@ export function AlgorithmForm({
   onTagsChange,
   onCategoriesChange: onCategoryChange,
 
-  // Description handlers
-  onDescriptionChange,
+  // Lesson handlers
+  onLessonAdd,
+  onLessonUpdate,
+  onLessonRemove,
 
   // Language handlers
   onLanguageAdd,
@@ -149,6 +158,8 @@ export function AlgorithmForm({
   const [activeTab, setActiveTab] = useState("metadata");
   const [showResetDialog, setShowResetDialog] = useState(false);
   const currentCategories = algorithm.metadata.categories;
+  const [newLessonTitle, setNewLessonTitle] = useState("");
+  const [editingLessonId, setEditingLessonId] = useState<string | null>(null);
 
   // Merge predefined and server categories
   const allCategories = useMemo(
@@ -239,10 +250,19 @@ export function AlgorithmForm({
     [onTagsChange]
   );
 
+  const handleAddLesson = useCallback(() => {
+    if (!newLessonTitle.trim()) {
+      showToast.error("Lesson title is required");
+      return;
+    }
+    onLessonAdd(newLessonTitle.trim(), "");
+    setNewLessonTitle("");
+  }, [newLessonTitle, onLessonAdd]);
+
   const hasContent = Boolean(
     algorithm.metadata.title ||
       algorithm.metadata.tags.length > 0 ||
-      algorithm.description ||
+      algorithm.lessons.length > 0 ||
       algorithm.files.length > 0
   );
 
@@ -319,7 +339,7 @@ export function AlgorithmForm({
               )}
               data-has-error={validation.hasErrorsInTab("description")}
             >
-              Description
+              Lessons
               {validation.hasErrorsInTab("description") && (
                 <AlertCircle className="h-4 w-4 ml-2 text-destructive" />
               )}
@@ -489,10 +509,10 @@ export function AlgorithmForm({
               <div className="flex flex-col h-full">
                 <div className="px-4 pt-4 flex items-center justify-between">
                   <Label className="flex items-center gap-1">
-                    Description
+                    Lessons
                     <span className="text-destructive">*</span>
                   </Label>
-                  {validation.getErrorsForField("content").map((error) => (
+                  {validation.getErrorsForField("lessons").map((error) => (
                     <span
                       key={error.message}
                       className="text-sm text-destructive"
@@ -501,12 +521,116 @@ export function AlgorithmForm({
                     </span>
                   ))}
                 </div>
-                <DescriptionEditor
-                  isPreview={false}
-                  value={algorithm.description}
-                  onChange={onDescriptionChange}
-                  hasError={validation.getErrorsForField("content").length > 0}
-                />
+
+                {/* Add new lesson */}
+                <div className="px-4 py-2 flex items-center gap-2">
+                  <Input
+                    placeholder="New lesson title..."
+                    value={newLessonTitle}
+                    onChange={(e) => setNewLessonTitle(e.target.value)}
+                    maxLength={MAX_LESSON_TITLE_LENGTH}
+                    className="flex-1"
+                  />
+                  <Button onClick={handleAddLesson} className="gap-1">
+                    <Plus className="h-4 w-4" />
+                    Add Lesson
+                  </Button>
+                </div>
+
+                {/* Lessons list */}
+                {algorithm.lessons.length === 0 ? (
+                  <div className="p-4 text-center text-muted-foreground">
+                    No lessons added yet. Add your first lesson above.
+                  </div>
+                ) : (
+                  <div className="flex-1 overflow-auto p-4">
+                    <div className="space-y-4">
+                      {algorithm.lessons.map((lesson) => (
+                        <div key={lesson.id} className="border rounded-md p-4">
+                          <div className="flex items-center justify-between mb-2">
+                            <div className="flex items-center gap-2">
+                              <h3 className="font-medium">{lesson.title}</h3>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() =>
+                                  setEditingLessonId(
+                                    lesson.id === editingLessonId
+                                      ? null
+                                      : lesson.id
+                                  )
+                                }
+                              >
+                                {lesson.id === editingLessonId
+                                  ? "Close"
+                                  : "Edit"}
+                              </Button>
+                            </div>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => onLessonRemove(lesson.id)}
+                              className="text-destructive hover:text-destructive"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+
+                          {lesson.id === editingLessonId ? (
+                            <div className="mt-2">
+                              <div className="mb-2">
+                                <Label htmlFor={`lesson-title-${lesson.id}`}>
+                                  Title
+                                </Label>
+                                <Input
+                                  id={`lesson-title-${lesson.id}`}
+                                  value={lesson.title}
+                                  onChange={(e) =>
+                                    onLessonUpdate(
+                                      lesson.id,
+                                      e.target.value,
+                                      lesson.content
+                                    )
+                                  }
+                                  maxLength={MAX_LESSON_TITLE_LENGTH}
+                                  className="mb-2"
+                                />
+                              </div>
+                              <Label htmlFor={`lesson-content-${lesson.id}`}>
+                                Content
+                              </Label>
+                              <DescriptionEditor
+                                isPreview={false}
+                                value={lesson.content}
+                                onChange={(content) =>
+                                  onLessonUpdate(
+                                    lesson.id,
+                                    lesson.title,
+                                    content
+                                  )
+                                }
+                                hasError={false}
+                              />
+                            </div>
+                          ) : (
+                            <div className="prose prose-sm max-w-none dark:prose-invert">
+                              {lesson.content ? (
+                                <div className="max-h-20 overflow-hidden text-ellipsis">
+                                  {lesson.content.substring(0, 150)}
+                                  {lesson.content.length > 150 && "..."}
+                                </div>
+                              ) : (
+                                <div className="text-muted-foreground italic">
+                                  No content
+                                </div>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             </Card>
           </TabsContent>
@@ -548,8 +672,7 @@ export function AlgorithmForm({
             <AlertDialogTitle>Reset Algorithm State?</AlertDialogTitle>
             <AlertDialogDescription>
               This will clear all your current progress including metadata,
-              description, and all language solutions. This action cannot be
-              undone.
+              lessons, and all language solutions. This action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

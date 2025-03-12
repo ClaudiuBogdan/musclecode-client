@@ -33,7 +33,10 @@ export default function EditAlgorithm() {
     setCategories: setCategory,
     setDifficulty,
     setTags,
-    setDescription,
+    addLesson,
+    updateLesson,
+    removeLesson,
+    setLessons,
     addLanguage,
     addFiles: addFile,
     removeLanguage,
@@ -66,8 +69,8 @@ export default function EditAlgorithm() {
       setTitle(existingAlgorithm.title);
       setDifficulty(existingAlgorithm.difficulty);
 
-      // Set description
-      setDescription(existingAlgorithm.lessons);
+      // Set lessons
+      setLessons(existingAlgorithm.lessons);
 
       addFile(existingAlgorithm.files);
     }
@@ -78,7 +81,7 @@ export default function EditAlgorithm() {
     setTitle,
     setDifficulty,
     setTags,
-    setDescription,
+    setLessons,
     addLanguage,
     addFile,
     setSummary,
@@ -120,7 +123,9 @@ export default function EditAlgorithm() {
       validation={validation}
       onTitleChange={setTitle}
       onDifficultyChange={setDifficulty}
-      onDescriptionChange={setDescription}
+      onLessonAdd={addLesson}
+      onLessonUpdate={updateLesson}
+      onLessonRemove={removeLesson}
       onLanguageAdd={addLanguage}
       onLanguageRemove={removeLanguage}
       onFileContentChange={updateFileContent}

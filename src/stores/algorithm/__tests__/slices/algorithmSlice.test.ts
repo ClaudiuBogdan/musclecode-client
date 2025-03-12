@@ -61,7 +61,13 @@ describe("Algorithm Slice", () => {
       algorithmTemplate: {
         id: algorithmId,
         title: "Test Algorithm",
-        lessons: "Test Description",
+        lessons: [
+          {
+            id: "test-lesson-id",
+            title: "Test Lesson",
+            content: "Test Content",
+          },
+        ],
         categories: ["test"],
         summary: "Test Summary",
         difficulty: "easy" as const,

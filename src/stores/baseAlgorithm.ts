@@ -1,5 +1,9 @@
 import { StateCreator } from "zustand";
-import { AlgorithmFile, CodeLanguage } from "@/types/algorithm";
+import {
+  AlgorithmFile,
+  CodeLanguage,
+  AlgorithmLesson,
+} from "@/types/algorithm";
 import { v4 as uuidv4 } from "uuid";
 import { NewAlgorithm } from "@/types/newAlgorithm";
 import { getLanguageExtension } from "@/lib/utils/algorithm";
@@ -9,7 +13,8 @@ export const MAX_TITLE_LENGTH = 100;
 export const MAX_SUMMARY_LENGTH = 1000;
 export const MAX_TAG_LENGTH = 30;
 export const MAX_TAGS = 10;
-export const MAX_DESCRIPTION_LENGTH = 10000;
+export const MAX_LESSON_TITLE_LENGTH = 100;
+export const MAX_LESSON_CONTENT_LENGTH = 10000;
 export const MAX_CODE_LENGTH = 50000;
 
 export interface BaseAlgorithmState {
@@ -26,8 +31,11 @@ export interface BaseAlgorithmActions {
   setCategories: (categories: string[]) => void;
   setTags: (tags: string[]) => void;
 
-  // Description actions
-  setDescription: (content: string) => void;
+  // Lesson actions
+  addLesson: (title: string, content: string) => void;
+  updateLesson: (lessonId: string, title: string, content: string) => void;
+  removeLesson: (lessonId: string) => void;
+  setLessons: (lessons: AlgorithmLesson[]) => void;
 
   // Language actions
   addLanguage: (language: CodeLanguage) => void;
@@ -50,7 +58,7 @@ export const createBaseAlgorithmSlice: StateCreator<
       difficulty: "easy",
       tags: [],
     },
-    description: "",
+    lessons: [],
     files: [],
   },
   isLoading: false as boolean,
@@ -94,10 +102,47 @@ export const createBaseAlgorithmSlice: StateCreator<
       return state;
     }),
 
-  // Description actions
-  setDescription: (content) =>
+  // Lesson actions
+  addLesson: (title, content) =>
     set((state) => {
-      state.algorithm.description = content.slice(0, MAX_DESCRIPTION_LENGTH);
+      const newLesson: AlgorithmLesson = {
+        id: uuidv4(),
+        title: title.slice(0, MAX_LESSON_TITLE_LENGTH),
+        content: content.slice(0, MAX_LESSON_CONTENT_LENGTH),
+      };
+      state.algorithm.lessons.push(newLesson);
+      state.error = null;
+      return state;
+    }),
+
+  updateLesson: (lessonId, title, content) =>
+    set((state) => {
+      const lessonIndex = state.algorithm.lessons.findIndex(
+        (lesson) => lesson.id === lessonId
+      );
+      if (lessonIndex !== -1) {
+        state.algorithm.lessons[lessonIndex] = {
+          ...state.algorithm.lessons[lessonIndex],
+          title: title.slice(0, MAX_LESSON_TITLE_LENGTH),
+          content: content.slice(0, MAX_LESSON_CONTENT_LENGTH),
+        };
+      }
+      state.error = null;
+      return state;
+    }),
+
+  removeLesson: (lessonId) =>
+    set((state) => {
+      state.algorithm.lessons = state.algorithm.lessons.filter(
+        (lesson) => lesson.id !== lessonId
+      );
+      state.error = null;
+      return state;
+    }),
+
+  setLessons: (lessons) =>
+    set((state) => {
+      state.algorithm.lessons = lessons;
       state.error = null;
       return state;
     }),
@@ -184,14 +229,28 @@ export const createBaseAlgorithmSlice: StateCreator<
       errors.push(`Tag length must be less than ${MAX_TAG_LENGTH} characters`);
     }
 
-    // Validate description
-    if (!algorithm.description.trim()) {
-      errors.push("Description is required");
+    // Validate lessons
+    if (algorithm.lessons.length === 0) {
+      errors.push("At least one lesson is required");
     }
-    if (algorithm.description.length > MAX_DESCRIPTION_LENGTH) {
-      errors.push(
-        `Description must be less than ${MAX_DESCRIPTION_LENGTH} characters`
-      );
+
+    for (const lesson of algorithm.lessons) {
+      if (!lesson.title.trim()) {
+        errors.push("Lesson title is required");
+      }
+      if (lesson.title.length > MAX_LESSON_TITLE_LENGTH) {
+        errors.push(
+          `Lesson title must be less than ${MAX_LESSON_TITLE_LENGTH} characters`
+        );
+      }
+      if (!lesson.content.trim()) {
+        errors.push("Lesson content is required");
+      }
+      if (lesson.content.length > MAX_LESSON_CONTENT_LENGTH) {
+        errors.push(
+          `Lesson content must be less than ${MAX_LESSON_CONTENT_LENGTH} characters`
+        );
+      }
     }
 
     // Validate languages

@@ -20,7 +20,9 @@ function RouteComponent() {
     setSummary,
     setCategories: setCategory,
     setTags,
-    setDescription,
+    addLesson,
+    updateLesson,
+    removeLesson,
     addLanguage,
     removeLanguage,
     updateFileContent,
@@ -63,7 +65,9 @@ function RouteComponent() {
       onSummaryChange={setSummary}
       onCategoriesChange={setCategory}
       onTagsChange={setTags}
-      onDescriptionChange={setDescription}
+      onLessonAdd={addLesson}
+      onLessonUpdate={updateLesson}
+      onLessonRemove={removeLesson}
       onLanguageAdd={addLanguage}
       onLanguageRemove={removeLanguage}
       onFileContentChange={updateFileContent}

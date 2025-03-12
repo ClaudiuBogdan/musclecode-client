@@ -1,4 +1,4 @@
-import { AlgorithmFile } from "./algorithm";
+import { AlgorithmFile, AlgorithmLesson } from "./algorithm";
 
 export interface NewAlgorithmMetadata {
   title: string;
@@ -10,7 +10,7 @@ export interface NewAlgorithmMetadata {
 
 export interface NewAlgorithm {
   metadata: NewAlgorithmMetadata;
-  description: string;
+  lessons: AlgorithmLesson[];
   files: AlgorithmFile[];
 }
 
@@ -25,7 +25,7 @@ export interface CreateAlgorithmPayload {
   categories: string[];
   summary: string;
   tags: string[];
-  description: string;
+  lessons: AlgorithmLesson[];
   difficulty: "easy" | "medium" | "hard";
   files: AlgorithmFile[];
 }

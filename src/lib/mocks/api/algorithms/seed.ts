@@ -10,41 +10,13 @@ export const seedAlgorithms = (): AlgorithmTemplate[] => {
       tags: ["sorting", "bubble sort"],
       summary:
         "A simple sorting algorithm that repeatedly steps through the list, compares adjacent elements and swaps them if they are in the wrong order.",
-      lessons: `
-# Bubble Sort
-
-Bubble Sort is a simple sorting algorithm that repeatedly steps through the list, compares adjacent elements and swaps them if they are in the wrong order. The pass through the list is repeated until the list is sorted.
-
-## How it works:
-
-1. Start with an unsorted array of n elements.
-2. Compare the first two elements of the array.
-3. If the first element is greater than the second element, swap them.
-4. Move to the next pair of adjacent elements, repeat steps 2-3 until the end of the array.
-5. Repeat steps 1-4 for n-1 passes.
-
-## Example:
-
-\`\`\`
-Initial array: [64, 34, 25, 12, 22, 11, 90]
-
-Pass 1: [34, 25, 12, 22, 11, 64, 90]
-Pass 2: [25, 12, 22, 11, 34, 64, 90]
-Pass 3: [12, 22, 11, 25, 34, 64, 90]
-Pass 4: [12, 11, 22, 25, 34, 64, 90]
-Pass 5: [11, 12, 22, 25, 34, 64, 90]
-
-Sorted array: [11, 12, 22, 25, 34, 64, 90]
-\`\`\`
-
-## Time Complexity:
-- Worst and Average Case: O(n^2)
-- Best Case: O(n) when the array is already sorted
-
-## Space Complexity:
-- O(1) as only a single additional memory space is required for the swapping temp variable.
-
-`,
+      lessons: [
+        {
+          id: "1",
+          title: "Bubble Sort",
+          content: "Test Content",
+        },
+      ],
       difficulty: "easy",
       files: [
         {
