@@ -121,9 +121,9 @@ const MatrixStream = ({ columnIndex }: { columnIndex: number }) => {
 export const MatrixRain = () => {
   const phrase = "[Running tests]";
   return (
-    <div className="relative w-[500px] h-[200px] overflow-hidden rounded-2xl bg-gradient-to-b from-gray-900/5 via-gray-900/20 to-gray-900/5 backdrop-blur-sm">
-      <div className="absolute top-0 left-0 right-0 h-16 bg-gradient-to-b from-gray-900 to-transparent z-10" />
-      <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-gray-900 to-transparent z-10" />
+    <div className="relative w-[500px] h-[200px] overflow-hidden rounded-2xl bg-linear-to-b from-gray-900/5 via-gray-900/20 to-gray-900/5 backdrop-blur-xs">
+      <div className="absolute top-0 left-0 right-0 h-16 bg-linear-to-b from-gray-900 to-transparent z-10" />
+      <div className="absolute bottom-0 left-0 right-0 h-16 bg-linear-to-t from-gray-900 to-transparent z-10" />
 
       <div className="absolute inset-0">
         <AnimatePresence>
@@ -142,7 +142,7 @@ export const MatrixRain = () => {
         transition={{ duration: 0.2 }}
       >
         <p
-          className="text-green-400 font-mono text-lg p-0 rounded-xl bg-gray-900/50 backdrop-blur-sm select-none"
+          className="text-green-400 font-mono text-lg p-0 rounded-xl bg-gray-900/50 backdrop-blur-xs select-none"
           style={{
             textShadow: "0 0 16px rgba(74, 222, 128, 0.8)",
           }}

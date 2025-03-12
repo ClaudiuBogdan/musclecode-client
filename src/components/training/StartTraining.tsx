@@ -49,7 +49,7 @@ export default function AlgorithmGymDashboard() {
     >
       <Card className="backdrop-blur-xl bg-white/10 dark:bg-gray-800/30 border-none shadow-2xl">
         <CardHeader className="text-center relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-emerald-400 opacity-20"></div>
+          <div className="absolute inset-0 bg-linear-to-r from-blue-400 to-emerald-400 opacity-20"></div>
           <motion.div
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
@@ -241,7 +241,7 @@ export default function AlgorithmGymDashboard() {
             >
               <Button
                 size="lg"
-                className="w-full sm:w-auto bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white dark:text-white shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-blue-500/20"
+                className="w-full sm:w-auto bg-linear-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white dark:text-white shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-blue-500/20"
               >
                 Start Today's Workout <Dumbbell className="ml-2 h-5 w-5" />
               </Button>

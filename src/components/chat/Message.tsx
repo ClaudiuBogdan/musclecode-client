@@ -88,7 +88,7 @@ export const Message: React.FC<MessageProps> = React.memo(({ message }) => {
           ) : (
             <div
               className={cn(
-                "rounded-lg p-3 min-w-20 shadow-sm",
+                "rounded-lg p-3 min-w-20 shadow-2xs",
                 "bg-gray-50 dark:bg-secondary"
               )}
             >

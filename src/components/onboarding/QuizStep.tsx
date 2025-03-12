@@ -300,7 +300,7 @@ export function QuizStep({ onBack, onNext }: StepProps) {
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: -20 }}
           transition={{ duration: 0.3 }}
-          className="bg-card border rounded-lg shadow-sm p-6"
+          className="bg-card border rounded-lg shadow-2xs p-6"
         >
           <div className="space-y-6">
             <div className="space-y-2">
@@ -354,12 +354,12 @@ export function QuizStep({ onBack, onNext }: StepProps) {
                       <span className="text-base flex-1">{option}</span>
                       {showFeedback && isCorrectOption && (
                         <div className="absolute right-4 flex items-center justify-center">
-                          <CheckCircle2 className="h-5 w-5 text-green-500 flex-shrink-0" />
+                          <CheckCircle2 className="h-5 w-5 text-green-500 shrink-0" />
                         </div>
                       )}
                       {showFeedback && isSelected && !isCorrectOption && (
                         <div className="absolute right-4 flex items-center justify-center">
-                          <XCircle className="h-5 w-5 text-red-500 flex-shrink-0" />
+                          <XCircle className="h-5 w-5 text-red-500 shrink-0" />
                         </div>
                       )}
                     </div>
@@ -382,7 +382,7 @@ export function QuizStep({ onBack, onNext }: StepProps) {
                   <span className="text-base">I don't know</span>
                   {showFeedback && userAnswer === -1 && (
                     <div className="absolute right-4 flex items-center justify-center">
-                      <Lightbulb className="h-5 w-5 text-amber-500 flex-shrink-0" />
+                      <Lightbulb className="h-5 w-5 text-amber-500 shrink-0" />
                     </div>
                   )}
                 </div>

@@ -94,25 +94,25 @@ export const InfoPanel: React.FC<InfoPanelProps> = ({
         </TabsList>
         <TabsContent
           value="description"
-          className="flex-grow m-0 overflow-auto border-none outline-none"
+          className="grow m-0 overflow-auto border-none outline-hidden"
         >
           <ProblemDescription lessons={lessons} />
         </TabsContent>
         <TabsContent
           value="notes"
-          className="flex-grow m-0 overflow-auto border-none outline-none"
+          className="grow m-0 overflow-auto border-none outline-hidden"
         >
           <Notes algorithmId={algorithmId} />
         </TabsContent>
         <TabsContent
           value="submissions"
-          className="flex-grow m-0 overflow-auto border-none outline-none"
+          className="grow m-0 overflow-auto border-none outline-hidden"
         >
           <Submissions submissions={submissions} />
         </TabsContent>
         <TabsContent
           value="chat"
-          className="flex-grow m-0 overflow-auto border-none outline-none"
+          className="grow m-0 overflow-auto border-none outline-hidden"
         >
           <Chat />
         </TabsContent>

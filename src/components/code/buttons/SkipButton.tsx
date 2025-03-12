@@ -61,14 +61,14 @@ export function SkipButton({ onClick, disabled, className }: SkipButtonProps) {
           </div>
           <div className="flex border-t border-gray-700">
             <DropdownMenuItem
-              className="flex-1 justify-center text-gray-300 hover:!bg-gray-700 hover:!text-gray-200 cursor-pointer"
+              className="flex-1 justify-center text-gray-300 hover:bg-gray-700! hover:text-gray-200! cursor-pointer"
               onClick={() => setDropdownOpen(false)}
             >
               No
             </DropdownMenuItem>
             <div className="w-px bg-gray-700" />
             <DropdownMenuItem
-              className="flex-1 justify-center text-yellow-500 hover:!bg-gray-700 hover:!text-yellow-400 cursor-pointer"
+              className="flex-1 justify-center text-yellow-500 hover:bg-gray-700! hover:text-yellow-400! cursor-pointer"
               onClick={handleSkip}
             >
               Yes

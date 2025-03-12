@@ -1,7 +1,48 @@
-@import './styles/fonts.css';
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import './styles/fonts.css' layer(base);
+@import 'tailwindcss';
+
+@config '../tailwind.config.js';
+
+/*
+  The default border color has changed to `currentColor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentColor);
+  }
+}
+
+@utility split {
+  display: flex;
+  flex-direction: row;
+}
+
+/*
+  The default border color has changed to `currentColor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentColor);
+  }
+}
 
 @layer base {
   html,
@@ -118,57 +159,54 @@
   }
 }
 
-/* Scrollbar Styles */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
+@layer utilities {
+  /* Scrollbar Styles */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
 
-::-webkit-scrollbar-track {
-  background-color: hsla(var(--scrollbar-track));
-  border-radius: 4px;
-}
+  ::-webkit-scrollbar-track {
+    background-color: hsla(var(--scrollbar-track));
+    border-radius: 4px;
+  }
 
-::-webkit-scrollbar-thumb {
-  background-color: hsla(var(--scrollbar-thumb));
-  border-radius: 4px;
-  transition: background-color 0.2s ease;
-}
+  ::-webkit-scrollbar-thumb {
+    background-color: hsla(var(--scrollbar-thumb));
+    border-radius: 4px;
+    transition: background-color 0.2s ease;
+  }
 
-::-webkit-scrollbar-thumb:hover {
-  background-color: hsla(var(--scrollbar-thumb-hover));
-}
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: hsla(var(--scrollbar-thumb-hover));
+  }
 
-/* Show scrollbar for Firefox */
-* {
-  scrollbar-width: thin;
-  scrollbar-color: hsla(var(--scrollbar-thumb)) hsla(var(--scrollbar-track));
-}
+  /* Show scrollbar for Firefox */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: hsla(var(--scrollbar-thumb)) hsla(var(--scrollbar-track));
+  }
 
-/* Remove focus outline for mouse users but keep it for keyboard navigation */
-*:focus:not(:focus-visible) {
-  outline: none;
-}
+  /* Remove focus outline for mouse users but keep it for keyboard navigation */
+  *:focus:not(:focus-visible) {
+    outline: none;
+  }
 
-*:focus-visible {
-  outline: 2px solid hsl(var(--ring));
-  outline-offset: 2px;
-}
+  *:focus-visible {
+    outline: 2px solid hsl(var(--ring));
+    outline-offset: 2px;
+  }
 
-body {
-  @apply bg-background text-foreground;
-  margin: 0;
-  min-width: 320px;
-  min-height: 100vh;
-  font-family: var(--font-family);
-  font-size: var(--font-size);
-  line-height: var(--line-height);
-  letter-spacing: var(--letter-spacing);
-}
-
-.split {
-  display: flex;
-  flex-direction: row;
+  body {
+    @apply bg-background text-foreground;
+    margin: 0;
+    min-width: 320px;
+    min-height: 100vh;
+    font-family: var(--font-family);
+    font-size: var(--font-size);
+    line-height: var(--line-height);
+    letter-spacing: var(--letter-spacing);
+  }
 }
 
 @layer base {

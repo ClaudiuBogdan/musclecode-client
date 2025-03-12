@@ -118,7 +118,7 @@ function CollectionDetailsPage() {
             <div className="inline-block bg-primary/10 text-primary px-4 py-2 rounded-full text-sm mb-4">
               {isPublicCollection ? "Public Collection" : "Personal Collection"}
             </div>
-            <h1 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
+            <h1 className="text-4xl font-bold tracking-tight bg-linear-to-r from-primary to-primary/70 bg-clip-text text-transparent">
               {collection.name}
             </h1>
             <p className="text-lg text-muted-foreground leading-relaxed max-w-3xl">

@@ -40,7 +40,7 @@ function EditCollectionPage() {
     return (
       <div className="container px-4 md:px-8 py-12 max-w-7xl mx-auto">
         <div className="space-y-4">
-          <div className="inline-block bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
+          <div className="inline-block bg-linear-to-r from-primary to-primary/70 bg-clip-text text-transparent">
             <h1 className="text-4xl font-bold tracking-tight">
               Edit Collection
             </h1>
@@ -64,7 +64,7 @@ function EditCollectionPage() {
           <div className="mx-auto bg-destructive/10 w-fit p-4 rounded-full">
             <AlertCircle className="h-12 w-12 text-destructive" />
           </div>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-destructive to-destructive/70 bg-clip-text text-transparent">
+          <h1 className="text-3xl font-bold bg-linear-to-r from-destructive to-destructive/70 bg-clip-text text-transparent">
             Loading Error
           </h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
@@ -85,7 +85,7 @@ function EditCollectionPage() {
           <div className="mx-auto bg-primary/10 w-fit p-4 rounded-full">
             <Search className="h-12 w-12 text-primary" />
           </div>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
+          <h1 className="text-3xl font-bold bg-linear-to-r from-primary to-primary/70 bg-clip-text text-transparent">
             Collection Not Found
           </h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
@@ -140,7 +140,7 @@ function EditCollectionPage() {
     <div className="container px-4 md:px-8 py-12 max-w-7xl mx-auto">
       {/* Enhanced Header */}
       <div className="mb-12 space-y-2">
-        <div className="inline-block bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
+        <div className="inline-block bg-linear-to-r from-primary to-primary/70 bg-clip-text text-transparent">
           <h1 className="text-4xl font-bold tracking-tight">Edit Collection</h1>
         </div>
         <p className="text-lg text-muted-foreground max-w-3xl leading-relaxed">
@@ -149,7 +149,7 @@ function EditCollectionPage() {
       </div>
 
       {/* Form Container */}
-      <div className="mx-auto max-w-3xl rounded-xl border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 p-6 md:p-8">
+      <div className="mx-auto max-w-3xl rounded-xl border bg-background/95 backdrop-blur-xs supports-backdrop-filter:bg-background/60 p-6 md:p-8">
         <CollectionForm
           initialData={initialData}
           onSubmit={handleSubmit}

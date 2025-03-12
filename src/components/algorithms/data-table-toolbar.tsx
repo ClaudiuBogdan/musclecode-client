@@ -58,7 +58,7 @@ export function DataTableToolbar<TData>({
       <Link to="/algorithms/new">
         <Button
           size="sm"
-          className="h-9 rounded-lg bg-gradient-to-r from-primary to-primary/90 text-white shadow-sm hover:shadow-md hover:from-primary/90 hover:to-primary transition-all"
+          className="h-9 rounded-lg bg-linear-to-r from-primary to-primary/90 text-white shadow-2xs hover:shadow-md hover:from-primary/90 hover:to-primary transition-all"
         >
           New Algorithm
         </Button>

@@ -31,7 +31,7 @@ export const EditorTabs: React.FC<EditorTabsProps> = ({
             onClick={() => onTabChange(file.name)}
             className={clsx(
               tabClassName,
-              "focus:outline-none",
+              "focus:outline-hidden",
               activeTab === file.name
                 ? activeTabClassName
                 : inactiveTabClassName

@@ -63,8 +63,8 @@ export function LanguageSelector({
           "bg-transparent text-gray-400",
           "hover:bg-[#2D2D2D] hover:text-gray-200",
           "transition-colors duration-150",
-          "focus:outline-none",
-          "focus-visible:outline-none focus-visible:bg-[#2D2D2D]",
+          "focus:outline-hidden",
+          "focus-visible:outline-hidden focus-visible:bg-[#2D2D2D]",
           "focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-500",
           className
         )}
@@ -93,10 +93,10 @@ export function LanguageSelector({
             className={cn(
               "transition-colors duration-150",
               "hover:bg-[#2D2D2D] hover:text-gray-200",
-              "focus:outline-none",
-              "focus-visible:outline-none focus-visible:bg-[#2D2D2D]",
+              "focus:outline-hidden",
+              "focus-visible:outline-hidden focus-visible:bg-[#2D2D2D]",
               "focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-500",
-              "data-[highlighted]:bg-[#2D2D2D] data-[highlighted]:text-gray-200",
+              "data-highlighted:bg-[#2D2D2D] data-highlighted:text-gray-200",
               "relative pl-8"
             )}
           >

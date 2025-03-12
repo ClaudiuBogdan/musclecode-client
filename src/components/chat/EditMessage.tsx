@@ -57,7 +57,7 @@ export const EditMessage: React.FC<EditMessageProps> = React.memo(
             className={cn(
               "w-full min-h-[8rem] max-h-[40rem] p-4 pb-16 rounded-lg resize-none overflow-y-auto",
               "bg-transparent text-gray-900 dark:text-white",
-              "focus:outline-none focus:ring-2 focus:ring-blue-500",
+              "focus:outline-hidden focus:ring-2 focus:ring-blue-500",
               "placeholder:text-gray-400"
             )}
             placeholder="Edit your message..."

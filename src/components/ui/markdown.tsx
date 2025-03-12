@@ -212,7 +212,7 @@ const useMarkdownComponents = (
               "flex items-center gap-3 cursor-pointer py-4 px-4",
               "transition-all duration-200 ease-out",
               "hover:bg-accent/50 active:bg-accent/70",
-              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+              "focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring",
               "list-none [&::-webkit-details-marker]:hidden"
             )}
             {...props}

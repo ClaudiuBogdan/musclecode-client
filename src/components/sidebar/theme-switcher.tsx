@@ -81,7 +81,7 @@ export function ThemeSwitcher() {
                       "hover:text-primary-foreground": theme === option.value,
                       "focus-visible:ring-1": true,
                       "focus-visible:ring-ring": true,
-                      "focus-visible:outline-none": true,
+                      "focus-visible:outline-hidden": true,
                     })}
                     onClick={() => setTheme(option.value)}
                     onKeyDown={(e) => {

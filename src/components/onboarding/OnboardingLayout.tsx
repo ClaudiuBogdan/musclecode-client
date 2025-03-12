@@ -47,7 +47,7 @@ export function OnboardingLayout({
     <div className="min-h-screen flex flex-col bg-background">
       {/* Minimalist header */}
       <header className="border-b bg-background py-4 px-6 flex items-center justify-between">
-        <CardTitle className="text-4xl font-bold tracking-tight bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
+        <CardTitle className="text-4xl font-bold tracking-tight bg-linear-to-r from-primary to-primary/70 bg-clip-text text-transparent">
           MuscleCode
         </CardTitle>
 
@@ -65,7 +65,7 @@ export function OnboardingLayout({
 
       {/* Main content */}
       <div className="container px-4 py-8 max-w-3xl mx-auto flex-1 flex flex-col">
-        <Card className="rounded-lg border shadow-sm flex-1">
+        <Card className="rounded-lg border shadow-2xs flex-1">
           <CardHeader className="p-6 pb-4 space-y-1">
             <CardTitle className="text-2xl font-bold">{title}</CardTitle>
             <CardDescription className="text-base">

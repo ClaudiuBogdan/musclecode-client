@@ -15,10 +15,10 @@ export function AlgorithmsTable() {
 
   return (
     <div className="container px-4 md:px-8 py-12 max-w-7xl mx-auto">
-      <Card className="rounded-xl border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 shadow-sm">
+      <Card className="rounded-xl border bg-background/95 backdrop-blur-xs supports-backdrop-filter:bg-background/60 shadow-2xs">
         <CardHeader className="p-6 pb-2">
           <div className="space-y-1">
-            <CardTitle className="text-4xl font-bold tracking-tight bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
+            <CardTitle className="text-4xl font-bold tracking-tight bg-linear-to-r from-primary to-primary/70 bg-clip-text text-transparent">
               Algorithm Challenges
             </CardTitle>
             <CardDescription className="text-lg text-muted-foreground leading-relaxed max-w-3xl">

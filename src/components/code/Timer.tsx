@@ -148,14 +148,14 @@ export function Timer({ algorithmId, className }: TimerProps) {
             </div>
             <div className="flex border-t border-gray-700">
               <DropdownMenuItem
-                className="flex-1 justify-center text-gray-300 hover:!text-gray-200 cursor-pointer"
+                className="flex-1 justify-center text-gray-300 hover:text-gray-200! cursor-pointer"
                 onClick={() => setDropdownOpen(false)}
               >
                 No
               </DropdownMenuItem>
               <div className="w-px bg-gray-700" />
               <DropdownMenuItem
-                className="flex-1 justify-center text-red-500 hover:!text-red-400 cursor-pointer"
+                className="flex-1 justify-center text-red-500 hover:text-red-400! cursor-pointer"
                 onClick={handleReset}
               >
                 Yes

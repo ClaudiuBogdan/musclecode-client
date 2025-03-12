@@ -73,9 +73,9 @@ export function DataTable<TData, TValue>({
   return (
     <div className={cn("space-y-6", className)}>
       <DataTableToolbar table={table} />
-      <div className="rounded-xl border bg-background shadow-sm">
+      <div className="rounded-xl border bg-background shadow-2xs">
         <Table>
-          <TableHeader className="bg-gradient-to-r from-primary/5 to-primary/10">
+          <TableHeader className="bg-linear-to-r from-primary/5 to-primary/10">
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id} className="hover:bg-transparent">
                 {headerGroup.headers.map((header) => (

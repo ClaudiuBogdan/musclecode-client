@@ -263,7 +263,7 @@ export function GoalsStep({ onNext }: StepProps) {
               ) : (
                 <div className="space-y-4">
                   <div className="flex items-center p-4 bg-accent/20 rounded-lg border border-accent">
-                    <div className="mr-4 flex-shrink-0">
+                    <div className="mr-4 shrink-0">
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         width="24"

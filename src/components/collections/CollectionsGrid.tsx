@@ -18,7 +18,7 @@ interface CollectionsGridProps {
 
 function CollectionCardSkeleton() {
   return (
-    <div className="rounded-lg border bg-card text-card-foreground shadow-sm">
+    <div className="rounded-lg border bg-card text-card-foreground shadow-2xs">
       <div className="p-6 space-y-4">
         <div className="flex justify-between items-start">
           <div className="space-y-2">

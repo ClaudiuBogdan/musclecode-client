@@ -60,7 +60,7 @@ export function SubmissionDetail({ submission }: SubmissionDetailProps) {
               <TabsTrigger
                 key={file.id}
                 value={file.id}
-                className="flex-shrink-0"
+                className="shrink-0"
               >
                 {file.name}.{file.extension}
               </TabsTrigger>
