@@ -23,6 +23,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import QuizQuestion from "@/components/QuizQuestion";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface MarkdownProps {
   content: string;
@@ -42,6 +43,13 @@ const CodeBlock: FC<
   React.PropsWithChildren<{ isDarkMode: boolean; className?: string }>
 > = React.memo(({ className, children, isDarkMode, ...props }) => {
   const [isDialogOpen, setIsDialogOpen] = React.useState(false);
+  const [copied, setCopied] = React.useState(false);
+  const handleCopy = () => {
+    navigator.clipboard.writeText(content).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1000);
+    });
+  };
   const content = String(children);
   const match = /language-(\w+)/.exec(className || "");
   const isInline = !match && !className;
@@ -95,11 +103,26 @@ const CodeBlock: FC<
           variant="ghost"
           size="sm"
           className="text-muted-foreground hover:bg-background"
-          onClick={() => navigator.clipboard.writeText(content)}
+          onClick={handleCopy}
         >
           <Copy className="h-4 w-4" />
         </Button>
       </div>
+
+      <AnimatePresence>
+        {copied && (
+          <motion.div
+            key="copied-feedback"
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.2 }}
+            className="absolute z-10 top-2 right-14 bg-accent text-accent-foreground border border-accent-foreground/30 text-xs p-2 rounded shadow"
+          >
+            Copied!
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="max-w-[90vw] h-[90vh] flex flex-col p-0">
@@ -111,7 +134,7 @@ const CodeBlock: FC<
               variant="ghost"
               size="sm"
               className="absolute right-4 top-4 z-20 h-8 w-8 p-2"
-              onClick={() => navigator.clipboard.writeText(content)}
+              onClick={handleCopy}
             >
               <Copy className="h-4 w-4" />
             </Button>

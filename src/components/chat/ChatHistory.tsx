@@ -66,7 +66,7 @@ export const ChatHistory: React.FC<ChatHistoryProps> = ({
           <ChevronDown className="h-4 w-4 ml-1" />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-96">
+      <DropdownMenuContent align="start" className="w-96">
         <DropdownMenuLabel className="flex justify-between items-center">
           <span>Chat History</span>
           <span className="text-xs text-gray-500">
