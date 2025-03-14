@@ -18,7 +18,6 @@ import {
 import ReactMarkdown from "react-markdown";
 import { cn } from "@/lib/utils";
 import { vscodeDark } from "@uiw/codemirror-theme-vscode";
-import "@/components/notes/src/style.css";
 
 interface DescriptionEditorProps {
   isPreview?: boolean;
