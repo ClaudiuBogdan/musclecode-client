@@ -2,7 +2,7 @@ import React, { useMemo, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import confetti from "canvas-confetti";
-import { CheckCircle2, XCircle } from "lucide-react";
+import { CheckCircle2, Loader2, XCircle } from "lucide-react";
 import useQuizSessionStorage from "@/hooks/useQuizSessionStorage";
 
 const ENCOURAGEMENTS = [
@@ -85,7 +85,12 @@ const QuizQuestion: React.FC<QuizQuestionProps> = React.memo(({ children }) => {
   };
 
   if (!quizData) {
-    return <div className="text-red-500">Error parsing quiz data.</div>;
+    return (
+      <div className="flex items-center justify-center h-16 text-muted-foreground dark:text-muted-foreground">
+        <Loader2 className="h-5 w-5 mr-3 animate-spin" />
+        <div>Generating quiz data...</div>
+      </div>
+    );
   }
 
   const handleAnswerClick = (option: string) => {
@@ -124,9 +129,9 @@ const QuizQuestion: React.FC<QuizQuestionProps> = React.memo(({ children }) => {
       onMouseMove={handleMouseMove}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="relative border border-gray-200 dark:border-gray-700 rounded-lg p-4 my-4 bg-gradient-to-br from-white dark:from-gray-800 to-gray-50 dark:to-gray-900 shadow-md backdrop-blur-sm"
+      className="relative border border-gray-200 dark:border-gray-700 rounded-lg p-4 my-4 bg-gradient-to-br from-white dark:from-gray-800 to-gray-50 dark:to-gray-900 shadow-md hover:shadow-lg transition-shadow duration-200 backdrop-blur-sm"
     >
-      <h3 className="text-xl font-bold mb-4 text-gray-800 dark:text-gray-100 bg-clip-text">
+      <h3 className="text-2xl font-extrabold mb-4 text-center text-transparent bg-clip-text bg-gradient-to-r from-blue-500 dark:from-blue-300 to-teal-400 dark:to-teal-200">
         {quizData.question}
       </h3>
 
