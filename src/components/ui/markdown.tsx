@@ -22,6 +22,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import QuizQuestion from "@/components/QuizQuestion";
 
 interface MarkdownProps {
   content: string;
@@ -228,6 +229,11 @@ const useMarkdownComponents = (
         ),
       });
     }
+
+    // Custom components
+    Object.assign(components, {
+      "quiz-question": QuizQuestion,
+    });
 
     return components;
   }, [isDarkMode, enableMath, enableDetails]);
