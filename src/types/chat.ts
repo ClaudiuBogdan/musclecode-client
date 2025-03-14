@@ -34,6 +34,13 @@ export interface MessageContext {
   files?: ContextFile[];
 }
 
+export interface Command {
+  name: string;
+  description: string;
+  command: string;
+  prompt: string;
+}
+
 export interface MessageStreamDto {
   messageId: string;
   assistantMessageId: string;
@@ -43,6 +50,7 @@ export interface MessageStreamDto {
   algorithmId: string;
   parentId: string | null;
   context?: MessageContext;
+  commands?: Command[];
 }
 
 export interface SyncThreadsRequest {
@@ -84,7 +92,12 @@ export interface ChatState {
 export interface ChatStore extends ChatState {
   createThread: (algorithmId: string) => string;
   sendHintMessage: (message: MessageStreamDto) => Promise<string>;
-  sendMessage: (message: string, parentId?: string | null) => Promise<void>;
+  sendMessage: (args: {
+    message: string;
+    parentId?: string | null;
+    commands?: Command[];
+    context?: MessageContext;
+  }) => Promise<void>;
   stopStreaming: () => void;
   startNewChat: () => Promise<void>;
   setEditMessageId: (messageId: string | null) => void;

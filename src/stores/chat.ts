@@ -8,6 +8,8 @@ import {
   ClientThreadUpdate,
   ThreadDto,
   MessageStreamDto,
+  Command,
+  MessageContext,
 } from "../types/chat";
 import { createJSONStorage, persist } from "zustand/middleware";
 import { createLogger } from "@/lib/logger";
@@ -69,11 +71,15 @@ const useChatStore = create<ChatStore>()(
         get().syncThreads();
       },
 
-      sendMessage: async (message: string, parentId?: string | null) => {
+      sendMessage: async (args: {
+        message: string;
+        parentId?: string | null;
+        commands?: Command[];
+        context?: MessageContext;
+      }) => {
         let { activeThreadId } = get();
         const { activeAlgorithmId, inputMessage, status } = get();
-        const content = message || inputMessage;
-
+        const content = args.message || inputMessage;
         if (status === "loading") return;
 
         if (!activeThreadId && activeAlgorithmId) {
@@ -94,8 +100,8 @@ const useChatStore = create<ChatStore>()(
           throw new Error("No active thread");
         }
 
-        if (!parentId) {
-          parentId =
+        if (!args.parentId) {
+          args.parentId =
             activeThread.messages[activeThread.messages.length - 1]?.id || null;
         }
 
@@ -109,7 +115,7 @@ const useChatStore = create<ChatStore>()(
             timestamp: Date.now(),
             sender: "user",
             status: "complete",
-            parentId,
+            parentId: args.parentId,
           };
 
           set((state) => ({
@@ -164,8 +170,10 @@ const useChatStore = create<ChatStore>()(
             content,
             type: "chat",
             threadId: activeThreadId,
-            parentId,
+            parentId: args.parentId,
             algorithmId: activeAlgorithmId,
+            commands: args.commands,
+            context: args.context,
           });
           const reader = stream.getReader();
 
@@ -406,7 +414,10 @@ const useChatStore = create<ChatStore>()(
         });
 
         // Generate new assistant response
-        await get().sendMessage(newContent, message.parentId);
+        await get().sendMessage({
+          message: newContent,
+          parentId: message.parentId,
+        });
       },
 
       switchBranch: (messageId: string) => {
@@ -528,7 +539,10 @@ const useChatStore = create<ChatStore>()(
           };
         });
 
-        get().sendMessage(parentMessage.content, parentMessage.id);
+        get().sendMessage({
+          message: parentMessage.content,
+          parentId: parentMessage.id,
+        });
       },
 
       getConversationThread: (threadId: string) => {
