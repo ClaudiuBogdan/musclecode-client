@@ -1,4 +1,3 @@
-import React from "react";
 import { ChatThread } from "./ChatThread";
 import { MessageInput } from "./MessageInput";
 import { Toaster } from "sonner";

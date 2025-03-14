@@ -7,7 +7,22 @@ export const INPUT_COMMANDS = Object.freeze([
     description: "Start a quiz",
     prompt: `
 Write a quiz with 5 questions for this algorithm.
-Remember that the text you generate is markdown, so use the following format to write each individual question:
+
+Use the following format to write each individual question.
+
+JSON format:
+
+{
+  "question": "Question text",
+  "options": ["Option 1", "Option 2", "Option 3", "Option 4"],
+  "hint": "Hint text",
+  "explanation": "Explanation text",
+  "answer": "Correct answer"
+}
+
+Surround the JSON object with <quiz-question> tags. Don't include any other text in between the tags. Don't use markdown to format the quiz questions. Avoid this sequence at all costs: \`\`\`\n
+
+Here is an example:
 
 <quiz-question> 
 { 
@@ -25,7 +40,21 @@ Remember that the text you generate is markdown, so use the following format to 
 } 
 </quiz-question>
 
-The opening and closing tags are required. The inner text should be a valid JSON object.
+<quiz-question> 
+{ 
+  "question": "What is the key characteristic that makes linear search more versatile than binary search?",
+  "options": [
+    "Linear search can be performed on unsorted arrays",
+    "Linear search always has better time complexity",
+    "Linear search requires less memory",
+    "Linear search can only find unique elements",
+    "Linear search always returns the index of the first occurrence"
+    ],
+  "hint": "Consider what prerequisites each algorithm requires before it can be used effectively.",
+  "explanation": "Unlike binary search which requires a sorted array, linear search can be performed on any array regardless of whether it's sorted or not. While binary search is more efficient with O(log n) time complexity compared to linear search's O(n), linear search has the advantage of working directly on unsorted data without requiring preprocessing. This makes linear search more versatile and appropriate for one-time searches on unsorted data or small arrays where the overhead of sorting would be inefficient.", 
+  "answer": "Linear search can be performed on unsorted arrays" 
+} 
+</quiz-question>
 `,
   },
 ]) as Command[];
