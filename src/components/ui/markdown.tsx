@@ -28,10 +28,9 @@ import { motion, AnimatePresence } from "framer-motion";
 interface MarkdownProps {
   content: string;
   className?: string;
-  enableGfm?: boolean;
-  enableRaw?: boolean;
-  enableDetails?: boolean;
-  enableMath?: boolean;
+  disableGfm?: boolean;
+  disableDetails?: boolean;
+  disableMath?: boolean;
 }
 
 interface MathComponentProps {
@@ -169,8 +168,8 @@ CodeBlock.displayName = "CodeBlock";
 // Create a custom hook for markdown components
 const useMarkdownComponents = (
   isDarkMode: boolean,
-  enableMath: boolean,
-  enableDetails: boolean
+  disableMath: boolean,
+  disableDetails: boolean
 ): Components => {
   return useMemo(() => {
     const components: Components = {
@@ -182,7 +181,7 @@ const useMarkdownComponents = (
       ),
     };
 
-    if (enableMath) {
+    if (!disableMath) {
       Object.assign(components, {
         math: ({ children }: MathComponentProps) => (
           <span className="my-4 [&>.katex]:text-base [&>.katex]:block">
@@ -211,7 +210,7 @@ const useMarkdownComponents = (
       });
     }
 
-    if (enableDetails) {
+    if (!disableDetails) {
       Object.assign(components, {
         details: ({ children, ...props }: { children: ReactNode }) => (
           <details
@@ -259,52 +258,48 @@ const useMarkdownComponents = (
     });
 
     return components;
-  }, [isDarkMode, enableMath, enableDetails]);
+  }, [isDarkMode, disableMath, disableDetails]);
 };
 
 export const Markdown: FC<MarkdownProps> = React.memo(
   ({
     content,
     className,
-    enableGfm = true,
-    enableRaw = true,
-    enableDetails = true,
-    enableMath = true,
+    disableGfm = false,
+    disableDetails = false,
+    disableMath = false,
   }) => {
     const { theme } = useTheme();
     const isDarkMode = theme === "dark";
 
     const plugins = useMemo(
       () => [
-        ...(enableGfm ? [remarkGfm] : []),
-        ...(enableMath ? [remarkMath] : []),
+        ...(!disableGfm ? [remarkGfm] : []),
+        ...(!disableMath ? [remarkMath] : []),
       ],
-      [enableGfm, enableMath]
+      [disableGfm, disableMath]
     );
 
     const rehypePlugins = useMemo(
-      () => [
-        ...(enableRaw ? [rehypeRaw] : []),
-        ...(enableMath ? [rehypeKatex] : []),
-      ],
-      [enableRaw, enableMath]
+      () => [rehypeRaw, ...(!disableMath ? [rehypeKatex] : [])],
+      [disableMath]
     );
 
     const components = useMarkdownComponents(
       isDarkMode,
-      enableMath,
-      enableDetails
+      disableMath,
+      disableDetails
     );
 
     const processedContent = useMemo(
       () =>
-        enableDetails
+        !disableDetails
           ? content.replace(
               /<details>([\s\S]*?)<\/details>/g,
               (match) => `\n${match}\n`
             )
           : content,
-      [content, enableDetails]
+      [content, disableDetails]
     );
 
     return (
