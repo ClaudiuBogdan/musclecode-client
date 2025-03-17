@@ -2,7 +2,7 @@ import { Message as MessageType } from "@/types/chat";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { Copy, RotateCcw, Edit2, BotIcon } from "lucide-react";
+import { RotateCcw, Edit2, BotIcon } from "lucide-react";
 import useChatStore from "@/stores/chat";
 import { showToast } from "@/utils/toast";
 import { EditMessage } from "./EditMessage";

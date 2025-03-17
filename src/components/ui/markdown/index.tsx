@@ -10,7 +10,7 @@ import {
   vscDarkPlus,
   vs,
 } from "react-syntax-highlighter/dist/esm/styles/prism";
-import { Copy, ChevronRight, Expand } from "lucide-react";
+import { ChevronRight, Expand } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { detectLanguage, cleanTheme } from "@/lib/code-detection";
