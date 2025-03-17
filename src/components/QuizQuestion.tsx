@@ -69,7 +69,6 @@ const QuizQuestion: React.FC<QuizQuestionProps> = React.memo(({ children }) => {
     try {
       return JSON.parse(content);
     } catch {
-      console.error("Error parsing quiz data");
       return null;
     }
   }, [content]);
@@ -91,6 +90,11 @@ const QuizQuestion: React.FC<QuizQuestionProps> = React.memo(({ children }) => {
         <div>Generating quiz data...</div>
       </div>
     );
+  }
+
+  // Validate the quiz data: ensure that the answer exists in the options.
+  if (!quizData.options.includes(quizData.answer)) {
+    quizData.options.push(quizData.answer);
   }
 
   const handleAnswerClick = (option: string) => {

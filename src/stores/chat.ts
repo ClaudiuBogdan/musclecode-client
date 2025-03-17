@@ -501,6 +501,7 @@ const useChatStore = create<ChatStore>()(
 
       // TODO: this is a temporary solution to retry a message
       // TODO: we should refactor this to be more robust and handle edge cases
+      // I need to update the message data structure and add the context and prompt to the retry.
       retryMessage: async (messageId: string) => {
         const { threads, activeThreadId, activeAlgorithmId } = get();
         if (!activeThreadId) return;
