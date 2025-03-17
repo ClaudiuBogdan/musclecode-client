@@ -146,6 +146,12 @@ const Callout: FC<CalloutProps> = ({
             </div>
             {title && (
               <div
+                onMouseDown={(event) => {
+                  // Prevent double click to select text
+                  if (foldable && event.detail > 1) {
+                    event.preventDefault();
+                  }
+                }}
                 className={cn(
                   "text-base font-semibold tracking-tight flex items-center gap-2",
                   // Title text colors (matches icon)
