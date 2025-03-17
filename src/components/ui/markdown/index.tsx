@@ -23,7 +23,9 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import QuizQuestion from "@/components/QuizQuestion";
-import { motion, AnimatePresence } from "framer-motion";
+import Callout from "./callout";
+import { remarkCallouts } from "./plugins/callout-plugin";
+import { CopyButton } from "../copy-button";
 
 interface MarkdownProps {
   content: string;
@@ -42,12 +44,8 @@ const CodeBlock: FC<
   React.PropsWithChildren<{ isDarkMode: boolean; className?: string }>
 > = React.memo(({ className, children, isDarkMode, ...props }) => {
   const [isDialogOpen, setIsDialogOpen] = React.useState(false);
-  const [copied, setCopied] = React.useState(false);
   const handleCopy = () => {
-    navigator.clipboard.writeText(content).then(() => {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 1000);
-    });
+    navigator.clipboard.writeText(content);
   };
   const content = String(children);
   const match = /language-(\w+)/.exec(className || "");
@@ -98,45 +96,18 @@ const CodeBlock: FC<
         >
           <Expand className="h-4 w-4" />
         </Button>
-        <Button
-          variant="ghost"
-          size="sm"
-          className="text-muted-foreground hover:bg-background"
-          onClick={handleCopy}
-        >
-          <Copy className="h-4 w-4" />
-        </Button>
+        <CopyButton onCopy={handleCopy} />
       </div>
-
-      <AnimatePresence>
-        {copied && (
-          <motion.div
-            key="copied-feedback"
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.2 }}
-            className="absolute z-10 top-2 right-14 bg-accent text-accent-foreground border border-accent-foreground/30 text-xs p-2 rounded shadow"
-          >
-            Copied!
-          </motion.div>
-        )}
-      </AnimatePresence>
-
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="max-w-[90vw] h-[90vh] flex flex-col p-0">
           <DialogHeader className="px-4 pt-4 pb-2">
             <DialogTitle>Code Preview</DialogTitle>
           </DialogHeader>
           <div className="relative flex-1 flex flex-col overflow-hidden">
-            <Button
-              variant="ghost"
-              size="sm"
+            <CopyButton
+              onCopy={handleCopy}
               className="absolute right-4 top-4 z-20 h-8 w-8 p-2"
-              onClick={handleCopy}
-            >
-              <Copy className="h-4 w-4" />
-            </Button>
+            />
             <SyntaxHighlighter
               language={detectLanguage(content)}
               style={style}
@@ -172,6 +143,7 @@ const useMarkdownComponents = (
   disableDetails: boolean
 ): Components => {
   return useMemo(() => {
+    // Create a base components object
     const components: Components = {
       code: (props) => <CodeBlock isDarkMode={isDarkMode} {...props} />,
       a: (props) => (
@@ -180,6 +152,34 @@ const useMarkdownComponents = (
         </a>
       ),
     };
+
+    // Add custom components using the components object
+    const customComponents = {
+      callout: (props: {
+        calloutType: string;
+        title?: string;
+        content: string;
+        foldable?: string;
+        expanded?: string;
+        children: React.ReactNode;
+      }) => {
+        const { calloutType, title, content, foldable, expanded } = props;
+
+        return (
+          <Callout
+            type={calloutType}
+            title={title}
+            foldable={foldable === "true"}
+            expanded={expanded === "true"}
+          >
+            <Markdown content={content} />
+          </Callout>
+        );
+      },
+    };
+
+    // Type assertion to add custom components
+    Object.assign(components, customComponents as unknown as Components);
 
     if (!disableMath) {
       Object.assign(components, {
@@ -263,7 +263,7 @@ const useMarkdownComponents = (
 
 export const Markdown: FC<MarkdownProps> = React.memo(
   ({
-    content,
+    content = "",
     className,
     disableGfm = false,
     disableDetails = false,
@@ -276,6 +276,7 @@ export const Markdown: FC<MarkdownProps> = React.memo(
       () => [
         ...(!disableGfm ? [remarkGfm] : []),
         ...(!disableMath ? [remarkMath] : []),
+        remarkCallouts,
       ],
       [disableGfm, disableMath]
     );

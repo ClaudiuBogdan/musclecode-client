@@ -585,7 +585,6 @@ const useChatStore = create<ChatStore>()(
 
         if (message) {
           await navigator.clipboard.writeText(message.content);
-          // TODO: Add toast notification
         }
       },
 

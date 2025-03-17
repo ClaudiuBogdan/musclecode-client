@@ -8,6 +8,7 @@ import { showToast } from "@/utils/toast";
 import { EditMessage } from "./EditMessage";
 import { Markdown } from "@/components/ui/markdown";
 import React, { useCallback } from "react";
+import { CopyButton } from "../ui/copy-button";
 
 interface MessageProps {
   message: MessageType;
@@ -109,14 +110,10 @@ export const Message: React.FC<MessageProps> = React.memo(({ message }) => {
               isUser ? "justify-end" : "justify-start"
             )}
           >
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleCopy}
+            <CopyButton
+              onCopy={handleCopy}
               className="h-8 w-8 p-0 hover:bg-gray-100 dark:hover:bg-gray-800"
-            >
-              <Copy className="h-4 w-4" />
-            </Button>
+            />
             {isUser && !isEditing && !isLoading && (
               <Button
                 variant="ghost"
