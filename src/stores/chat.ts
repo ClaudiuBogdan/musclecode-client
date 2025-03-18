@@ -13,7 +13,6 @@ import {
 } from "../types/chat";
 import { createJSONStorage, persist } from "zustand/middleware";
 import { createLogger } from "@/lib/logger";
-import { getAlgorithmContext } from "@/utils/getAlgorithmContext";
 
 const STREAM_TIMEOUT_MS = 5 * 60 * 1000; // 5 minutes
 
@@ -505,7 +504,7 @@ const useChatStore = create<ChatStore>()(
       // TODO: we should refactor this to be more robust and handle edge cases
       // I need to update the message data structure and add the context and prompt to the retry.
       retryMessage: async (messageId: string) => {
-        const { threads, activeThreadId, activeAlgorithmId } = get();
+        const { threads, activeThreadId } = get();
         if (!activeThreadId) return;
 
         const thread = threads[activeThreadId];
