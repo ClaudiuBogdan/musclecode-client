@@ -20,7 +20,7 @@ JSON format:
   "answer": "Correct answer"
 }
 
-Surround the JSON object with <quiz-question> tags. Don't include any other text in between the tags. Don't use markdown to format the quiz questions. Avoid this sequence at all costs: \`\`\`\n
+Surround the JSON object with <quiz-question> html tags, but never include it in a code block. Don't include any other text in between the tags. Don't use markdown to format the quiz questions. Avoid this sequence at all costs: \`\`\`\n
 
 Here is an example:
 
@@ -55,6 +55,8 @@ Here is an example:
   "answer": "Linear search can be performed on unsorted arrays" 
 } 
 </quiz-question>
+
+Remember to always use the <quiz-question> tags and don't use any code block to surround the <quiz-question> tags.
 `,
   },
 ]) as Command[];

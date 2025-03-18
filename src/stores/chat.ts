@@ -117,6 +117,8 @@ const useChatStore = create<ChatStore>()(
             sender: "user",
             status: "complete",
             parentId: args.parentId,
+            commands: args.commands,
+            context: args.context,
           };
 
           set((state) => ({
@@ -546,9 +548,8 @@ const useChatStore = create<ChatStore>()(
         get().sendMessage({
           message: parentMessage.content,
           parentId: parentMessage.parentId,
-          context: activeAlgorithmId
-            ? getAlgorithmContext(activeAlgorithmId)
-            : undefined,
+          commands: parentMessage.commands,
+          context: parentMessage.context,
         });
       },
 
@@ -643,6 +644,8 @@ const useChatStore = create<ChatStore>()(
                 sender: msg.role === "user" ? "user" : "assistant",
                 status: "complete",
                 parentId: msg.parentId,
+                commands: msg.commands,
+                context: msg.context,
               }));
 
               // If thread exists locally, update it

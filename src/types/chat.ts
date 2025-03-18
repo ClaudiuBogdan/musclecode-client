@@ -15,6 +15,8 @@ export interface Message {
   sender: "user" | "assistant";
   status: "pending" | "streaming" | "complete" | "error";
   parentId: string | null;
+  commands?: Command[];
+  context?: MessageContext;
 }
 
 // Thread synchronization types
@@ -70,6 +72,8 @@ export interface ThreadDto {
     timestamp: number;
     role: "user" | "assistant";
     parentId: string | null;
+    commands?: Command[];
+    context?: MessageContext;
   }[];
 }
 
