@@ -75,11 +75,11 @@ export const remarkCallouts: Plugin = () => {
 
         // The first line should contain the callout marker and optional title.
         // It should be of the form: [!TYPE] Title (title is optional)
-        const headerRegex = /^\[!(?<type>[^\]]+)\]\s*(?<title>.+)$/;
+        const headerRegex = /^\[!(?<type>[^\]]+)\](\s*(?<title>.+))?$/;
         const headerMatch = headerRegex.exec(lines[0]?.trim());
 
         if (!headerMatch || !headerMatch.groups) return;
-        let { type, title } = headerMatch.groups;
+        let { type = "", title = "" } = headerMatch.groups;
         type = type.trim().toLowerCase();
         title = title.trim();
         let foldable = false;
