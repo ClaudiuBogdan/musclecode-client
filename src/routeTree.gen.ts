@@ -22,6 +22,7 @@ const UnauthorizedLazyImport = createFileRoute('/unauthorized')()
 const IndexLazyImport = createFileRoute('/')()
 const SettingsIndexLazyImport = createFileRoute('/settings/')()
 const OnboardingIndexLazyImport = createFileRoute('/onboarding/')()
+const LearningIndexLazyImport = createFileRoute('/learning/')()
 const CollectionsIndexLazyImport = createFileRoute('/collections/')()
 const AlgorithmsIndexLazyImport = createFileRoute('/algorithms/')()
 const SettingsSecurityLazyImport = createFileRoute('/settings/security')()
@@ -30,6 +31,7 @@ const SettingsNotificationsLazyImport = createFileRoute(
   '/settings/notifications',
 )()
 const SettingsBillingLazyImport = createFileRoute('/settings/billing')()
+const LearningCreateLazyImport = createFileRoute('/learning/create')()
 const CollectionsNewLazyImport = createFileRoute('/collections/new')()
 const AlgorithmsNewLazyImport = createFileRoute('/algorithms/new')()
 const CollectionsCollectionIdIndexLazyImport = createFileRoute(
@@ -84,6 +86,14 @@ const OnboardingIndexLazyRoute = OnboardingIndexLazyImport.update({
   import('./routes/onboarding/index.lazy').then((d) => d.Route),
 )
 
+const LearningIndexLazyRoute = LearningIndexLazyImport.update({
+  id: '/learning/',
+  path: '/learning/',
+  getParentRoute: () => rootRoute,
+} as any).lazy(() =>
+  import('./routes/learning/index.lazy').then((d) => d.Route),
+)
+
 const CollectionsIndexLazyRoute = CollectionsIndexLazyImport.update({
   id: '/collections/',
   path: '/collections/',
@@ -130,6 +140,14 @@ const SettingsBillingLazyRoute = SettingsBillingLazyImport.update({
   getParentRoute: () => rootRoute,
 } as any).lazy(() =>
   import('./routes/settings/billing.lazy').then((d) => d.Route),
+)
+
+const LearningCreateLazyRoute = LearningCreateLazyImport.update({
+  id: '/learning/create',
+  path: '/learning/create',
+  getParentRoute: () => rootRoute,
+} as any).lazy(() =>
+  import('./routes/learning/create.lazy').then((d) => d.Route),
 )
 
 const CollectionsNewLazyRoute = CollectionsNewLazyImport.update({
@@ -249,6 +267,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CollectionsNewLazyImport
       parentRoute: typeof rootRoute
     }
+    '/learning/create': {
+      id: '/learning/create'
+      path: '/learning/create'
+      fullPath: '/learning/create'
+      preLoaderRoute: typeof LearningCreateLazyImport
+      parentRoute: typeof rootRoute
+    }
     '/settings/billing': {
       id: '/settings/billing'
       path: '/settings/billing'
@@ -289,6 +314,13 @@ declare module '@tanstack/react-router' {
       path: '/collections'
       fullPath: '/collections'
       preLoaderRoute: typeof CollectionsIndexLazyImport
+      parentRoute: typeof rootRoute
+    }
+    '/learning/': {
+      id: '/learning/'
+      path: '/learning'
+      fullPath: '/learning'
+      preLoaderRoute: typeof LearningIndexLazyImport
       parentRoute: typeof rootRoute
     }
     '/onboarding/': {
@@ -352,12 +384,14 @@ export interface FileRoutesByFullPath {
   '/settings/profile': typeof SettingsProfileRoute
   '/algorithms/new': typeof AlgorithmsNewLazyRoute
   '/collections/new': typeof CollectionsNewLazyRoute
+  '/learning/create': typeof LearningCreateLazyRoute
   '/settings/billing': typeof SettingsBillingLazyRoute
   '/settings/notifications': typeof SettingsNotificationsLazyRoute
   '/settings/preferences': typeof SettingsPreferencesLazyRoute
   '/settings/security': typeof SettingsSecurityLazyRoute
   '/algorithms': typeof AlgorithmsIndexLazyRoute
   '/collections': typeof CollectionsIndexLazyRoute
+  '/learning': typeof LearningIndexLazyRoute
   '/onboarding': typeof OnboardingIndexLazyRoute
   '/settings': typeof SettingsIndexLazyRoute
   '/algorithms/$algorithmId/edit': typeof AlgorithmsAlgorithmIdEditLazyRoute
@@ -374,12 +408,14 @@ export interface FileRoutesByTo {
   '/settings/profile': typeof SettingsProfileRoute
   '/algorithms/new': typeof AlgorithmsNewLazyRoute
   '/collections/new': typeof CollectionsNewLazyRoute
+  '/learning/create': typeof LearningCreateLazyRoute
   '/settings/billing': typeof SettingsBillingLazyRoute
   '/settings/notifications': typeof SettingsNotificationsLazyRoute
   '/settings/preferences': typeof SettingsPreferencesLazyRoute
   '/settings/security': typeof SettingsSecurityLazyRoute
   '/algorithms': typeof AlgorithmsIndexLazyRoute
   '/collections': typeof CollectionsIndexLazyRoute
+  '/learning': typeof LearningIndexLazyRoute
   '/onboarding': typeof OnboardingIndexLazyRoute
   '/settings': typeof SettingsIndexLazyRoute
   '/algorithms/$algorithmId/edit': typeof AlgorithmsAlgorithmIdEditLazyRoute
@@ -397,12 +433,14 @@ export interface FileRoutesById {
   '/settings/profile': typeof SettingsProfileRoute
   '/algorithms/new': typeof AlgorithmsNewLazyRoute
   '/collections/new': typeof CollectionsNewLazyRoute
+  '/learning/create': typeof LearningCreateLazyRoute
   '/settings/billing': typeof SettingsBillingLazyRoute
   '/settings/notifications': typeof SettingsNotificationsLazyRoute
   '/settings/preferences': typeof SettingsPreferencesLazyRoute
   '/settings/security': typeof SettingsSecurityLazyRoute
   '/algorithms/': typeof AlgorithmsIndexLazyRoute
   '/collections/': typeof CollectionsIndexLazyRoute
+  '/learning/': typeof LearningIndexLazyRoute
   '/onboarding/': typeof OnboardingIndexLazyRoute
   '/settings/': typeof SettingsIndexLazyRoute
   '/algorithms/$algorithmId/edit': typeof AlgorithmsAlgorithmIdEditLazyRoute
@@ -421,12 +459,14 @@ export interface FileRouteTypes {
     | '/settings/profile'
     | '/algorithms/new'
     | '/collections/new'
+    | '/learning/create'
     | '/settings/billing'
     | '/settings/notifications'
     | '/settings/preferences'
     | '/settings/security'
     | '/algorithms'
     | '/collections'
+    | '/learning'
     | '/onboarding'
     | '/settings'
     | '/algorithms/$algorithmId/edit'
@@ -442,12 +482,14 @@ export interface FileRouteTypes {
     | '/settings/profile'
     | '/algorithms/new'
     | '/collections/new'
+    | '/learning/create'
     | '/settings/billing'
     | '/settings/notifications'
     | '/settings/preferences'
     | '/settings/security'
     | '/algorithms'
     | '/collections'
+    | '/learning'
     | '/onboarding'
     | '/settings'
     | '/algorithms/$algorithmId/edit'
@@ -463,12 +505,14 @@ export interface FileRouteTypes {
     | '/settings/profile'
     | '/algorithms/new'
     | '/collections/new'
+    | '/learning/create'
     | '/settings/billing'
     | '/settings/notifications'
     | '/settings/preferences'
     | '/settings/security'
     | '/algorithms/'
     | '/collections/'
+    | '/learning/'
     | '/onboarding/'
     | '/settings/'
     | '/algorithms/$algorithmId/edit'
@@ -486,12 +530,14 @@ export interface RootRouteChildren {
   SettingsProfileRoute: typeof SettingsProfileRoute
   AlgorithmsNewLazyRoute: typeof AlgorithmsNewLazyRoute
   CollectionsNewLazyRoute: typeof CollectionsNewLazyRoute
+  LearningCreateLazyRoute: typeof LearningCreateLazyRoute
   SettingsBillingLazyRoute: typeof SettingsBillingLazyRoute
   SettingsNotificationsLazyRoute: typeof SettingsNotificationsLazyRoute
   SettingsPreferencesLazyRoute: typeof SettingsPreferencesLazyRoute
   SettingsSecurityLazyRoute: typeof SettingsSecurityLazyRoute
   AlgorithmsIndexLazyRoute: typeof AlgorithmsIndexLazyRoute
   CollectionsIndexLazyRoute: typeof CollectionsIndexLazyRoute
+  LearningIndexLazyRoute: typeof LearningIndexLazyRoute
   OnboardingIndexLazyRoute: typeof OnboardingIndexLazyRoute
   SettingsIndexLazyRoute: typeof SettingsIndexLazyRoute
   AlgorithmsAlgorithmIdEditLazyRoute: typeof AlgorithmsAlgorithmIdEditLazyRoute
@@ -508,12 +554,14 @@ const rootRouteChildren: RootRouteChildren = {
   SettingsProfileRoute: SettingsProfileRoute,
   AlgorithmsNewLazyRoute: AlgorithmsNewLazyRoute,
   CollectionsNewLazyRoute: CollectionsNewLazyRoute,
+  LearningCreateLazyRoute: LearningCreateLazyRoute,
   SettingsBillingLazyRoute: SettingsBillingLazyRoute,
   SettingsNotificationsLazyRoute: SettingsNotificationsLazyRoute,
   SettingsPreferencesLazyRoute: SettingsPreferencesLazyRoute,
   SettingsSecurityLazyRoute: SettingsSecurityLazyRoute,
   AlgorithmsIndexLazyRoute: AlgorithmsIndexLazyRoute,
   CollectionsIndexLazyRoute: CollectionsIndexLazyRoute,
+  LearningIndexLazyRoute: LearningIndexLazyRoute,
   OnboardingIndexLazyRoute: OnboardingIndexLazyRoute,
   SettingsIndexLazyRoute: SettingsIndexLazyRoute,
   AlgorithmsAlgorithmIdEditLazyRoute: AlgorithmsAlgorithmIdEditLazyRoute,
@@ -539,12 +587,14 @@ export const routeTree = rootRoute
         "/settings/profile",
         "/algorithms/new",
         "/collections/new",
+        "/learning/create",
         "/settings/billing",
         "/settings/notifications",
         "/settings/preferences",
         "/settings/security",
         "/algorithms/",
         "/collections/",
+        "/learning/",
         "/onboarding/",
         "/settings/",
         "/algorithms/$algorithmId/edit",
@@ -572,6 +622,9 @@ export const routeTree = rootRoute
     "/collections/new": {
       "filePath": "collections/new.lazy.tsx"
     },
+    "/learning/create": {
+      "filePath": "learning/create.lazy.tsx"
+    },
     "/settings/billing": {
       "filePath": "settings/billing.lazy.tsx"
     },
@@ -589,6 +642,9 @@ export const routeTree = rootRoute
     },
     "/collections/": {
       "filePath": "collections/index.lazy.tsx"
+    },
+    "/learning/": {
+      "filePath": "learning/index.lazy.tsx"
     },
     "/onboarding/": {
       "filePath": "onboarding/index.lazy.tsx"
