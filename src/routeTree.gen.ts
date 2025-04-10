@@ -13,6 +13,7 @@ import { createFileRoute } from '@tanstack/react-router'
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
+import { Route as TmpImport } from './routes/tmp'
 import { Route as LoginImport } from './routes/login'
 import { Route as SettingsProfileImport } from './routes/settings/profile'
 
@@ -57,6 +58,12 @@ const UnauthorizedLazyRoute = UnauthorizedLazyImport.update({
   path: '/unauthorized',
   getParentRoute: () => rootRoute,
 } as any).lazy(() => import('./routes/unauthorized.lazy').then((d) => d.Route))
+
+const TmpRoute = TmpImport.update({
+  id: '/tmp',
+  path: '/tmp',
+  getParentRoute: () => rootRoute,
+} as any)
 
 const LoginRoute = LoginImport.update({
   id: '/login',
@@ -239,6 +246,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginImport
       parentRoute: typeof rootRoute
     }
+    '/tmp': {
+      id: '/tmp'
+      path: '/tmp'
+      fullPath: '/tmp'
+      preLoaderRoute: typeof TmpImport
+      parentRoute: typeof rootRoute
+    }
     '/unauthorized': {
       id: '/unauthorized'
       path: '/unauthorized'
@@ -380,6 +394,7 @@ declare module '@tanstack/react-router' {
 export interface FileRoutesByFullPath {
   '/': typeof IndexLazyRoute
   '/login': typeof LoginRoute
+  '/tmp': typeof TmpRoute
   '/unauthorized': typeof UnauthorizedLazyRoute
   '/settings/profile': typeof SettingsProfileRoute
   '/algorithms/new': typeof AlgorithmsNewLazyRoute
@@ -404,6 +419,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexLazyRoute
   '/login': typeof LoginRoute
+  '/tmp': typeof TmpRoute
   '/unauthorized': typeof UnauthorizedLazyRoute
   '/settings/profile': typeof SettingsProfileRoute
   '/algorithms/new': typeof AlgorithmsNewLazyRoute
@@ -429,6 +445,7 @@ export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexLazyRoute
   '/login': typeof LoginRoute
+  '/tmp': typeof TmpRoute
   '/unauthorized': typeof UnauthorizedLazyRoute
   '/settings/profile': typeof SettingsProfileRoute
   '/algorithms/new': typeof AlgorithmsNewLazyRoute
@@ -455,6 +472,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/login'
+    | '/tmp'
     | '/unauthorized'
     | '/settings/profile'
     | '/algorithms/new'
@@ -478,6 +496,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/login'
+    | '/tmp'
     | '/unauthorized'
     | '/settings/profile'
     | '/algorithms/new'
@@ -501,6 +520,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/login'
+    | '/tmp'
     | '/unauthorized'
     | '/settings/profile'
     | '/algorithms/new'
@@ -526,6 +546,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexLazyRoute: typeof IndexLazyRoute
   LoginRoute: typeof LoginRoute
+  TmpRoute: typeof TmpRoute
   UnauthorizedLazyRoute: typeof UnauthorizedLazyRoute
   SettingsProfileRoute: typeof SettingsProfileRoute
   AlgorithmsNewLazyRoute: typeof AlgorithmsNewLazyRoute
@@ -550,6 +571,7 @@ export interface RootRouteChildren {
 const rootRouteChildren: RootRouteChildren = {
   IndexLazyRoute: IndexLazyRoute,
   LoginRoute: LoginRoute,
+  TmpRoute: TmpRoute,
   UnauthorizedLazyRoute: UnauthorizedLazyRoute,
   SettingsProfileRoute: SettingsProfileRoute,
   AlgorithmsNewLazyRoute: AlgorithmsNewLazyRoute,
@@ -583,6 +605,7 @@ export const routeTree = rootRoute
       "children": [
         "/",
         "/login",
+        "/tmp",
         "/unauthorized",
         "/settings/profile",
         "/algorithms/new",
@@ -609,6 +632,9 @@ export const routeTree = rootRoute
     },
     "/login": {
       "filePath": "login.tsx"
+    },
+    "/tmp": {
+      "filePath": "tmp.tsx"
     },
     "/unauthorized": {
       "filePath": "unauthorized.lazy.tsx"
