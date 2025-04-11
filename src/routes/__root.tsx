@@ -27,12 +27,8 @@ export const Route = createRootRoute({
                 <div className="flex h-screen w-screen overflow-auto">
                   <AppSidebar />
                   <SidebarInset>
-                    <main>
-                      <div>
-                        <Outlet />
-                        <Toaster />
-                      </div>
-                    </main>
+                    <Outlet />
+                    <Toaster />
                   </SidebarInset>
                 </div>
               </AuthProvider>

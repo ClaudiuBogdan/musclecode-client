@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { env } from "@/config/env";
-import ChatSession from "@/components/canvas/chat-session";
+import { Chat } from "@/components/canvas/chat/Chat";
 
 export const Route = createFileRoute("/tmp")({
   component: RouteComponent,
@@ -11,9 +11,5 @@ function RouteComponent() {
     return null;
   }
 
-  return (
-    <div>
-      <ChatSession />
-    </div>
-  );
+  return <Chat />;
 }

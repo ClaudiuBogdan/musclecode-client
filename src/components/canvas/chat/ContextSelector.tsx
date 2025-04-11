@@ -6,7 +6,6 @@ import React, {
   useMemo,
 } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
-import { ContextReference, KeyValueContextElement } from "../chat/types";
 import {
   contextOptions,
   getContextDisplayName,
@@ -16,6 +15,7 @@ import {
   updateKeyValueContextValue,
   shouldReplaceContext,
 } from "./types";
+import { ContextReference, KeyValueContextElement } from "../types";
 
 export interface ContextSelectorProps {
   /** Currently selected contexts */
