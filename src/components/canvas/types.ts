@@ -377,8 +377,14 @@ export interface ChatSession {
   title?: string;
   /** Timestamp of session creation (recommend ISO 8601 format string). */
   createdAt: string;
+  /** Timestamp of the last session update (recommend ISO 8601 format string). */
+  updatedAt: string;
   /** Ordered list of messages constituting the conversation. */
   messages: ChatMessage[];
   /** Metadata associated with the entire session (e.g., user ID, session settings). */
   metadata?: Record<string, unknown>;
+  /** Context references attached to the session. */
+  attachedContext?: ContextReference[];
+  /** Timestamp of the last message sync with the backend. */
+  lastMessagesSyncAt?: string;
 }
