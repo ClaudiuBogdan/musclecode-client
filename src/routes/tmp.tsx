@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { env } from "@/config/env";
-import ChatInput from "@/components/canvas/chat-input";
+import ChatSession from "@/components/canvas/chat-session";
+
 export const Route = createFileRoute("/tmp")({
   component: RouteComponent,
 });
@@ -12,7 +13,7 @@ function RouteComponent() {
 
   return (
     <div>
-      <ChatInput />
+      <ChatSession />
     </div>
   );
 }
