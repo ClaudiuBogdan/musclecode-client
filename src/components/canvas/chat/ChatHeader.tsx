@@ -1,35 +1,27 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useMemo } from "react";
 import { PlusCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import useChatStore from "@/stores/chat";
 import { ChatHistory } from "./ChatHistory";
+import { useChatStore } from "../store";
 
 interface ChatHeaderProps {
   className?: string;
 }
 
 export const ChatHeader: React.FC<ChatHeaderProps> = ({ className }) => {
-  const {
-    startNewChat,
-    getThreadsByAlgorithm,
-    activeAlgorithmId,
-    setActiveThreadId,
-  } = useChatStore();
+  const { threads: threadsMap, createThread, switchThread } = useChatStore();
 
-  const threads = activeAlgorithmId
-    ? getThreadsByAlgorithm(activeAlgorithmId)
-    : [];
-
+  const threads = useMemo(() => Object.values(threadsMap), [threadsMap]);
   const handleStartNewChat = useCallback(() => {
-    startNewChat();
-  }, [startNewChat]);
+    createThread();
+  }, [createThread]);
 
   const handleSelectThread = useCallback(
     (threadId: string) => {
-      setActiveThreadId(threadId);
+      switchThread(threadId);
     },
-    [setActiveThreadId]
+    [switchThread]
   );
 
   return (

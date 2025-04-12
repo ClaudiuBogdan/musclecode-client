@@ -14,29 +14,32 @@ import { Button } from "@/components/ui/button";
 import { EmptyState } from "./EmptyState";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { useChatStore } from "../store";
-import { ChatMessage, TextElement } from "../types";
+import { ChatMessage, TextElement, ChatThread as ThreadType } from "../types";
 
 interface ChatThreadProps {
   className?: string;
 }
 
 export const ChatThread: React.FC<ChatThreadProps> = ({ className }) => {
-  const { currentSessionId, loadInitialState, sessions } = useChatStore();
+  const storeData = useChatStore();
+  const currentThreadId = storeData.currentThreadId;
+  const initializeStore = storeData.initializeStore;
+  const threads = storeData.threads as Record<string, ThreadType>;
 
   useEffect(() => {
-    loadInitialState();
-  }, [loadInitialState]);
+    initializeStore();
+  }, [initializeStore]);
 
-  const currentSession = currentSessionId ? sessions[currentSessionId] : null;
+  const currentThread = currentThreadId ? threads[currentThreadId] : null;
   const messages = useMemo(() => {
-    if (!currentSession?.messages || currentSession.messages.length === 0)
+    if (!currentThread?.messages || currentThread.messages.length === 0)
       return [];
 
     // Sort messages by createdAt to ensure proper order
-    return [...currentSession.messages].sort((a, b) => {
+    return [...currentThread.messages].sort((a, b) => {
       return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
     });
-  }, [currentSession?.messages]);
+  }, [currentThread?.messages]);
 
   const totalMessages = messages.length;
   const lastMessageLength =
@@ -118,7 +121,7 @@ export const ChatThread: React.FC<ChatThreadProps> = ({ className }) => {
       ) : (
         <div
           ref={parentRef}
-          data-session-id={currentSessionId}
+          data-thread-id={currentThreadId}
           className="flex-1 overflow-auto px-4"
         >
           <div

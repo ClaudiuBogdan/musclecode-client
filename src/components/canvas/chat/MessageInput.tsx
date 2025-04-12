@@ -12,7 +12,7 @@ interface MessageInputProps {
 }
 
 export const MessageInput: React.FC<MessageInputProps> = ({ className }) => {
-  const { currentSessionId, addMessage } = useChatStore();
+  const { currentThreadId, sendMessage } = useChatStore();
   const [inputMessage, setInputMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
@@ -20,8 +20,7 @@ export const MessageInput: React.FC<MessageInputProps> = ({ className }) => {
   const inputContainerRef = useRef<HTMLDivElement>(null);
 
   const newMessageContent = inputMessage.trim();
-  const canSend =
-    newMessageContent.length > 0 && !isLoading && currentSessionId;
+  const canSend = newMessageContent.length > 0 && !isLoading && currentThreadId;
 
   // Execute commands and send message
   const handleSubmit = useCallback(
@@ -32,14 +31,14 @@ export const MessageInput: React.FC<MessageInputProps> = ({ className }) => {
 
         try {
           // Create a text content element
-          await addMessage({
+          await sendMessage({
             content: [
               {
                 type: "text",
                 value: newMessageContent,
               } as TextElement,
             ],
-            threadId: currentSessionId!,
+            threadId: currentThreadId!,
           });
 
           // Clear the input
@@ -56,7 +55,7 @@ export const MessageInput: React.FC<MessageInputProps> = ({ className }) => {
         }
       }
     },
-    [canSend, newMessageContent, addMessage, currentSessionId]
+    [canSend, newMessageContent, sendMessage, currentThreadId]
   );
 
   // Handle input changes

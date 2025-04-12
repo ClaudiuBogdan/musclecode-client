@@ -11,28 +11,49 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useChatStore } from "../store";
-import { ChatSession, TextElement } from "../types";
+import { ChatThread, TextElement } from "../types";
 import { formatRelativeTime } from "@/lib/dateUtils";
 import { cn } from "@/lib/utils";
 
 interface ChatHistoryProps {
   className?: string;
+  threads?: ChatThread[]; // Optional array of threads to display
+  onSelectThread?: (threadId: string) => void; // Optional callback for thread selection
 }
 
-export const ChatHistory: React.FC<ChatHistoryProps> = ({ className }) => {
-  const { sessions, switchSession, currentSessionId } = useChatStore();
+export const ChatHistory: React.FC<ChatHistoryProps> = ({
+  className,
+  threads: providedThreads,
+  onSelectThread,
+}) => {
+  const storeData = useChatStore();
+  // If threads are provided via props, use them, otherwise get from store
+  const storeThreads = storeData.threads as Record<string, ChatThread>;
+  const switchThread = storeData.switchThread;
+  const currentThreadId = storeData.currentThreadId;
 
-  const validSessions = useMemo(() => {
-    return Object.values(sessions)
-      .filter((session) => session.messages.length > 0)
+  const validThreads = useMemo(() => {
+    // If threads are provided as props, use them
+    if (providedThreads) {
+      return providedThreads
+        .filter((thread) => thread.messages?.length > 0)
+        .sort(
+          (a, b) =>
+            new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+        );
+    }
+
+    // Otherwise, use threads from store
+    return Object.values(storeThreads || {})
+      .filter((thread) => thread.messages.length > 0)
       .sort(
         (a, b) =>
           new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
       );
-  }, [sessions]);
+  }, [providedThreads, storeThreads]);
 
-  const getSessionContent = useCallback((session: ChatSession) => {
-    const messages = session.messages;
+  const getThreadContent = useCallback((thread: ChatThread) => {
+    const messages = thread.messages || [];
     let title = "New Conversation";
     let preview = "";
 
@@ -71,11 +92,17 @@ export const ChatHistory: React.FC<ChatHistoryProps> = ({ className }) => {
     return { title, preview };
   }, []);
 
-  const handleSelectSession = useCallback(
-    (sessionId: string) => {
-      switchSession(sessionId);
+  const handleSelectThread = useCallback(
+    (threadId: string) => {
+      // If an external handler is provided, use it
+      if (onSelectThread) {
+        onSelectThread(threadId);
+      } else {
+        // Otherwise, use the built-in handler
+        switchThread(threadId);
+      }
     },
-    [switchSession]
+    [switchThread, onSelectThread]
   );
 
   return (
@@ -98,20 +125,20 @@ export const ChatHistory: React.FC<ChatHistoryProps> = ({ className }) => {
         <DropdownMenuLabel className="flex justify-between items-center">
           <span>Chat History</span>
           <span className="text-xs text-gray-500">
-            {validSessions.length} conversations
+            {validThreads.length} conversations
           </span>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <ScrollArea className="h-[400px]">
-          {validSessions.length > 0 ? (
-            validSessions.map((session) => {
-              const { title, preview } = getSessionContent(session);
-              const isActive = session.id === currentSessionId;
+          {validThreads.length > 0 ? (
+            validThreads.map((thread) => {
+              const { title, preview } = getThreadContent(thread);
+              const isActive = thread.id === currentThreadId;
 
               return (
                 <DropdownMenuItem
-                  key={session.id}
-                  onSelect={() => handleSelectSession(session.id)}
+                  key={thread.id}
+                  onSelect={() => handleSelectThread(thread.id)}
                   className={cn(
                     "flex flex-col items-start p-3 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer border-b border-gray-100 dark:border-gray-700 last:border-0",
                     isActive && "bg-gray-100 dark:bg-gray-800"
@@ -122,9 +149,7 @@ export const ChatHistory: React.FC<ChatHistoryProps> = ({ className }) => {
                       {title}
                     </span>
                     <span className="text-xs text-gray-500 dark:text-gray-400 whitespace-nowrap ml-2">
-                      {formatRelativeTime(
-                        new Date(session.createdAt).getTime()
-                      )}
+                      {formatRelativeTime(new Date(thread.createdAt).getTime())}
                     </span>
                   </div>
                   {preview && (
@@ -133,7 +158,7 @@ export const ChatHistory: React.FC<ChatHistoryProps> = ({ className }) => {
                         {preview}
                       </p>
                       <span className="text-xs text-gray-500 dark:text-gray-400 ml-2 whitespace-nowrap">
-                        {session.messages.length} msgs
+                        {thread.messages.length} msgs
                       </span>
                     </div>
                   )}

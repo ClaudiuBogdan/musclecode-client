@@ -366,10 +366,18 @@ export interface ChatMessage {
 // --------------- Chat Container ---------------
 
 /**
- * Represents the entire chat session or conversation.
+ * Represents metadata associated with a chat session.
  */
-export interface ChatSession {
-  /** Unique identifier for the chat session. */
+export interface ChatThreadMetadata {
+  userId: string;
+  [key: string]: unknown;
+}
+
+/**
+ * Represents a single chat conversation/thread.
+ */
+export interface ChatThread {
+  /** Unique identifier for the session */
   id: string;
   /** Optional title for the chat session. */
   title?: string;
@@ -379,18 +387,9 @@ export interface ChatSession {
   updatedAt: string;
   /** Ordered list of messages constituting the conversation. */
   messages: ChatMessage[];
-  /** Metadata associated with the entire session (e.g., user ID, session settings). */
-  metadata?: ChatSessionMetadata;
+  metadata: ChatThreadMetadata;
   /** Context references attached to the session. */
   attachedContext?: ContextReference[];
   /** Timestamp of the last message sync with the backend. */
   lastMessagesSyncAt?: string;
-}
-
-export interface ChatSessionMetadata {
-  /** The user ID associated with the session. */
-  userId: string;
-
-  /** The content ID associated with the session. */
-  contentNodeId?: string;
 }
