@@ -1,62 +1,74 @@
-import { Message as MessageType } from "@/types/chat";
+import React, { useCallback } from "react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { RotateCcw, Edit2, BotIcon } from "lucide-react";
-import useChatStore from "@/stores/chat";
+import { RotateCcw, Edit2, BotIcon, UserIcon } from "lucide-react";
 import { showToast } from "@/utils/toast";
 import { EditMessage } from "./EditMessage";
 import { Markdown } from "@/components/ui/markdown";
-import React, { useCallback } from "react";
 import { CopyButton } from "@/components/ui/copy-button";
+import { ChatMessage, TextElement, CodeElement } from "../types";
 
 interface MessageProps {
-  message: MessageType;
+  message: ChatMessage;
 }
 
 export const Message: React.FC<MessageProps> = React.memo(({ message }) => {
-  const {
-    retryMessage,
-    editMessage,
-    editingMessageId,
-    setEditMessageId,
-    status,
-  } = useChatStore();
-  const isUser = message.sender === "user";
-
-  const isEditing = editingMessageId === message.id;
-  const isLoading = status === "loading";
+  // Local state for editing
+  const [isEditing, setIsEditing] = React.useState(false);
+  const isUser = message.role === "user";
 
   const handleCopy = useCallback(async () => {
-    await navigator.clipboard.writeText(message.content);
+    // Convert content elements to text
+    const contentText = message.content
+      .map((item) => {
+        if (item.type === "text") {
+          return (item as TextElement).value || "";
+        }
+        if (item.type === "code") {
+          return `\`\`\`${(item as CodeElement).language || ""}\n${(item as CodeElement).value || ""}\n\`\`\``;
+        }
+        return JSON.stringify(item);
+      })
+      .join("\n");
+
+    await navigator.clipboard.writeText(contentText);
     showToast.success("Message copied to clipboard");
   }, [message.content]);
 
   const handleRetry = useCallback(() => {
-    retryMessage(message.id);
-  }, [message.id, retryMessage]);
+    // Placeholder for retry functionality
+    showToast.info("Retry functionality not yet implemented");
+  }, []);
 
   const handleEdit = useCallback(() => {
-    setEditMessageId(message.id);
-  }, [message.id, setEditMessageId]);
+    setIsEditing(true);
+  }, []);
 
-  const handleSaveEdit = useCallback(
-    async (editedContent: string) => {
-      if (editedContent.trim() !== message.content) {
-        try {
-          await editMessage(message.id, editedContent);
-        } catch {
-          return;
-        }
-      }
-      setEditMessageId(null);
-    },
-    [message.id, message.content, editMessage, setEditMessageId]
-  );
+  const handleSaveEdit = useCallback(() => {
+    // Placeholder for edit functionality
+    showToast.info("Edit functionality not yet implemented");
+    setIsEditing(false);
+  }, []);
 
   const handleCancelEdit = useCallback(() => {
-    setEditMessageId(null);
-  }, [setEditMessageId]);
+    setIsEditing(false);
+  }, []);
+
+  // Helper to get displayable content
+  const getDisplayContent = useCallback(() => {
+    return message.content
+      .map((item) => {
+        if (item.type === "text") {
+          return (item as TextElement).value || "";
+        }
+        if (item.type === "code") {
+          return `\`\`\`${(item as CodeElement).language || ""}\n${(item as CodeElement).value || ""}\n\`\`\``;
+        }
+        return JSON.stringify(item);
+      })
+      .join("\n");
+  }, [message.content]);
 
   return (
     <div
@@ -72,17 +84,24 @@ export const Message: React.FC<MessageProps> = React.memo(({ message }) => {
           isEditing && "w-full"
         )}
       >
-        {!isUser ? (
-          <Avatar className="w-8 h-8 bg-blue-500 flex items-center justify-center">
-            <AvatarFallback>
+        <Avatar
+          className={cn(
+            "w-8 h-8 flex items-center justify-center",
+            isUser ? "bg-green-500" : "bg-blue-500"
+          )}
+        >
+          <AvatarFallback>
+            {isUser ? (
+              <UserIcon className="h-4 w-4" />
+            ) : (
               <BotIcon className="h-4 w-4" />
-            </AvatarFallback>
-          </Avatar>
-        ) : null}
+            )}
+          </AvatarFallback>
+        </Avatar>
         <div className="flex flex-col gap-2 flex-1 overflow-x-auto">
           {isEditing ? (
             <EditMessage
-              content={message.content}
+              content={getDisplayContent()}
               onSave={handleSaveEdit}
               onCancel={handleCancelEdit}
             />
@@ -90,14 +109,19 @@ export const Message: React.FC<MessageProps> = React.memo(({ message }) => {
             <div
               className={cn(
                 "rounded-lg p-3 min-w-20 shadow-2xs",
-                "bg-gray-50 dark:bg-secondary"
+                isUser
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-gray-50 dark:bg-secondary"
               )}
             >
               <Markdown
-                content={message.content}
-                className={cn("prose-sm max-w-none")}
+                content={getDisplayContent()}
+                className={cn(
+                  "prose-sm max-w-none",
+                  isUser && "text-primary-foreground"
+                )}
               />
-              {message.status === "error" && (
+              {message.status === "failed" && (
                 <p className="text-xs text-red-400 dark:text-red-300 mt-1">
                   Failed to send message. Please try again.
                 </p>
@@ -114,7 +138,7 @@ export const Message: React.FC<MessageProps> = React.memo(({ message }) => {
               onCopy={handleCopy}
               className="h-8 w-8 p-0 hover:bg-gray-100 dark:hover:bg-gray-800"
             />
-            {isUser && !isEditing && !isLoading && (
+            {isUser && !isEditing && (
               <Button
                 variant="ghost"
                 size="sm"
@@ -124,7 +148,7 @@ export const Message: React.FC<MessageProps> = React.memo(({ message }) => {
                 <Edit2 className="h-4 w-4" />
               </Button>
             )}
-            {!isUser && !isLoading && (
+            {!isUser && (
               <Button
                 variant="ghost"
                 size="sm"

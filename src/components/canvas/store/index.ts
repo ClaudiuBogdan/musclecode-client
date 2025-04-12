@@ -97,6 +97,10 @@ export const useChatStore = create<ChatStore>()(
             currentSessionId,
             isLoading: false,
           });
+
+          if (!currentSessionId) {
+            await get().createSession("New Chat");
+          }
         } catch (error) {
           console.error("Failed to load initial state:", error);
           set({
@@ -219,54 +223,42 @@ export const useChatStore = create<ChatStore>()(
         }
       },
 
-      addMessage: async (sessionId, messageData) => {
-        const tempId = uuidv4();
-        const session = get().sessions[sessionId];
+      addMessage: async (messageData) => {
+        const messageId = uuidv4();
+        const threadId = messageData.threadId;
+        const session = get().sessions[threadId];
 
         if (!session) {
-          console.error(`Session ${sessionId} not found for adding message.`);
-          set({ error: new Error(`Session ${sessionId} not found`) });
+          console.error(`Session ${threadId} not found for adding message.`);
+          set({ error: new Error(`Session ${threadId} not found`) });
           return;
         }
 
-        const tempMessage: ChatMessage = {
-          id: tempId,
+        const message: ChatMessage = {
+          id: messageId,
           role: "user", // Explicitly user role
-          content: messageData.content, // Assume messageData.content is already ContentElement[]
           createdAt: new Date().toISOString(),
           status: "in_progress" as MessageStatus,
-          // Spread other fields from messageData if needed (e.g., metadata)
-          ...(messageData as Partial<ChatMessage>), // Cast carefully
+          ...messageData,
         };
 
         // Optimistic Add
-        get()._addOrUpdateMessage(sessionId, tempMessage);
+        get()._addOrUpdateMessage(message);
 
         try {
           // Send to backend - API expects content etc.
-          const backendPayload = {
-            content: messageData.content,
-            // Include other relevant fields from messageData for the API
-            ...(messageData as Partial<ChatMessage>),
-          };
-          const sentMessage = await api.sendMessageAPI(
-            sessionId,
-            backendPayload
-          );
+          const sentMessage = await api.sendMessageAPI(message);
 
           // Ensure backend response has necessary fields
           sentMessage.status = "completed"; // Set status on successful return
 
           // Update the temporary message with the final one from backend
-          get()._addOrUpdateMessage(sessionId, sentMessage, tempId);
+          get()._addOrUpdateMessage(sentMessage);
         } catch (error) {
           console.error("Failed to send message:", error);
 
           // Update optimistic message to failed status
-          get()._addOrUpdateMessage(sessionId, {
-            ...tempMessage, // Use the original temp message data
-            status: "failed",
-          });
+          get()._addOrUpdateMessage(message, messageId);
 
           set({
             error:
@@ -330,9 +322,10 @@ export const useChatStore = create<ChatStore>()(
 
       // --- Internal Helper Implementations ---
 
-      _addOrUpdateMessage: (sessionId, message, replaceTempId = undefined) => {
+      _addOrUpdateMessage: (message, replaceTempId = undefined) => {
         set((state) => {
-          const session = state.sessions[sessionId];
+          const threadId = message.threadId;
+          const session = state.sessions[threadId];
           if (!session) return;
 
           let messageIndex = -1;

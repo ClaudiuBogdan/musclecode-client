@@ -1,48 +1,53 @@
-import React, { useRef, useCallback } from "react";
+import React, { useRef, useCallback, useState } from "react";
 import { ArrowUp, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import useChatStore from "@/stores/chat";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 import { StopButton } from "./StopButton";
-import { getAlgorithmContext } from "@/utils/getAlgorithmContext";
+import { useChatStore } from "../store";
+import { TextElement } from "../types";
 
 interface MessageInputProps {
   className?: string;
 }
 
 export const MessageInput: React.FC<MessageInputProps> = ({ className }) => {
-  const {
-    sendMessage,
-    status,
-    inputMessage,
-    activeAlgorithmId,
-    updateInputMessage,
-    stopStreaming,
-  } = useChatStore();
+  const { currentSessionId, addMessage } = useChatStore();
+  const [inputMessage, setInputMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const inputContainerRef = useRef<HTMLDivElement>(null);
 
   const newMessageContent = inputMessage.trim();
-  const canSend = newMessageContent.length > 0 && status === "idle";
+  const canSend =
+    newMessageContent.length > 0 && !isLoading && currentSessionId;
 
   // Execute commands and send message
   const handleSubmit = useCallback(
     async (e: React.FormEvent) => {
       e.preventDefault();
       if (canSend) {
-        // Send message
+        setIsLoading(true);
+
         try {
-          await sendMessage({
-            message: newMessageContent,
-            commands: [],
-            context: activeAlgorithmId
-              ? getAlgorithmContext(activeAlgorithmId)
-              : undefined,
+          // Create a text content element
+          await addMessage({
+            content: [
+              {
+                type: "text",
+                value: newMessageContent,
+              } as TextElement,
+            ],
+            threadId: currentSessionId!,
           });
+
+          // Clear the input
+          setInputMessage("");
         } catch (error) {
           console.error("Failed to send message:", error);
+        } finally {
+          setIsLoading(false);
         }
 
         // Reset textarea height
@@ -51,14 +56,14 @@ export const MessageInput: React.FC<MessageInputProps> = ({ className }) => {
         }
       }
     },
-    [canSend, newMessageContent, sendMessage, activeAlgorithmId]
+    [canSend, newMessageContent, addMessage, currentSessionId]
   );
 
   // Handle input changes
   const handleInput = useCallback(
     (e: React.ChangeEvent<HTMLTextAreaElement>) => {
       const value = e.target.value;
-      updateInputMessage(value);
+      setInputMessage(value);
 
       // Adjust textarea height
       if (textareaRef.current) {
@@ -66,13 +71,19 @@ export const MessageInput: React.FC<MessageInputProps> = ({ className }) => {
         textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
       }
     },
-    [updateInputMessage]
+    []
   );
+
+  const handleStopStreaming = useCallback(() => {
+    // Would need to implement stop streaming functionality with the new chat store
+    console.log("Stop streaming not implemented yet");
+    setIsLoading(false);
+  }, []);
 
   return (
     <form onSubmit={handleSubmit} className={cn("relative p-4", className)}>
       <AnimatePresence>
-        {status === "loading" && <StopButton onStop={stopStreaming} />}
+        {isLoading && <StopButton onStop={handleStopStreaming} />}
       </AnimatePresence>
 
       <div
@@ -86,7 +97,7 @@ export const MessageInput: React.FC<MessageInputProps> = ({ className }) => {
             value={inputMessage}
             onChange={handleInput}
             autoFocus={true}
-            placeholder="Type a message or use / for commands..."
+            placeholder="Type a message..."
             className="w-full min-h-[40px] max-h-[120px] bg-transparent border-0 focus:ring-0 focus:outline-hidden resize-none overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600 py-2 pl-3 pr-10 text-gray-900 dark:text-gray-100"
             maxLength={3000}
             style={{
@@ -123,7 +134,7 @@ export const MessageInput: React.FC<MessageInputProps> = ({ className }) => {
           )}
 
           {/* Loading indicator */}
-          {status === "loading" && (
+          {isLoading && (
             <motion.div
               initial={{ scale: 0, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}

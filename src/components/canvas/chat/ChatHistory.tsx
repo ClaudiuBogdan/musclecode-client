@@ -10,47 +10,72 @@ import {
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Thread } from "@/types/chat";
+import { useChatStore } from "../store";
+import { ChatSession, TextElement } from "../types";
 import { formatRelativeTime } from "@/lib/dateUtils";
+import { cn } from "@/lib/utils";
 
 interface ChatHistoryProps {
-  threads: Thread[];
-  onSelectThread: (threadId: string) => void;
+  className?: string;
 }
 
-export const ChatHistory: React.FC<ChatHistoryProps> = ({
-  threads,
-  onSelectThread,
-}) => {
-  const validThreads = useMemo(
-    () =>
-      threads
-        .filter((thread) => thread.messages.length > 0)
-        .sort((a, b) => b.createdAt - a.createdAt),
-    [threads]
-  );
+export const ChatHistory: React.FC<ChatHistoryProps> = ({ className }) => {
+  const { sessions, switchSession, currentSessionId } = useChatStore();
 
-  const getThreadContent = (thread: Thread) => {
-    const messages = thread.messages;
-    const title = messages[0]?.content || "New Conversation";
+  const validSessions = useMemo(() => {
+    return Object.values(sessions)
+      .filter((session) => session.messages.length > 0)
+      .sort(
+        (a, b) =>
+          new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+      );
+  }, [sessions]);
+
+  const getSessionContent = useCallback((session: ChatSession) => {
+    const messages = session.messages;
+    let title = "New Conversation";
     let preview = "";
 
-    // Get preview from second message if it exists, otherwise use empty string
-    if (messages.length > 1) {
-      preview =
-        messages[1].content.length > 100
-          ? `${messages[1].content.substring(0, 100)}...`
-          : messages[1].content;
+    // Try to extract title from first user message
+    const firstUserMessage = messages.find((m) => m.role === "user");
+    if (firstUserMessage) {
+      const textContent = firstUserMessage.content
+        .filter((item) => item.type === "text")
+        .map((item) => (item as TextElement).value)
+        .join(" ");
+
+      title = textContent || title;
+
+      // Truncate if too long
+      if (title.length > 50) {
+        title = `${title.substring(0, 47)}...`;
+      }
     }
 
-    return { title: title.substring(0, 50), preview };
-  };
+    // Get preview from first assistant message if it exists
+    const firstAssistantMessage = messages.find((m) => m.role === "assistant");
+    if (firstAssistantMessage) {
+      const textContent = firstAssistantMessage.content
+        .filter((item) => item.type === "text")
+        .map((item) => (item as TextElement).value)
+        .join(" ");
 
-  const memoizedOnSelectThread = useCallback(
-    (threadId: string) => {
-      onSelectThread(threadId);
+      preview = textContent || "";
+
+      // Truncate if too long
+      if (preview.length > 100) {
+        preview = `${preview.substring(0, 97)}...`;
+      }
+    }
+
+    return { title, preview };
+  }, []);
+
+  const handleSelectSession = useCallback(
+    (sessionId: string) => {
+      switchSession(sessionId);
     },
-    [onSelectThread]
+    [switchSession]
   );
 
   return (
@@ -59,7 +84,10 @@ export const ChatHistory: React.FC<ChatHistoryProps> = ({
         <Button
           variant="ghost"
           size="sm"
-          className="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white"
+          className={cn(
+            "text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white",
+            className
+          )}
         >
           <Clock className="h-5 w-5 mr-1" />
           History
@@ -70,26 +98,33 @@ export const ChatHistory: React.FC<ChatHistoryProps> = ({
         <DropdownMenuLabel className="flex justify-between items-center">
           <span>Chat History</span>
           <span className="text-xs text-gray-500">
-            {validThreads.length} conversations
+            {validSessions.length} conversations
           </span>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <ScrollArea className="h-[400px]">
-          {validThreads.length > 0 ? (
-            validThreads.map((thread) => {
-              const { title, preview } = getThreadContent(thread);
+          {validSessions.length > 0 ? (
+            validSessions.map((session) => {
+              const { title, preview } = getSessionContent(session);
+              const isActive = session.id === currentSessionId;
+
               return (
                 <DropdownMenuItem
-                  key={thread.id}
-                  onSelect={() => memoizedOnSelectThread(thread.id)}
-                  className="flex flex-col items-start p-3 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer border-b border-gray-100 dark:border-gray-700 last:border-0"
+                  key={session.id}
+                  onSelect={() => handleSelectSession(session.id)}
+                  className={cn(
+                    "flex flex-col items-start p-3 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer border-b border-gray-100 dark:border-gray-700 last:border-0",
+                    isActive && "bg-gray-100 dark:bg-gray-800"
+                  )}
                 >
                   <div className="flex items-center justify-between w-full mb-1">
                     <span className="text-sm font-medium text-gray-900 dark:text-gray-100 line-clamp-1">
                       {title}
                     </span>
                     <span className="text-xs text-gray-500 dark:text-gray-400 whitespace-nowrap ml-2">
-                      {formatRelativeTime(thread.createdAt)}
+                      {formatRelativeTime(
+                        new Date(session.createdAt).getTime()
+                      )}
                     </span>
                   </div>
                   {preview && (
@@ -98,7 +133,7 @@ export const ChatHistory: React.FC<ChatHistoryProps> = ({
                         {preview}
                       </p>
                       <span className="text-xs text-gray-500 dark:text-gray-400 ml-2 whitespace-nowrap">
-                        {thread.messages.length} msgs
+                        {session.messages.length} msgs
                       </span>
                     </div>
                   )}

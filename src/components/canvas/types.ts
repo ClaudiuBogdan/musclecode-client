@@ -338,9 +338,7 @@ export interface ChatMessage {
   /** ID of the message this one is related to (e.g., a tool result message replying to a tool call message, or user interaction replying to assistant message). */
   parentId?: string;
   /** Optional ID for grouping related messages in a logical sub-thread or step (e.g., all messages related to one complex agent task). */
-  threadId?: string;
-  /** Optional ID linking the message to a specific agent/tool execution run. */
-  runId?: string;
+  threadId: string;
 
   // --- Standardized Optional Metadata ---
   /** End-to-end latency in milliseconds for generating the message (if applicable, e.g., for 'assistant' role). */
@@ -382,9 +380,17 @@ export interface ChatSession {
   /** Ordered list of messages constituting the conversation. */
   messages: ChatMessage[];
   /** Metadata associated with the entire session (e.g., user ID, session settings). */
-  metadata?: Record<string, unknown>;
+  metadata?: ChatSessionMetadata;
   /** Context references attached to the session. */
   attachedContext?: ContextReference[];
   /** Timestamp of the last message sync with the backend. */
   lastMessagesSyncAt?: string;
+}
+
+export interface ChatSessionMetadata {
+  /** The user ID associated with the session. */
+  userId: string;
+
+  /** The content ID associated with the session. */
+  contentNodeId?: string;
 }

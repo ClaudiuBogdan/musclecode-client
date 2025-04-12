@@ -63,7 +63,7 @@ export const EditMessage: React.FC<EditMessageProps> = React.memo(
             placeholder="Edit your message..."
             aria-label="Edit message"
           />
-          <div className="flex justify-end gap-2  bg-blue-50 dark:bg-gray-700 p-2 rounded-b-lg">
+          <div className="flex justify-end gap-2 bg-blue-50 dark:bg-gray-700 p-2 rounded-b-lg">
             <Button
               variant="ghost"
               size="sm"
