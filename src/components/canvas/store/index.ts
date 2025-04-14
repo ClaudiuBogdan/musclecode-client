@@ -148,13 +148,13 @@ export const useChatStore = create<ChatStore>()(
           role: "user",
           content,
           createdAt: new Date().toISOString(),
-          status: "in_progress",
+          status: "completed",
           parentId,
           metadata,
         };
 
         const responseMessage: ChatMessage = {
-          id: messageId,
+          id: uuidv4(),
           threadId,
           content: [],
           parentId: messageId,
@@ -167,25 +167,10 @@ export const useChatStore = create<ChatStore>()(
         get()._addOrUpdateMessage(responseMessage);
 
         try {
-          const payload = {
-            id: messageId,
-            threadId,
-            content,
-            parentId,
-          };
-
           const sentMessage = await api.sendMessageAPI(
-            payload,
+            optimisticMessage,
             responseMessage
           );
-
-          get()._addOrUpdateMessage({
-            ...optimisticMessage,
-            status: "completed",
-          });
-
-          get()._addOrUpdateMessage(sentMessage);
-
           if (sentMessage) {
             const assistantMessage: ChatMessage = {
               ...sentMessage,
@@ -196,7 +181,7 @@ export const useChatStore = create<ChatStore>()(
           console.error("Failed to send message:", error);
 
           get()._addOrUpdateMessage({
-            ...optimisticMessage,
+            ...responseMessage,
             status: "failed",
           });
 

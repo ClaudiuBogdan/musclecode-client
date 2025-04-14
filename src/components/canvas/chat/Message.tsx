@@ -121,6 +121,11 @@ export const Message: React.FC<MessageProps> = React.memo(({ message }) => {
                   isUser && "text-primary-foreground"
                 )}
               />
+              {message.status === "in_progress" && (
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                  Generating...
+                </p>
+              )}
               {message.status === "failed" && (
                 <p className="text-xs text-red-400 dark:text-red-300 mt-1">
                   Failed to send message. Please try again.

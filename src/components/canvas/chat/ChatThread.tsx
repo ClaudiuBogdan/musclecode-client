@@ -14,7 +14,7 @@ import { Button } from "@/components/ui/button";
 import { EmptyState } from "./EmptyState";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { useChatStore } from "../store";
-import { ChatMessage, TextElement, ChatThread as ThreadType } from "../types";
+import { ChatThread as ThreadType } from "../types";
 
 interface ChatThreadProps {
   className?: string;
@@ -99,21 +99,6 @@ export const ChatThread: React.FC<ChatThreadProps> = ({ className }) => {
   // Memoize empty state to prevent unnecessary re-renders
   const emptyState = useMemo(() => <EmptyState />, []);
 
-  // Helper to check if a message should be hidden
-  const isMessageEmpty = useCallback((message: ChatMessage) => {
-    if (!message.content || message.content.length === 0) return true;
-
-    // For text content, check if all text elements are empty
-    const hasContent = message.content.some((item) => {
-      if (item.type === "text") {
-        return (item as TextElement).value?.trim().length > 0;
-      }
-      return true; // Non-text elements are considered non-empty
-    });
-
-    return !hasContent;
-  }, []);
-
   return (
     <div className={cn("relative flex flex-col h-full", className)}>
       {messages.length === 0 ? (
@@ -136,7 +121,6 @@ export const ChatThread: React.FC<ChatThreadProps> = ({ className }) => {
                 key={messages[virtualItem.index].id}
                 data-index={virtualItem.index}
                 ref={virtualizer.measureElement}
-                hidden={isMessageEmpty(messages[virtualItem.index])}
                 style={{
                   position: "absolute",
                   top: 0,
