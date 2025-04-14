@@ -1,7 +1,6 @@
 import {
-  CanvasContext,
   ContextReference,
-  KeyValueContextElement,
+  KeyValueContextBlock,
   PromptReferenceContext,
 } from "../types";
 
@@ -17,18 +16,8 @@ const promptContext: PromptReferenceContext = {
   unique: true,
 };
 
-const canvasContext: CanvasContext = {
-  id: "2",
-  type: "canvas",
-  canvas: {
-    id: "2",
-    name: "Canvas 2",
-    description: "Canvas 2 description",
-  },
-};
-
 // Difficulty section
-const difficultyContext: KeyValueContextElement = {
+const difficultyContext: KeyValueContextBlock = {
   id: "3",
   type: "key_value",
   title: "Difficulty",
@@ -43,7 +32,7 @@ const difficultyContext: KeyValueContextElement = {
 };
 
 // Language section
-const languageContext: KeyValueContextElement = {
+const languageContext: KeyValueContextBlock = {
   id: "4",
   type: "key_value",
   title: "Language",
@@ -58,7 +47,7 @@ const languageContext: KeyValueContextElement = {
 };
 
 // Mode section
-const modeContext: KeyValueContextElement = {
+const modeContext: KeyValueContextBlock = {
   id: "5",
   type: "key_value",
   title: "Mode",
@@ -75,7 +64,6 @@ const modeContext: KeyValueContextElement = {
 // Collection of available context options
 export const contextOptions: ContextReference[] = [
   promptContext,
-  canvasContext,
   difficultyContext,
   languageContext,
   modeContext,
@@ -86,8 +74,8 @@ export const getContextDisplayName = (context: ContextReference): string => {
   switch (context.type) {
     case "prompt":
       return context.prompt.name;
-    case "canvas":
-      return context.canvas.name;
+    case "graph_node":
+      return context.graph_node.id;
     case "key_value":
       return `${context.key_value.key}:${context.key_value.value}`;
   }
@@ -100,8 +88,6 @@ export const getContextDescription = (
   switch (context.type) {
     case "prompt":
       return context.prompt.description;
-    case "canvas":
-      return context.canvas.description;
     case "key_value":
       return context.key_value.description;
   }
@@ -125,9 +111,9 @@ export const getContextKind = (context: ContextReference): string => {
 
 // Helper to update value for key-value context
 export const updateKeyValueContextValue = (
-  context: KeyValueContextElement,
+  context: KeyValueContextBlock,
   newValue: string
-): KeyValueContextElement => {
+): KeyValueContextBlock => {
   return {
     ...context,
     key_value: {

@@ -1,9 +1,8 @@
 import {
   ChatMessage,
   ChatThread,
-  ContentElement,
+  ContentBlock,
   ContextReference,
-  ChatThreadMetadata,
 } from "../types";
 
 // Define the extended message statuses
@@ -45,12 +44,11 @@ export interface CreateThreadPayload {
   // Renamed from CreateSessionPayload
   title?: string;
   attachedContext?: ContextReference[];
-  metadata: ChatThreadMetadata;
 }
 
 export interface SendMessagePayload {
   threadId: string;
-  content: ContentElement[];
+  content: ContentBlock[];
   parentId?: string;
   // attachedContext?: ContextReference[]; // If needed by API
 }

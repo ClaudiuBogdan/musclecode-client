@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useChatStore } from "../store";
-import { ChatThread, TextElement } from "../types";
+import { ChatThread, TextBlock } from "../types";
 import { formatRelativeTime } from "@/lib/dateUtils";
 import { cn } from "@/lib/utils";
 
@@ -62,7 +62,7 @@ export const ChatHistory: React.FC<ChatHistoryProps> = ({
     if (firstUserMessage) {
       const textContent = firstUserMessage.content
         .filter((item) => item.type === "text")
-        .map((item) => (item as TextElement).value)
+        .map((item) => (item as TextBlock).text)
         .join(" ");
 
       title = textContent || title;
@@ -78,7 +78,7 @@ export const ChatHistory: React.FC<ChatHistoryProps> = ({
     if (firstAssistantMessage) {
       const textContent = firstAssistantMessage.content
         .filter((item) => item.type === "text")
-        .map((item) => (item as TextElement).value)
+        .map((item) => (item as TextBlock).text)
         .join(" ");
 
       preview = textContent || "";

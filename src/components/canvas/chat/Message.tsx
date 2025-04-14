@@ -7,7 +7,7 @@ import { showToast } from "@/utils/toast";
 import { EditMessage } from "./EditMessage";
 import { Markdown } from "@/components/ui/markdown";
 import { CopyButton } from "@/components/ui/copy-button";
-import { ChatMessage, TextElement, CodeElement } from "../types";
+import { ChatMessage, TextBlock } from "../types";
 
 interface MessageProps {
   message: ChatMessage;
@@ -23,10 +23,7 @@ export const Message: React.FC<MessageProps> = React.memo(({ message }) => {
     const contentText = message.content
       .map((item) => {
         if (item.type === "text") {
-          return (item as TextElement).value || "";
-        }
-        if (item.type === "code") {
-          return `\`\`\`${(item as CodeElement).language || ""}\n${(item as CodeElement).value || ""}\n\`\`\``;
+          return (item as TextBlock).text || "";
         }
         return JSON.stringify(item);
       })
@@ -60,10 +57,7 @@ export const Message: React.FC<MessageProps> = React.memo(({ message }) => {
     return message.content
       .map((item) => {
         if (item.type === "text") {
-          return (item as TextElement).value || "";
-        }
-        if (item.type === "code") {
-          return `\`\`\`${(item as CodeElement).language || ""}\n${(item as CodeElement).value || ""}\n\`\`\``;
+          return (item as TextBlock).text || "";
         }
         return JSON.stringify(item);
       })

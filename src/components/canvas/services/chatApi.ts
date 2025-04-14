@@ -1,10 +1,10 @@
 import { apiClient } from "@/lib/api/client";
-import { ChatMessage, ContentElement } from "../types"; // Adjust path as needed
+import { ChatMessage, ContentBlock } from "../types"; // Adjust path as needed
 
 // Define the expected payload structure for sending a message
 // This reflects the 'backendPayload' created in the store's addMessage
 interface MessagePayload {
-  content: ContentElement[];
+  content: ContentBlock[];
   // Include other fields the backend expects when sending a message
   // For example: parentId, threadId, runId, specific metadata
   metadata?: Record<string, unknown>;

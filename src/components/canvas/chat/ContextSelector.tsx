@@ -15,7 +15,7 @@ import {
   updateKeyValueContextValue,
   shouldReplaceContext,
 } from "./types";
-import { ContextReference, KeyValueContextElement } from "../types";
+import { ContextReference, KeyValueContextBlock } from "../types";
 
 export interface ContextSelectorProps {
   /** Currently selected contexts */
@@ -119,7 +119,7 @@ export const ContextSelector: React.FC<ContextSelectorProps> = ({
    * Updates a KeyValueContextElement with a new value.
    */
   const updateKeyValueContext = useCallback(
-    (context: KeyValueContextElement, newValue: string) => {
+    (context: KeyValueContextBlock, newValue: string) => {
       const updatedContext = updateKeyValueContextValue(context, newValue);
       onContextsChange(
         selectedContexts.map((ctx) =>
@@ -155,14 +155,14 @@ export const ContextSelector: React.FC<ContextSelectorProps> = ({
   );
 
   const handleSelectOption = useCallback(
-    (context: KeyValueContextElement, option: string) => {
+    (context: KeyValueContextBlock, option: string) => {
       updateKeyValueContext(context, option);
     },
     [updateKeyValueContext]
   );
 
   const handleCustomValueSubmit = useCallback(
-    (context: KeyValueContextElement) => {
+    (context: KeyValueContextBlock) => {
       if (customValueInput.trim()) {
         updateKeyValueContext(context, customValueInput.trim());
       }
@@ -173,7 +173,7 @@ export const ContextSelector: React.FC<ContextSelectorProps> = ({
   const handleCustomInputKeyDown = useCallback(
     (
       e: React.KeyboardEvent<HTMLInputElement>,
-      context: KeyValueContextElement
+      context: KeyValueContextBlock
     ) => {
       if (e.key === "Enter") {
         e.preventDefault();
@@ -438,7 +438,7 @@ export const ContextSelector: React.FC<ContextSelectorProps> = ({
   );
 
   /** Renders the dropdown menu for a key-value context item */
-  const renderKeyValueDropdown = (context: KeyValueContextElement) => {
+  const renderKeyValueDropdown = (context: KeyValueContextBlock) => {
     const allowCustomValue = context.key_value.customValue === true;
     return (
       <div className="absolute top-full left-0 mt-1 w-40 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-md shadow-lg z-20">
@@ -496,7 +496,7 @@ export const ContextSelector: React.FC<ContextSelectorProps> = ({
         {selectedContexts.map((context) => {
           const isKeyValue = context.type === "key_value";
           const keyValueContext = isKeyValue
-            ? (context as KeyValueContextElement)
+            ? (context as KeyValueContextBlock)
             : null;
           const hasOptions = !!keyValueContext?.key_value.options?.length;
           const isDropdownOpen = activeDropdownContextId === context.id;

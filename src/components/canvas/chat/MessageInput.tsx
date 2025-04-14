@@ -5,7 +5,6 @@ import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 import { StopButton } from "./StopButton";
 import { useChatStore } from "../store";
-import { TextElement } from "../types";
 
 interface MessageInputProps {
   className?: string;
@@ -35,8 +34,8 @@ export const MessageInput: React.FC<MessageInputProps> = ({ className }) => {
             content: [
               {
                 type: "text",
-                value: newMessageContent,
-              } as TextElement,
+                text: newMessageContent,
+              },
             ],
             threadId: currentThreadId!,
           });

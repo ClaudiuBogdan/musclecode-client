@@ -67,8 +67,6 @@ export const useChatStore = create<ChatStore>()(
 
       createThread: async (title, context) => {
         try {
-          // TODO: get user id from auth store
-          const userId = "placeholder-user-id";
           const threadId = uuidv4();
 
           // Create a new thread locally without calling the API
@@ -79,7 +77,6 @@ export const useChatStore = create<ChatStore>()(
             updatedAt: new Date().toISOString(),
             messages: [],
             attachedContext: context || [],
-            metadata: { userId },
           };
 
           set((state) => {
