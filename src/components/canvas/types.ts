@@ -195,13 +195,7 @@ export interface ChatMessage {
     totalTokens?: number;
   };
   /** Reason the message generation finished (e.g., 'stop' sequence, max length reached, tool calls needed). */
-  finishReason?:
-    | "stop"
-    | "length"
-    | "tool_calls"
-    | "content_filter"
-    | "error"
-    | null;
+  finishReason?: string | null; // Allow any string or null
 
   // --- Custom Metadata ---
   /** Generic property bag for any additional custom data associated with the message. */

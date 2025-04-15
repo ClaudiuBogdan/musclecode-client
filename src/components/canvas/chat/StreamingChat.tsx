@@ -30,6 +30,8 @@ function StreamingChatDisplay() {
   // State for the message being managed by the reconstructor
   // The UI will update based on this state variable when the reconstructor calls onMessageUpdate
   const [message, setMessage] = useState<ChatMessage | null>(null);
+  // **** NEW: State for the current JSON assembly buffers ****
+  const [buffers, setBuffers] = useState<Map<number, string>>(new Map());
 
   const [status, setStatus] = useState<ConnectionStatus>("idle");
   const [error, setError] = useState<string | null>(null);
@@ -46,22 +48,36 @@ function StreamingChatDisplay() {
   // These update the component's UI state (`message`, `status`, `error`)
 
   const handleMessageUpdate = useCallback(
-    (updatedMessage: ChatMessage | null) => {
+    // Accept buffers map from parser
+    (
+      updatedMessage: ChatMessage | null,
+      updatedBuffers?: Map<number, string>
+    ) => {
       console.log(
         // Log from component's perspective
         "COMPONENT handleMessageUpdate CALLED",
         updatedMessage?.id,
         updatedMessage?.status,
-        updatedMessage?.content?.length
+        updatedMessage?.content?.length,
+        "Buffer keys:",
+        updatedBuffers ? Array.from(updatedBuffers.keys()) : "N/A" // Log buffer keys
       );
-      setMessage(updatedMessage); // Update the state variable that the UI renders
+      setMessage(updatedMessage); // Update the message state
+
+      // **** Update buffer state ****
+      if (updatedBuffers) {
+        setBuffers(new Map(updatedBuffers)); // Store a copy of the buffers map
+      } else if (!updatedMessage) {
+        setBuffers(new Map()); // Reset buffers if message is reset
+      }
+
       if (updatedMessage && status !== "completed") {
         setStatus(
           (prev) =>
             prev === "open" || prev === "streaming" ? "streaming" : prev // Keep streaming status
         );
       } else if (!updatedMessage) {
-        // Handle reset case if needed
+        // Handle reset case if needed (buffers already reset above)
       }
     },
     [status] // Depend on status to avoid stale closures if logic used it heavily
@@ -188,6 +204,7 @@ function StreamingChatDisplay() {
     setStatus("connecting");
     setError(null);
     setMessage(null); // Clear previous UI message state
+    setBuffers(new Map()); // **** Clear buffers state on new connection ****
     reconstructorRef.current?.resetState(); // Reset reconstructor's internal state
 
     // Prepare payload for the POST request (if needed by backend to trigger stream)
@@ -252,6 +269,9 @@ function StreamingChatDisplay() {
   // --- Rendering Logic (Uses `message` state updated by the reconstructor) ---
   const renderContentBlock = (block: ContentBlock, index: number) => {
     console.log(`COMPONENT rendering block index ${index}, type ${block.type}`); // Log render
+    const currentBuffer = buffers.get(index); // Get buffer for this block index
+    const isStreaming = !block.stop_timestamp; // Check if the block is still streaming
+
     switch (block.type) {
       case "text": {
         const textBlock = block as TextBlock;
@@ -274,12 +294,18 @@ function StreamingChatDisplay() {
       }
       case "tool_use": {
         const toolUse = block as ToolUseContentBlock;
+        // Display buffer content if streaming and buffer exists, otherwise display final input
         const inputDisplay =
-          typeof toolUse.input === "object" && toolUse.input // check not null
-            ? JSON.stringify(toolUse.input, null, 2)
-            : String(toolUse.input ?? ""); // Handle null/undefined input
-        // More robust check for processing state
-        const isProcessingInput = !toolUse.stop_timestamp && !toolUse.input;
+          isStreaming && currentBuffer !== undefined
+            ? currentBuffer // Show raw buffer content while streaming
+            : typeof toolUse.input === "object" && toolUse.input
+              ? JSON.stringify(toolUse.input, null, 2) // Show formatted final JSON
+              : String(toolUse.input ?? ""); // Handle null/undefined/non-object final input
+
+        // Determine if we should show the "(streaming...)" indicator
+        const showStreamingIndicator =
+          isStreaming && currentBuffer === undefined && !toolUse.input;
+
         return (
           <div
             key={toolUse.id || index}
@@ -303,10 +329,12 @@ function StreamingChatDisplay() {
                 padding: "5px",
                 maxHeight: "100px",
                 overflow: "auto",
+                whiteSpace: "pre-wrap", // Allow wrapping of long JSON lines
+                wordBreak: "break-all", // Break long words/strings
               }}
             >
               Input:{" "}
-              {isProcessingInput ? <em>(streaming...)</em> : inputDisplay}
+              {showStreamingIndicator ? <em>(streaming...)</em> : inputDisplay}
             </pre>
             <small style={{ display: "block", color: "grey" }}>
               Block ID: {toolUse.id}
@@ -316,15 +344,21 @@ function StreamingChatDisplay() {
       }
       case "tool_result": {
         const toolResult = block as ToolResultContentBlock;
+        // Display buffer content if streaming and buffer exists, otherwise display final content
         const contentDisplay =
-          typeof toolResult.content === "object" && toolResult.content // check not null
-            ? JSON.stringify(toolResult.content, null, 2)
-            : String(toolResult.content ?? ""); // Handle null/undefined content
-        // More robust check for processing state
-        const isProcessingResult =
-          !toolResult.stop_timestamp &&
+          isStreaming && currentBuffer !== undefined
+            ? currentBuffer // Show raw buffer content while streaming
+            : typeof toolResult.content === "object" && toolResult.content
+              ? JSON.stringify(toolResult.content, null, 2) // Show formatted final JSON
+              : String(toolResult.content ?? ""); // Handle null/undefined/non-object final content
+
+        // Determine if we should show the "(streaming...)" indicator
+        const showStreamingIndicator =
+          isStreaming &&
+          currentBuffer === undefined &&
           !toolResult.content &&
           !toolResult.is_error;
+
         return (
           <div
             key={toolResult.id || index}
@@ -352,10 +386,16 @@ function StreamingChatDisplay() {
                 padding: "5px",
                 maxHeight: "150px",
                 overflow: "auto",
+                whiteSpace: "pre-wrap", // Allow wrapping
+                wordBreak: "break-all", // Break long strings
               }}
             >
               Result:{" "}
-              {isProcessingResult ? <em>(streaming...)</em> : contentDisplay}
+              {showStreamingIndicator ? (
+                <em>(streaming...)</em>
+              ) : (
+                contentDisplay
+              )}
             </pre>
             <small style={{ display: "block", color: "grey" }}>
               Block ID: {toolResult.id}

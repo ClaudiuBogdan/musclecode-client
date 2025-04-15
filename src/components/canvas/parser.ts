@@ -8,7 +8,10 @@ import type {
 
 // Define callbacks provided by the UI component
 export type ReconstructorCallbacks = {
-  onMessageUpdate?: (message: ChatMessage | null) => void;
+  onMessageUpdate?: (
+    message: ChatMessage | null,
+    buffers?: Map<number, string>
+  ) => void;
   onMessageComplete?: (message: ChatMessage) => void;
   // onError is now triggered by external connection errors fed into handleSSEError
   // or internal processing errors
@@ -54,8 +57,8 @@ export function createMessageReconstructor(
     currentMessageState = null;
     jsonAssemblyBuffers = new Map();
     isProcessing = false;
-    // Notify UI that the message state has been reset
-    callbacks.onMessageUpdate?.(null);
+    // Notify UI that the message state has been reset, pass empty buffers
+    callbacks.onMessageUpdate?.(null, new Map());
   };
 
   // --- Helper: Calculate Next State (Keep this logic the same) ---
@@ -258,7 +261,7 @@ export function createMessageReconstructor(
       jsonAssemblyBuffers = nextState.buffers; // **** CRUCIAL: Update closure buffers ****
 
       // --- Handle Side Effects Based on Event AFTER State Update ---
-      // ... (Simplified callback trigger logic from previous answer - KEEP THIS) ...
+      // Pass the current buffer state along with the message state
       if (
         event.type !== "ping" &&
         currentMessageState !== previousMessageStateForComparison
@@ -267,11 +270,14 @@ export function createMessageReconstructor(
           // Added detailed log
           `Calling onMessageUpdate - Event: ${event.type}, New Message ID: ${currentMessageState?.id}, Content Length: ${currentMessageState?.content?.length}`
         );
-        callbacks.onMessageUpdate?.(currentMessageState);
+        // Pass the UPDATED jsonAssemblyBuffers map to the callback
+        callbacks.onMessageUpdate?.(currentMessageState, jsonAssemblyBuffers);
       } else if (event.type !== "ping") {
         console.debug(
           `State reference didn't change for event: ${event.type}. No UI update triggered by default.`
         );
+        // Still pass buffers even if message ref didn't change, as buffers might have
+        callbacks.onMessageUpdate?.(currentMessageState, jsonAssemblyBuffers);
       }
 
       // Handle message completion
@@ -279,7 +285,8 @@ export function createMessageReconstructor(
         // ... (message_stop logic - KEEP THIS) ...
         if (currentMessageState) {
           console.log("Message reconstruction complete (via message_stop).");
-          callbacks.onMessageUpdate?.(currentMessageState);
+          // Pass final message state and potentially empty buffers
+          callbacks.onMessageUpdate?.(currentMessageState, jsonAssemblyBuffers);
           callbacks.onMessageComplete?.(currentMessageState);
         }
         isProcessing = false;
