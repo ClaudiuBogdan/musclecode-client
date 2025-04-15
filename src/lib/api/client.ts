@@ -1,11 +1,16 @@
 // lib/api/client.ts
 import axios from "axios";
+import {
+  fetchEventSource,
+  EventSourceMessage,
+} from "@microsoft/fetch-event-source";
 import { ApiError } from "@/types/api";
 import { getAuthService } from "../auth/auth-service";
 import { env } from "@/config/env";
 import { createLogger } from "../logger";
 import { AuthErrorCode, AuthError } from "../auth/errors";
 import { AppError, createAuthError } from "@/lib/errors/types";
+import { ServerSentEvent } from "@/components/canvas/types";
 
 const logger = createLogger("ApiClient");
 
@@ -327,4 +332,212 @@ function processMessage(
       controller.enqueue(rawContent);
     }
   }
+}
+
+/**
+ * Callbacks for handling SSE events.
+ */
+export interface SSECallbacks {
+  /** Called when the connection is successfully opened. */
+  onOpen?: () => void;
+  /** Called for each message received from the server. */
+  onMessage: (data: ServerSentEvent) => void; // data is typically the parsed JSON from the 'data:' field
+  /** Called when an error occurs (network error, server error during connection). */
+  onError: (error: Error) => void;
+  /** Optional: Called when the connection is closed by the server or explicitly. */
+  onClose?: () => void;
+}
+
+/**
+ * Controller object returned by listenToSSE to manage the connection.
+ */
+export interface SSEController {
+  /** Closes the SSE connection. */
+  disconnect: () => void;
+}
+
+/**
+ * Establishes a connection to a Server-Sent Events (SSE) endpoint
+ * with authentication headers and handles events using callbacks.
+ *
+ * Requires the `@microsoft/fetch-event-source` library.
+ *
+ * @param url The relative or absolute URL of the SSE endpoint.
+ * @param callbacks An object containing onOpen, onMessage, onError, and onClose callbacks.
+ * @param method The HTTP method to use (usually GET for SSE, but POST can be used to trigger).
+ * @param payload Optional data payload for POST requests.
+ * @returns An SSEController object with a `disconnect` method.
+ */
+export function listenToSSE(
+  url: string,
+  callbacks: SSECallbacks,
+  method: "GET" | "POST" = "GET", // Default to GET for standard SSE
+  payload?: Record<string, unknown>
+): SSEController {
+  const { onOpen, onMessage, onError, onClose } = callbacks;
+  const abortController = new AbortController();
+
+  // Use a wrapper function to ensure auth headers are fetched asynchronously
+  const connect = async () => {
+    try {
+      // 1. Get Authentication Headers
+      const authHeaders = await getAuthHeaders();
+
+      // 2. Prepare Headers for fetchEventSource
+      const headers: Record<string, string> = {
+        Accept: "text/event-stream",
+        ...authHeaders, // Include Authorization and X-User-Id
+        ...(method === "POST" &&
+          payload && { "Content-Type": "application/json" }),
+      };
+
+      // 3. Construct Full URL
+      const fullUrl = new URL(url, apiClient.defaults.baseURL).toString();
+      logger.info(`Connecting to SSE endpoint: ${method} ${fullUrl}`);
+
+      // 4. Use fetchEventSource
+      await fetchEventSource(fullUrl, {
+        method: method,
+        headers: headers,
+        body:
+          method === "POST" && payload ? JSON.stringify(payload) : undefined,
+        signal: abortController.signal,
+
+        // Called when the connection is established (response headers received)
+        async onopen(response: Response) {
+          logger.debug(`SSE connection opened with status: ${response.status}`);
+          if (response.ok) {
+            onOpen?.(); // Call user's onOpen callback
+          } else {
+            // Handle initial connection errors (401, 403, etc.)
+            if (response.status === 401) {
+              // Trigger standard 401 handling (which throws)
+              await handle401Error(`SSE Connect (${url})`);
+            }
+            if (response.status === 403) {
+              // Trigger standard 403 handling (which throws)
+              handle403Error();
+            }
+            // Handle other non-OK statuses
+            const errorText = await response
+              .text()
+              .catch(() => `Status: ${response.status}`);
+            throw new AppError(
+              `SSE connection failed: ${response.status} ${
+                response.statusText || ""
+              }`.trim(),
+              {
+                type: "api",
+                code: `SSE_ERROR_${response.status}`,
+                severity: "error",
+                isRecoverable: false,
+                context: {
+                  status: response.status,
+                  statusText: response.statusText,
+                  detail: errorText,
+                },
+              }
+            );
+          }
+        },
+
+        // Called for each message received
+        onmessage(event: EventSourceMessage) {
+          logger.debug(
+            `SSE message received: id=${event.id}, event=${event.event}`
+          ); // Log event details
+          if (event.event === "ping" || !event.data) {
+            // Ignore pings or empty data fields often used as keep-alives
+            logger.debug("SSE ping or empty data ignored");
+            return;
+          }
+          try {
+            const jsonData = JSON.parse(event.data);
+            onMessage(jsonData); // Pass parsed data to user's callback
+          } catch (parseError) {
+            logger.error("Failed to parse SSE message data as JSON", {
+              data: event.data,
+              error: parseError,
+            });
+            // Decide how to handle non-JSON data: pass raw or trigger error?
+            // Option 1: Pass raw string data
+            // onMessage(event.data);
+            // Option 2: Trigger error callback
+            onError(
+              new AppError("Failed to parse SSE message data", {
+                type: "runtime",
+                code: "SSE_PARSE_ERROR",
+                severity: "error",
+                isRecoverable: false,
+                context: {
+                  originalError: parseError,
+                  data: event.data,
+                },
+              })
+            );
+          }
+        },
+
+        // Called when the connection is closed (by server or abort)
+        onclose() {
+          logger.info("SSE connection closed.");
+          // Don't call onError here, as this is a clean close or intentional disconnect
+          onClose?.(); // Call user's onClose callback
+        },
+
+        // Called on network errors or errors thrown from onopen/onmessage
+        onerror(err: unknown) {
+          logger.error("SSE error occurred", { error: err });
+          // fetchEventSource wraps errors, potentially losing original type.
+          // We check common cases or wrap as AppError.
+          if (err instanceof Error && err.name === "AbortError") {
+            logger.warn(
+              "SSE connection aborted (likely intentional disconnect)."
+            );
+            onClose?.(); // Treat abort like a close
+            return; // Don't propagate abort errors via onError callback
+          }
+
+          // If the error was already handled (e.g., 401/403 threw in onopen), rethrow it.
+          // fetchEventSource might catch and pass it here again.
+          if (err instanceof AuthError || err instanceof AppError) {
+            onError(err);
+            throw err; // IMPORTANT: Need to rethrow errors from onopen to stop fetchEventSource retrying
+          }
+
+          // Wrap unknown errors for consistency
+          const appErr = AppError.fromError(
+            err instanceof Error
+              ? err
+              : new Error(String(err ?? "Unknown SSE error")),
+            "api" // Assume API/network related
+          );
+          onError(appErr);
+          throw appErr; // IMPORTANT: Need to rethrow to stop retries on fatal errors
+        },
+
+        // Optional: Customize retry behavior if needed
+        // openWhenHidden: false, // Don't connect if tab is hidden
+        // retry: 3000, // Retry delay in ms
+      });
+    } catch (error: unknown) {
+      // Catch errors from getAuthHeaders or initial setup before fetchEventSource runs
+      logger.error("Error setting up SSE connection", { error });
+      // Use transformError to ensure consistency and potentially trigger auth flow
+      // It throws, so no need to call onError directly here.
+      transformError(error, "api");
+    }
+  };
+
+  // Start the connection process
+  connect();
+
+  // Return the controller object
+  return {
+    disconnect: () => {
+      logger.info("Disconnecting SSE connection...");
+      abortController.abort(); // Signal fetchEventSource to stop
+      onClose?.(); // Immediately invoke onClose for faster UI feedback if desired
+    },
+  };
 }

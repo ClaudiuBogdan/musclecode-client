@@ -7,6 +7,9 @@
  */
 export type ChatRole = "user" | "assistant" | "system" | "tool";
 
+export type UUID = string;
+export type Timestamp = string;
+
 /**
  * Represents the overall status of a potentially multi-step message generation or processing.
  */
@@ -23,16 +26,24 @@ export type MessageStatus =
  * Uses a 'type' discriminator for specific rendering and processing.
  */
 export interface BaseContentBlock {
+  /** Unique ID for this specific content block instance, useful for updates or referencing. */
+  id: string;
   /** The discriminator field to identify the block type. */
   type: string;
-  /** Optional unique ID for this specific content block instance, useful for updates or referencing. */
-  id?: string;
+
+  /** The timestamp of when the block was created. */
+  start_timestamp: Timestamp;
+  /** The timestamp of when the block was completed. */
+  stop_timestamp: Timestamp;
 }
 
 // --------------- Content Block Types ---------------
 // Discriminated union of all possible content blocks within a message body.
 
-export type ContentBlock = TextBlock;
+export type ContentBlock =
+  | TextBlock
+  | ToolUseContentBlock
+  | ToolResultContentBlock;
 
 /**
  * Plain text content. Supports markdown rendering on the frontend.
@@ -41,6 +52,48 @@ export interface TextBlock extends BaseContentBlock {
   type: "text";
   /** The text content. */
   text: string;
+}
+
+/**
+ * Content block representing the initiation of a tool call.
+ * The 'input' field is built incrementally by 'input_json_delta' events.
+ */
+export interface ToolUseContentBlock extends BaseContentBlock {
+  type: "tool_use";
+  name: string; // Name of the tool being used (e.g., "artifacts")
+  id: string; // Unique ID for this specific tool usage instance (e.g., "toolu_015ShpskUsQYcGWHTnFSaoXj")
+  input: Record<string, unknown>; // The complete input object once assembled
+  message?: string; // Optional descriptive message
+  integration_name?: string | null;
+  integration_icon_url?: string | null;
+  display_content?: string | null;
+}
+
+/**
+ * Represents a simple text part, potentially used within tool results.
+ */
+interface ToolResultTextPart {
+  uuid?: UUID;
+  type: "text";
+  text: string;
+}
+
+// Define a more specific type if the tool result structure is known,
+// otherwise use a broader type. Based on the example:
+export type ToolResultContent = ToolResultTextPart[]; // Array of text parts based on example result delta
+
+/**
+ * Content block representing the result returned from a tool call.
+ * The 'content' field is built incrementally.
+ */
+export interface ToolResultContentBlock extends BaseContentBlock {
+  type: "tool_result";
+  tool_use_id: string; // ID of the corresponding 'tool_use' block
+  name: string; // Name of the tool that was used
+  content: ToolResultContent | string | unknown; // The result content (structure depends on the tool)
+  is_error: boolean;
+  message?: string | null; // Optional descriptive message from the tool execution
+  display_content?: string | null;
 }
 
 // --------------- Context Reference Types ---------------
@@ -175,3 +228,117 @@ export interface ChatThread {
   /** Timestamp of the last message sync with the backend. */
   lastMessagesSyncAt?: string;
 }
+
+// -------------- Delta Level Structures --------------
+/**
+ * Possible reasons why message generation stopped.
+ */
+type StopReason = "end_turn" | "max_tokens" | "stop_sequence" | string; // Allow other potential string values
+
+/**
+ * Represents the delta applied at the message level, typically indicating completion.
+ */
+interface MessageDelta {
+  stop_reason: StopReason | null;
+  stop_sequence: string | null;
+}
+
+/**
+ * Base interface for delta objects within content_block_delta events.
+ */
+interface BaseDelta {
+  type: string; // Discriminator field ('text_delta', 'input_json_delta')
+}
+
+/**
+ * Delta representing a chunk of text being added to a 'text' content block.
+ */
+interface TextDelta extends BaseDelta {
+  type: "text_delta";
+  text: string;
+}
+
+/**
+ * Delta representing a chunk of JSON string being added to a tool's 'input'
+ * or potentially a tool's 'content' if the result is streamed as JSON.
+ */
+interface InputJsonDelta extends BaseDelta {
+  type: "input_json_delta";
+  partial_json: string; // A string fragment of the JSON object
+}
+
+/**
+ * Union type for all possible delta structures.
+ */
+type Delta = TextDelta | InputJsonDelta; // Add other delta types if they exist
+
+// -------------- Event Level Interfaces --------------
+
+/**
+ * Event: Indicates the start of a new message from the assistant or user.
+ */
+interface MessageStartEvent {
+  type: "message_start";
+  message: ChatMessage; // Contains the initial message metadata
+}
+
+/**
+ * Event: Indicates the start of a new content block within the message.
+ */
+interface ContentBlockStartEvent {
+  type: "content_block_start";
+  index: number; // The index of the content block in the message's content array
+  content_block: ContentBlock; // The initial state of the content block
+}
+
+/**
+ * Event: Represents an incremental update (delta) to a content block.
+ */
+interface ContentBlockDeltaEvent {
+  type: "content_block_delta";
+  index: number; // The index of the content block being updated
+  delta: Delta; // The actual change (text, JSON chunk, etc.)
+}
+
+/**
+ * Event: Indicates that a content block has finished generating.
+ */
+interface ContentBlockStopEvent {
+  type: "content_block_stop";
+  index: number; // The index of the content block that stopped
+  stop_timestamp: Timestamp; // When the block stopped generating
+}
+
+/**
+ * Event: Represents an incremental update at the message level, usually stop reason.
+ */
+interface MessageDeltaEvent {
+  type: "message_delta";
+  delta: MessageDelta;
+}
+
+/**
+ * Event: A keep-alive ping.
+ */
+interface PingEvent {
+  type: "ping";
+}
+
+/**
+ * Event: Indicates the entire message generation process has stopped.
+ */
+interface MessageStopEvent {
+  type: "message_stop";
+}
+
+/**
+ * Union type representing any possible event from the stream.
+ */
+export type ServerSentEvent =
+  | MessageStartEvent
+  | ContentBlockStartEvent
+  | ContentBlockDeltaEvent
+  | ContentBlockStopEvent
+  | MessageDeltaEvent
+  | PingEvent
+  | MessageStopEvent;
