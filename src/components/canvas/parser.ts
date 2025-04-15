@@ -1,16 +1,30 @@
-// src/parser.ts (or wherever createMessageReconstructor is defined)
 import type {
   ServerSentEvent,
   ChatMessage,
   ToolResultContent,
   ContentBlock,
 } from "./types"; // Adjust path
+import { parse as parsePartialJson, ALL } from "partial-json"; // Import partial JSON parser
+// TODO: have a look at this: https://www.npmjs.com/package/@streamparser/json
+// Type for partial JSON results
+export type PartialJsonValue =
+  | string
+  | number
+  | boolean
+  | null
+  | PartialJsonObject
+  | PartialJsonArray;
+export interface PartialJsonObject {
+  [key: string]: PartialJsonValue;
+}
+export type PartialJsonArray = PartialJsonValue[];
 
 // Define callbacks provided by the UI component
 export type ReconstructorCallbacks = {
   onMessageUpdate?: (
     message: ChatMessage | null,
-    buffers?: Map<number, string>
+    buffers?: Map<number, string>,
+    parsedPartialJson?: Map<number, PartialJsonValue> // Use specific type instead of any
   ) => void;
   onMessageComplete?: (message: ChatMessage) => void;
   // onError is now triggered by external connection errors fed into handleSSEError
@@ -48,31 +62,36 @@ export function createMessageReconstructor(
   // --- State within Closure ---
   let currentMessageState: ChatMessage | null = null;
   let jsonAssemblyBuffers: Map<number, string> = new Map();
+  let parsedPartialJsonResults: Map<number, PartialJsonValue> = new Map(); // Use specific type
   let callbacks = { ...initialCallbacks };
   let isProcessing: boolean = false; // Flag to indicate active message processing
 
   // --- Helper: State Reset ---
   const resetStateInternal = () => {
-    console.log("Reconstructor state reset.");
     currentMessageState = null;
     jsonAssemblyBuffers = new Map();
+    parsedPartialJsonResults = new Map(); // NEW: Reset parsed results
     isProcessing = false;
-    // Notify UI that the message state has been reset, pass empty buffers
-    callbacks.onMessageUpdate?.(null, new Map());
+    // Notify UI that the message state has been reset, pass empty buffers and parsed results
+    callbacks.onMessageUpdate?.(null, new Map(), new Map());
   };
 
   // --- Helper: Calculate Next State (Keep this logic the same) ---
   const calculateNextState = (
     currentState: ChatMessage | null,
     currentBuffers: Map<number, string>, // Receive current buffers
+    currentParsedJson: Map<number, PartialJsonValue>, // Use specific type
     event: ServerSentEvent
-  ): { message: ChatMessage | null; buffers: Map<number, string> } => {
-    // Return updated buffers
-
+  ): {
+    message: ChatMessage | null;
+    buffers: Map<number, string>;
+    parsedJson: Map<number, PartialJsonValue>; // Use specific type
+  } => {
     // Start with copies to ensure immutability as much as possible
     let nextMessage = currentState ? { ...currentState } : null;
     // !! Crucially, clone the buffer map passed in, don't reuse the closure's map directly
     let nextBuffers = new Map(currentBuffers);
+    let nextParsedJson = new Map(currentParsedJson); // NEW: Clone parsed JSON map
 
     switch (event.type) {
       case "message_start":
@@ -82,7 +101,7 @@ export function createMessageReconstructor(
           content: event.message.content ?? [],
         };
         nextBuffers = new Map(); // New message, new buffers
-        console.log("calculateNextState: message_start processed", nextMessage); // Log
+        nextParsedJson = new Map(); // NEW: New message, new parsed results
         break;
 
       case "content_block_start":
@@ -104,10 +123,6 @@ export function createMessageReconstructor(
               nextBuffers.set(event.index, "");
             }
           }
-          console.log(
-            `calculateNextState: content_block_start processed for index ${event.index}`,
-            nextMessage?.content
-          ); // Log
         }
         break;
 
@@ -120,19 +135,28 @@ export function createMessageReconstructor(
           if (delta.type === "text_delta" && block.type === "text") {
             // Create new block object with appended text
             updatedBlock = { ...block, text: block.text + delta.text };
-            console.log(
-              `calculateNextState: text_delta applied to index ${event.index}`
-            ); // Log
           } else if (
             delta.type === "input_json_delta" &&
             (block.type === "tool_use" || block.type === "tool_result")
           ) {
             // Update buffer map, not the message state directly for this event
             const currentBuffer = nextBuffers.get(event.index) || "";
-            nextBuffers.set(event.index, currentBuffer + delta.partial_json);
-            console.log(
-              `calculateNextState: input_json_delta buffered for index ${event.index}`
-            ); // Log
+            const newBuffer = currentBuffer + delta.partial_json;
+            nextBuffers.set(event.index, newBuffer);
+
+            // NEW: Attempt to parse the updated buffer with partial-json
+            try {
+              const parsedResult = parsePartialJson(newBuffer, ALL);
+              nextParsedJson.set(event.index, parsedResult);
+            } catch (parseError) {
+              console.log(
+                `calculateNextState: Partial JSON parsing failed for block ${event.index}:`,
+                parseError
+              );
+              // Keep the previous parsed result if parsing fails
+              // This ensures we always show the last successful parse
+            }
+
             // IMPORTANT: Keep block state in nextMessage unchanged here, return updated nextBuffers
           }
 
@@ -171,9 +195,6 @@ export function createMessageReconstructor(
                   is_error: false,
                 };
               }
-              console.log(
-                `calculateNextState: Successfully parsed JSON for block ${blockIndex}`
-              ); // Log
             } catch (parseError) {
               console.error(
                 `calculateNextState: Failed to parse assembled JSON for block ${blockIndex}:`,
@@ -192,6 +213,7 @@ export function createMessageReconstructor(
             } finally {
               // Clean up buffer for this index *in the map we are returning*
               nextBuffers.delete(blockIndex); // Modify the map copy
+              nextParsedJson.delete(blockIndex); // NEW: Clean up parsed result as well
             }
           } // else: no buffer needed processing for this block
 
@@ -199,10 +221,6 @@ export function createMessageReconstructor(
           const newContent = [...nextMessage.content];
           newContent[blockIndex] = blockToUpdate;
           nextMessage = { ...nextMessage, content: newContent };
-          console.log(
-            `calculateNextState: content_block_stop processed for index ${blockIndex}`,
-            nextMessage?.content
-          ); // Log
         }
         break;
 
@@ -214,10 +232,6 @@ export function createMessageReconstructor(
               finishReason: event.delta.stop_reason,
             };
           }
-          console.log(
-            "calculateNextState: message_delta processed",
-            nextMessage?.finishReason
-          ); // Log
         }
         break;
 
@@ -225,7 +239,6 @@ export function createMessageReconstructor(
         if (nextMessage) {
           nextMessage = { ...nextMessage, status: "completed" };
         }
-        console.log("calculateNextState: message_stop processed"); // Log
         break;
 
       case "ping":
@@ -234,8 +247,12 @@ export function createMessageReconstructor(
         break;
     }
 
-    // Return the potentially modified message state AND the potentially modified buffer map
-    return { message: nextMessage, buffers: nextBuffers };
+    // Return the potentially modified message state, buffers, and parsed JSON results
+    return {
+      message: nextMessage,
+      buffers: nextBuffers,
+      parsedJson: nextParsedJson,
+    };
   };
 
   // --- Core Event Processing Function (Called by processSSEEvent) ---
@@ -249,44 +266,53 @@ export function createMessageReconstructor(
       // Store previous state reference for comparison
       const previousMessageStateForComparison = currentMessageState;
 
-      // Calculate the next state immutably, passing the CURRENT buffer state
+      // Calculate the next state immutably, passing the CURRENT states
       const nextState = calculateNextState(
         currentMessageState,
         jsonAssemblyBuffers, // Pass the closure's current buffer state
+        parsedPartialJsonResults, // NEW: Pass current parsed results
         event
       );
 
       // Update the closure's state variables using the results returned by calculateNextState
       currentMessageState = nextState.message;
       jsonAssemblyBuffers = nextState.buffers; // **** CRUCIAL: Update closure buffers ****
+      parsedPartialJsonResults = nextState.parsedJson; // NEW: Update parsed results
 
       // --- Handle Side Effects Based on Event AFTER State Update ---
-      // Pass the current buffer state along with the message state
+      // Pass the current buffer state and parsed results along with the message state
       if (
         event.type !== "ping" &&
         currentMessageState !== previousMessageStateForComparison
       ) {
-        console.log(
-          // Added detailed log
-          `Calling onMessageUpdate - Event: ${event.type}, New Message ID: ${currentMessageState?.id}, Content Length: ${currentMessageState?.content?.length}`
+        // Pass the UPDATED jsonAssemblyBuffers and parsedPartialJsonResults maps to the callback
+        callbacks.onMessageUpdate?.(
+          currentMessageState,
+          jsonAssemblyBuffers,
+          parsedPartialJsonResults
         );
-        // Pass the UPDATED jsonAssemblyBuffers map to the callback
-        callbacks.onMessageUpdate?.(currentMessageState, jsonAssemblyBuffers);
       } else if (event.type !== "ping") {
         console.debug(
           `State reference didn't change for event: ${event.type}. No UI update triggered by default.`
         );
-        // Still pass buffers even if message ref didn't change, as buffers might have
-        callbacks.onMessageUpdate?.(currentMessageState, jsonAssemblyBuffers);
+        // Still pass buffers and parsed results even if message ref didn't change
+        callbacks.onMessageUpdate?.(
+          currentMessageState,
+          jsonAssemblyBuffers,
+          parsedPartialJsonResults
+        );
       }
 
       // Handle message completion
       if (event.type === "message_stop") {
         // ... (message_stop logic - KEEP THIS) ...
         if (currentMessageState) {
-          console.log("Message reconstruction complete (via message_stop).");
-          // Pass final message state and potentially empty buffers
-          callbacks.onMessageUpdate?.(currentMessageState, jsonAssemblyBuffers);
+          // Pass final message state, potentially empty buffers, and parsed results
+          callbacks.onMessageUpdate?.(
+            currentMessageState,
+            jsonAssemblyBuffers,
+            parsedPartialJsonResults
+          );
           callbacks.onMessageComplete?.(currentMessageState);
         }
         isProcessing = false;
@@ -311,7 +337,6 @@ export function createMessageReconstructor(
 
   /** Signals that the underlying SSE connection was successfully opened. */
   const handleSSEOpen = (): void => {
-    console.log("Reconstructor notified: SSE connection opened.");
     // Reset state when a new connection opens to prepare for a new message stream
     resetStateInternal();
     isProcessing = false; // Ensure processing flag is reset
@@ -319,14 +344,12 @@ export function createMessageReconstructor(
 
   /** Signals that the underlying SSE connection encountered an error. */
   const handleSSEError = (error: Error): void => {
-    console.error("Reconstructor notified: SSE connection error:", error);
     callbacks.onError?.(error);
     isProcessing = false; // Stop processing on connection error
   };
 
   /** Signals that the underlying SSE connection was closed. */
   const handleSSEClose = (): void => {
-    console.log("Reconstructor notified: SSE connection closed.");
     // If processing was ongoing and didn't complete via message_stop,
     // consider it incomplete or errored.
     if (isProcessing) {

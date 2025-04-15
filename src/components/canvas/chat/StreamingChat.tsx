@@ -1,6 +1,6 @@
 // src/components/StreamingChatDisplay.tsx (or .jsx)
 
-import React, { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import type {
   ChatMessage,
   ContentBlock,
@@ -14,7 +14,11 @@ import type {
 import { listenToSSE, SSEController, SSECallbacks } from "@/lib/api/client"; // Adjust path if needed
 import { AppError } from "@/lib/errors/types"; // Adjust path if needed
 import { AuthError } from "@/lib/auth/errors"; // Adjust path if needed
-import { createMessageReconstructor, ReconstructorControls } from "../parser";
+import {
+  createMessageReconstructor,
+  PartialJsonValue,
+  ReconstructorControls,
+} from "../parser";
 
 // Define the type for the component's status
 type ConnectionStatus =
@@ -30,8 +34,11 @@ function StreamingChatDisplay() {
   // State for the message being managed by the reconstructor
   // The UI will update based on this state variable when the reconstructor calls onMessageUpdate
   const [message, setMessage] = useState<ChatMessage | null>(null);
-  // **** NEW: State for the current JSON assembly buffers ****
+  // **** State for both raw JSON buffers and parsed partial JSON values ****
   const [buffers, setBuffers] = useState<Map<number, string>>(new Map());
+  const [parsedJsonResults, setParsedJsonResults] = useState<
+    Map<number, PartialJsonValue>
+  >(new Map());
 
   const [status, setStatus] = useState<ConnectionStatus>("idle");
   const [error, setError] = useState<string | null>(null);
@@ -48,27 +55,27 @@ function StreamingChatDisplay() {
   // These update the component's UI state (`message`, `status`, `error`)
 
   const handleMessageUpdate = useCallback(
-    // Accept buffers map from parser
+    // Accept parsed JSON results from parser
     (
       updatedMessage: ChatMessage | null,
-      updatedBuffers?: Map<number, string>
+      updatedBuffers?: Map<number, string>,
+      updatedParsedJson?: Map<number, PartialJsonValue>
     ) => {
-      console.log(
-        // Log from component's perspective
-        "COMPONENT handleMessageUpdate CALLED",
-        updatedMessage?.id,
-        updatedMessage?.status,
-        updatedMessage?.content?.length,
-        "Buffer keys:",
-        updatedBuffers ? Array.from(updatedBuffers.keys()) : "N/A" // Log buffer keys
-      );
       setMessage(updatedMessage); // Update the message state
 
-      // **** Update buffer state ****
+      // **** Update buffer and parsed JSON states ****
       if (updatedBuffers) {
         setBuffers(new Map(updatedBuffers)); // Store a copy of the buffers map
-      } else if (!updatedMessage) {
-        setBuffers(new Map()); // Reset buffers if message is reset
+      }
+
+      if (updatedParsedJson) {
+        setParsedJsonResults(new Map(updatedParsedJson)); // Store a copy of the parsed JSON map
+      }
+
+      // Reset both if message is reset
+      if (!updatedMessage) {
+        setBuffers(new Map());
+        setParsedJsonResults(new Map());
       }
 
       if (updatedMessage && status !== "completed") {
@@ -76,19 +83,12 @@ function StreamingChatDisplay() {
           (prev) =>
             prev === "open" || prev === "streaming" ? "streaming" : prev // Keep streaming status
         );
-      } else if (!updatedMessage) {
-        // Handle reset case if needed (buffers already reset above)
       }
     },
     [status] // Depend on status to avoid stale closures if logic used it heavily
   );
 
   const handleMessageComplete = useCallback((finalMessage: ChatMessage) => {
-    console.log(
-      // Log from component's perspective
-      "COMPONENT handleMessageComplete CALLED",
-      finalMessage.id
-    );
     setMessage(finalMessage); // Ensure final state is set for rendering
     setStatus("completed"); // Set final UI status
   }, []);
@@ -109,7 +109,6 @@ function StreamingChatDisplay() {
         onMessageComplete: handleMessageComplete,
         onError: handleReconstructorError,
       });
-      console.log("Message Reconstructor Initialized (Modified Version).");
     }
     // No cleanup needed specifically for the reconstructor instance itself here
   }, [handleMessageUpdate, handleMessageComplete, handleReconstructorError]); // Stable callbacks
@@ -117,7 +116,6 @@ function StreamingChatDisplay() {
   // --- Callbacks for listenToSSE (Feed events TO the reconstructor) ---
 
   const handleSSEOpen = useCallback(() => {
-    console.log("COMPONENT handleSSEOpen CALLED (via listenToSSE)");
     setStatus("open");
     setError(null);
     // Notify reconstructor that connection is open (will trigger its reset)
@@ -125,10 +123,6 @@ function StreamingChatDisplay() {
   }, []); // Depends only on reconstructorRef
 
   const handleSSEMessage = useCallback((eventData: ServerSentEvent) => {
-    console.log(
-      "COMPONENT handleSSEMessage CALLED with event type:",
-      eventData?.type
-    );
     // Assuming eventData is a parsed ServerSentEvent from listenToSSE
     if (
       typeof eventData === "object" &&
@@ -162,7 +156,6 @@ function StreamingChatDisplay() {
   }, []); // Depends only on reconstructorRef
 
   const handleSSEClose = useCallback(() => {
-    console.log("COMPONENT handleSSEClose CALLED (via listenToSSE)");
     setStatus((prevStatus) =>
       prevStatus === "error" || prevStatus === "completed"
         ? prevStatus
@@ -178,7 +171,6 @@ function StreamingChatDisplay() {
     // Return cleanup function to disconnect on unmount
     return () => {
       if (sseControllerRef.current) {
-        console.log("Unmounting - Disconnecting SSE via controller");
         sseControllerRef.current.disconnect();
         sseControllerRef.current = null;
       }
@@ -205,6 +197,7 @@ function StreamingChatDisplay() {
     setError(null);
     setMessage(null); // Clear previous UI message state
     setBuffers(new Map()); // **** Clear buffers state on new connection ****
+    setParsedJsonResults(new Map()); // **** Clear parsed JSON results on new connection ****
     reconstructorRef.current?.resetState(); // Reset reconstructor's internal state
 
     // Prepare payload for the POST request (if needed by backend to trigger stream)
@@ -222,7 +215,6 @@ function StreamingChatDisplay() {
         onClose: handleSSEClose,
       };
 
-      console.log(`Calling listenToSSE: POST ${streamUrl}`);
       // Establish connection using listenToSSE function from apiClient
       // It handles fetching auth headers internally.
       sseControllerRef.current = listenToSSE(
@@ -254,22 +246,30 @@ function StreamingChatDisplay() {
 
   const disconnectStream = () => {
     if (sseControllerRef.current) {
-      console.log("Disconnecting SSE stream via button...");
       sseControllerRef.current.disconnect(); // Calls AbortController.abort() in listenToSSE
       // The sseControllerRef will be cleared in the handleSSEClose callback
       // The status will be updated via the handleSSEClose callback
     } else {
-      console.log("No active SSE connection to disconnect.");
       // If needed, manually reset status if not managed by onClose
       // setStatus('closed');
       // reconstructorRef.current?.resetState();
     }
   };
 
+  // --- Helper function to format JSON for display ---
+  const formatJson = (value: PartialJsonValue): string => {
+    if (value === null) {
+      return "null";
+    } else if (typeof value === "object") {
+      return JSON.stringify(value, null, 2);
+    }
+    return String(value);
+  };
+
   // --- Rendering Logic (Uses `message` state updated by the reconstructor) ---
   const renderContentBlock = (block: ContentBlock, index: number) => {
-    console.log(`COMPONENT rendering block index ${index}, type ${block.type}`); // Log render
     const currentBuffer = buffers.get(index); // Get buffer for this block index
+    const parsedJson = parsedJsonResults.get(index); // Get parsed JSON for this block
     const isStreaming = !block.stop_timestamp; // Check if the block is still streaming
 
     switch (block.type) {
@@ -294,17 +294,22 @@ function StreamingChatDisplay() {
       }
       case "tool_use": {
         const toolUse = block as ToolUseContentBlock;
-        // Display buffer content if streaming and buffer exists, otherwise display final input
+        // Try to use parsed JSON first, if available and streaming
         const inputDisplay =
-          isStreaming && currentBuffer !== undefined
-            ? currentBuffer // Show raw buffer content while streaming
-            : typeof toolUse.input === "object" && toolUse.input
-              ? JSON.stringify(toolUse.input, null, 2) // Show formatted final JSON
-              : String(toolUse.input ?? ""); // Handle null/undefined/non-object final input
+          isStreaming && parsedJson !== undefined
+            ? formatJson(parsedJson) // Show formatted partial JSON result
+            : isStreaming && currentBuffer !== undefined
+              ? currentBuffer // Fallback to buffer if no parsed result
+              : typeof toolUse.input === "object" && toolUse.input
+                ? JSON.stringify(toolUse.input, null, 2) // Show formatted final JSON
+                : String(toolUse.input ?? ""); // Handle null/undefined/non-object final input
 
         // Determine if we should show the "(streaming...)" indicator
         const showStreamingIndicator =
-          isStreaming && currentBuffer === undefined && !toolUse.input;
+          isStreaming &&
+          parsedJson === undefined &&
+          currentBuffer === undefined &&
+          !toolUse.input;
 
         return (
           <div
@@ -344,21 +349,75 @@ function StreamingChatDisplay() {
       }
       case "tool_result": {
         const toolResult = block as ToolResultContentBlock;
-        // Display buffer content if streaming and buffer exists, otherwise display final content
+        // Try to use parsed JSON first, if available and streaming
         const contentDisplay =
-          isStreaming && currentBuffer !== undefined
-            ? currentBuffer // Show raw buffer content while streaming
-            : typeof toolResult.content === "object" && toolResult.content
-              ? JSON.stringify(toolResult.content, null, 2) // Show formatted final JSON
-              : String(toolResult.content ?? ""); // Handle null/undefined/non-object final content
+          isStreaming && parsedJson !== undefined
+            ? formatJson(parsedJson) // Show formatted partial JSON result
+            : isStreaming && currentBuffer !== undefined
+              ? currentBuffer // Fallback to buffer if no parsed result
+              : typeof toolResult.content === "object" && toolResult.content
+                ? JSON.stringify(toolResult.content, null, 2) // Show formatted final JSON
+                : String(toolResult.content ?? ""); // Handle null/undefined/non-object final content
 
         // Determine if we should show the "(streaming...)" indicator
         const showStreamingIndicator =
           isStreaming &&
+          parsedJson === undefined &&
           currentBuffer === undefined &&
           !toolResult.content &&
           !toolResult.is_error;
 
+        // Custom rendering for text type tool results
+        const textJsonArr = parsedJson as { type?: string; text?: string }[];
+        console.log("textJson", textJsonArr);
+        if (
+          Array.isArray(textJsonArr) &&
+          textJsonArr.length > 0 &&
+          textJsonArr[0].type === "text"
+        ) {
+          return textJsonArr.map((textBlock) => (
+            <div
+              key={textBlock.text || index}
+              style={{
+                borderBottom: "1px dashed #eee",
+                paddingBottom: "5px",
+                marginBottom: "5px",
+                background: toolResult.is_error ? "#fff0f0" : "#f0fff0",
+                padding: "5px",
+              }}
+            >
+              <strong>Tool Result (Text):</strong> {toolResult.name} (for Tool
+              Use ID: {toolResult.tool_use_id})
+              {toolResult.is_error && (
+                <strong style={{ color: "red" }}> [ERROR]</strong>
+              )}
+              {toolResult.message && (
+                <p>
+                  <em>{toolResult.message}</em>
+                </p>
+              )}
+              <div
+                style={{
+                  background: "#eee",
+                  padding: "10px",
+                  borderRadius: "5px",
+                  whiteSpace: "pre-wrap",
+                }}
+              >
+                {showStreamingIndicator ? (
+                  <em>(streaming...)</em>
+                ) : (
+                  textBlock.text
+                )}
+              </div>
+              <small style={{ display: "block", color: "grey" }}>
+                Block ID: {toolResult.id}
+              </small>
+            </div>
+          ));
+        }
+
+        // Default rendering for other tool result types
         return (
           <div
             key={toolResult.id || index}

@@ -92,6 +92,7 @@
     "motion": "^12.5.0",
     "msw": "^2.7.3",
     "openai": "^4.87.3",
+    "partial-json": "^0.1.7",
     "postcss": "^8.5.3",
     "posthog-js": "^1.230.2",
     "pyodide": "^0.27.3",
