@@ -381,6 +381,11 @@ export function createMessageReconstructor(
     let nextMessage = currentState.message;
     if (event.delta?.stop_reason) {
       nextMessage = { ...nextMessage, finishReason: event.delta.stop_reason };
+
+      // If stop_reason is "error", mark the message status as "failed"
+      if (event.delta.stop_reason === "error") {
+        nextMessage = { ...nextMessage, status: "failed" as const };
+      }
     }
     // Buffers and parsedJson remain unchanged
     return { ...currentState, message: nextMessage };

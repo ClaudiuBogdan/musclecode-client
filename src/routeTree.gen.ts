@@ -20,6 +20,7 @@ import { Route as SettingsProfileImport } from './routes/settings/profile'
 // Create Virtual Routes
 
 const UnauthorizedLazyImport = createFileRoute('/unauthorized')()
+const ErrorTestLazyImport = createFileRoute('/error-test')()
 const IndexLazyImport = createFileRoute('/')()
 const SettingsIndexLazyImport = createFileRoute('/settings/')()
 const OnboardingIndexLazyImport = createFileRoute('/onboarding/')()
@@ -58,6 +59,12 @@ const UnauthorizedLazyRoute = UnauthorizedLazyImport.update({
   path: '/unauthorized',
   getParentRoute: () => rootRoute,
 } as any).lazy(() => import('./routes/unauthorized.lazy').then((d) => d.Route))
+
+const ErrorTestLazyRoute = ErrorTestLazyImport.update({
+  id: '/error-test',
+  path: '/error-test',
+  getParentRoute: () => rootRoute,
+} as any).lazy(() => import('./routes/error-test.lazy').then((d) => d.Route))
 
 const TmpRoute = TmpImport.update({
   id: '/tmp',
@@ -253,6 +260,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TmpImport
       parentRoute: typeof rootRoute
     }
+    '/error-test': {
+      id: '/error-test'
+      path: '/error-test'
+      fullPath: '/error-test'
+      preLoaderRoute: typeof ErrorTestLazyImport
+      parentRoute: typeof rootRoute
+    }
     '/unauthorized': {
       id: '/unauthorized'
       path: '/unauthorized'
@@ -395,6 +409,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexLazyRoute
   '/login': typeof LoginRoute
   '/tmp': typeof TmpRoute
+  '/error-test': typeof ErrorTestLazyRoute
   '/unauthorized': typeof UnauthorizedLazyRoute
   '/settings/profile': typeof SettingsProfileRoute
   '/algorithms/new': typeof AlgorithmsNewLazyRoute
@@ -420,6 +435,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexLazyRoute
   '/login': typeof LoginRoute
   '/tmp': typeof TmpRoute
+  '/error-test': typeof ErrorTestLazyRoute
   '/unauthorized': typeof UnauthorizedLazyRoute
   '/settings/profile': typeof SettingsProfileRoute
   '/algorithms/new': typeof AlgorithmsNewLazyRoute
@@ -446,6 +462,7 @@ export interface FileRoutesById {
   '/': typeof IndexLazyRoute
   '/login': typeof LoginRoute
   '/tmp': typeof TmpRoute
+  '/error-test': typeof ErrorTestLazyRoute
   '/unauthorized': typeof UnauthorizedLazyRoute
   '/settings/profile': typeof SettingsProfileRoute
   '/algorithms/new': typeof AlgorithmsNewLazyRoute
@@ -473,6 +490,7 @@ export interface FileRouteTypes {
     | '/'
     | '/login'
     | '/tmp'
+    | '/error-test'
     | '/unauthorized'
     | '/settings/profile'
     | '/algorithms/new'
@@ -497,6 +515,7 @@ export interface FileRouteTypes {
     | '/'
     | '/login'
     | '/tmp'
+    | '/error-test'
     | '/unauthorized'
     | '/settings/profile'
     | '/algorithms/new'
@@ -521,6 +540,7 @@ export interface FileRouteTypes {
     | '/'
     | '/login'
     | '/tmp'
+    | '/error-test'
     | '/unauthorized'
     | '/settings/profile'
     | '/algorithms/new'
@@ -547,6 +567,7 @@ export interface RootRouteChildren {
   IndexLazyRoute: typeof IndexLazyRoute
   LoginRoute: typeof LoginRoute
   TmpRoute: typeof TmpRoute
+  ErrorTestLazyRoute: typeof ErrorTestLazyRoute
   UnauthorizedLazyRoute: typeof UnauthorizedLazyRoute
   SettingsProfileRoute: typeof SettingsProfileRoute
   AlgorithmsNewLazyRoute: typeof AlgorithmsNewLazyRoute
@@ -572,6 +593,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexLazyRoute: IndexLazyRoute,
   LoginRoute: LoginRoute,
   TmpRoute: TmpRoute,
+  ErrorTestLazyRoute: ErrorTestLazyRoute,
   UnauthorizedLazyRoute: UnauthorizedLazyRoute,
   SettingsProfileRoute: SettingsProfileRoute,
   AlgorithmsNewLazyRoute: AlgorithmsNewLazyRoute,
@@ -606,6 +628,7 @@ export const routeTree = rootRoute
         "/",
         "/login",
         "/tmp",
+        "/error-test",
         "/unauthorized",
         "/settings/profile",
         "/algorithms/new",
@@ -635,6 +658,9 @@ export const routeTree = rootRoute
     },
     "/tmp": {
       "filePath": "tmp.tsx"
+    },
+    "/error-test": {
+      "filePath": "error-test.lazy.tsx"
     },
     "/unauthorized": {
       "filePath": "unauthorized.lazy.tsx"

@@ -214,8 +214,14 @@ export const StreamingMessageRenderer: React.FC<
   // We expect `message` to always be non-null when this component is rendered
   // Based on the logic in ChatThread
 
+  // Determine if there's an error
+  const hasError =
+    message.status === "failed" || message.finishReason === "error";
+
   return (
-    <div className="bg-gray-50 dark:bg-gray-800/50 p-3 rounded-lg shadow-sm border border-blue-200 dark:border-blue-800 animate-pulse-border">
+    <div
+      className={`bg-gray-50 dark:bg-gray-800/50 p-3 rounded-lg shadow-sm border ${hasError ? "border-red-200 dark:border-red-800" : "border-blue-200 dark:border-blue-800"} ${!hasError ? "animate-pulse-border" : ""}`}
+    >
       {/* Removed Role/Thread/Status display as they are implicit or handled elsewhere */}
       {/* <p><strong>Role:</strong> {message.role}</p> */}
       {/* <p><strong>Thread:</strong> {message.threadId}</p> */}
@@ -235,10 +241,19 @@ export const StreamingMessageRenderer: React.FC<
           ))
         ) : (
           <em className="text-gray-500">
-            (Assistant is preparing response...)
+            {hasError
+              ? "An error occurred during message generation."
+              : "(Assistant is preparing response...)"}
           </em>
         )}
       </div>
+
+      {/* Display error message */}
+      {hasError && (
+        <p className="text-xs text-red-400 dark:text-red-300 mt-1">
+          Failed to generate message. Please try again.
+        </p>
+      )}
       {/* Optionally show message ID for debugging */}
       {/* <small className="block text-gray-400 dark:text-gray-500 text-xs mt-2">Msg ID: {message.id}</small> */}
     </div>

@@ -227,7 +227,7 @@ export interface ChatThread {
 /**
  * Possible reasons why message generation stopped.
  */
-type StopReason = "end_turn" | "max_tokens" | "stop_sequence" | string; // Allow other potential string values
+type StopReason = "end_turn" | "max_tokens" | "stop_sequence" | "error" | string; // Allow other potential string values
 
 /**
  * Represents the delta applied at the message level, typically indicating completion.
