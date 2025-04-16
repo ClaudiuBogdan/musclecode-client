@@ -4,6 +4,19 @@ import {
   ContentBlock,
   ContextReference,
 } from "../types";
+// Import PartialJsonValue from the parser file
+import { PartialJsonValue } from "../parser";
+
+// Define the connection status type (can be reused from store/index.ts or defined globally)
+// NOTE: If defined globally, import it here instead.
+type ConnectionStatus =
+  | "idle"
+  | "connecting"
+  | "open"
+  | "streaming"
+  | "error"
+  | "closed"
+  | "completed";
 
 // Define the extended message statuses
 export type MessageStatus =
@@ -35,6 +48,19 @@ export interface ChatStoreState {
    * Any critical global error related to the store's operation
    */
   error: Error | null;
+
+  // --- New Streaming State --- //
+  /** The assistant message currently being reconstructed from the stream. */
+  streamingAssistantMessage: ChatMessage | null;
+  /** Raw buffers and partially parsed JSON for streaming tool calls/results. */
+  streamingToolData: {
+    buffers: Map<number, string>;
+    parsedJson: PartialJsonValue;
+  } | null;
+  /** Status of the current SSE connection. */
+  connectionStatus: ConnectionStatus;
+  /** Error message specifically related to the SSE connection or stream processing. */
+  connectionError: string | null;
 }
 
 // --- Define API Payload Structures (Example) ---
@@ -87,22 +113,20 @@ export interface ChatStoreActions {
   deleteThread: (threadId: string) => Promise<void>; // Renamed from deleteSession
 
   /**
-   * Sends a user message optimistically, handles API call, and processes response.
-   * @param messageData Core data for the new message (must include threadId).
+   * Initiates a streaming connection to send a user message and receive the assistant's response.
+   * @param messageData Core data for the user message (threadId, content, etc.).
    */
-  sendMessage: (
-    messageData: Omit<
-      ChatMessage,
-      "id" | "createdAt" | "role" | "status" | "errorDetails"
-    > & { threadId: string } // Ensure threadId is present
-  ) => Promise<void>;
+  sendMessage: (messageData: {
+    threadId: string;
+    content: ContentBlock[]; // Use structured content
+    parentId?: string;
+    metadata?: Record<string, unknown>;
+  }) => Promise<void>;
 
   /**
-   * Retries sending a message that previously failed.
-   * @param messageId The ID of the message with status 'error'.
-   * @param threadId The ID of the thread the message belongs to.
+   * Manually disconnects the active SSE stream, if one exists.
    */
-  retrySendMessage: (messageId: string, threadId: string) => Promise<void>; // Added threadId
+  disconnectStream: () => void; // New action
 
   /**
    * Attaches context to a thread locally.

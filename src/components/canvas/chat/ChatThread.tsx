@@ -13,71 +13,83 @@ import { ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "./EmptyState";
 import { useVirtualizer } from "@tanstack/react-virtual";
-import { useChatStore } from "../store";
-import { ChatThread as ThreadType } from "../types";
+import {
+  useChatStore,
+  useCurrentChatMessages,
+  useStreamingAssistantMessage,
+  useStreamingToolData,
+  useConnectionStatus,
+} from "../store";
+import { StreamingMessageRenderer } from "./StreamingMessageRenderer";
 
 interface ChatThreadProps {
   className?: string;
 }
 
 export const ChatThread: React.FC<ChatThreadProps> = ({ className }) => {
-  const storeData = useChatStore();
-  const currentThreadId = storeData.currentThreadId;
-  const initializeStore = storeData.initializeStore;
-  const threads = storeData.threads as Record<string, ThreadType>;
+  const initializeStore = useChatStore((state) => state.initializeStore);
+  const messages = useCurrentChatMessages();
+  const streamingMessage = useStreamingAssistantMessage();
+  const streamingToolData = useStreamingToolData();
+  const connectionStatus = useConnectionStatus();
+  const currentThreadId = useChatStore((state) => state.currentThreadId);
 
   useEffect(() => {
     initializeStore();
   }, [initializeStore]);
 
-  const currentThread = currentThreadId ? threads[currentThreadId] : null;
-  const messages = useMemo(() => {
-    if (!currentThread?.messages || currentThread.messages.length === 0)
-      return [];
+  const completedMessages = useMemo(
+    () => messages.filter((m) => m.id !== streamingMessage?.id),
+    [messages, streamingMessage]
+  );
 
-    // Sort messages by createdAt to ensure proper order
-    return [...currentThread.messages].sort((a, b) => {
-      return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
-    });
-  }, [currentThread?.messages]);
-
-  const totalMessages = messages.length;
+  const totalMessages = completedMessages.length;
   const lastMessageLength =
-    messages.length > 0 ? messages[totalMessages - 1].content.length || 0 : 0;
+    totalMessages > 0
+      ? completedMessages[totalMessages - 1].content.length || 0
+      : 0;
 
   const parentRef = useRef<HTMLDivElement>(null);
   const [showScrollButton, setShowScrollButton] = useState(false);
 
+  const virtualizerCount =
+    completedMessages.length + (streamingMessage ? 1 : 0);
+
   const virtualizer = useVirtualizer({
-    count: messages.length,
+    count: virtualizerCount,
     useAnimationFrameWithResizeObserver: true,
     getScrollElement: () => parentRef.current,
-    estimateSize: useCallback(() => 100, []),
+    estimateSize: useCallback(() => 110, []),
     overscan: 5,
     scrollMargin: 50,
   });
 
   const scrollToBottom = useCallback(() => {
     if (!parentRef.current) return;
+    if (virtualizerCount > 0) {
+      virtualizer.scrollToIndex(virtualizerCount - 1, {
+        align: "end",
+      });
+    }
+  }, [virtualizerCount, virtualizer]);
 
-    virtualizer.scrollToIndex(messages.length - 1, {
-      align: "end",
-    });
-  }, [messages.length, virtualizer]);
-
-  // Scroll to bottom if user sends new message
   useLayoutEffect(() => {
-    scrollToBottom();
-  }, [totalMessages, scrollToBottom]);
+    const isStreamingStarted =
+      connectionStatus === "streaming" ||
+      connectionStatus === "open" ||
+      connectionStatus === "connecting";
+    if (totalMessages > 0 || isStreamingStarted) {
+      scrollToBottom();
+    }
+  }, [totalMessages, connectionStatus, scrollToBottom]);
 
-  // Show scroll icon and handle scroll position
   useEffect(() => {
     const threadElement = parentRef.current;
     if (!threadElement) return;
 
     const getIsNearBottom = () => {
       const { scrollTop, scrollHeight, clientHeight } = threadElement;
-      return scrollHeight - scrollTop - clientHeight < 100;
+      return scrollHeight - scrollTop - clientHeight < 150;
     };
 
     const isNearBottom = getIsNearBottom();
@@ -94,20 +106,22 @@ export const ChatThread: React.FC<ChatThreadProps> = ({ className }) => {
     return () => {
       threadElement.removeEventListener("scroll", handleScroll);
     };
-  }, [lastMessageLength]);
+  }, [streamingMessage, lastMessageLength]);
 
-  // Memoize empty state to prevent unnecessary re-renders
   const emptyState = useMemo(() => <EmptyState />, []);
+
+  const isEffectivelyEmpty =
+    completedMessages.length === 0 && !streamingMessage;
 
   return (
     <div className={cn("relative flex flex-col h-full", className)}>
-      {messages.length === 0 ? (
+      {isEffectivelyEmpty ? (
         emptyState
       ) : (
         <div
           ref={parentRef}
           data-thread-id={currentThreadId}
-          className="flex-1 overflow-auto px-4"
+          className="flex-1 overflow-y-auto px-4 scroll-smooth"
         >
           <div
             style={{
@@ -116,27 +130,51 @@ export const ChatThread: React.FC<ChatThreadProps> = ({ className }) => {
               position: "relative",
             }}
           >
-            {virtualizer.getVirtualItems().map((virtualItem) => (
-              <div
-                key={messages[virtualItem.index].id}
-                data-index={virtualItem.index}
-                ref={virtualizer.measureElement}
-                style={{
-                  position: "absolute",
-                  top: 0,
-                  left: 0,
-                  width: "100%",
-                  transform: `translateY(${virtualItem.start}px)`,
-                }}
-                className="py-2"
-              >
-                <Message message={messages[virtualItem.index]} />
-              </div>
-            ))}
+            {virtualizer.getVirtualItems().map((virtualItem) => {
+              const itemIndex = virtualItem.index;
+              const isStreamingSlot = itemIndex === completedMessages.length;
+              const renderStreaming =
+                isStreamingSlot && streamingMessage !== null;
+              const message = renderStreaming
+                ? streamingMessage
+                : completedMessages[itemIndex];
+
+              if (!message) {
+                console.warn(
+                  `No message found for index ${itemIndex}, streaming: ${renderStreaming}`
+                );
+                return null;
+              }
+
+              return (
+                <div
+                  key={message.id}
+                  data-index={itemIndex}
+                  ref={virtualizer.measureElement}
+                  style={{
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    width: "100%",
+                    transform: `translateY(${virtualItem.start}px)`,
+                  }}
+                  className="py-2"
+                >
+                  {renderStreaming || message.role === "assistant" ? (
+                    <StreamingMessageRenderer
+                      message={message}
+                      toolData={streamingToolData}
+                    />
+                  ) : (
+                    <Message message={message} />
+                  )}
+                </div>
+              );
+            })}
           </div>
         </div>
       )}
-      {showScrollButton && messages.length > 0 && (
+      {showScrollButton && virtualizerCount > 0 && (
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
