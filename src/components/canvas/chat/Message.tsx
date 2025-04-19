@@ -30,7 +30,6 @@ export const Message: React.FC<MessageProps> = React.memo(({ message }) => {
       .join("\n");
 
     await navigator.clipboard.writeText(contentText);
-    showToast.success("Message copied to clipboard");
   }, [message.content]);
 
   const handleRetry = useCallback(() => {
