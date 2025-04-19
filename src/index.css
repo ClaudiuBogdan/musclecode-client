@@ -247,3 +247,13 @@
 details> :not(summary) {
   margin-left: 1rem;
 }
+
+.chat-thread-container {
+  overflow-y: auto;
+  overflow-anchor: none; /* disable default anchoring */
+}
+
+.chat-thread-container > .anchor {
+  overflow-anchor: auto;
+  height: 1px;
+}

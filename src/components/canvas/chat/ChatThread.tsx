@@ -121,7 +121,7 @@ export const ChatThread: React.FC<ChatThreadProps> = ({ className }) => {
         <div
           ref={parentRef}
           data-thread-id={currentThreadId}
-          className="flex-1 overflow-y-auto px-4 scroll-smooth"
+          className="flex-1 overflow-y-auto px-4 chat-thread-container"
         >
           <div
             style={{
@@ -172,6 +172,7 @@ export const ChatThread: React.FC<ChatThreadProps> = ({ className }) => {
               );
             })}
           </div>
+          <div className="anchor" />
         </div>
       )}
       {showScrollButton && virtualizerCount > 0 && (
