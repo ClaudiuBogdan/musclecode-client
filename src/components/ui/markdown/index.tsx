@@ -308,14 +308,13 @@ export const Markdown: FC<MarkdownProps> = React.memo(
         className={cn(
           "prose prose-sm max-w-none",
           // Light mode styles
-          "prose-headings:text-foreground",
+          "prose-headings:text-foreground prose-headings:font-medium",
+          "prose-h4:text-sm prose-h5:text-xs prose-h6:text-xs",
           "prose-p:text-foreground",
           "prose-strong:text-foreground",
           "prose-code:text-foreground",
           "prose-code:before:content-[''] prose-code:after:content-['']",
           "prose-pre:bg-secondary",
-          "prose-ul:text-foreground",
-          "prose-li:text-foreground",
           "prose-blockquote:text-foreground",
           "prose-a:text-primary hover:prose-a:text-primary/80",
           // Dark mode styles
@@ -325,10 +324,12 @@ export const Markdown: FC<MarkdownProps> = React.memo(
           "dark:prose-strong:text-zinc-200",
           "dark:prose-code:text-zinc-200",
           "dark:prose-pre:bg-zinc-800",
-          "dark:prose-ul:text-zinc-300",
-          "dark:prose-li:text-zinc-300",
           "dark:prose-blockquote:text-zinc-300",
           "dark:prose-a:text-blue-400 dark:hover:prose-a:text-blue-300",
+          // Add list style overrides to reduce indentation and spacing
+          "prose-ul:my-0 prose-ol:my-0 [&_ul]:my-0 [&_ol]:my-0 [&_li]:my-0",
+          "prose-li:marker:text-muted-foreground",
+          "leading-relaxed",
           className
         )}
       >
