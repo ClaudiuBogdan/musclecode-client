@@ -67,8 +67,8 @@ export const useChatStore = create<ChatStore>()(
           state.streamingAssistantMessage = updatedMessage;
           if (updatedBuffers || updatedParsedJson) {
             state.streamingToolData = {
-              buffers: updatedBuffers ? new Map(updatedBuffers) : new Map(),
-              parsedJson: updatedParsedJson
+              deltaBuffers: updatedBuffers ? new Map(updatedBuffers) : new Map(),
+              partialInputStream: updatedParsedJson
                 ? // @ts-expect-error - TODO: Fix this
                   new Map(updatedParsedJson)
                 : new Map(),
@@ -92,7 +92,6 @@ export const useChatStore = create<ChatStore>()(
       };
 
       const _handleMessageComplete = (finalMessage: ChatMessage) => {
-        console.log("STORE: Message complete:", finalMessage);
         // Ensure the final message has 'completed' status
         const completedMessage = {
           ...finalMessage,
@@ -668,8 +667,8 @@ export const useStreamingAssistantMessage = (): ChatMessage | null => {
 
 /** Selector for streaming tool data (buffers, parsed JSON) */
 export const useStreamingToolData = (): {
-  buffers: Map<number, string>;
-  parsedJson: Map<number, PartialJsonValue>;
+  deltaBuffers: Map<number, string>;
+  partialInputStream: Map<number, PartialJsonValue>;
 } | null => {
   return useChatStore((state) => state.streamingToolData);
 };

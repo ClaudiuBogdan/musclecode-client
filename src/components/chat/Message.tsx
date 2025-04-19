@@ -4,7 +4,6 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { RotateCcw, Edit2, BotIcon } from "lucide-react";
 import useChatStore from "@/stores/chat";
-import { showToast } from "@/utils/toast";
 import { EditMessage } from "./EditMessage";
 import { Markdown } from "@/components/ui/markdown";
 import React, { useCallback } from "react";

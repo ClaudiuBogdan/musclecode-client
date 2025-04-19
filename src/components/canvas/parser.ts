@@ -96,15 +96,15 @@ export function createMessageReconstructor(
   // --- Type for State Tuple ---
   type ReconstructorState = {
     message: ChatMessage | null;
-    buffers: Map<number, string>;
-    parsedJson: Map<number, PartialJsonValue>;
+    deltaBuffers: Map<number, string>;
+    partialInputStream: Map<number, PartialJsonValue>;
   };
 
   // --- Initial State ---
   const getInitialState = (): ReconstructorState => ({
     message: null,
-    buffers: new Map(),
-    parsedJson: new Map(),
+    deltaBuffers: new Map(),
+    partialInputStream: new Map(),
   });
 
   let currentState: ReconstructorState = getInitialState();
@@ -116,8 +116,8 @@ export function createMessageReconstructor(
     // Use current state directly for notification
     callbacks.onMessageUpdate?.(
       currentState.message,
-      currentState.buffers,
-      currentState.parsedJson
+      currentState.deltaBuffers,
+      currentState.partialInputStream
     );
   };
 
@@ -131,7 +131,7 @@ export function createMessageReconstructor(
       content: event.message.content ?? [],
     };
     // Start with fresh buffers and parsed results for the new message
-    return { message: nextMessage, buffers: new Map(), parsedJson: new Map() };
+    return { message: nextMessage, deltaBuffers: new Map(), partialInputStream: new Map() };
   };
 
   const handleContentBlockStart = (
@@ -142,14 +142,14 @@ export function createMessageReconstructor(
   ): ReconstructorState => {
     if (!currentState.message) return currentState; // Should not happen if message_start was received
 
-    const { message, buffers, parsedJson } = currentState;
+    const { message, deltaBuffers: buffers, partialInputStream: parsedJson } = currentState;
     const newContent = [...(message.content ?? [])];
     newContent[event.index] = { ...event.content_block } as ContentBlock; // Clone block
     const nextMessage = { ...message, content: newContent };
     const nextBuffers = new Map(buffers); // Clone buffers
 
     // No change to parsedJson map in this handler
-    return { message: nextMessage, buffers: nextBuffers, parsedJson };
+    return { message: nextMessage, deltaBuffers: nextBuffers, partialInputStream: parsedJson };
   };
 
   // --- Helper Functions for Complex Handlers ---
@@ -170,7 +170,7 @@ export function createMessageReconstructor(
     delta: { type: typeof DELTA_TYPES.INPUT_JSON_DELTA; partial_json: string },
     currentBuffers: Map<number, string>,
     currentParsedJson: Map<number, PartialJsonValue>
-  ): Pick<ReconstructorState, "buffers" | "parsedJson"> => {
+  ): Pick<ReconstructorState, "deltaBuffers" | "partialInputStream"> => {
     const nextBuffers = new Map(currentBuffers);
     const nextParsedJson = new Map(currentParsedJson);
     const currentBuffer = nextBuffers.get(blockIndex) || "";
@@ -187,7 +187,7 @@ export function createMessageReconstructor(
       );
       // Keep the last successful parse result (already in nextParsedJson)
     }
-    return { buffers: nextBuffers, parsedJson: nextParsedJson };
+    return { deltaBuffers: nextBuffers, partialInputStream: nextParsedJson };
   };
 
   const finalizeJsonBlock = (
@@ -197,8 +197,8 @@ export function createMessageReconstructor(
     currentParsedJson: Map<number, PartialJsonValue>
   ): {
     updatedBlock: ContentBlock; // Return the potentially modified block
-    buffers: Map<number, string>;
-    parsedJson: Map<number, PartialJsonValue>;
+    deltaBuffers: Map<number, string>;
+    partialInputStream: Map<number, PartialJsonValue>;
   } => {
     const nextBuffers = new Map(currentBuffers);
     const nextParsedJson = new Map(currentParsedJson);
@@ -211,8 +211,8 @@ export function createMessageReconstructor(
       nextParsedJson.delete(blockIndex);
       return {
         updatedBlock: finalizedBlock,
-        buffers: nextBuffers,
-        parsedJson: nextParsedJson,
+        deltaBuffers: nextBuffers,
+        partialInputStream: nextParsedJson,
       };
     }
 
@@ -263,8 +263,8 @@ export function createMessageReconstructor(
 
     return {
       updatedBlock: finalizedBlock,
-      buffers: nextBuffers,
-      parsedJson: nextParsedJson,
+      deltaBuffers: nextBuffers,
+      partialInputStream: nextParsedJson,
     };
   };
 
@@ -277,7 +277,7 @@ export function createMessageReconstructor(
     const blockIndex = event.index;
     if (!currentState.message?.content?.[blockIndex]) return currentState;
 
-    const { message, buffers, parsedJson } = currentState;
+    const { message, deltaBuffers: buffers, partialInputStream: parsedJson } = currentState;
     const block = message.content[blockIndex];
     const delta = event.delta;
 
@@ -299,12 +299,12 @@ export function createMessageReconstructor(
       (block.type === CONTENT_BLOCK_TYPES.TOOL_USE ||
         block.type === CONTENT_BLOCK_TYPES.TOOL_RESULT)
     ) {
-      const { buffers: nextBuffers, parsedJson: nextParsedJson } =
+      const { deltaBuffers: nextBuffers, partialInputStream: nextParsedJson } =
         updateJsonBufferAndParse(blockIndex, delta, buffers, parsedJson);
       nextState = {
         ...currentState, // Keep message unchanged
-        buffers: nextBuffers,
-        parsedJson: nextParsedJson,
+        deltaBuffers: nextBuffers,
+        partialInputStream: nextParsedJson,
       };
     } else {
       // Log unhandled delta/block type combinations if necessary
@@ -323,7 +323,7 @@ export function createMessageReconstructor(
     const blockIndex = event.index;
     if (!currentState.message?.content?.[blockIndex]) return currentState;
 
-    const { message, buffers, parsedJson } = currentState;
+    const { message, deltaBuffers: buffers, partialInputStream: parsedJson } = currentState;
     let blockToUpdate = message.content[blockIndex];
 
     // Always update timestamp immutably first
@@ -346,8 +346,8 @@ export function createMessageReconstructor(
         parsedJson
       );
       finalBlock = finalizationResult.updatedBlock;
-      nextBuffers = finalizationResult.buffers;
-      nextParsedJson = finalizationResult.parsedJson;
+      nextBuffers = finalizationResult.deltaBuffers;
+      nextParsedJson = finalizationResult.partialInputStream;
     }
     // Else: No finalization needed for this block type (e.g., text)
 
@@ -358,8 +358,8 @@ export function createMessageReconstructor(
 
     return {
       message: nextMessage,
-      buffers: nextBuffers,
-      parsedJson: nextParsedJson,
+      deltaBuffers: nextBuffers,
+      partialInputStream: nextParsedJson,
     };
   };
 
@@ -398,7 +398,6 @@ export function createMessageReconstructor(
   };
 
   const handlePing = (currentState: ReconstructorState): ReconstructorState => {
-    console.log("handlePing: ping ignored");
     return currentState; // No state change
   };
 
@@ -467,8 +466,8 @@ export function createMessageReconstructor(
         // Pass the components of the *new* currentState to the callback
         callbacks.onMessageUpdate?.(
           currentState.message,
-          currentState.buffers,
-          currentState.parsedJson
+          currentState.deltaBuffers,
+          currentState.partialInputStream
         );
       }
 
@@ -477,8 +476,8 @@ export function createMessageReconstructor(
           // Final update call (already done above, ensures latest state is passed)
           callbacks.onMessageUpdate?.(
             currentState.message,
-            currentState.buffers,
-            currentState.parsedJson
+            currentState.deltaBuffers,
+            currentState.partialInputStream
           );
           callbacks.onMessageComplete?.(currentState.message); // Pass the final message state
         }

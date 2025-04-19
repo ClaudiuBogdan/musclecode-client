@@ -5,8 +5,8 @@ import { StreamingMessageRenderer } from "./StreamingMessageRenderer";
 
 export const ErrorStreamTest: React.FC = () => {
   const [message, setMessage] = React.useState<ChatMessage | null>(null);
-  const [buffers, setBuffers] = React.useState<Map<number, string>>(new Map());
-  const [parsedJson, setParsedJson] = React.useState<
+  const [deltaBuffers, setDeltaBuffers] = React.useState<Map<number, string>>(new Map());
+  const [partialInputStream, setPartialInputStream] = React.useState<
     Map<number, PartialJsonValue>
   >(new Map());
 
@@ -15,8 +15,8 @@ export const ErrorStreamTest: React.FC = () => {
     const reconstructor = createMessageReconstructor({
       onMessageUpdate: (updatedMessage, updatedBuffers, updatedParsedJson) => {
         setMessage(updatedMessage);
-        if (updatedBuffers) setBuffers(new Map(updatedBuffers));
-        if (updatedParsedJson) setParsedJson(new Map(updatedParsedJson));
+        if (updatedBuffers) setDeltaBuffers(new Map(updatedBuffers));
+        if (updatedParsedJson) setPartialInputStream(new Map(updatedParsedJson));
       },
       onMessageComplete: (finalMessage) => {
         console.log("Message complete:", finalMessage);
@@ -77,7 +77,7 @@ export const ErrorStreamTest: React.FC = () => {
       {message ? (
         <StreamingMessageRenderer
           message={message}
-          toolData={{ buffers, parsedJson }}
+          toolData={{ deltaBuffers, partialInputStream }}
         />
       ) : (
         <div>Waiting for message...</div>

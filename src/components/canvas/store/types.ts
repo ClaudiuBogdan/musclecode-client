@@ -54,8 +54,8 @@ export interface ChatStoreState {
   streamingAssistantMessage: ChatMessage | null;
   /** Raw buffers and partially parsed JSON for streaming tool calls/results. */
   streamingToolData: {
-    buffers: Map<number, string>;
-    parsedJson: PartialJsonValue;
+    deltaBuffers: Map<number, string>;
+    partialInputStream: Map<number, PartialJsonValue>;
   } | null;
   /** Status of the current SSE connection. */
   connectionStatus: ConnectionStatus;

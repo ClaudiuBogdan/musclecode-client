@@ -27,14 +27,14 @@ export type MessageStatus =
  */
 export interface BaseContentBlock {
   /** Unique ID for this specific content block instance, useful for updates or referencing. */
-  id: string;
+  id?: string;
   /** The discriminator field to identify the block type. */
   type: string;
 
   /** The timestamp of when the block was created. */
-  start_timestamp: Timestamp;
+  start_timestamp?: Timestamp;
   /** The timestamp of when the block was completed. */
-  stop_timestamp: Timestamp;
+  stop_timestamp?: Timestamp;
 }
 
 // --------------- Content Block Types ---------------

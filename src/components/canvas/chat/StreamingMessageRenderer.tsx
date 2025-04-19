@@ -8,6 +8,7 @@ import {
   ToolResultContent,
 } from "../types";
 import { PartialJsonValue } from "../parser"; // Assuming this is the correct path
+import { Markdown } from "@/components/ui/markdown";
 
 // Helper function to format JSON for display (similar to demo)
 const formatJson = (value: PartialJsonValue | unknown): string => {
@@ -28,8 +29,8 @@ const formatJson = (value: PartialJsonValue | unknown): string => {
 interface StreamingMessageRendererProps {
   message: ChatMessage; // The message being streamed
   toolData: {
-    buffers: Map<number, string>;
-    parsedJson: Map<number, PartialJsonValue>;
+    deltaBuffers: Map<number, string>;
+    partialInputStream: Map<number, PartialJsonValue>;
   } | null;
 }
 
@@ -39,11 +40,11 @@ const RenderContentBlock: React.FC<{
   index: number;
   toolData: StreamingMessageRendererProps["toolData"];
 }> = React.memo(({ block, index, toolData }) => {
-  const buffers = toolData?.buffers;
-  const parsedJsonResults = toolData?.parsedJson;
+  const deltaBuffers = toolData?.deltaBuffers;
+  const partialInputStream = toolData?.partialInputStream;
 
-  const currentBuffer = buffers?.get(index);
-  const parsedJson = parsedJsonResults?.get(index);
+  const currentBuffer = deltaBuffers?.get(index);
+  const parsedJson = partialInputStream?.get(index);
   const isStreaming = !block.stop_timestamp; // Check if the block is still generating
 
   switch (block.type) {
@@ -53,12 +54,15 @@ const RenderContentBlock: React.FC<{
       return (
         <div className="whitespace-pre-wrap border-b border-dashed border-gray-200 dark:border-gray-700 pb-1 mb-1">
           {/* Removed strong tag for cleaner look, text is the primary content */}
-          {textBlock.text ||
-            (isStreaming ? (
+          {textBlock.text ? (
+            <Markdown content={textBlock.text} />
+          ) : (
+            isStreaming ? (
               <span className="italic text-gray-500">(streaming text...)</span>
             ) : (
               <span className="italic text-gray-500">(empty)</span>
-            ))}
+            )
+          )}
           {/* Optionally show block ID for debugging */}
           {/* <small className="block text-gray-400 dark:text-gray-500 text-xs">ID: {textBlock.id}</small> */}
         </div>
@@ -93,10 +97,10 @@ const RenderContentBlock: React.FC<{
             </p>
           )}
             <h2>Partial Input</h2>
-          <pre className="bg-gray-100 dark:bg-gray-800 p-1.5 rounded text-xs mt-1 max-h-40 overflow-auto whitespace-pre-wrap break-all">
+          <pre className="bg-gray-100 dark:bg-gray-800 p-1.5 rounded text-xs mt-1 overflow-auto whitespace-pre-wrap break-all">
             {partialInput}
           </pre>
-          <pre className="bg-gray-100 dark:bg-gray-800 p-1.5 rounded text-xs mt-1 max-h-40 overflow-auto whitespace-pre-wrap break-all">
+          <pre className="bg-gray-100 dark:bg-gray-800 p-1.5 rounded text-xs mt-1 overflow-auto whitespace-pre-wrap break-all">
             Input:{" "}
             {showStreamingIndicator ? (
               <em className="text-gray-500">(streaming...)</em>
