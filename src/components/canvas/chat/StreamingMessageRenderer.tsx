@@ -67,6 +67,7 @@ const RenderContentBlock: React.FC<{
     case "tool_use": {
       const toolUse = block as ToolUseContentBlock;
       // Determine what to display for input: parsed JSON > buffer > final input > streaming indicator
+      const partialInput = parsedJson ? formatJson(parsedJson) : null;
       const inputDisplay =
         isStreaming && parsedJson !== undefined
           ? formatJson(parsedJson) // Show formatted partial JSON result
@@ -91,6 +92,10 @@ const RenderContentBlock: React.FC<{
               {toolUse.message}
             </p>
           )}
+            <h2>Partial Input</h2>
+          <pre className="bg-gray-100 dark:bg-gray-800 p-1.5 rounded text-xs mt-1 max-h-40 overflow-auto whitespace-pre-wrap break-all">
+            {partialInput}
+          </pre>
           <pre className="bg-gray-100 dark:bg-gray-800 p-1.5 rounded text-xs mt-1 max-h-40 overflow-auto whitespace-pre-wrap break-all">
             Input:{" "}
             {showStreamingIndicator ? (

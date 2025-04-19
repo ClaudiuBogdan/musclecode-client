@@ -1,5 +1,3 @@
-// src/components/StreamingChatDisplay.tsx (or .jsx)
-
 import { useState, useRef, useEffect, useCallback } from "react";
 import type {
   ChatMessage,
