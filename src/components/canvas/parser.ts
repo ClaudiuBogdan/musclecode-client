@@ -148,15 +148,6 @@ export function createMessageReconstructor(
     const nextMessage = { ...message, content: newContent };
     const nextBuffers = new Map(buffers); // Clone buffers
 
-    // Initialize buffer if needed (tool_use or tool_result)
-    if (
-      (event.content_block.type === CONTENT_BLOCK_TYPES.TOOL_USE ||
-        event.content_block.type === CONTENT_BLOCK_TYPES.TOOL_RESULT) &&
-      !nextBuffers.has(event.index)
-    ) {
-      nextBuffers.set(event.index, "");
-    }
-
     // No change to parsedJson map in this handler
     return { message: nextMessage, buffers: nextBuffers, parsedJson };
   };
@@ -214,8 +205,10 @@ export function createMessageReconstructor(
     const buffer = nextBuffers.get(blockIndex);
     let finalizedBlock = blockToUpdate; // Start with the input block
 
-    if (buffer === undefined) {
-      // No buffer to process, return state as is
+    if (buffer === undefined || buffer.trim() === "") {
+      // No buffer to process or empty buffer, return state as is and clean up
+      nextBuffers.delete(blockIndex);
+      nextParsedJson.delete(blockIndex);
       return {
         updatedBlock: finalizedBlock,
         buffers: nextBuffers,
@@ -274,8 +267,6 @@ export function createMessageReconstructor(
       parsedJson: nextParsedJson,
     };
   };
-
-  // --- Refactored Event Handlers ---
 
   const handleContentBlockDelta = (
     currentState: ReconstructorState,
@@ -361,7 +352,7 @@ export function createMessageReconstructor(
     // Else: No finalization needed for this block type (e.g., text)
 
     // Update the message state with the potentially finalized block
-    const newContent = [...message.content];
+    const newContent = [...message.content].filter((c) => c && c.type);
     newContent[blockIndex] = finalBlock; // Use the finalized block
     const nextMessage = { ...message, content: newContent };
 
