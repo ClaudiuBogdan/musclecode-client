@@ -402,6 +402,8 @@ export function listenToSSE(
         body:
           method === "POST" && payload ? JSON.stringify(payload) : undefined,
         signal: abortController.signal,
+        keepalive: true,
+        openWhenHidden: true,
 
         // Called when the connection is established (response headers received)
         async onopen(response: Response) {
