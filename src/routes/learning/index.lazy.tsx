@@ -1,14 +1,22 @@
+import { useNavigate } from "@tanstack/react-router";
 import { createLazyFileRoute } from "@tanstack/react-router";
-import { Outlet } from "@tanstack/react-router";
+import { useEffect } from "react";
 
 export const Route = createLazyFileRoute("/learning/")({
-  component: LearningLayout,
+  component: LearningIndexPage,
 });
 
-function LearningLayout() {
+function LearningIndexPage() {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Automatically redirect to the modules page
+    navigate({ to: "/learning/modules" });
+  }, [navigate]);
+
   return (
-    <div className="container mx-auto py-4">
-      <Outlet />
+    <div className="flex items-center justify-center h-full">
+      <p>Redirecting to modules...</p>
     </div>
   );
 }

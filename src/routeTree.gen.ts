@@ -36,11 +36,17 @@ const SettingsBillingLazyImport = createFileRoute('/settings/billing')()
 const LearningCreateLazyImport = createFileRoute('/learning/create')()
 const CollectionsNewLazyImport = createFileRoute('/collections/new')()
 const AlgorithmsNewLazyImport = createFileRoute('/algorithms/new')()
+const LearningModulesIndexLazyImport = createFileRoute('/learning/modules/')()
 const CollectionsCollectionIdIndexLazyImport = createFileRoute(
   '/collections/$collectionId/',
 )()
 const AlgorithmsAlgorithmIdIndexLazyImport = createFileRoute(
   '/algorithms/$algorithmId/',
+)()
+const LearningModulesIdLazyImport = createFileRoute('/learning/modules/$id')()
+const LearningLessonsIdLazyImport = createFileRoute('/learning/lessons/$id')()
+const LearningExercisesIdLazyImport = createFileRoute(
+  '/learning/exercises/$id',
 )()
 const CollectionsCollectionIdEditLazyImport = createFileRoute(
   '/collections/$collectionId/edit',
@@ -188,6 +194,14 @@ const SettingsProfileRoute = SettingsProfileImport.update({
   import('./routes/settings/profile.lazy').then((d) => d.Route),
 )
 
+const LearningModulesIndexLazyRoute = LearningModulesIndexLazyImport.update({
+  id: '/learning/modules/',
+  path: '/learning/modules/',
+  getParentRoute: () => rootRoute,
+} as any).lazy(() =>
+  import('./routes/learning/modules/index.lazy').then((d) => d.Route),
+)
+
 const CollectionsCollectionIdIndexLazyRoute =
   CollectionsCollectionIdIndexLazyImport.update({
     id: '/collections/$collectionId/',
@@ -207,6 +221,30 @@ const AlgorithmsAlgorithmIdIndexLazyRoute =
   } as any).lazy(() =>
     import('./routes/algorithms/$algorithmId/index.lazy').then((d) => d.Route),
   )
+
+const LearningModulesIdLazyRoute = LearningModulesIdLazyImport.update({
+  id: '/learning/modules/$id',
+  path: '/learning/modules/$id',
+  getParentRoute: () => rootRoute,
+} as any).lazy(() =>
+  import('./routes/learning/modules/$id.lazy').then((d) => d.Route),
+)
+
+const LearningLessonsIdLazyRoute = LearningLessonsIdLazyImport.update({
+  id: '/learning/lessons/$id',
+  path: '/learning/lessons/$id',
+  getParentRoute: () => rootRoute,
+} as any).lazy(() =>
+  import('./routes/learning/lessons/$id.lazy').then((d) => d.Route),
+)
+
+const LearningExercisesIdLazyRoute = LearningExercisesIdLazyImport.update({
+  id: '/learning/exercises/$id',
+  path: '/learning/exercises/$id',
+  getParentRoute: () => rootRoute,
+} as any).lazy(() =>
+  import('./routes/learning/exercises/$id.lazy').then((d) => d.Route),
+)
 
 const CollectionsCollectionIdEditLazyRoute =
   CollectionsCollectionIdEditLazyImport.update({
@@ -386,6 +424,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CollectionsCollectionIdEditLazyImport
       parentRoute: typeof rootRoute
     }
+    '/learning/exercises/$id': {
+      id: '/learning/exercises/$id'
+      path: '/learning/exercises/$id'
+      fullPath: '/learning/exercises/$id'
+      preLoaderRoute: typeof LearningExercisesIdLazyImport
+      parentRoute: typeof rootRoute
+    }
+    '/learning/lessons/$id': {
+      id: '/learning/lessons/$id'
+      path: '/learning/lessons/$id'
+      fullPath: '/learning/lessons/$id'
+      preLoaderRoute: typeof LearningLessonsIdLazyImport
+      parentRoute: typeof rootRoute
+    }
+    '/learning/modules/$id': {
+      id: '/learning/modules/$id'
+      path: '/learning/modules/$id'
+      fullPath: '/learning/modules/$id'
+      preLoaderRoute: typeof LearningModulesIdLazyImport
+      parentRoute: typeof rootRoute
+    }
     '/algorithms/$algorithmId/': {
       id: '/algorithms/$algorithmId/'
       path: '/algorithms/$algorithmId'
@@ -398,6 +457,13 @@ declare module '@tanstack/react-router' {
       path: '/collections/$collectionId'
       fullPath: '/collections/$collectionId'
       preLoaderRoute: typeof CollectionsCollectionIdIndexLazyImport
+      parentRoute: typeof rootRoute
+    }
+    '/learning/modules/': {
+      id: '/learning/modules/'
+      path: '/learning/modules'
+      fullPath: '/learning/modules'
+      preLoaderRoute: typeof LearningModulesIndexLazyImport
       parentRoute: typeof rootRoute
     }
   }
@@ -427,8 +493,12 @@ export interface FileRoutesByFullPath {
   '/algorithms/$algorithmId/edit': typeof AlgorithmsAlgorithmIdEditLazyRoute
   '/algorithms/$algorithmId/view': typeof AlgorithmsAlgorithmIdViewLazyRoute
   '/collections/$collectionId/edit': typeof CollectionsCollectionIdEditLazyRoute
+  '/learning/exercises/$id': typeof LearningExercisesIdLazyRoute
+  '/learning/lessons/$id': typeof LearningLessonsIdLazyRoute
+  '/learning/modules/$id': typeof LearningModulesIdLazyRoute
   '/algorithms/$algorithmId': typeof AlgorithmsAlgorithmIdIndexLazyRoute
   '/collections/$collectionId': typeof CollectionsCollectionIdIndexLazyRoute
+  '/learning/modules': typeof LearningModulesIndexLazyRoute
 }
 
 export interface FileRoutesByTo {
@@ -453,8 +523,12 @@ export interface FileRoutesByTo {
   '/algorithms/$algorithmId/edit': typeof AlgorithmsAlgorithmIdEditLazyRoute
   '/algorithms/$algorithmId/view': typeof AlgorithmsAlgorithmIdViewLazyRoute
   '/collections/$collectionId/edit': typeof CollectionsCollectionIdEditLazyRoute
+  '/learning/exercises/$id': typeof LearningExercisesIdLazyRoute
+  '/learning/lessons/$id': typeof LearningLessonsIdLazyRoute
+  '/learning/modules/$id': typeof LearningModulesIdLazyRoute
   '/algorithms/$algorithmId': typeof AlgorithmsAlgorithmIdIndexLazyRoute
   '/collections/$collectionId': typeof CollectionsCollectionIdIndexLazyRoute
+  '/learning/modules': typeof LearningModulesIndexLazyRoute
 }
 
 export interface FileRoutesById {
@@ -480,8 +554,12 @@ export interface FileRoutesById {
   '/algorithms/$algorithmId/edit': typeof AlgorithmsAlgorithmIdEditLazyRoute
   '/algorithms/$algorithmId/view': typeof AlgorithmsAlgorithmIdViewLazyRoute
   '/collections/$collectionId/edit': typeof CollectionsCollectionIdEditLazyRoute
+  '/learning/exercises/$id': typeof LearningExercisesIdLazyRoute
+  '/learning/lessons/$id': typeof LearningLessonsIdLazyRoute
+  '/learning/modules/$id': typeof LearningModulesIdLazyRoute
   '/algorithms/$algorithmId/': typeof AlgorithmsAlgorithmIdIndexLazyRoute
   '/collections/$collectionId/': typeof CollectionsCollectionIdIndexLazyRoute
+  '/learning/modules/': typeof LearningModulesIndexLazyRoute
 }
 
 export interface FileRouteTypes {
@@ -508,8 +586,12 @@ export interface FileRouteTypes {
     | '/algorithms/$algorithmId/edit'
     | '/algorithms/$algorithmId/view'
     | '/collections/$collectionId/edit'
+    | '/learning/exercises/$id'
+    | '/learning/lessons/$id'
+    | '/learning/modules/$id'
     | '/algorithms/$algorithmId'
     | '/collections/$collectionId'
+    | '/learning/modules'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -533,8 +615,12 @@ export interface FileRouteTypes {
     | '/algorithms/$algorithmId/edit'
     | '/algorithms/$algorithmId/view'
     | '/collections/$collectionId/edit'
+    | '/learning/exercises/$id'
+    | '/learning/lessons/$id'
+    | '/learning/modules/$id'
     | '/algorithms/$algorithmId'
     | '/collections/$collectionId'
+    | '/learning/modules'
   id:
     | '__root__'
     | '/'
@@ -558,8 +644,12 @@ export interface FileRouteTypes {
     | '/algorithms/$algorithmId/edit'
     | '/algorithms/$algorithmId/view'
     | '/collections/$collectionId/edit'
+    | '/learning/exercises/$id'
+    | '/learning/lessons/$id'
+    | '/learning/modules/$id'
     | '/algorithms/$algorithmId/'
     | '/collections/$collectionId/'
+    | '/learning/modules/'
   fileRoutesById: FileRoutesById
 }
 
@@ -585,8 +675,12 @@ export interface RootRouteChildren {
   AlgorithmsAlgorithmIdEditLazyRoute: typeof AlgorithmsAlgorithmIdEditLazyRoute
   AlgorithmsAlgorithmIdViewLazyRoute: typeof AlgorithmsAlgorithmIdViewLazyRoute
   CollectionsCollectionIdEditLazyRoute: typeof CollectionsCollectionIdEditLazyRoute
+  LearningExercisesIdLazyRoute: typeof LearningExercisesIdLazyRoute
+  LearningLessonsIdLazyRoute: typeof LearningLessonsIdLazyRoute
+  LearningModulesIdLazyRoute: typeof LearningModulesIdLazyRoute
   AlgorithmsAlgorithmIdIndexLazyRoute: typeof AlgorithmsAlgorithmIdIndexLazyRoute
   CollectionsCollectionIdIndexLazyRoute: typeof CollectionsCollectionIdIndexLazyRoute
+  LearningModulesIndexLazyRoute: typeof LearningModulesIndexLazyRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
@@ -611,8 +705,12 @@ const rootRouteChildren: RootRouteChildren = {
   AlgorithmsAlgorithmIdEditLazyRoute: AlgorithmsAlgorithmIdEditLazyRoute,
   AlgorithmsAlgorithmIdViewLazyRoute: AlgorithmsAlgorithmIdViewLazyRoute,
   CollectionsCollectionIdEditLazyRoute: CollectionsCollectionIdEditLazyRoute,
+  LearningExercisesIdLazyRoute: LearningExercisesIdLazyRoute,
+  LearningLessonsIdLazyRoute: LearningLessonsIdLazyRoute,
+  LearningModulesIdLazyRoute: LearningModulesIdLazyRoute,
   AlgorithmsAlgorithmIdIndexLazyRoute: AlgorithmsAlgorithmIdIndexLazyRoute,
   CollectionsCollectionIdIndexLazyRoute: CollectionsCollectionIdIndexLazyRoute,
+  LearningModulesIndexLazyRoute: LearningModulesIndexLazyRoute,
 }
 
 export const routeTree = rootRoute
@@ -646,8 +744,12 @@ export const routeTree = rootRoute
         "/algorithms/$algorithmId/edit",
         "/algorithms/$algorithmId/view",
         "/collections/$collectionId/edit",
+        "/learning/exercises/$id",
+        "/learning/lessons/$id",
+        "/learning/modules/$id",
         "/algorithms/$algorithmId/",
-        "/collections/$collectionId/"
+        "/collections/$collectionId/",
+        "/learning/modules/"
       ]
     },
     "/": {
@@ -713,11 +815,23 @@ export const routeTree = rootRoute
     "/collections/$collectionId/edit": {
       "filePath": "collections/$collectionId/edit.lazy.tsx"
     },
+    "/learning/exercises/$id": {
+      "filePath": "learning/exercises/$id.lazy.tsx"
+    },
+    "/learning/lessons/$id": {
+      "filePath": "learning/lessons/$id.lazy.tsx"
+    },
+    "/learning/modules/$id": {
+      "filePath": "learning/modules/$id.lazy.tsx"
+    },
     "/algorithms/$algorithmId/": {
       "filePath": "algorithms/$algorithmId/index.lazy.tsx"
     },
     "/collections/$collectionId/": {
       "filePath": "collections/$collectionId/index.lazy.tsx"
+    },
+    "/learning/modules/": {
+      "filePath": "learning/modules/index.lazy.tsx"
     }
   }
 }
