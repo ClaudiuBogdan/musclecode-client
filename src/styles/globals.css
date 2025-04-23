@@ -1,0 +1,19 @@
+/* This is a placeholder to check if the file exists */ 
+
+@import "tailwindcss/preflight";
+@tailwind utilities;
+
+@layer utilities {
+  /* 3D Transform Utilities */
+  .perspective-1000 {
+    perspective: 1000px;
+  }
+  
+  .preserve-3d {
+    transform-style: preserve-3d;
+  }
+  
+  .backface-hidden {
+    backface-visibility: hidden;
+  }
+} 
