@@ -8,6 +8,7 @@ import {
   Code2,
   Library,
   BookOpen,
+  Cross,
 } from "lucide-react";
 import { Link, useMatches } from "@tanstack/react-router";
 import { cn } from "@/lib/utils";
@@ -63,6 +64,11 @@ const settingsItems = {
       title: "Billing",
       url: "/settings/billing",
       icon: CreditCard,
+    },
+    {
+      title: "Models",
+      url: "/settings/models",
+      icon: Cross,
     },
     // TODO: Add notifications
     // {

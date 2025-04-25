@@ -32,6 +32,7 @@ const SettingsPreferencesLazyImport = createFileRoute('/settings/preferences')()
 const SettingsNotificationsLazyImport = createFileRoute(
   '/settings/notifications',
 )()
+const SettingsModelsLazyImport = createFileRoute('/settings/models')()
 const SettingsBillingLazyImport = createFileRoute('/settings/billing')()
 const LearningCreateLazyImport = createFileRoute('/learning/create')()
 const CollectionsNewLazyImport = createFileRoute('/collections/new')()
@@ -156,6 +157,14 @@ const SettingsNotificationsLazyRoute = SettingsNotificationsLazyImport.update({
   getParentRoute: () => rootRoute,
 } as any).lazy(() =>
   import('./routes/settings/notifications.lazy').then((d) => d.Route),
+)
+
+const SettingsModelsLazyRoute = SettingsModelsLazyImport.update({
+  id: '/settings/models',
+  path: '/settings/models',
+  getParentRoute: () => rootRoute,
+} as any).lazy(() =>
+  import('./routes/settings/models.lazy').then((d) => d.Route),
 )
 
 const SettingsBillingLazyRoute = SettingsBillingLazyImport.update({
@@ -357,6 +366,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SettingsBillingLazyImport
       parentRoute: typeof rootRoute
     }
+    '/settings/models': {
+      id: '/settings/models'
+      path: '/settings/models'
+      fullPath: '/settings/models'
+      preLoaderRoute: typeof SettingsModelsLazyImport
+      parentRoute: typeof rootRoute
+    }
     '/settings/notifications': {
       id: '/settings/notifications'
       path: '/settings/notifications'
@@ -492,6 +508,7 @@ export interface FileRoutesByFullPath {
   '/collections/new': typeof CollectionsNewLazyRoute
   '/learning/create': typeof LearningCreateLazyRoute
   '/settings/billing': typeof SettingsBillingLazyRoute
+  '/settings/models': typeof SettingsModelsLazyRoute
   '/settings/notifications': typeof SettingsNotificationsLazyRoute
   '/settings/preferences': typeof SettingsPreferencesLazyRoute
   '/settings/security': typeof SettingsSecurityLazyRoute
@@ -522,6 +539,7 @@ export interface FileRoutesByTo {
   '/collections/new': typeof CollectionsNewLazyRoute
   '/learning/create': typeof LearningCreateLazyRoute
   '/settings/billing': typeof SettingsBillingLazyRoute
+  '/settings/models': typeof SettingsModelsLazyRoute
   '/settings/notifications': typeof SettingsNotificationsLazyRoute
   '/settings/preferences': typeof SettingsPreferencesLazyRoute
   '/settings/security': typeof SettingsSecurityLazyRoute
@@ -553,6 +571,7 @@ export interface FileRoutesById {
   '/collections/new': typeof CollectionsNewLazyRoute
   '/learning/create': typeof LearningCreateLazyRoute
   '/settings/billing': typeof SettingsBillingLazyRoute
+  '/settings/models': typeof SettingsModelsLazyRoute
   '/settings/notifications': typeof SettingsNotificationsLazyRoute
   '/settings/preferences': typeof SettingsPreferencesLazyRoute
   '/settings/security': typeof SettingsSecurityLazyRoute
@@ -585,6 +604,7 @@ export interface FileRouteTypes {
     | '/collections/new'
     | '/learning/create'
     | '/settings/billing'
+    | '/settings/models'
     | '/settings/notifications'
     | '/settings/preferences'
     | '/settings/security'
@@ -614,6 +634,7 @@ export interface FileRouteTypes {
     | '/collections/new'
     | '/learning/create'
     | '/settings/billing'
+    | '/settings/models'
     | '/settings/notifications'
     | '/settings/preferences'
     | '/settings/security'
@@ -643,6 +664,7 @@ export interface FileRouteTypes {
     | '/collections/new'
     | '/learning/create'
     | '/settings/billing'
+    | '/settings/models'
     | '/settings/notifications'
     | '/settings/preferences'
     | '/settings/security'
@@ -674,6 +696,7 @@ export interface RootRouteChildren {
   CollectionsNewLazyRoute: typeof CollectionsNewLazyRoute
   LearningCreateLazyRoute: typeof LearningCreateLazyRoute
   SettingsBillingLazyRoute: typeof SettingsBillingLazyRoute
+  SettingsModelsLazyRoute: typeof SettingsModelsLazyRoute
   SettingsNotificationsLazyRoute: typeof SettingsNotificationsLazyRoute
   SettingsPreferencesLazyRoute: typeof SettingsPreferencesLazyRoute
   SettingsSecurityLazyRoute: typeof SettingsSecurityLazyRoute
@@ -704,6 +727,7 @@ const rootRouteChildren: RootRouteChildren = {
   CollectionsNewLazyRoute: CollectionsNewLazyRoute,
   LearningCreateLazyRoute: LearningCreateLazyRoute,
   SettingsBillingLazyRoute: SettingsBillingLazyRoute,
+  SettingsModelsLazyRoute: SettingsModelsLazyRoute,
   SettingsNotificationsLazyRoute: SettingsNotificationsLazyRoute,
   SettingsPreferencesLazyRoute: SettingsPreferencesLazyRoute,
   SettingsSecurityLazyRoute: SettingsSecurityLazyRoute,
@@ -744,6 +768,7 @@ export const routeTree = rootRoute
         "/collections/new",
         "/learning/create",
         "/settings/billing",
+        "/settings/models",
         "/settings/notifications",
         "/settings/preferences",
         "/settings/security",
@@ -792,6 +817,9 @@ export const routeTree = rootRoute
     },
     "/settings/billing": {
       "filePath": "settings/billing.lazy.tsx"
+    },
+    "/settings/models": {
+      "filePath": "settings/models.lazy.tsx"
     },
     "/settings/notifications": {
       "filePath": "settings/notifications.lazy.tsx"
