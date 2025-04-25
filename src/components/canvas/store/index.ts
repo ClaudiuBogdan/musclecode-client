@@ -20,6 +20,7 @@ import {
 } from "../parser";
 import { useModelsStore } from "@/stores/models";
 import { toast } from "sonner";
+import { env } from "@/config/env";
 
 // --- Define Connection Status Type ---
 type ConnectionStatus =
@@ -55,8 +56,7 @@ export const useChatStore = create<ChatStore>()(
       let sseController: SSEController | null = null;
       let reconstructor: ReconstructorControls | null = null;
       // TODO: Move to config or env variable
-      const streamUrl =
-        "http://localhost:3000/api/v1/chat/messages/stream-complex";
+      const streamUrl = `${env.VITE_API_URL}/api/v1/chat/messages/stream-complex`;
 
       // --- Define Store-Internal Callbacks for Reconstructor & SSE ---
       // These use `set` to update the store state

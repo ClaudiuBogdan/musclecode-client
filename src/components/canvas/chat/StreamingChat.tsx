@@ -17,6 +17,7 @@ import {
   PartialJsonValue,
   ReconstructorControls,
 } from "../parser";
+import { env } from "@/config/env";
 
 // Define the type for the component's status
 type ConnectionStatus =
@@ -47,7 +48,7 @@ function StreamingChatDisplay() {
   const sseControllerRef = useRef<SSEController | null>(null);
 
   // Endpoint URL (update if your backend runs elsewhere)
-  const streamUrl = "http://localhost:3000/api/v1/chat/messages/stream-complex";
+  const streamUrl = `${env.VITE_API_URL}/api/v1/chat/messages/stream-complex`;
 
   // --- Callbacks for the Reconstructor (Passed during initialization) ---
   // These update the component's UI state (`message`, `status`, `error`)
