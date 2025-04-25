@@ -1,3 +1,5 @@
+import { Model } from "@/types/models";
+
 /**
  * Represents the author role in the chat.
  * - user: End-user interacting with the agent.
@@ -124,6 +126,14 @@ export interface PromptReferenceContext extends BaseContextBlock {
 }
 
 /**
+ * Represents a reference to a model provided as context.
+ */
+export interface ModelContext extends BaseContextBlock {
+  type: "model";
+  model: Model;
+}
+
+/**
  * Represents a reference to a canvas provided as context.
  */
 export interface GraphNodeContext extends BaseContextBlock {
@@ -152,7 +162,8 @@ export interface KeyValueContextBlock extends BaseContextBlock {
 export type ContextReference =
   | PromptReferenceContext
   | GraphNodeContext
-  | KeyValueContextBlock;
+  | KeyValueContextBlock
+  | ModelContext;
 
 // --------------- Chat Message ---------------
 

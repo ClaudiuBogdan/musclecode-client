@@ -74,6 +74,8 @@ export const getContextDisplayName = (context: ContextReference): string => {
   switch (context.type) {
     case "prompt":
       return context.prompt.name;
+    case "model":
+      return context.model.name;
     case "graph_node":
       return context.graph_node.id;
     case "key_value":

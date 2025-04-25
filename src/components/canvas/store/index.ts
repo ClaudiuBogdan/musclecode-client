@@ -8,6 +8,7 @@ import {
   ServerSentEvent,
   ContentBlock,
   ContextReference,
+  ModelContext,
 } from "../types";
 import { ChatStore, ChatStoreState } from "./types";
 import { listenToSSE, SSEController, SSECallbacks } from "@/lib/api/client";
@@ -17,6 +18,8 @@ import {
   PartialJsonValue,
   ReconstructorControls,
 } from "../parser";
+import { useModelsStore } from "@/stores/models";
+import { toast } from "sonner";
 
 // --- Define Connection Status Type ---
 type ConnectionStatus =
@@ -421,12 +424,28 @@ export const useChatStore = create<ChatStore>()(
             // REQUIRED: Construct payload based on backend API spec
             message: optimisticMessage, // Example: Send the user message
             // threadId: threadId, // Often needed
-            // context: thread.attachedContext || [], // Send context if backend requires
+            context: [] as ContextReference[], // Send context if backend requires
           };
           console.log("STORE: Sending trigger payload:", triggerPayload);
 
           // --- 5. Initiate SSE Connection ---
           try {
+            const geminiModel = useModelsStore.getState().getActiveModels().find(
+              (model) => model.provider === "gemini"
+            );
+
+            if (!geminiModel) {
+              throw new Error("No active Gemini model found");
+            }
+
+            const modelContext: ModelContext = {
+              id: geminiModel.id,
+              type: "model",
+              model: geminiModel,
+            };
+
+            triggerPayload.context.push(modelContext);
+
             const callbacks: SSECallbacks = {
               onOpen: _handleSSEOpen,
               onMessage: _handleSSEMessage,
@@ -454,6 +473,14 @@ export const useChatStore = create<ChatStore>()(
             );
             // sseController should be null already if setup failed
             // reconstructor will be cleaned up by _handleSSEError
+            // Remove the message from the thread
+            get()._addOrUpdateMessage({
+              ...optimisticMessage,
+              status: "failed",
+            });
+            toast.error("Failed to send message. Please try again.", {
+              description: err instanceof Error ? err.message : "Unknown error",
+            });
           }
         },
 
