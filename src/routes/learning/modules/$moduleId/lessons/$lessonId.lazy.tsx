@@ -9,14 +9,14 @@ import { LessonProgressBar } from "@/components/learning/LessonProgressBar";
 import { LessonChunkRenderer } from "@/components/learning/LessonChunkRenderer";
 import { LessonBody } from "@/types/lesson";
 
-export const Route = createLazyFileRoute("/learning/lessons/$id")({
+export const Route = createLazyFileRoute("/learning/modules/$moduleId/lessons/$lessonId")({
   component: LessonDetailPage,
 });
 
 function LessonDetailPage() {
-  const { id } = Route.useParams();
+  const { moduleId, lessonId } = Route.useParams();
   const navigate = useNavigate();
-  const { data: lesson, isLoading, error } = useLesson(id);
+  const { data: lesson, isLoading, error } = useLesson(lessonId);
   const [currentChunkIndex, setCurrentChunkIndex] = useState(0);
 
   // Reset chunk index when lesson changes
@@ -38,7 +38,7 @@ function LessonDetailPage() {
       // Last chunk - complete the lesson (navigate back or to results?)
       // For now, navigate back to the module
       if (lesson) {
-        navigate({ to: `/learning/modules/${lesson.moduleId}` });
+        navigate({ to: `/learning/modules/${moduleId}` });
       }
       return;
     }
@@ -63,7 +63,7 @@ function LessonDetailPage() {
   const handleClose = () => {
     // Navigate back to the module page or dashboard
     if (lesson) {
-      navigate({ to: `/learning/modules/${lesson.moduleId}` });
+      navigate({ to: `/learning/modules/${moduleId}` });
     } else {
       navigate({ to: '/learning/modules'});
     }

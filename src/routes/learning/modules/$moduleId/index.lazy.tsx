@@ -10,13 +10,13 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { AlertCircleIcon, BookIcon, BookOpenIcon, BarChartIcon } from "lucide-react";
 import { createLazyFileRoute } from "@tanstack/react-router";
 
-export const Route = createLazyFileRoute("/learning/modules/$id")({
+export const Route = createLazyFileRoute("/learning/modules/$moduleId/")({
   component: ModuleDetailPage,
 });
 
 function ModuleDetailPage() {
-  const { id } = Route.useParams();
-  const { data: module, isLoading, error } = useModule(id);
+  const { moduleId } = Route.useParams();
+  const { data: module, isLoading, error } = useModule(moduleId);
   
   // Mock progress for now - in a real app this would come from the user's progress data
   const progress = 25;
@@ -97,6 +97,7 @@ function ModuleDetailPage() {
                   {module.lessons.map((lesson, index) => (
                     <LessonCard 
                       key={lesson.id} 
+                      moduleId={moduleId}
                       lesson={lesson} 
                       index={index + 1} 
                     />

@@ -7,6 +7,7 @@ import {
   LayoutDashboard,
   Code2,
   Library,
+  BookOpen,
 } from "lucide-react";
 import { Link, useMatches } from "@tanstack/react-router";
 import { cn } from "@/lib/utils";
@@ -41,6 +42,11 @@ const mainItems = [
     title: "Collections",
     url: "/collections",
     icon: Library,
+  },
+  {
+    title: "Learning",
+    url: "/learning",
+    icon: BookOpen,
   },
 ];
 

@@ -21,7 +21,7 @@ export const ModuleCard: React.FC<ModuleCardProps> = ({ module }) => {
   const description = module.body?.description as string || "No description available";
 
   const navigateToModule = () => {
-    navigate({ to: "/learning/modules/$id", params: { id: module.id } });
+    navigate({ to: "/learning/modules/$moduleId", params: { moduleId: module.id } });
   };
 
   return (

@@ -7,11 +7,12 @@ import { useNavigate } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 
 interface LessonCardProps {
+  moduleId: string;
   lesson: LessonEntity;
   index: number;
 }
 
-export const LessonCard: React.FC<LessonCardProps> = ({ lesson, index }) => {
+export const LessonCard: React.FC<LessonCardProps> = ({ moduleId, lesson, index }) => {
   const navigate = useNavigate();
   const exerciseCount = lesson.exercises?.length || 0;
   
@@ -23,7 +24,7 @@ export const LessonCard: React.FC<LessonCardProps> = ({ lesson, index }) => {
   const contentPreview = content ? content.slice(0, 100) + (content.length > 100 ? '...' : '') : 'No content available';
 
   const navigateToLesson = () => {
-    navigate({ to: "/learning/lessons/$id", params: { id: lesson.id } });
+    navigate({ to: "/learning/modules/$moduleId/lessons/$lessonId", params: { moduleId, lessonId: lesson.id } });
   };
 
   return (

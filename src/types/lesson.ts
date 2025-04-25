@@ -1,7 +1,7 @@
 export type ContentStatus = 'draft' | 'published' | 'archived';
 
 // Forward declare LessonBody if needed for LessonEntity
-interface LessonBody {
+export interface LessonBody {
   title: string;
   description: string;
   chunks: LessonChunk[];
