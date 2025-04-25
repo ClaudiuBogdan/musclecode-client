@@ -376,8 +376,6 @@ export function listenToSSE(
 ): SSEController {
   const { onOpen, onMessage, onError, onClose } = callbacks;
   const abortController = new AbortController();
-  // Flag to track manual disconnects vs unexpected closures
-  let isManualDisconnect = false;
 
   // Use a wrapper function to ensure auth headers are fetched asynchronously
   const connect = async () => {
@@ -479,36 +477,35 @@ export function listenToSSE(
         // Called when the connection is closed (by server or abort)
         onclose() {
           logger.info("SSE connection closed.");
-          if (isManualDisconnect) {
-            // Manual disconnect: notify close
-            onClose?.();
-          } else {
-            // Unexpected close: attempt to reconnect
-            logger.warn("SSE connection closed unexpectedly, retrying...");
-            connect();
-          }
+          // Don't call onError here, as this is a clean close or intentional disconnect
+          onClose?.(); // Call user's onClose callback
         },
 
-        // Called on errors or exceptions; returning allows automatic retries
+        // Called on network errors or errors thrown from onopen/onmessage
         onerror(err: unknown) {
-          // Handle intentional abort (manual disconnect)
+          // Handle intentional abort (manual disconnect) using DOMException
           if (err instanceof DOMException && err.name === "AbortError") {
             logger.warn("SSE connection aborted (likely intentional disconnect).");
-            return; // Do not retry aborts
+            onClose?.(); // Treat abort like a close
+            return; // Do not propagate aborts
           }
           logger.error("SSE error occurred", { error: err });
-          // Handle authentication errors (non-recoverable)
-          if (err instanceof AuthError) {
+          // Handle AuthError or existing AppError by rethrowing to stop retries
+          if (err instanceof AuthError || err instanceof AppError) {
             onError(err);
-            throw err; // Stop retries on auth errors
+            throw err;
           }
-          // For other errors, notify and retry
+          // Wrap unknown errors for consistency
           const description =
             err instanceof Error ? err.message : String(err ?? "Unknown SSE error");
           const appErr = AppError.fromError(new Error(description), "api");
           onError(appErr);
-          return; // Return to allow fetchEventSource to retry after a delay
+          throw appErr; // Stop retries on fatal errors
         },
+
+        // Optional: Customize retry behavior if needed
+        // openWhenHidden: false, // Don't connect if tab is hidden
+        // retry: 3000, // Retry delay in ms
       });
     } catch (error: unknown) {
       // Catch errors from getAuthHeaders or initial setup before fetchEventSource runs
@@ -526,8 +523,6 @@ export function listenToSSE(
   return {
     disconnect: () => {
       logger.info("Disconnecting SSE connection...");
-      // Mark as manual before aborting to prevent auto-reconnect
-      isManualDisconnect = true;
       abortController.abort(); // Signal fetchEventSource to stop
       onClose?.(); // Immediately invoke onClose for faster UI feedback if desired
     },
