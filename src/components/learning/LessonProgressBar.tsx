@@ -1,7 +1,7 @@
 import React from 'react'
 import { LessonChunk } from '@/types/lesson'
 import { motion } from 'framer-motion'
-import { HelpCircleIcon, LightbulbIcon } from 'lucide-react'
+import { HelpCircleIcon, LightbulbIcon, CheckSquareIcon } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 interface LessonProgressBarProps {
@@ -19,6 +19,7 @@ export const LessonProgressBar: React.FC<LessonProgressBarProps> = ({
   const leftPct = (idx: number) => (idx / denom) * 100
 
   const getIconForChunk = (type: LessonChunk['type']) => {
+    if (type === 'quiz') return CheckSquareIcon
     if (type === 'question') return HelpCircleIcon
     if (type === 'flashcard') return LightbulbIcon
     return null

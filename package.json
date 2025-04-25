@@ -89,7 +89,7 @@
     "immer": "^10.1.1",
     "katex": "^0.16.21",
     "keycloak-js": "^26.1.3",
-    "lucide-react": "^0.479.0",
+    "lucide-react": "^0.503.0",
     "msw": "^2.7.3",
     "openai": "^4.87.3",
     "partial-json": "^0.1.7",
