@@ -446,8 +446,8 @@ export function listenToSSE(
         // Called for each message received
         onmessage(event: EventSourceMessage) {
           logger.debug(
-            `SSE message received: id=${event.id}, event=${event.event}`
-          ); // Log event details
+            `SSE message received: id=${event.id}, event=${event.event}, data_length=${event.data?.length ?? 0}`
+          ); // Log event details including data length
           if (event.event === "ping" || !event.data) {
             // Ignore pings or empty data fields often used as keep-alives
             logger.debug("SSE ping or empty data ignored");
@@ -461,20 +461,14 @@ export function listenToSSE(
               data: event.data,
               error: parseError,
             });
-            // Decide how to handle non-JSON data: pass raw or trigger error?
-            // Option 1: Pass raw string data
-            // onMessage(event.data);
-            // Option 2: Trigger error callback
+            // Treat JSON parsing errors as fatal because the client cannot process corrupted data
             onError(
               new AppError("Failed to parse SSE message data", {
                 type: "runtime",
                 code: "SSE_PARSE_ERROR",
                 severity: "error",
                 isRecoverable: false,
-                context: {
-                  originalError: parseError,
-                  data: event.data,
-                },
+                context: { originalError: parseError, data: event.data },
               })
             );
           }
@@ -489,33 +483,24 @@ export function listenToSSE(
 
         // Called on network errors or errors thrown from onopen/onmessage
         onerror(err: unknown) {
-          logger.error("SSE error occurred", { error: err });
-          // fetchEventSource wraps errors, potentially losing original type.
-          // We check common cases or wrap as AppError.
-          if (err instanceof Error && err.name === "AbortError") {
-            logger.warn(
-              "SSE connection aborted (likely intentional disconnect)."
-            );
+          // Handle intentional abort (manual disconnect) using DOMException
+          if (err instanceof DOMException && err.name === "AbortError") {
+            logger.warn("SSE connection aborted (likely intentional disconnect).");
             onClose?.(); // Treat abort like a close
-            return; // Don't propagate abort errors via onError callback
+            return; // Do not propagate aborts
           }
-
-          // If the error was already handled (e.g., 401/403 threw in onopen), rethrow it.
-          // fetchEventSource might catch and pass it here again.
+          logger.error("SSE error occurred", { error: err });
+          // Handle AuthError or existing AppError by rethrowing to stop retries
           if (err instanceof AuthError || err instanceof AppError) {
             onError(err);
-            throw err; // IMPORTANT: Need to rethrow errors from onopen to stop fetchEventSource retrying
+            throw err;
           }
-
           // Wrap unknown errors for consistency
-          const appErr = AppError.fromError(
-            err instanceof Error
-              ? err
-              : new Error(String(err ?? "Unknown SSE error")),
-            "api" // Assume API/network related
-          );
+          const description =
+            err instanceof Error ? err.message : String(err ?? "Unknown SSE error");
+          const appErr = AppError.fromError(new Error(description), "api");
           onError(appErr);
-          throw appErr; // IMPORTANT: Need to rethrow to stop retries on fatal errors
+          throw appErr; // Stop retries on fatal errors
         },
 
         // Optional: Customize retry behavior if needed

@@ -21,6 +21,7 @@ import {
 import { useModelsStore } from "@/stores/models";
 import { toast } from "sonner";
 import { env } from "@/config/env";
+import { logger } from "@/lib/logger";
 
 // --- Define Connection Status Type ---
 type ConnectionStatus =
@@ -179,17 +180,14 @@ export const useChatStore = create<ChatStore>()(
       };
 
       const _handleSSEClose = () => {
-        console.log("STORE SSE Close triggered.");
+        logger.info("STORE SSE Close triggered.");
         // Connection closed - update status if not already completed or errored
         set((state) => {
           if (
             state.connectionStatus !== "completed" &&
             state.connectionStatus !== "error"
           ) {
-            console.log(
-              "STORE: Setting status to 'closed'. Previous:",
-              state.connectionStatus
-            );
+            logger.info("STORE: Setting status to 'closed'.");
             state.connectionStatus = "closed";
             // Clear potentially incomplete streaming data if closed unexpectedly
             state.streamingAssistantMessage = null;
@@ -197,11 +195,7 @@ export const useChatStore = create<ChatStore>()(
             state.connectionError =
               state.connectionError ?? "Connection closed unexpectedly."; // Set error if none exists
           } else {
-            console.log(
-              "STORE: Status is already",
-              state.connectionStatus,
-              ", not changing to 'closed'."
-            );
+            logger.info("STORE: Status is already 'closed', not changing.");
           }
         });
         reconstructor?.handleSSEClose(); // Notify reconstructor
@@ -249,7 +243,7 @@ export const useChatStore = create<ChatStore>()(
         createThread: async (title?: string, context?: ContextReference[]) => {
           // --- Disconnect stream before creating a new thread and switching ---
           if (sseController) {
-            console.log(
+            logger.info(
               "Disconnecting active stream before creating new thread."
             );
             get().disconnectStream(); // Ensure clean state before switching
@@ -297,7 +291,7 @@ export const useChatStore = create<ChatStore>()(
           if (threads[threadId] && threadId !== currentId) {
             // Disconnect stream if switching away from the thread with an active stream
             if (sseController) {
-              console.log("Disconnecting active stream due to thread switch.");
+              logger.info("Disconnecting active stream due to thread switch.");
               get().disconnectStream(); // This will also reset state via _handleSSEClose
             } else {
               // If no controller, still reset local streaming state manually
@@ -331,7 +325,7 @@ export const useChatStore = create<ChatStore>()(
 
           // Disconnect stream if deleting the active thread
           if (threadId === currentId && sseController) {
-            console.log(
+            logger.info(
               "Disconnecting active stream due to deleting active thread."
             );
             get().disconnectStream(); // Disconnect first
@@ -426,7 +420,6 @@ export const useChatStore = create<ChatStore>()(
             // threadId: threadId, // Often needed
             context: [] as ContextReference[], // Send context if backend requires
           };
-          console.log("STORE: Sending trigger payload:", triggerPayload);
 
           // --- 5. Initiate SSE Connection ---
           try {
@@ -487,13 +480,13 @@ export const useChatStore = create<ChatStore>()(
         // --- Action to manually disconnect ---
         disconnectStream: () => {
           if (sseController) {
-            console.log("STORE: Disconnecting stream manually...");
+            logger.info("STORE: Disconnecting stream manually...");
             sseController.disconnect(); // This triggers onClose -> _handleSSEClose eventually
             // State updates (status, controller = null) are handled by _handleSSEClose
             // Immediately set status to 'closed' for faster UI feedback? Or wait for onClose?
             // Let's wait for onClose to keep logic centralized.
           } else {
-            console.log("STORE: No active stream to disconnect.");
+            logger.info("STORE: No active stream to disconnect.");
             // Manually reset state if somehow out of sync
             const status = get().connectionStatus;
             if (
@@ -581,7 +574,7 @@ export const useChatStore = create<ChatStore>()(
               thread.messages.push(message);
             }
 
-            console.log("STORE: Added/updated message:", message, thread);
+            logger.info("STORE: Added/updated message:");
 
             thread.messages.sort(
               (a, b) =>
