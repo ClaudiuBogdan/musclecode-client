@@ -45,10 +45,6 @@ export const LessonContentRenderer: React.FC<LessonContentRendererProps> = ({ co
             return <QuestionRenderer 
                       key={item.id || index} 
                       lessonQuestion={contentItem} 
-                      onComplete={(isCorrect, score, maxScore) => { 
-                        // Placeholder: Log completion status or implement actual logic
-                        console.log(`Question ${item.id} completed: Correct=${isCorrect}, Score=${score}/${maxScore}`); 
-                      }} 
                     />;
           default:
             return (

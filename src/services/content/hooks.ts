@@ -1,9 +1,12 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { 
   fetchModule, 
   fetchModules, 
   fetchLesson, 
-  fetchExercise
+  fetchExercise,
+  checkQuestionAnswer,
+  CheckAnswerPayload,
+  CheckAnswerResponse
 } from "./api";
 
 export function useModules() {
@@ -35,4 +38,17 @@ export function useExercise(id: string) {
     queryFn: () => fetchExercise(id),
     enabled: !!id,
   });
-} 
+}
+
+// TODO add hook to check the question
+
+// Hook for checking a question answer
+export function useCheckQuestionAnswer() {
+  return useMutation<
+    CheckAnswerResponse,
+    Error,
+    { questionId: string; payload: CheckAnswerPayload }
+  >({
+    mutationFn: ({ questionId, payload }) => checkQuestionAnswer(questionId, payload),
+  });
+}

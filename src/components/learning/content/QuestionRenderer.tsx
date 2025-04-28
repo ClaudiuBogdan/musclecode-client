@@ -1,62 +1,45 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 import { LessonQuestion } from '@/types/lesson';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { CheckCircle2, XCircle, ChevronLeft, ChevronRight, Lightbulb } from 'lucide-react';
+import { CheckCircle2, XCircle, ChevronRight, Lightbulb, Loader2, AlertCircle } from 'lucide-react';
+import { useCheckQuestionAnswer } from '@/services/content/hooks';
+import { CheckAnswerResponse } from '@/services/content/api';
 
 // Props now directly use LessonQuestion and add callbacks
 interface QuestionRendererProps {
-  lessonQuestion: LessonQuestion;
-  onComplete: (isCorrect: boolean, score: number, maxScore: number) => void; // Callback remains
+  lessonQuestion: LessonQuestion & { id: string };
 }
 
-interface EvaluationResult {
-  score: number;
-  maxScore: number;
-  isCorrect: boolean;
-  feedbackItems: {
-    isMet: boolean;
-    explanation: string;
-    points: number;
-  }[];
-}
+// Use CheckAnswerResponse as the type for evaluationResult
+type EvaluationResult = CheckAnswerResponse;
 
 export const QuestionRenderer: React.FC<QuestionRendererProps> = ({
   lessonQuestion,
-  onComplete,
 }) => {
-  const { question, correctionCriteria } = lessonQuestion;
+  const { id: questionId, question, correctionCriteria } = lessonQuestion;
   const [userAnswer, setUserAnswer] = useState('');
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [evaluationResult, setEvaluationResult] = useState<EvaluationResult | null>(null);
-  const [showHint, setShowHint] = useState(false); // Basic hint visibility
+  const [showHint, setShowHint] = useState(false);
 
-  const maxScore = correctionCriteria.reduce((sum, criterion) => sum + criterion.points, 0);
+  // Use the mutation hook
+  const { mutate: checkAnswer, isPending, isError, error, data: apiResult, reset } = useCheckQuestionAnswer();
 
-  const evaluateAnswer = (): EvaluationResult => {
-    // MOCK IMPLEMENTATION: Assume incorrect answer for now
-    const score = 0;
-    const feedbackItems = correctionCriteria.map(criterion => ({
-      isMet: false, // Force all criteria to be unmet
-      explanation: criterion.explanation,
-      points: criterion.points,
-    }));
-
-    return {
-      score,
-      maxScore,
-      isCorrect: false, // Force incorrect result
-      feedbackItems,
-    };
-  };
+  // Effect to update state when API call succeeds
+  useEffect(() => {
+    if (apiResult) {
+      setEvaluationResult(apiResult);
+      setIsSubmitted(true);
+    }
+  }, [apiResult]);
 
   const handleSubmit = () => {
-    const result = evaluateAnswer();
-    setEvaluationResult(result);
-    setIsSubmitted(true);
-    // Optionally call onComplete immediately or wait for "Finish" click
+    if (!userAnswer.trim()) return;
+    // Call the mutation
+    checkAnswer({ questionId, payload: { userAnswer, lessonQuestion } });
   };
 
   const handleRedo = () => {
@@ -64,13 +47,7 @@ export const QuestionRenderer: React.FC<QuestionRendererProps> = ({
     setEvaluationResult(null);
     setUserAnswer('');
     setShowHint(false);
-  };
-
-  const handleFinish = () => {
-    if (evaluationResult) {
-      onComplete(evaluationResult.isCorrect, evaluationResult.score, evaluationResult.maxScore);
-    }
-    // Add navigation logic here if needed
+    reset(); // Reset mutation state
   };
 
   const toggleHint = () => {
@@ -102,14 +79,21 @@ export const QuestionRenderer: React.FC<QuestionRendererProps> = ({
            <p className="text-lg font-semibold">{question}</p>
 
           {!isSubmitted ? (
-            <Textarea
-              placeholder="Type your answer here..."
-              value={userAnswer}
-              onChange={(e) => setUserAnswer(e.target.value)}
-              rows={5}
-              className="resize-none border focus:border-purple-500 focus:ring-purple-500"
-              disabled={isSubmitted}
-            />
+            <div className="relative">
+              <Textarea
+                placeholder="Type your answer here..."
+                value={userAnswer}
+                onChange={(e) => setUserAnswer(e.target.value)}
+                rows={5}
+                className="resize-none border focus:border-purple-500 focus:ring-purple-500"
+                disabled={isPending || isSubmitted}
+              />
+              {isPending && (
+                <div className="absolute inset-0 flex items-center justify-center bg-white/50 dark:bg-black/30 rounded-md">
+                  <Loader2 className="h-6 w-6 animate-spin text-purple-600" />
+                </div>
+              )}
+            </div>
           ) : (
              // Display submitted answer (read-only)
             <Textarea
@@ -140,13 +124,13 @@ export const QuestionRenderer: React.FC<QuestionRendererProps> = ({
                 <span className="font-semibold text-lg text-black dark:text-white">{evaluationResult.score}/{evaluationResult.maxScore}</span>
               </h3>
               {evaluationResult.feedbackItems.map((item, index) => (
-                <Alert key={index} className={`border-l-4 p-4 ${item.isMet ? 'border-green-500 bg-green-50 dark:bg-green-950/30 text-green-800 dark:text-green-300' : 'border-red-500 bg-red-50 dark:bg-red-950/30 text-red-800 dark:text-red-300'}`}>
+                <Alert key={index} className={`border-l-4 p-4 ${item.isCorrect ? 'border-green-500 bg-green-50 dark:bg-green-950/30 text-green-800 dark:text-green-300' : 'border-red-500 bg-red-50 dark:bg-red-950/30 text-red-800 dark:text-red-300'}`}>
                   <div className="flex items-start gap-3">
-                     {item.isMet ? <CheckCircle2 className="h-5 w-5 flex-shrink-0 text-green-600 dark:text-green-400" /> : <XCircle className="h-5 w-5 flex-shrink-0 text-red-600 dark:text-red-400" />}
+                     {item.isCorrect ? <CheckCircle2 className="h-5 w-5 flex-shrink-0 text-green-600 dark:text-green-400" /> : <XCircle className="h-5 w-5 flex-shrink-0 text-red-600 dark:text-red-400" />}
                      <div className="flex-grow">
                        <AlertDescription>
                          {/* Display feedback based on explanation and met status */} 
-                         {item.isMet 
+                         {item.isCorrect 
                            ? `Correct: ${item.explanation}` 
                            : `Incorrect: ${item.explanation}`}
                        </AlertDescription>
@@ -175,39 +159,44 @@ export const QuestionRenderer: React.FC<QuestionRendererProps> = ({
       </Card>
 
       {/* Footer Actions */}
-      {isSubmitted && evaluationResult && (
-         <div className={`p-4 rounded-md flex items-center justify-between ${evaluationResult.isCorrect ? 'bg-green-100 dark:bg-green-900/40' : 'bg-red-100 dark:bg-red-900/40'}`}>
-           <div className="flex items-center gap-2">
-             {evaluationResult.isCorrect ? <CheckCircle2 className="h-6 w-6 text-green-600 dark:text-green-400" /> : <XCircle className="h-6 w-6 text-red-600 dark:text-red-400" />}
-             <span className={`font-semibold ${evaluationResult.isCorrect ? 'text-green-700 dark:text-green-300' : 'text-red-700 dark:text-red-300'}`}>
-               {evaluationResult.isCorrect ? 'Correct' : 'Incorrect'}
-             </span>
-           </div>
-           <div className="flex items-center gap-2">
-              {!evaluationResult.isCorrect && (
-                 <Button variant="outline" size="sm" onClick={handleRedo}>
-                    Redo
-                 </Button>
-              )}
-               {evaluationResult.isCorrect && (
-                  <Button variant="outline" size="sm" > {/* Add navigation logic */}
-                     <ChevronLeft className="h-4 w-4 mr-1"/> Previous
-                  </Button>
-               )}
-             <Button size="sm" onClick={handleFinish} className={`${evaluationResult.isCorrect ? 'bg-green-600 hover:bg-green-700' : 'bg-red-600 hover:bg-red-700'} text-white`}>
-                Finish <ChevronRight className="h-4 w-4 ml-1"/>
-              </Button>
-           </div>
-         </div>
-       )}
+      {isSubmitted && (
+        <div className="flex justify-end p-4 border-t">
+          <Button variant="outline" onClick={handleRedo}>
+            Redo
+          </Button>
+        </div>
+      )}
 
        {/* Initial Submit Button */}
         {!isSubmitted && (
            <div className="flex justify-end p-4 border-t">
-              <Button onClick={handleSubmit} disabled={!userAnswer.trim()} className="bg-purple-600 hover:bg-purple-700 text-white">
-                  Check Answer <ChevronRight className="h-4 w-4 ml-1"/>
-              </Button>
+              <Button 
+                 onClick={handleSubmit} 
+                 disabled={!userAnswer.trim() || isPending}
+                 className="bg-purple-600 hover:bg-purple-700 text-white flex items-center gap-1.5"
+               >
+                 {isPending ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin" /> Checking...
+                    </>
+                 ) : (
+                    <>
+                     Check Answer <ChevronRight className="h-4 w-4"/>
+                   </>
+                 )}
+               </Button>
            </div>
+        )}
+
+        {/* API Error Message */} 
+        {isError && (
+           <Alert variant="destructive" className="mt-4">
+              <AlertCircle className="h-4 w-4" />
+              <AlertTitle>Error</AlertTitle>
+              <AlertDescription>
+                {error?.message || 'Failed to check answer. Please try again.'}
+              </AlertDescription>
+           </Alert>
         )}
     </div>
   );

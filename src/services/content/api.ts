@@ -1,4 +1,6 @@
 import { apiClient } from "@/lib/api/client";
+import { useModelsStore } from "@/stores/models";
+import { LessonQuestion } from "@/types/lesson";
 
 export interface ContentNode {
   id: string;
@@ -59,3 +61,31 @@ export async function fetchExercise(id: string): Promise<ExerciseEntity> {
   const response = await apiClient.get<ExerciseEntity>(`/api/v1/content/exercises/${id}`);
   return response.data;
 } 
+
+
+export interface CheckAnswerPayload {
+  userAnswer: string;
+  lessonQuestion: LessonQuestion;
+}
+
+export interface CheckAnswerResponse {
+  score: number;
+  maxScore: number;
+  isCorrect: boolean;
+  feedbackItems: {
+    isCorrect: boolean;
+    explanation: string;
+    points: number;
+  }[];
+}
+
+export async function checkQuestionAnswer(questionId: string, payload: CheckAnswerPayload): Promise<CheckAnswerResponse> {
+  // Optional: Use the user model api key
+  const model = useModelsStore.getState().getActiveModels()[0];
+
+  const response = await apiClient.post<CheckAnswerResponse>(`/api/v1/content/questions/${questionId}/check`, {
+    ...payload,
+    model
+  });
+  return response.data;
+}
