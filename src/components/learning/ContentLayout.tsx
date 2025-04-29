@@ -17,7 +17,7 @@ export const ContentLayout: React.FC<ContentLayoutProps> = ({
   backLink,
 }) => {
   const navigate = useNavigate();
-  const [isChatVisible, setIsChatVisible] = useState(false);
+  const [isChatVisible, setIsChatVisible] = useState(true);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   return (
@@ -61,13 +61,6 @@ export const ContentLayout: React.FC<ContentLayoutProps> = ({
       
       {/* Main content */}
       <div className="flex flex-1 overflow-hidden">
-        {/* Content area */}
-        <div className={`${isChatVisible ? "w-full md:w-3/5" : "w-full"} overflow-y-auto transition-all duration-300 ease-in-out`}>
-          <div className="p-4 md:p-6">
-            {children}
-          </div>
-        </div>
-        
         {/* Chat panel */}
         {isChatVisible && (
           <div className="hidden md:block w-2/5 border-l border-gray-200 dark:border-gray-800 transition-all duration-300 ease-in-out">
@@ -75,6 +68,12 @@ export const ContentLayout: React.FC<ContentLayoutProps> = ({
           </div>
         )}
         
+        {/* Content area */}
+        <div className={`${isChatVisible ? "w-full md:w-3/5" : "w-full"} overflow-y-auto transition-all duration-300 ease-in-out`}>
+          <div className="p-4 md:p-6">
+            {children}
+          </div>
+        </div>
         {/* Mobile Chat panel (overlay) */}
         {isChatVisible && (
           <div className="md:hidden fixed inset-0 z-50 bg-white dark:bg-gray-950">
