@@ -14,15 +14,10 @@ interface LessonCardProps {
 
 export const LessonCard: React.FC<LessonCardProps> = ({ moduleId, lesson, index }) => {
   const navigate = useNavigate();
-  const exerciseCount = lesson.exercises?.length || 0;
   
   // Access body properties safely with optional chaining and defaults
   const title = lesson.body?.title as string || "Untitled Lesson";
-  const content = lesson.body?.content as string || "";
   
-  // Create a safe short content preview
-  const contentPreview = content ? content.slice(0, 100) + (content.length > 100 ? '...' : '') : 'No content available';
-
   const navigateToLesson = () => {
     navigate({ to: "/learning/modules/$moduleId/lessons/$lessonId", params: { moduleId, lessonId: lesson.id } });
   };
@@ -48,16 +43,7 @@ export const LessonCard: React.FC<LessonCardProps> = ({ moduleId, lesson, index 
           </div>
         </CardHeader>
         <CardContent>
-          <CardDescription className="mb-4 line-clamp-2">
-            {contentPreview}
-          </CardDescription>
-          
           <div className="flex justify-between items-center">
-            <div className="flex items-center gap-1 text-sm text-gray-500 dark:text-gray-400">
-              <BookIcon className="h-4 w-4" />
-              <span>{exerciseCount} {exerciseCount === 1 ? "Exercise" : "Exercises"}</span>
-            </div>
-            
             <Button 
               variant="ghost" 
               className="gap-1"

@@ -36,7 +36,7 @@ export const AddModelTutorial = () => {
                         <img
                             src={getApiKeyAiStudio}
                             alt="Google AI Studio - 'Get API Key' button location in sidebar"
-                            className="object-contain w-full h-auto"
+                            className="object-contain w-full h-auto max-w-full"
                         />
                     </div>
                      <p>
@@ -46,7 +46,7 @@ export const AddModelTutorial = () => {
                         <img
                             src={createApiKeyButtonAiStudio}
                             alt="Google AI Studio - 'Create API Key' button"
-                            className="object-contain w-full h-auto"
+                            className="object-contain w-full h-auto max-w-full"
                         />
                     </div>
                     <p>
@@ -56,7 +56,7 @@ export const AddModelTutorial = () => {
                         <img
                             src={createApiKeyInNewProjectAiStudio}
                             alt="Google AI Studio - 'Create API key in new project' option"
-                            className="object-contain w-full h-auto"
+                            className="object-contain w-full h-auto max-w-full"
                         />
                     </div>
                     <p>
@@ -66,7 +66,7 @@ export const AddModelTutorial = () => {
                         <img
                             src={copyGeneratedKeyAiStudio}
                             alt="Google AI Studio - Copy generated API key"
-                            className="object-contain w-full h-auto"
+                            className="object-contain w-full h-auto max-w-full"
                         />
                     </div>
                 </CardContent>
@@ -91,21 +91,21 @@ export const AddModelTutorial = () => {
                         <img
                             src={addNewModelMuscleCode}
                             alt="MuscleCode - Add New Model button in Models page"
-                            className="object-contain w-full h-auto"
+                            className="object-contain w-full h-auto max-w-full"
                          />
                     </div>
                     <p>
                         In the form that appears:
-                        <ul className="list-disc list-inside ml-4 mt-2 space-y-1">
-                            <li>Give your model a recognizable <span className="font-semibold">Name</span> (e.g., "My Gemini Pro").</li>
-                            <li>Paste the <span className="font-semibold">API Key</span> you copied from Google AI Studio.</li>
-                        </ul>
                     </p>
+                    <ul className="list-disc list-inside ml-4 mt-2 space-y-1">
+                        <li>Give your model a recognizable <span className="font-semibold">Name</span> (e.g., "My Gemini Pro").</li>
+                        <li>Paste the <span className="font-semibold">API Key</span> you copied from Google AI Studio.</li>
+                    </ul>
                     <div className="border rounded-lg overflow-hidden mx-auto mt-2 mb-4">
                         <img
                             src={addNewModelFormMuscleCode}
                             alt="MuscleCode - Add New Model form with Name and API Key fields"
-                            className="object-contain w-full h-auto"
+                            className="object-contain w-full h-auto max-w-full"
                          />
                     </div>
                     <p>
