@@ -7,14 +7,14 @@ import { Toaster } from "sonner";
 import { AuthProvider } from "@/components/auth/AuthProvider";
 import { ErrorProvider } from "@/contexts/ErrorContext";
 import { createRouteGuard } from "@/lib/auth/route-guard";
-import { createOnboardingGuard } from "@/lib/onboarding/route-guard";
+// import { createOnboardingGuard } from "@/lib/onboarding/route-guard";
 import { HotkeysProvider } from "react-hotkeys-hook";
 
 const queryClient = new QueryClient();
 
 // Create route guards
 const authGuard = createRouteGuard();
-const onboardingGuard = createOnboardingGuard();
+// const onboardingGuard = createOnboardingGuard();
 
 export const Route = createRootRoute({
   component: () => (
@@ -38,8 +38,9 @@ export const Route = createRootRoute({
       </QueryClientProvider>
     </ErrorProvider>
   ),
-  beforeLoad: async (path) => {
+  beforeLoad: async () => {
     await authGuard();
-    await onboardingGuard(path.location.pathname);
+    // TODO: enable when onboarding is update to the new flow
+    // await onboardingGuard(path.location.pathname);
   },
 });
