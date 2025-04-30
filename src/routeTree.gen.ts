@@ -13,7 +13,6 @@ import { createFileRoute } from '@tanstack/react-router'
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
-import { Route as TmpImport } from './routes/tmp'
 import { Route as LoginImport } from './routes/login'
 import { Route as SettingsProfileImport } from './routes/settings/profile'
 
@@ -76,12 +75,6 @@ const ErrorTestLazyRoute = ErrorTestLazyImport.update({
   path: '/error-test',
   getParentRoute: () => rootRoute,
 } as any).lazy(() => import('./routes/error-test.lazy').then((d) => d.Route))
-
-const TmpRoute = TmpImport.update({
-  id: '/tmp',
-  path: '/tmp',
-  getParentRoute: () => rootRoute,
-} as any)
 
 const LoginRoute = LoginImport.update({
   id: '/login',
@@ -310,13 +303,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginImport
       parentRoute: typeof rootRoute
     }
-    '/tmp': {
-      id: '/tmp'
-      path: '/tmp'
-      fullPath: '/tmp'
-      preLoaderRoute: typeof TmpImport
-      parentRoute: typeof rootRoute
-    }
     '/error-test': {
       id: '/error-test'
       path: '/error-test'
@@ -500,7 +486,6 @@ declare module '@tanstack/react-router' {
 export interface FileRoutesByFullPath {
   '/': typeof IndexLazyRoute
   '/login': typeof LoginRoute
-  '/tmp': typeof TmpRoute
   '/error-test': typeof ErrorTestLazyRoute
   '/unauthorized': typeof UnauthorizedLazyRoute
   '/settings/profile': typeof SettingsProfileRoute
@@ -531,7 +516,6 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexLazyRoute
   '/login': typeof LoginRoute
-  '/tmp': typeof TmpRoute
   '/error-test': typeof ErrorTestLazyRoute
   '/unauthorized': typeof UnauthorizedLazyRoute
   '/settings/profile': typeof SettingsProfileRoute
@@ -563,7 +547,6 @@ export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexLazyRoute
   '/login': typeof LoginRoute
-  '/tmp': typeof TmpRoute
   '/error-test': typeof ErrorTestLazyRoute
   '/unauthorized': typeof UnauthorizedLazyRoute
   '/settings/profile': typeof SettingsProfileRoute
@@ -596,7 +579,6 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/login'
-    | '/tmp'
     | '/error-test'
     | '/unauthorized'
     | '/settings/profile'
@@ -626,7 +608,6 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/login'
-    | '/tmp'
     | '/error-test'
     | '/unauthorized'
     | '/settings/profile'
@@ -656,7 +637,6 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/login'
-    | '/tmp'
     | '/error-test'
     | '/unauthorized'
     | '/settings/profile'
@@ -688,7 +668,6 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexLazyRoute: typeof IndexLazyRoute
   LoginRoute: typeof LoginRoute
-  TmpRoute: typeof TmpRoute
   ErrorTestLazyRoute: typeof ErrorTestLazyRoute
   UnauthorizedLazyRoute: typeof UnauthorizedLazyRoute
   SettingsProfileRoute: typeof SettingsProfileRoute
@@ -719,7 +698,6 @@ export interface RootRouteChildren {
 const rootRouteChildren: RootRouteChildren = {
   IndexLazyRoute: IndexLazyRoute,
   LoginRoute: LoginRoute,
-  TmpRoute: TmpRoute,
   ErrorTestLazyRoute: ErrorTestLazyRoute,
   UnauthorizedLazyRoute: UnauthorizedLazyRoute,
   SettingsProfileRoute: SettingsProfileRoute,
@@ -760,7 +738,6 @@ export const routeTree = rootRoute
       "children": [
         "/",
         "/login",
-        "/tmp",
         "/error-test",
         "/unauthorized",
         "/settings/profile",
@@ -793,9 +770,6 @@ export const routeTree = rootRoute
     },
     "/login": {
       "filePath": "login.tsx"
-    },
-    "/tmp": {
-      "filePath": "tmp.tsx"
     },
     "/error-test": {
       "filePath": "error-test.lazy.tsx"
