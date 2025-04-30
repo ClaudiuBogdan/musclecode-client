@@ -24,7 +24,7 @@ export const Route = createRootRoute({
           <HotkeysProvider>
             <SidebarProvider>
               <AuthProvider>
-                <div className="flex h-screen w-screen overflow-auto">
+                <div className="flex h-dvh w-screen overflow-auto">
                   <AppSidebar />
                   <SidebarInset>
                     <Outlet />

@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { ChevronLeftIcon, MenuIcon } from "lucide-react";
+import { ChevronLeftIcon } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { Chat } from "@/components/canvas/chat/Chat";
@@ -17,8 +17,8 @@ export const ContentLayout: React.FC<ContentLayoutProps> = ({
   backLink,
 }) => {
   const navigate = useNavigate();
-  const [isChatVisible, setIsChatVisible] = useState(true);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  const [isChatVisible, setIsChatVisible] = useState(false);
 
   return (
     <div className="flex flex-col h-full overflow-hidden">
@@ -36,16 +36,6 @@ export const ContentLayout: React.FC<ContentLayoutProps> = ({
             </Button>
           )}
           <h1 className="text-xl font-semibold">{title}</h1>
-          
-          <Button
-            variant="ghost"
-            size="icon"
-            className="md:hidden"
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            aria-label="Toggle menu"
-          >
-            <MenuIcon className="h-5 w-5" />
-          </Button>
         </div>
         
         <Button

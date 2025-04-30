@@ -3,11 +3,9 @@ import { useModule } from "@/services/content/hooks";
 import { LessonCard } from "@/components/learning/LessonCard";
 import { ExerciseCard } from "@/components/learning/ExerciseCard";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Card, CardContent } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Progress } from "@/components/ui/progress";
+import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { Skeleton } from "@/components/ui/skeleton";
-import { AlertCircleIcon, BookIcon, BookOpenIcon, BarChartIcon } from "lucide-react";
+import { AlertCircleIcon } from "lucide-react";
 import { createLazyFileRoute } from "@tanstack/react-router";
 
 export const Route = createLazyFileRoute("/learning/modules/$moduleId/")({
@@ -19,7 +17,7 @@ function ModuleDetailPage() {
   const { data: module, isLoading, error } = useModule(moduleId);
   
   // Mock progress for now - in a real app this would come from the user's progress data
-  const progress = 25;
+  // const progress = 25;
 
   // Get a safe title with a fallback
   const title = module?.body?.title as string || "Module";
@@ -57,7 +55,8 @@ function ModuleDetailPage() {
             <p className="text-gray-700 dark:text-gray-300">{description}</p>
 
             {/* Progress card */}
-            <Card>
+            {/* TODO: Add progress card */}
+            {/* <Card>
               <CardContent className="p-4">
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                   <div className="flex items-center gap-2">
@@ -75,12 +74,13 @@ function ModuleDetailPage() {
                   </div>
                 </div>
               </CardContent>
-            </Card>
+            </Card> */}
           </div>
 
           {/* Lessons and Exercises Tabs */}
           <Tabs defaultValue="lessons" className="mt-8">
-            <TabsList className="grid w-full grid-cols-2 mb-4">
+            {/* TODO: Add tabs */}
+            {/* <TabsList className="grid w-full grid-cols-2 mb-4">
               <TabsTrigger value="lessons" className="flex items-center gap-2">
                 <BookOpenIcon className="h-4 w-4" />
                 <span>Lessons</span>
@@ -89,7 +89,7 @@ function ModuleDetailPage() {
                 <BookIcon className="h-4 w-4" />
                 <span>Exercises</span>
               </TabsTrigger>
-            </TabsList>
+            </TabsList> */}
             
             <TabsContent value="lessons" className="mt-0">
               {module.lessons && module.lessons.length > 0 ? (
