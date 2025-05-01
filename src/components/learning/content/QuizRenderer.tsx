@@ -108,7 +108,7 @@ export const QuizRenderer: React.FC<QuizRendererProps> = ({
                   whileTap={ !isCorrectAnswerSelected ? { scale: 0.99 } : {} }
                 >
                   <div className={cn(
-                    "flex items-center justify-center w-6 h-6 rounded-md mr-3 text-xs font-semibold border",
+                    "flex items-center justify-center w-6 h-6 aspect-square rounded-md mr-3 text-xs font-semibold border",
                     showCorrectFeedback ? "bg-green-600 text-white border-green-700" : // Correct and selected
                     showIncorrectFeedback ? "bg-red-600 text-white border-red-700" : // Incorrect and selected
                     "bg-gray-100 text-gray-700 border-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600" // Default or unselected
