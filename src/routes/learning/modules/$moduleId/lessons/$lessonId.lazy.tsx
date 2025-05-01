@@ -3,8 +3,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AlertCircleIcon, ArrowLeftIcon, ArrowRightIcon, BookOpenIcon, XIcon, ZapIcon } from "lucide-react";
-import { createLazyFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState, useEffect } from "react";
+import { createLazyFileRoute } from "@tanstack/react-router";
 import { LessonProgressBar } from "@/components/learning/LessonProgressBar";
 import { LessonChunkRenderer } from "@/components/learning/LessonChunkRenderer";
 import { LessonBody } from "@/types/lesson";
@@ -15,16 +14,21 @@ export const Route = createLazyFileRoute("/learning/modules/$moduleId/lessons/$l
 
 function LessonDetailPage() {
   const { moduleId, lessonId } = Route.useParams();
-  const navigate = useNavigate();
+  const navigate = Route.useNavigate();
   const { data: lesson, isLoading, error } = useLesson(lessonId);
-  const [currentChunkIndex, setCurrentChunkIndex] = useState(0);
+  const { chunk: currentChunkIndex } = Route.useSearch({
+    select: (search: Record<string, unknown>) => ({
+      chunk: (search.chunk as number) || 0,
+    }),
+  });
 
-  // Reset chunk index when lesson changes
-  useEffect(() => {
-    if (lesson) {
-      setCurrentChunkIndex(0);
-    }
-  }, [lesson]);
+  const setCurrentChunkIndex = (index: number) => {
+    navigate({
+      to: ".",
+      search: (prev) => ({ ...prev, chunk: index }),
+      replace: true,
+    });
+  };
 
   // Get lesson body with proper typing
   const lessonBody = lesson?.body as LessonBody | undefined;
@@ -44,13 +48,13 @@ function LessonDetailPage() {
     }
     
     // Move to next chunk
-    setCurrentChunkIndex(prev => prev + 1);
+    setCurrentChunkIndex(currentChunkIndex + 1);
   };
   
   // Handler for going back to the previous chunk
   const handlePreviousChunk = () => {
     if (currentChunkIndex > 0) {
-      setCurrentChunkIndex(prev => prev - 1);
+      setCurrentChunkIndex(currentChunkIndex - 1);
     }
   };
   
