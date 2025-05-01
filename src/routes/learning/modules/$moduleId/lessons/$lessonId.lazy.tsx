@@ -7,6 +7,7 @@ import { createLazyFileRoute } from "@tanstack/react-router";
 import { LessonProgressBar } from "@/components/learning/LessonProgressBar";
 import { LessonChunkRenderer } from "@/components/learning/LessonChunkRenderer";
 import { LessonBody } from "@/types/lesson";
+import { useChunkNavigation } from "@/services/learning/hooks/useChunkNavigation";
 
 export const Route = createLazyFileRoute("/learning/modules/$moduleId/lessons/$lessonId")({
   component: LessonDetailPage,
@@ -16,19 +17,7 @@ function LessonDetailPage() {
   const { moduleId, lessonId } = Route.useParams();
   const navigate = Route.useNavigate();
   const { data: lesson, isLoading, error } = useLesson(lessonId);
-  const { chunk: currentChunkIndex } = Route.useSearch({
-    select: (search: Record<string, unknown>) => ({
-      chunk: (search.chunk as number) || 0,
-    }),
-  });
-
-  const setCurrentChunkIndex = (index: number) => {
-    navigate({
-      to: ".",
-      search: (prev) => ({ ...prev, chunk: index }),
-      replace: true,
-    });
-  };
+  const [currentChunkIndex, setCurrentChunkIndex] = useChunkNavigation();
 
   // Get lesson body with proper typing
   const lessonBody = lesson?.body as LessonBody | undefined;
@@ -48,13 +37,13 @@ function LessonDetailPage() {
     }
     
     // Move to next chunk
-    setCurrentChunkIndex(currentChunkIndex + 1);
+    setCurrentChunkIndex(prev => prev + 1);
   };
   
   // Handler for going back to the previous chunk
   const handlePreviousChunk = () => {
     if (currentChunkIndex > 0) {
-      setCurrentChunkIndex(currentChunkIndex - 1);
+      setCurrentChunkIndex(prev => prev - 1);
     }
   };
   
