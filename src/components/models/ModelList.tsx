@@ -1,5 +1,6 @@
 import { useModelsStore } from '@/stores/models'
 import { ModelListItem } from './ModelListItem'
+import { AddModelTutorial } from '../learning/AddModelTutorial'
 
 export function ModelList() {
   const models = useModelsStore((state) => state.models)
@@ -11,6 +12,8 @@ export function ModelList() {
         <p className="text-sm text-muted-foreground">
           Add your first AI model to get started.
         </p>
+
+        <AddModelTutorial />
       </div>
     )
   }

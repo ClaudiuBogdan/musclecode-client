@@ -9,6 +9,7 @@ interface ModelsState {
 
 interface ModelsActions {
   addModel: (model?: Partial<Omit<Model, 'id'>>) => void;
+  addDefaultModel: (apiKey: string) => void;
   removeModel: (id: string) => void;
   updateModel: (id: string, updates: Partial<Omit<Model, 'id'>>) => void;
   toggleModelStatus: (id: string) => void;
@@ -23,6 +24,22 @@ export const useModelsStore = create<ModelsState & ModelsActions>()(
 
       addModel: (model) => {
         const newModel = createNewModel(model);
+        set((state) => {
+          state.models.push(newModel);
+        });
+      },
+
+      addDefaultModel: (apiKey: string) => {
+        if (apiKey.trim().length === 0) {
+          throw new Error('API key is required');
+        }
+        const newModel = createNewModel({
+          name: 'Gemini Flash 2.5',
+          provider: 'gemini',
+          model: 'gemini-2.5-flash-preview-04-17',
+          apiKey,
+          enabled: true,
+        });
         set((state) => {
           state.models.push(newModel);
         });
