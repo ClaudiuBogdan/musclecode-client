@@ -41,9 +41,6 @@ Created
 
 1. API Configuration:
 ```env
-VITE_OPENAI_API_URL=https://api.example.com/v1
-VITE_OPENAI_API_KEY=sk-xxxxx
-VITE_OPENAI_MODEL=model-name
 VITE_API_URL=https://api.example.com
 VITE_EXECUTION_API_URL=https://execution.example.com
 ```

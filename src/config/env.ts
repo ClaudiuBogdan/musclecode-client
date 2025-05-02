@@ -6,9 +6,6 @@ const envSchema = z.object({
   VITE_APP_ENVIRONMENT: z.string().min(1),
 
   // API Configuration
-  VITE_OPENAI_API_URL: z.string().url(),
-  VITE_OPENAI_API_KEY: z.string().min(1),
-  VITE_OPENAI_MODEL: z.string().min(1),
   VITE_API_URL: z.string().url(),
   VITE_EXECUTION_API_URL: z.string().url(),
 
