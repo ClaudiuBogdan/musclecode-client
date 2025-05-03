@@ -188,14 +188,6 @@ export const AddModelTutorial: React.FC = () => {
                 </Button>
               </>
             )}
-            {hasActive && (
-              <>
-                <p className="text-sm text-gray-700 dark:text-gray-300">Your AI model is ready to use!</p>
-                <Button asChild>
-                  <Link to="/learning/modules">Go to Modules</Link>
-                </Button>
-              </>
-            )}
           </div>
         </div>
       </div>
