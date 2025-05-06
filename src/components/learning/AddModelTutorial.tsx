@@ -166,20 +166,40 @@ export const AddModelTutorial: React.FC = () => {
             </div>
 
             {/* Input key */}
-            {hasActive && (
+            {!hasActive && (
                 <div className="fixed bottom-0 left-0 right-0 flex justify-center pointer-events-none z-50">
                     <div className="w-full max-w-3xl bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm p-4 shadow-lg rounded-t-lg pointer-events-auto">
                         <div className="flex items-center space-x-3">
                             {!hasModels && (
-                                <>
+                                <form
+                                    className="flex items-center space-x-3 w-full"
+                                    onSubmit={e => {
+                                        e.preventDefault()
+                                        handleAddModel()
+                                    }}
+                                >
+                                    <p className="text-sm text-gray-700 dark:text-gray-300 mr-2 shrink-0 whitespace-nowrap">
+                                        Get your key from{' '}
+                                        <a
+                                            href="https://aistudio.google.com/app/apikey"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="text-blue-600 hover:underline"
+                                        >
+                                            Google AI Studio
+                                        </a>
+                                        .
+                                    </p>
                                     <Input
+                                        className="flex-grow"
                                         placeholder="Enter API Key"
                                         value={apiKey}
+                                        autoComplete="off"
                                         type="password"
                                         onChange={e => setApiKey(e.target.value)}
                                     />
-                                    <Button onClick={handleAddModel}>Add Model</Button>
-                                </>
+                                    <Button type="submit">Add Key</Button>
+                                </form>
                             )}
                             {hasModels && !hasActive && (
                                 <>
