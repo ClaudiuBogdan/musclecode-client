@@ -94,7 +94,7 @@ export default function EditAlgorithm() {
     try {
       await saveAlgorithm();
       showToast.success("Algorithm updated successfully!");
-      navigate({ to: "/algorithms" });
+      void navigate({ to: "/algorithms" });
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : "Failed to save algorithm";
@@ -108,7 +108,7 @@ export default function EditAlgorithm() {
   }, [resetState]);
 
   const handleCancel = useCallback(() => {
-    navigate({ to: "/algorithms" });
+    void navigate({ to: "/algorithms" });
   }, [navigate]);
 
   if (isLoadingAlgorithm) return <div>Loading...</div>;

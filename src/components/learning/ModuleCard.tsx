@@ -16,16 +16,16 @@ interface ModuleCardProps {
 
 export const ModuleCard: React.FC<ModuleCardProps> = ({ module }) => {
   const navigate = useNavigate();
-  const lessonCount = module.lessons?.length || 0;
-  const exerciseCount = (module.exercises?.length || 0) + 
-    (module.lessons?.reduce((acc, lesson) => acc + (lesson.exercises?.length || 0), 0) || 0);
+  const lessonCount = module.lessons?.length ?? 0;
+  const exerciseCount = (module.exercises?.length ?? 0) + 
+    (module.lessons?.reduce((acc, lesson) => acc + (lesson.exercises?.length ?? 0), 0) ?? 0);
   
   // Access body properties safely with optional chaining and defaults
   const title = module.body?.title as string || "Untitled Module";
   const description = module.body?.description as string || "No description available";
 
   const navigateToModule = () => {
-    navigate({ to: "/learning/modules/$moduleId", params: { moduleId: module.id } });
+    void navigate({ to: "/learning/modules/$moduleId", params: { moduleId: module.id } });
   };
 
   return (

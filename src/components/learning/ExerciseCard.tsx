@@ -23,7 +23,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({ exercise, index }) =
   const description = exercise.body?.description as string || "No description available";
 
   const navigateToExercise = () => {
-    navigate({ to: "/learning/exercises/$id", params: { id: exercise.id } });
+    void navigate({ to: "/learning/exercises/$id", params: { id: exercise.id } });
   };
 
   return (

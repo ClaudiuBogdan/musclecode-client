@@ -37,7 +37,7 @@ export function SummaryStep() {
   const handleComplete = async () => {
     clearError();
     try {
-      router.navigate({ to: "/" });
+      void router.navigate({ to: "/" });
     } catch (error) {
       console.error("Error completing onboarding:", error);
     }
@@ -96,7 +96,7 @@ export function SummaryStep() {
                 variant="outline"
                 onClick={() => {
                   clearError();
-                  router.navigate({ to: "/" });
+                  void router.navigate({ to: "/" });
                 }}
               >
                 Go to Dashboard

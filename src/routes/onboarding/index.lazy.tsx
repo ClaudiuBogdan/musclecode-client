@@ -48,7 +48,7 @@ function OnboardingPage() {
   // Handle navigation after completing or skipping onboarding
   const handleSkip = async () => {
     await skipOnboarding();
-    router.navigate({ to: "/" });
+    void router.navigate({ to: "/" });
   };
 
   if (isLoading && !onboardingState) {

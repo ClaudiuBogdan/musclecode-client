@@ -16,30 +16,26 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { MultiSelect } from "@/components/ui/multi-select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { CodeLanguage } from "@/types/algorithm";
-import { NewAlgorithm } from "@/types/newAlgorithm";
-
-import { showToast } from "@/utils/toast";
-
-import { FilesEditor } from "./code/FilesEditor";
-import { DescriptionEditor } from "./description/DescriptionEditor";
-
+import { createLogger } from "@/lib/logger";
 import { cn } from "@/lib/utils";
-
-import { categories as predefinedCategories } from "../algorithms/data";
-
-import type { ValidationError } from "@/types/newAlgorithm";
-
 import {
   MAX_SUMMARY_LENGTH,
   MAX_TITLE_LENGTH,
   MAX_LESSON_TITLE_LENGTH,
 } from "@/stores/baseAlgorithm";
-import { createLogger } from "@/lib/logger";
-import { MultiSelect } from "@/components/ui/multi-select";
+import { showToast } from "@/utils/toast";
 
-const logger = createLogger("AlgorithmForm");
+import { FilesEditor } from "./code/FilesEditor";
+import { DescriptionEditor } from "./description/DescriptionEditor";
+import { categories as predefinedCategories } from "../algorithms/data";
+
+import type { CodeLanguage } from "@/types/algorithm";
+import type { NewAlgorithm } from "@/types/newAlgorithm";
+import type { ValidationError } from "@/types/newAlgorithm";
+
+const logger = createLogger({ context: "AlgorithmForm" });
 
 // Helper function to convert a string to kebab case
 function toKebabCase(str: string): string {
@@ -307,7 +303,7 @@ export function AlgorithmForm({
               Cancel
             </Button>
             <Button
-              onClick={handleSave}
+              onClick={() => void handleSave()}
               disabled={isLoading}
               className="min-w-[100px]"
             >

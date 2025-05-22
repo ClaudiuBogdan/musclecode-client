@@ -96,12 +96,12 @@ export const DifficultySelector: React.FC<DifficultySelectorProps> = ({
     onReset();
 
     if (nextAlgorithmId) {
-      router.navigate({
+      void router.navigate({
         to: "/algorithms/$algorithmId",
         params: { algorithmId: nextAlgorithmId },
       });
     } else {
-      router.navigate({
+      void router.navigate({
         to: "/",
       });
     }

@@ -25,7 +25,7 @@ function LoginPage() {
 
     if (!authConfig.enabled) {
       logger.info("Auth Disabled", { action: "redirect", destination: "/" });
-      navigate({ to: "/" });
+      void navigate({ to: "/" });
       return;
     }
 
@@ -34,7 +34,7 @@ function LoginPage() {
         action: "redirect",
         destination: redirect,
       });
-      navigate({ to: redirect });
+      void navigate({ to: redirect });
       return;
     }
 

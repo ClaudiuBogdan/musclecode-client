@@ -13,7 +13,7 @@ export const useChunkNavigation = () => {
     const [index, setIndex] = useState(initialChunkIndex);
     
     useEffect(() => {
-        navigate({
+        void navigate({
             to: ".",
             search: (prev) => ({ ...prev, chunk: index }),
             replace: true,

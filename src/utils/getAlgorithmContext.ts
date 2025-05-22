@@ -45,7 +45,7 @@ export function getAlgorithmContext(algorithmId: string): MessageContext {
     });
   }
 
-  if (execution && execution.executionResult) {
+  if (execution?.executionResult) {
     files.push({
       name: "execution-result.txt",
       content: JSON.stringify(execution.executionResult, null, 2),

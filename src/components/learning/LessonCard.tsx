@@ -23,7 +23,7 @@ export const LessonCard: React.FC<LessonCardProps> = ({ moduleId, lesson, index 
   const title = lesson.body?.title as string || "Untitled Lesson";
   
   const navigateToLesson = () => {
-    navigate({ to: "/learning/modules/$moduleId/lessons/$lessonId", params: { moduleId, lessonId: lesson.id } });
+    void navigate({ to: "/learning/modules/$moduleId/lessons/$lessonId", params: { moduleId, lessonId: lesson.id } });
   };
 
   return (

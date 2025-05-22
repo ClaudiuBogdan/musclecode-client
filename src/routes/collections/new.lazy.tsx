@@ -60,7 +60,7 @@ function NewCollectionPage() {
   const handleSubmit = async (data: CollectionFormData) => {
     logger.info("Creating collection");
     await createCollectionMutation.mutateAsync(data);
-    navigate({ to: "/collections" });
+    void navigate({ to: "/collections" });
   };
 
   return (

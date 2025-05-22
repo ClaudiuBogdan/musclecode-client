@@ -31,20 +31,20 @@ export function OnboardingProvider() {
   // Fetch onboarding state on mount
   useEffect(() => {
     // Always fetch on mount to ensure we have the latest state
-    fetchOnboardingState();
+    void fetchOnboardingState();
   }, [fetchOnboardingState]);
 
   // Check if onboarding is completed and redirect to dashboard
   useEffect(() => {
     if (onboardingState?.isCompleted) {
-      router.navigate({ to: "/" });
+      void router.navigate({ to: "/" });
     }
   }, [onboardingState?.isCompleted, router]);
 
   // Handle navigation after completing or skipping onboarding
   const handleSkip = async () => {
     await skipOnboarding();
-    router.navigate({ to: "/" });
+    await router.navigate({ to: "/" });
   };
 
   // Create wrapper functions that don't pass parameters
@@ -108,7 +108,7 @@ export function OnboardingProvider() {
               className="w-full"
               onClick={() => {
                 clearError();
-                fetchOnboardingState();
+                void fetchOnboardingState();
               }}
             >
               Try Again
@@ -117,7 +117,7 @@ export function OnboardingProvider() {
               <Button
                 variant="outline"
                 className="w-full"
-                onClick={() => router.navigate({ to: "/" })}
+                onClick={() => void router.navigate({ to: "/" })}
               >
                 Go to Dashboard
               </Button>
@@ -139,7 +139,7 @@ export function OnboardingProvider() {
           <WelcomeStep
             onNext={handleNext}
             onBack={handleBack}
-            onSkip={handleSkip}
+            onSkip={() => void handleSkip()}
           />
         );
       case "goals":

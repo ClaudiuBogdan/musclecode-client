@@ -25,9 +25,6 @@ interface InfoPanelProps {
   className?: string;
 }
 
-// Valid tab values
-type TabValue = "description" | "notes" | "submissions" | "chat";
-
 export const InfoPanel: React.FC<InfoPanelProps> = ({
   algorithmId,
   tab,
@@ -57,9 +54,9 @@ export const InfoPanel: React.FC<InfoPanelProps> = ({
 
   const navigate = useNavigate();
 
-  const handleTabChange = (value: TabValue | string) => {
+  const handleTabChange = (value: string) => {
     // Update the URL when tab changes
-    navigate({
+    void navigate({
       to: ".",
       search: (current) => ({ ...current, tab: value }),
       replace: true,

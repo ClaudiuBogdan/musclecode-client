@@ -61,7 +61,7 @@ function CollectionDetailsPage() {
       logger.info("Deleting collection", { collectionId: collection.id });
       await deleteCollectionMutation.mutateAsync(collection.id);
       showToast.success("Collection deleted");
-      navigate({ to: "/collections" });
+      void navigate({ to: "/collections" });
     } catch (error) {
       logger.error("Failed to delete collection", {
         error: error instanceof Error ? error.message : String(error),
@@ -101,7 +101,7 @@ function CollectionDetailsPage() {
         <div className="text-center">
           <h1 className="text-2xl font-bold">Collection not found</h1>
           <p className="mt-2 text-muted-foreground">
-            The collection you're looking for doesn't exist or has been deleted
+            The collection you&apos;re looking for doesn&apos;t exist or has been deleted
           </p>
         </div>
       </div>
@@ -132,7 +132,7 @@ function CollectionDetailsPage() {
           <div className="flex gap-3 flex-wrap md:flex-nowrap">
             {isPublicCollection ? (
               <Button
-                onClick={handleCopyCollection}
+                onClick={() => void handleCopyCollection()}
                 disabled={copyCollectionMutation.isPending}
                 className="gap-2 transition-all hover:shadow-md"
                 size="lg"
@@ -146,7 +146,7 @@ function CollectionDetailsPage() {
               <div className="flex gap-3">
                 <Button
                   onClick={() =>
-                    navigate({
+                    void navigate({
                       to: "/collections/$collectionId/edit",
                       params: { collectionId },
                     })
@@ -193,14 +193,14 @@ function CollectionDetailsPage() {
               Confirm Deletion
             </AlertDialogTitle>
             <AlertDialogDescription className="text-base leading-relaxed">
-              This will permanently delete the "{collection.name}" collection
+              This will permanently delete the &quot;{collection.name}&quot; collection
               and remove all associated data. This action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel className="mt-4">Cancel</AlertDialogCancel>
             <AlertDialogAction
-              onClick={handleDeleteCollection}
+              onClick={() => void handleDeleteCollection()}
               className="bg-destructive hover:bg-destructive/90 transition-colors"
             >
               Confirm Delete

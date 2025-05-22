@@ -33,7 +33,7 @@ function LessonDetailPage() {
       // Last chunk - complete the lesson (navigate back or to results?)
       // For now, navigate back to the module
       if (lesson) {
-        navigate({ to: `/learning/modules/${moduleId}` });
+        void navigate({ to: `/learning/modules/${moduleId}` });
       }
       return;
     }
@@ -58,9 +58,9 @@ function LessonDetailPage() {
   const handleClose = () => {
     // Navigate back to the module page or dashboard
     if (lesson) {
-      navigate({ to: `/learning/modules/${moduleId}` });
+      void navigate({ to: `/learning/modules/${moduleId}` });
     } else {
-      navigate({ to: '/learning/modules'});
+      void navigate({ to: '/learning/modules'});
     }
   };
 

@@ -31,7 +31,7 @@ export const ContentLayout: React.FC<ContentLayoutProps> = ({
             <Button
               variant="ghost"
               size="icon"
-              onClick={() => navigate({ to: backLink })}
+              onClick={() => void navigate({ to: backLink })}
               aria-label="Go back"
             >
               <ChevronLeftIcon className="h-5 w-5" />

@@ -117,7 +117,7 @@ function EditCollectionPage() {
         },
       });
       showToast.success("Collection updated successfully");
-      navigate({ to: "/collections/$collectionId", params: { collectionId } });
+      void navigate({ to: "/collections/$collectionId", params: { collectionId } });
     } catch (error) {
       logger.error("Failed to update collection", {
         error: error instanceof Error ? error.message : String(error),

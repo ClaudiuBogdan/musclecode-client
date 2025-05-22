@@ -138,7 +138,7 @@ const TableOfContentsDropdown = ({
             <DropdownMenuItem
               key={index}
               onSelect={() => {
-                onNavigate(index);
+                void onNavigate(index);
                 setIsOpen(false);
               }}
               className={`

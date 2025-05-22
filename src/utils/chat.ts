@@ -24,7 +24,7 @@ export function findLatestLeafMessage(
     .sort((a, b) => b.timestamp - a.timestamp);
 
   const leafMessage = threadMessages.find((msg) => msg.parentId === null);
-  return leafMessage?.id || null;
+  return leafMessage?.id ?? null;
 }
 
 export function getThreadsByAlgorithm(

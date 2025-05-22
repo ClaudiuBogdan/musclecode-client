@@ -37,7 +37,7 @@ function RouteComponent() {
     try {
       await saveAlgorithm();
       showToast.success("Algorithm created successfully!");
-      navigate({ to: "/algorithms" });
+      void navigate({ to: "/algorithms" });
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : "Failed to save algorithm";
@@ -51,7 +51,7 @@ function RouteComponent() {
   }, [resetState]);
 
   const handleCancel = useCallback(() => {
-    navigate({ to: "/algorithms" });
+    void navigate({ to: "/algorithms" });
   }, [navigate]);
 
   return (

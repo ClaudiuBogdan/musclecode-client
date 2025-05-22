@@ -53,7 +53,7 @@ export const ButtonBar: React.FC<ButtonBarProps> = ({
         params: { algorithmId: nextAlgorithmId },
       });
     } else {
-      router.navigate({
+      void router.navigate({
         to: "/",
       });
     }

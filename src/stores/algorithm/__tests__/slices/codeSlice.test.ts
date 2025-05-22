@@ -6,6 +6,8 @@ import { getLanguageExtension } from "@/lib/utils/algorithm";
 
 import { createAlgorithmSlice, createHintSlice } from "../..";
 import { createCodeSlice } from "../../slices/codeSlice";
+import { createExecutionSlice } from "../../slices/executionSlice";
+import { createSubmissionSlice } from "../../slices/submissionSlice";
 import { createTimerSlice } from "../../slices/timerSlice";
 import { mockAlgorithmState } from "../utils/testStore";
 
@@ -13,8 +15,6 @@ import type { AlgorithmState, StoreActions } from "../../types";
 import type { CodeLanguage } from "@/types/algorithm";
 import type { CodeExecutionResponse, TestResult } from "@/types/testRunner";
 
-import { createExecutionSlice } from "../../slices/executionSlice";
-import { createSubmissionSlice } from "../../slices/submissionSlice";
 
 
 type TestStore = AlgorithmState & StoreActions;

@@ -24,7 +24,7 @@ export function AppErrorBoundary({
 
   useEffect(() => {
     if (isAuthErrorRequiringLogout(error)) {
-      logout();
+      void logout();
     }
     // Handle error on mount
     handleError(error);
@@ -43,7 +43,7 @@ export function AppErrorBoundary({
   const handleGoHome = () => {
     clearError();
     resetErrorBoundary();
-    navigate({ to: "/" });
+    void navigate({ to: "/" });
   };
 
   const getErrorTitle = () => {

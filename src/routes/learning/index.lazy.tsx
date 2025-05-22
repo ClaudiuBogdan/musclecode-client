@@ -11,7 +11,7 @@ function LearningIndexPage() {
 
   useEffect(() => {
     // Automatically redirect to the modules page
-    navigate({ to: "/learning/modules" });
+    void navigate({ to: "/learning/modules" });
   }, [navigate]);
 
   return (
