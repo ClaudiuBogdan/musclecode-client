@@ -1,9 +1,11 @@
+import posthog from "posthog-js";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+
 import { getAuthService } from "@/lib/auth/auth-service";
-import type { AuthUser } from "@/lib/auth/types";
-import posthog from "posthog-js";
 import { createLogger } from "@/lib/logger";
+
+import type { AuthUser } from "@/lib/auth/types";
 
 const logger = createLogger("AuthStore");
 

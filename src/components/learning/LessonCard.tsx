@@ -1,10 +1,14 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { ArrowRightIcon } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { ContentStatus, LessonEntity } from "@/services/content/api";
 import { useNavigate } from "@tanstack/react-router";
 import { motion } from "framer-motion";
+import { ArrowRightIcon } from "lucide-react";
+
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ContentStatus } from "@/services/content/api";
+
+import type { LessonEntity } from "@/services/content/api";
+
 
 interface LessonCardProps {
   moduleId: string;

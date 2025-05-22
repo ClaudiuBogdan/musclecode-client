@@ -1,10 +1,14 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
+
 import { 
   fetchModule, 
   fetchModules, 
   fetchLesson, 
   fetchExercise,
-  checkQuestionAnswer,
+  checkQuestionAnswer
+} from "./api";
+
+import type {
   CheckAnswerPayload,
   CheckAnswerResponse
 } from "./api";

@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
-import { RotateCwIcon } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { RotateCwIcon } from 'lucide-react';
+import React, { useState } from 'react';
+
+import { Card, CardContent } from '@/components/ui/card';
 import { Markdown } from '@/components/ui/markdown';
 
 // Represents a single flashcard content item

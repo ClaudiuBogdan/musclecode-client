@@ -1,5 +1,6 @@
-import { AlgorithmTemplate } from "@/types/algorithm";
 import { v4 as uuidv4 } from "uuid";
+
+import type { AlgorithmTemplate } from "@/types/algorithm";
 
 export const seedAlgorithms = (): AlgorithmTemplate[] => {
   return [

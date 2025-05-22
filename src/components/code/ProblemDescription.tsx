@@ -1,8 +1,11 @@
-import { FC } from "react";
+
 import { Markdown } from "@/components/ui/markdown";
-import { AlgorithmLesson } from "@/types/algorithm";
-import { ProblemNavigation } from "./ProblemNavigation";
 import useNavigationStorage from "@/hooks/useNavigationStorage";
+
+import { ProblemNavigation } from "./ProblemNavigation";
+
+import type { AlgorithmLesson } from "@/types/algorithm";
+import type { FC } from "react";
 
 interface ProblemDescriptionProps {
   lessons: AlgorithmLesson[];

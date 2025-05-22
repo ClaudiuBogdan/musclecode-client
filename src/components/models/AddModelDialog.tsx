@@ -1,4 +1,6 @@
 import { useState } from 'react'
+import { toast } from 'sonner'
+
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -8,10 +10,10 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog'
-import { ModelForm } from './ModelForm'
 import { useModelsStore } from '@/stores/models'
+
+import { ModelForm } from './ModelForm'
 import { type ModelFormValues } from './schema'
-import { toast } from 'sonner'
 
 export function AddModelDialog() {
   const [open, setOpen] = useState(false)

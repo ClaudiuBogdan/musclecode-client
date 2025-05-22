@@ -1,5 +1,5 @@
-import { useAuthStore } from "@/stores/auth";
 import { authConfig } from "@/config/auth";
+import { useAuthStore } from "@/stores/auth";
 
 export function createRouteGuard() {
   return async () => {

@@ -1,14 +1,9 @@
 import { createLazyFileRoute } from '@tanstack/react-router'
-import { useCollection } from '@/hooks/useCollection'
-import { usePublicCollections } from '@/hooks/usePublicCollections'
-import { useCopyCollection } from '@/hooks/useCopyCollection'
-import { useDeleteCollection } from "@/hooks/useDeleteCollection";
-import { Button } from "@/components/ui/button";
+import { useNavigate } from "@tanstack/react-router";
 import { Copy, Trash2, Pencil } from "lucide-react";
+import { useState } from "react";
+
 import { AlgorithmCard } from "@/components/algorithms/AlgorithmCard";
-import { Skeleton } from "@/components/ui/skeleton";
-import { createLogger } from "@/lib/logger";
-import { showToast } from "@/utils/toast";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -19,8 +14,15 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { useState } from "react";
-import { useNavigate } from "@tanstack/react-router";
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useCollection } from '@/hooks/useCollection'
+import { useCopyCollection } from '@/hooks/useCopyCollection'
+import { useDeleteCollection } from "@/hooks/useDeleteCollection";
+import { usePublicCollections } from '@/hooks/usePublicCollections'
+import { createLogger } from "@/lib/logger";
+import { showToast } from "@/utils/toast";
+
 
 export const Route = createLazyFileRoute("/collections/$collectionId/")({
   component: CollectionDetailsPage,

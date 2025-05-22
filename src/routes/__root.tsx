@@ -1,14 +1,16 @@
-import { ThemeProvider } from "@/components/theme/theme-provider";
-import { createRootRoute, Outlet } from "@tanstack/react-router";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/sidebar/app-sidebar";
+import { createRootRoute, Outlet } from "@tanstack/react-router";
+import { HotkeysProvider } from "react-hotkeys-hook";
 import { Toaster } from "sonner";
+
 import { AuthProvider } from "@/components/auth/AuthProvider";
+import { AppSidebar } from "@/components/sidebar/app-sidebar";
+import { ThemeProvider } from "@/components/theme/theme-provider";
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { ErrorProvider } from "@/contexts/ErrorContext";
 import { createRouteGuard } from "@/lib/auth/route-guard";
+
 // import { createOnboardingGuard } from "@/lib/onboarding/route-guard";
-import { HotkeysProvider } from "react-hotkeys-hook";
 
 const queryClient = new QueryClient();
 

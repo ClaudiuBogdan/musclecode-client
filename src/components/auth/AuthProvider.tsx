@@ -1,8 +1,10 @@
 import { ErrorBoundary } from "react-error-boundary";
-import { useAuthStore } from "@/stores/auth";
+
 import { authConfig } from "@/config/auth";
-import { AuthLoading } from "./AuthLoading";
+import { useAuthStore } from "@/stores/auth";
+
 import { AppErrorBoundary } from "./AppErrorBoundary";
+import { AuthLoading } from "./AuthLoading";
 
 interface AuthProviderProps {
   children: React.ReactNode;

@@ -1,4 +1,4 @@
-import { AlgorithmFile, AlgorithmLesson } from "./algorithm";
+import type { AlgorithmFile, AlgorithmLesson } from "./algorithm";
 
 export interface NewAlgorithmMetadata {
   title: string;

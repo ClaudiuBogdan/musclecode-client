@@ -1,3 +1,7 @@
+import { Loader2, AlertCircle } from "lucide-react";
+
+import { useAlgorithms } from "@/services/algorithms/hooks/useAlgorithms";
+
 import { columns } from "./columns";
 import { DataTable } from "./data-table";
 import {
@@ -7,8 +11,6 @@ import {
   CardTitle,
   CardDescription,
 } from "../ui/card";
-import { useAlgorithms } from "@/services/algorithms/hooks/useAlgorithms";
-import { Loader2, AlertCircle } from "lucide-react";
 
 export function AlgorithmsTable() {
   const { data: algorithms, isLoading, error } = useAlgorithms();

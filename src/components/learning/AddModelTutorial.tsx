@@ -1,14 +1,15 @@
-import React, { useState } from 'react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
 import { Link } from '@tanstack/react-router'
-import { useModelsStore } from '@/stores/models'
+import React, { useState } from 'react'
 import { toast } from 'sonner'
+
 import getApiKeyAiStudio from '@/assets/add-model-tutorial/2-get-api-key-ai-studio.png'
 import createApiKeyButtonAiStudio from '@/assets/add-model-tutorial/3-create-api-key-button-ai-studio.png'
 import createApiKeyInNewProjectAiStudio from '@/assets/add-model-tutorial/4-create-api-key-in-new-project-ai-studio.png'
 import copyGeneratedKeyAiStudio from '@/assets/add-model-tutorial/5-copy-generted-key-ai-studio.png'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import { useModelsStore } from '@/stores/models'
 
 export const AddModelTutorial: React.FC = () => {
     const models = useModelsStore(state => state.models)

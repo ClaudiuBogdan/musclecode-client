@@ -1,4 +1,17 @@
 import { useState, useRef, useEffect, useCallback } from "react";
+
+import { env } from "@/config/env";
+import { listenToSSE } from "@/lib/api/client"; // Adjust path if needed
+import { AuthError } from "@/lib/auth/errors"; // Adjust path if needed
+import { AppError } from "@/lib/errors/types"; // Adjust path if needed
+
+import {
+  createMessageReconstructor
+} from "../parser";
+
+import type {
+  PartialJsonValue,
+  ReconstructorControls} from "../parser";
 import type {
   ChatMessage,
   ContentBlock,
@@ -9,15 +22,11 @@ import type {
 } from "../types"; // Adjust path if needed
 
 // **** Import the SSE listener ****
-import { listenToSSE, SSEController, SSECallbacks } from "@/lib/api/client"; // Adjust path if needed
-import { AppError } from "@/lib/errors/types"; // Adjust path if needed
-import { AuthError } from "@/lib/auth/errors"; // Adjust path if needed
-import {
-  createMessageReconstructor,
-  PartialJsonValue,
-  ReconstructorControls,
-} from "../parser";
-import { env } from "@/config/env";
+
+
+
+import type { SSEController, SSECallbacks } from "@/lib/api/client";
+
 
 // Define the type for the component's status
 type ConnectionStatus =
@@ -129,7 +138,7 @@ function StreamingChatDisplay() {
       "type" in eventData
     ) {
       // Feed the event to the reconstructor for state processing
-      reconstructorRef.current?.processSSEEvent(eventData as ServerSentEvent);
+      reconstructorRef.current?.processSSEEvent(eventData);
     } else {
       console.warn(
         "Received unexpected non-event data format from listenToSSE:",
@@ -259,7 +268,7 @@ function StreamingChatDisplay() {
   const formatJson = (value: PartialJsonValue): string => {
     if (value === null) {
       return "null";
-    } else if (typeof value === "object") {
+    } if (typeof value === "object") {
       return JSON.stringify(value, null, 2);
     }
     return String(value);
@@ -273,7 +282,7 @@ function StreamingChatDisplay() {
 
     switch (block.type) {
       case "text": {
-        const textBlock = block as TextBlock;
+        const textBlock = block;
         return (
           <div
             key={textBlock.id || index}
@@ -292,7 +301,7 @@ function StreamingChatDisplay() {
         );
       }
       case "tool_use": {
-        const toolUse = block as ToolUseContentBlock;
+        const toolUse = block;
         // Try to use parsed JSON first, if available and streaming
         const inputDisplay =
           isStreaming && parsedJson !== undefined
@@ -347,7 +356,7 @@ function StreamingChatDisplay() {
         );
       }
       case "tool_result": {
-        const toolResult = block as ToolResultContentBlock;
+        const toolResult = block;
         // Try to use parsed JSON first, if available and streaming
         const contentDisplay =
           isStreaming && parsedJson !== undefined

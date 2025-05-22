@@ -1,6 +1,12 @@
-import { useCallback } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import type { UseQueryResult } from "@tanstack/react-query";
+import { createLazyFileRoute } from "@tanstack/react-router";
+import { format } from "date-fns";
+import { AlertCircle, CreditCard, Loader2, Receipt, Check } from "lucide-react";
+import { useCallback } from "react";
+import { toast } from "sonner";
+
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -8,12 +14,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { createLazyFileRoute } from "@tanstack/react-router";
 import { Separator } from "@/components/ui/separator";
-import { toast } from "sonner";
-import { AlertCircle, CreditCard, Loader2, Receipt, Check } from "lucide-react";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
   fetchBillingInfo,
   redirectToCustomerPortal,
@@ -22,9 +23,11 @@ import {
   availablePlans,
   type BillingInfo,
 } from "@/lib/api/billing";
-import { ApiError } from "@/types/api";
-import { format } from "date-fns";
 import { cn } from "@/lib/utils";
+import { ApiError } from "@/types/api";
+
+
+import type { UseQueryResult } from "@tanstack/react-query";
 
 export const Route = createLazyFileRoute("/settings/billing")({
   component: BillingSettings,
@@ -41,7 +44,7 @@ function BillingSettings() {
   } = useQuery({
     queryKey: ["billing"],
     queryFn: fetchBillingInfo,
-  }) as UseQueryResult<BillingInfo, Error>;
+  });
 
   // Stripe portal redirect mutation
   const { mutate: redirectToPortal, isPending: isRedirecting } = useMutation({
@@ -260,7 +263,7 @@ function BillingSettings() {
                             const currentPlanPrice =
                               billing?.subscription.plan?.price ?? 0;
                             if (plan.price === currentPlanPrice)
-                              return "Current Plan";
+                              {return "Current Plan";}
                             if (plan.price > currentPlanPrice) return "Upgrade";
                             return "Downgrade";
                           })()}

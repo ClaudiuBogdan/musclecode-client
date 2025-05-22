@@ -3,9 +3,7 @@ interface LanguagePattern {
   indicators: string[];
 }
 
-type LanguagePatterns = {
-  [key: string]: LanguagePattern;
-};
+type LanguagePatterns = Record<string, LanguagePattern>;
 
 // Common programming language patterns for auto-detection
 const languagePatterns: LanguagePatterns = {

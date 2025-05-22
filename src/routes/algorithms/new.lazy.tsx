@@ -1,8 +1,9 @@
 import { createLazyFileRoute, useNavigate } from "@tanstack/react-router";
-import { AlgorithmForm } from "@/components/algorithms-editor/AlgorithmForm";
-import { useNewAlgorithmStore } from "@/stores/newAlgorithm";
 import { useCallback } from "react";
+
+import { AlgorithmForm } from "@/components/algorithms-editor/AlgorithmForm";
 import { useAlgorithmValidation } from "@/hooks/useAlgorithmValidation";
+import { useNewAlgorithmStore } from "@/stores/newAlgorithm";
 import { showToast } from "@/utils/toast";
 
 export const Route = createLazyFileRoute("/algorithms/new")({

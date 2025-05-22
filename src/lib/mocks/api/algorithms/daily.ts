@@ -1,5 +1,6 @@
-import { apiClient } from "@/lib/api/client";
 import { http, HttpResponse } from "msw";
+
+import { apiClient } from "@/lib/api/client";
 import { createLogger } from "@/lib/logger";
 
 const logger = createLogger({ context: "MockDailyAlgorithmsApi" });

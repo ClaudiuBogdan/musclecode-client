@@ -1,12 +1,15 @@
-import { StateCreator } from "zustand";
-import {
+import { v4 as uuidv4 } from "uuid";
+
+
+import { getLanguageExtension } from "@/lib/utils/algorithm";
+
+import type {
   AlgorithmFile,
   CodeLanguage,
   AlgorithmLesson,
 } from "@/types/algorithm";
-import { v4 as uuidv4 } from "uuid";
-import { NewAlgorithm } from "@/types/newAlgorithm";
-import { getLanguageExtension } from "@/lib/utils/algorithm";
+import type { NewAlgorithm } from "@/types/newAlgorithm";
+import type { StateCreator } from "zustand";
 
 // Constants
 export const MAX_TITLE_LENGTH = 100;

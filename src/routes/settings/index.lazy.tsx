@@ -1,6 +1,6 @@
 import { Outlet } from "@tanstack/react-router";
-import { Settings } from "lucide-react";
 import { createLazyFileRoute } from "@tanstack/react-router";
+import { Settings } from "lucide-react";
 
 export const Route = createLazyFileRoute("/settings/")({
   component: SettingsLayout,

@@ -1,7 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
-import { AlgorithmTemplate } from "@/types/algorithm";
+
 import { apiClient } from "@/lib/api/client";
 import { createLogger } from "@/lib/logger";
+
+import type { AlgorithmTemplate } from "@/types/algorithm";
 
 const logger = createLogger("useAlgorithmTemplates");
 

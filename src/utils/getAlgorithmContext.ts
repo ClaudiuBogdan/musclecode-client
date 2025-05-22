@@ -1,6 +1,7 @@
 import { useAlgorithmStore } from "@/stores/algorithm";
-import type { ContextFile, MessageContext } from "@/types/chat";
+
 import type { AlgorithmFile } from "@/types/algorithm";
+import type { ContextFile, MessageContext } from "@/types/chat";
 
 export function getAlgorithmContext(algorithmId: string): MessageContext {
   const algorithmData = useAlgorithmStore.getState().algorithms[algorithmId];
@@ -12,10 +13,7 @@ export function getAlgorithmContext(algorithmId: string): MessageContext {
   // Destructure necessary parts from the algorithm data
   const { code, execution } = algorithmData;
   const { storedCode, activeLanguage } = code;
-  const languageFiles = (storedCode[activeLanguage] || {}) as Record<
-    string,
-    AlgorithmFile
-  >;
+  const languageFiles = (storedCode[activeLanguage] || {});
 
   // Find the exercise file and test file
   const exerciseFile = Object.values(languageFiles).find(

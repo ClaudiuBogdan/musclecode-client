@@ -1,8 +1,10 @@
 import { http } from "msw";
 import { HttpResponse } from "msw";
-import { CreateAlgorithmPayload } from "@/types/newAlgorithm";
+
 import { apiClient } from "@/lib/api/client";
 import { createLogger } from "@/lib/logger";
+
+import type { CreateAlgorithmPayload } from "@/types/newAlgorithm";
 
 const logger = createLogger("MockAlgorithmAPI");
 

@@ -1,8 +1,11 @@
-import { FC } from "react";
 import { Bold, Italic, List, Link, Image, Code, Eye, Edit } from "lucide-react";
+
+
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Toggle } from "@/components/ui/toggle";
+
+import type { FC } from "react";
 
 interface NotesToolbarProps {
   onAction: (action: string) => void;

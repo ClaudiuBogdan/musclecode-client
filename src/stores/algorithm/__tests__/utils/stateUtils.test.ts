@@ -1,4 +1,3 @@
-import { AlgorithmState } from "../../types";
 import {
   getAlgorithmById,
   validateAlgorithmExists,
@@ -9,6 +8,8 @@ import {
   createEmptyAlgorithmData,
   mockAlgorithmState,
 } from "../utils/testStore";
+
+import type { AlgorithmState } from "../../types";
 
 describe("State Utils", () => {
   const testAlgorithmId = "test-algorithm";

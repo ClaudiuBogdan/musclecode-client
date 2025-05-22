@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Submission } from "@/types/algorithm";
+
 import {
   Dialog,
   DialogContent,
@@ -9,8 +9,12 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
+
+
 import { SubmissionDetail } from "./SubmissionDetail";
 import { SubmissionsTable } from "./SubmissionsTable";
+
+import type { Submission } from "@/types/algorithm";
 
 interface SubmissionsProps {
   submissions: Submission[];

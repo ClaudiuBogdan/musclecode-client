@@ -1,10 +1,13 @@
 import Keycloak from "keycloak-js";
-import { AuthService, AuthUser } from "./types";
-import { AuthErrorCode, createAuthError } from "./errors";
+
 import { authConfig } from "@/config/auth";
-import { TokenStorage } from "./token-storage";
 import { env } from "@/config/env";
 import { createLogger } from "@/lib/logger";
+
+import { AuthErrorCode, createAuthError } from "./errors";
+import { TokenStorage } from "./token-storage";
+
+import type { AuthService, AuthUser } from "./types";
 
 const logger = createLogger({ context: "KeycloakAuthService" });
 

@@ -1,7 +1,9 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Collection } from "@/types/collection";
+
 import { apiClient } from "@/lib/api/client";
 import { createLogger } from "@/lib/logger";
+
+import type { Collection } from "@/types/collection";
 
 const logger = createLogger("useCopyCollection");
 

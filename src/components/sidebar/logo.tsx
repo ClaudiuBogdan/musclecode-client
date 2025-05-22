@@ -1,13 +1,17 @@
-import { FC } from "react";
+import { Collapsible } from "@radix-ui/react-collapsible";
+import { Link } from "@tanstack/react-router";
 import { Dumbbell } from "lucide-react";
+
 import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarTrigger,
 } from "../ui/sidebar";
-import { Collapsible } from "@radix-ui/react-collapsible";
-import { Link } from "@tanstack/react-router";
+
+import type { FC } from "react";
+
+
 
 const Logo: FC = () => {
   return (

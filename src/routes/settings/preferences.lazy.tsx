@@ -1,6 +1,10 @@
-import { useCallback } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import type { UseQueryResult } from "@tanstack/react-query";
+import { createLazyFileRoute } from "@tanstack/react-router";
+import { AlertCircle, Loader2, Monitor } from "lucide-react";
+import { useCallback } from "react";
+import { toast } from "sonner";
+
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
   Card,
   CardContent,
@@ -9,10 +13,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { createLazyFileRoute } from "@tanstack/react-router";
-import { toast } from "sonner";
-import { AlertCircle, Loader2, Monitor } from "lucide-react";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
   Select,
   SelectContent,
@@ -27,6 +27,8 @@ import {
   type Preferences,
 } from "@/lib/api/preferences";
 import { ApiError } from "@/types/api";
+
+import type { UseQueryResult } from "@tanstack/react-query";
 
 export const Route = createLazyFileRoute("/settings/preferences")({
   component: PreferencesSettings,
@@ -43,7 +45,7 @@ function PreferencesSettings() {
   } = useQuery({
     queryKey: ["preferences"],
     queryFn: fetchPreferences,
-  }) as UseQueryResult<Preferences, Error>;
+  });
 
   // Update preferences mutation
   const { mutate: updateSettings, isPending: isUpdating } = useMutation({

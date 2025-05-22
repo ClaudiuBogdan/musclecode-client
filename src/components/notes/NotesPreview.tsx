@@ -1,5 +1,7 @@
-import { FC } from "react";
 import { Markdown } from "../ui/markdown";
+
+import type { FC } from "react";
+
 
 interface NotesPreviewProps {
   value: string;

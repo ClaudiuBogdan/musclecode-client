@@ -1,7 +1,9 @@
-import React, { useCallback, useMemo } from "react";
 import { PlusCircle } from "lucide-react";
+import React, { useCallback, useMemo } from "react";
+
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+
 import { ChatHistory } from "./ChatHistory";
 import { useChatStore } from "../store";
 

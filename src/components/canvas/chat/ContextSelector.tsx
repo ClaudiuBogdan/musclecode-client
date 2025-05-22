@@ -6,6 +6,7 @@ import React, {
   useMemo,
 } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
+
 import {
   contextOptions,
   getContextDisplayName,
@@ -15,7 +16,8 @@ import {
   updateKeyValueContextValue,
   shouldReplaceContext,
 } from "./types";
-import { ContextReference, KeyValueContextBlock } from "../types";
+
+import type { ContextReference, KeyValueContextBlock } from "../types";
 
 export interface ContextSelectorProps {
   /** Currently selected contexts */
@@ -240,7 +242,7 @@ export const ContextSelector: React.FC<ContextSelectorProps> = ({
   }, [toolbarSearchTerm]);
 
   const groupedContexts = useMemo(() => {
-    const groups: { [kind: string]: ContextReference[] } = {};
+    const groups: Record<string, ContextReference[]> = {};
     filteredContexts.forEach((item) => {
       const kind = getContextKind(item);
       groups[kind] = groups[kind] || [];

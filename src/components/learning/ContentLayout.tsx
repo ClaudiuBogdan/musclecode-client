@@ -1,9 +1,11 @@
-import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
+import { useNavigate } from "@tanstack/react-router";
 import { ChevronLeftIcon } from "lucide-react";
 import { useState } from "react";
-import { useNavigate } from "@tanstack/react-router";
+
 import { Chat } from "@/components/canvas/chat/Chat";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
+
 
 interface ContentLayoutProps {
   children: React.ReactNode;

@@ -1,12 +1,7 @@
-import { useState } from "react";
 import { Check, ChevronsUpDown, X } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { useState } from "react";
+
 import { Button } from "@/components/ui/button";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import {
   Command,
   CommandEmpty,
@@ -15,8 +10,15 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { AlgorithmTemplate } from "@/types/algorithm";
+import { cn } from "@/lib/utils";
+
+import type { AlgorithmTemplate } from "@/types/algorithm";
 
 interface AlgorithmSelectorProps {
   value: string[];

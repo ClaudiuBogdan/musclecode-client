@@ -4,19 +4,17 @@ import {
   useSearch,
 } from "@tanstack/react-router";
 import { useCallback, useEffect } from "react";
+
 import { CodeEditor } from "@/components/code/CodeEditor";
-import { showToast } from "@/utils/toast";
 import { ExecutionResult } from "@/components/code/ExecutionResult";
-import { useLayoutStore } from "@/stores/layout";
 import { InfoPanel } from "@/components/code/InfoPanel";
-import { TopBar } from "@/components/code/layout/TopBar";
 import { ButtonBar } from "@/components/code/layout/ButtonBar";
+import { TopBar } from "@/components/code/layout/TopBar";
 import {
   ResizablePanelGroup,
   ResizablePanel,
   ResizableHandle,
 } from "@/components/ui/resizable";
-import { CodeLanguage } from "@/types/algorithm";
 import { useAlgorithmStore } from "@/stores/algorithm";
 import {
   selectActiveLanguage,
@@ -29,6 +27,10 @@ import {
   selectTimerState,
   selectRatingSchedule,
 } from "@/stores/algorithm/selectors";
+import { useLayoutStore } from "@/stores/layout";
+import { showToast } from "@/utils/toast";
+
+import type { CodeLanguage } from "@/types/algorithm";
 
 export const Route = createLazyFileRoute("/algorithms/$algorithmId/")({
   component: Algorithm,

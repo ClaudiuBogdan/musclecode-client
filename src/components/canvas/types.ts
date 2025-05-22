@@ -1,4 +1,4 @@
-import { Model } from "@/types/models";
+import type { Model } from "@/types/models";
 
 /**
  * Represents the author role in the chat.

@@ -1,13 +1,15 @@
-import { useLesson } from "@/services/content/hooks";
+import { createLazyFileRoute } from "@tanstack/react-router";
+import { AlertCircleIcon, ArrowLeftIcon, ArrowRightIcon, BookOpenIcon, XIcon, ZapIcon } from "lucide-react";
+
+import { LessonChunkRenderer } from "@/components/learning/LessonChunkRenderer";
+import { LessonProgressBar } from "@/components/learning/LessonProgressBar";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { AlertCircleIcon, ArrowLeftIcon, ArrowRightIcon, BookOpenIcon, XIcon, ZapIcon } from "lucide-react";
-import { createLazyFileRoute } from "@tanstack/react-router";
-import { LessonProgressBar } from "@/components/learning/LessonProgressBar";
-import { LessonChunkRenderer } from "@/components/learning/LessonChunkRenderer";
-import { LessonBody } from "@/types/lesson";
+import { useLesson } from "@/services/content/hooks";
 import { useChunkNavigation } from "@/services/learning/hooks/useChunkNavigation";
+
+import type { LessonBody } from "@/types/lesson";
 
 export const Route = createLazyFileRoute("/learning/modules/$moduleId/lessons/$lessonId")({
   component: LessonDetailPage,

@@ -1,16 +1,16 @@
-import { ViewPlugin } from '@codemirror/view';
-import { syntaxHighlighting } from '@codemirror/language';
 import { markdown } from '@codemirror/lang-markdown';
+import { syntaxHighlighting } from '@codemirror/language';
+import { ViewPlugin } from '@codemirror/view';
 
-import tagParser from './tagParser';
 import highlightStyle from './highlightStyle';
-import RichEditPlugin from './richEdit';
 import renderBlock from './renderBlock';
+import RichEditPlugin from './richEdit';
+import tagParser from './tagParser';
 
 import type { Config } from '@markdoc/markdoc';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type MarkdocPluginConfig = { lezer?: any, markdoc: Config };
+export interface MarkdocPluginConfig { lezer?: any, markdoc: Config }
 
 export default function (config: MarkdocPluginConfig) {
   const mergedConfig = {
@@ -31,7 +31,7 @@ export default function (config: MarkdocPluginConfig) {
           target instanceof Element &&
           target.matches(".cm-markdoc-renderBlock *")
         )
-          view.dispatch({ selection: { anchor: view.posAtDOM(target) } });
+          {view.dispatch({ selection: { anchor: view.posAtDOM(target) } });}
       },
     },
   });

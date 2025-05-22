@@ -1,31 +1,35 @@
-import React, { FC, ReactNode, useMemo } from "react";
-import ReactMarkdown from "react-markdown";
+import type { FC, ReactNode} from "react";
 import type { Components } from "react-markdown";
-import remarkGfm from "remark-gfm";
-import rehypeRaw from "rehype-raw";
-import remarkMath from "remark-math";
-import rehypeKatex from "rehype-katex";
+
+import { ChevronRight, Expand } from "lucide-react";
+import React, { useMemo } from "react";
+import ReactMarkdown from "react-markdown";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import {
   vscDarkPlus,
   vs,
 } from "react-syntax-highlighter/dist/esm/styles/prism";
-import { ChevronRight, Expand } from "lucide-react";
+import rehypeKatex from "rehype-katex";
+import rehypeRaw from "rehype-raw";
+import remarkGfm from "remark-gfm";
+import remarkMath from "remark-math";
+
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { detectLanguage, cleanTheme } from "@/lib/code-detection";
 import { useTheme } from "@/components/theme/theme-provider";
 import "katex/dist/katex.min.css";
+import QuizQuestion from "@/components/QuizQuestion";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import QuizQuestion from "@/components/QuizQuestion";
+
 import Callout from "./callout";
-import { remarkCallouts } from "./plugins/callout-plugin";
 import { CopyButton } from "../copy-button";
+import { remarkCallouts } from "./plugins/callout-plugin";
 
 interface MarkdownProps {
   content: string;

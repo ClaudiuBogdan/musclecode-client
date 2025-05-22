@@ -1,4 +1,4 @@
-import { CodeLanguage } from "@/types/algorithm";
+import type { CodeLanguage } from "@/types/algorithm";
 
 export function getLanguageExtension(language: CodeLanguage): string {
   switch (language) {

@@ -1,11 +1,13 @@
-import { StateCreator } from "zustand";
-import { AlgorithmState, StoreActions, TimerActions } from "../types";
+
 import { withAlgorithm } from "../utils/stateUtils";
 import {
   calculateRunningTime,
   createInitialTimerState,
   calculateAdditionalPausedTime,
 } from "../utils/timerUtils";
+
+import type { AlgorithmState, StoreActions, TimerActions } from "../types";
+import type { StateCreator } from "zustand";
 
 export const createTimerSlice: StateCreator<
   AlgorithmState & StoreActions,

@@ -1,8 +1,9 @@
-import React, { useMemo, useRef, useState } from "react";
-import { Button } from "@/components/ui/button";
-import { motion } from "framer-motion";
 import confetti from "canvas-confetti";
+import { motion } from "framer-motion";
 import { CheckCircle2, Loader2, XCircle } from "lucide-react";
+import React, { useMemo, useRef, useState } from "react";
+
+import { Button } from "@/components/ui/button";
 import useQuizSessionStorage from "@/hooks/useQuizSessionStorage";
 
 const ENCOURAGEMENTS = [
@@ -118,9 +119,9 @@ const QuizQuestion: React.FC<QuizQuestionProps> = React.memo(({ children }) => {
   const getButtonClasses = (option: string): string => {
     if (option === quizData.answer && isCorrect) {
       return "bg-green-100 border-green-300 ring-2 ring-green-200 text-green-700 dark:bg-green-900 dark:border-green-500 dark:ring-green-600";
-    } else if (selectedOptions.includes(option) && option !== quizData.answer) {
+    } if (selectedOptions.includes(option) && option !== quizData.answer) {
       return "bg-red-100 border-red-300 ring-2 ring-red-200 text-red-700 dark:bg-red-900 dark:border-red-500 dark:ring-red-600";
-    } else if (isCorrect) {
+    } if (isCorrect) {
       return "opacity-50 cursor-not-allowed";
     }
 

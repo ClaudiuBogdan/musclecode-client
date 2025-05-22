@@ -1,7 +1,11 @@
-import { AlgorithmTemplate } from "@/types/algorithm";
-import { apiClient } from "./client";
-import { CreateAlgorithmPayload } from "@/types/newAlgorithm";
 import { useQuery } from "@tanstack/react-query";
+
+
+
+import { apiClient } from "./client";
+
+import type { AlgorithmTemplate } from "@/types/algorithm";
+import type { CreateAlgorithmPayload } from "@/types/newAlgorithm";
 
 export const algorithmKeys = {
   templates: ["algorithm-templates"] as const,

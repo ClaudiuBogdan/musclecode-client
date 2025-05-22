@@ -1,16 +1,21 @@
+import { v4 as uuidv4 } from "uuid";
 import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
-import { AlgorithmState, StoreActions } from "../../types";
-import { mockAlgorithmState } from "../utils/testStore";
-import { CodeLanguage } from "@/types/algorithm";
-import { CodeExecutionResponse, TestResult } from "@/types/testRunner";
+
+import { getLanguageExtension } from "@/lib/utils/algorithm";
+
+import { createAlgorithmSlice, createHintSlice } from "../..";
 import { createCodeSlice } from "../../slices/codeSlice";
 import { createTimerSlice } from "../../slices/timerSlice";
+import { mockAlgorithmState } from "../utils/testStore";
+
+import type { AlgorithmState, StoreActions } from "../../types";
+import type { CodeLanguage } from "@/types/algorithm";
+import type { CodeExecutionResponse, TestResult } from "@/types/testRunner";
+
 import { createExecutionSlice } from "../../slices/executionSlice";
 import { createSubmissionSlice } from "../../slices/submissionSlice";
-import { createAlgorithmSlice, createHintSlice } from "../..";
-import { v4 as uuidv4 } from "uuid";
-import { getLanguageExtension } from "@/lib/utils/algorithm";
+
 
 type TestStore = AlgorithmState & StoreActions;
 
@@ -68,11 +73,11 @@ describe("Code Slice", () => {
 
   describe("Code Management", () => {
     describe("setCode", () => {
-      const testCases: Array<{
+      const testCases: {
         language: CodeLanguage;
         tab: string;
         code: string;
-      }> = [
+      }[] = [
         {
           language: "javascript",
           tab: "solution.js",
@@ -207,11 +212,11 @@ describe("Code Slice", () => {
 
     describe("Code Retrieval", () => {
       it("should correctly retrieve code for all supported languages", () => {
-        const testCases: Array<{
+        const testCases: {
           language: CodeLanguage;
           tab: string;
           code: string;
-        }> = [
+        }[] = [
           { language: "javascript", tab: "solution.js", code: "js code" },
           { language: "python", tab: "solution.py", code: "py code" },
           { language: "typescript", tab: "solution.ts", code: "ts code" },

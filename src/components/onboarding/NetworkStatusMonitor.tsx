@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
-import { useOnboardingStore } from "../../lib/onboarding/store";
-import { toast } from "sonner";
 import { Wifi, WifiOff } from "lucide-react";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
+
+import { useOnboardingStore } from "../../lib/onboarding/store";
 import { Alert, AlertDescription } from "../ui/alert";
 
 /**

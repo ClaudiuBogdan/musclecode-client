@@ -1,9 +1,13 @@
-import { http, HttpResponse, delay, JsonBodyType } from "msw";
+import { http, HttpResponse, delay } from "msw";
 import { v4 as uuidv4 } from "uuid";
-import { Message } from "@/types/chat";
-import { ChatMessageRequest, ChatResponse } from "@/types/api";
-import { generateResponse } from "./responseGenerator";
+
 import { createLogger } from "@/lib/logger";
+
+import { generateResponse } from "./responseGenerator";
+
+import type { ChatMessageRequest, ChatResponse } from "@/types/api";
+import type { Message } from "@/types/chat";
+import type { JsonBodyType } from "msw";
 
 const logger = createLogger("MockChatAPI");
 

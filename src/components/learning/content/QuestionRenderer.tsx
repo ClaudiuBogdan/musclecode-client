@@ -1,12 +1,15 @@
+import { CheckCircle2, XCircle, ChevronRight, Lightbulb, Loader2, AlertCircle } from 'lucide-react';
 import React, { useState, useEffect } from 'react';
+
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
-import { LessonQuestion } from '@/types/lesson';
-import { Button } from '@/components/ui/button';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { CheckCircle2, XCircle, ChevronRight, Lightbulb, Loader2, AlertCircle } from 'lucide-react';
 import { useCheckQuestionAnswer } from '@/services/content/hooks';
-import { CheckAnswerResponse } from '@/services/content/api';
+
+import type { CheckAnswerResponse } from '@/services/content/api';
+import type { LessonQuestion } from '@/types/lesson';
+
 
 // Props now directly use LessonQuestion and add callbacks
 interface QuestionRendererProps {

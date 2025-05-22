@@ -1,7 +1,11 @@
 import React, { useEffect } from "react";
-import { createMessageReconstructor, PartialJsonValue } from "../parser";
-import { ChatMessage, ServerSentEvent } from "../types";
+
+import { createMessageReconstructor } from "../parser";
 import { StreamingMessageRenderer } from "./StreamingMessageRenderer";
+
+import type { PartialJsonValue } from "../parser";
+import type { ChatMessage, ServerSentEvent } from "../types";
+
 
 export const ErrorStreamTest: React.FC = () => {
   const [message, setMessage] = React.useState<ChatMessage | null>(null);

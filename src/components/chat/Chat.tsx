@@ -1,7 +1,8 @@
+import { Toaster } from "sonner";
+
+import { ChatHeader } from "./ChatHeader";
 import { ChatThread } from "./ChatThread";
 import { MessageInput } from "./MessageInput";
-import { Toaster } from "sonner";
-import { ChatHeader } from "./ChatHeader";
 
 export const Chat: React.FC = () => {
   return (

@@ -1,5 +1,6 @@
-import { AlgorithmFile, CodeLanguage, Rating } from "@/types/algorithm";
-import { FileId, AlgorithmId } from "./state";
+import type { FileId, AlgorithmId } from "./state";
+import type { AlgorithmFile, CodeLanguage, Rating } from "@/types/algorithm";
+
 
 export interface CodeActions {
   setCode: (
@@ -19,7 +20,7 @@ export interface CodeActions {
   getFiles: (
     algorithmId: AlgorithmId,
     language: CodeLanguage
-  ) => Array<AlgorithmFile>;
+  ) => AlgorithmFile[];
 }
 
 export interface TimerActions {

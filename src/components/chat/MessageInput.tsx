@@ -1,16 +1,20 @@
-import React, { useRef, useEffect, useState, useCallback } from "react";
-import { ArrowUp, Loader2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Command } from "@/types/chat";
-import useChatStore from "@/stores/chat";
-import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
-import { StopButton } from "./StopButton";
+import { ArrowUp, Loader2 } from "lucide-react";
+import React, { useRef, useEffect, useState, useCallback } from "react";
+
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import useChatStore from "@/stores/chat";
+import { getAlgorithmContext } from "@/utils/getAlgorithmContext";
+
 import { CommandDropdown } from "./CommandDropdown";
-import { CommandTag } from "./CommandTag";
 import { CommandFeedback } from "./CommandFeedback";
 import { INPUT_COMMANDS } from "./commands";
-import { getAlgorithmContext } from "@/utils/getAlgorithmContext";
+import { CommandTag } from "./CommandTag";
+import { StopButton } from "./StopButton";
+
+import type { Command } from "@/types/chat";
+
 
 interface MessageInputProps {
   className?: string;

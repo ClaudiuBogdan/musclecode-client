@@ -1,5 +1,3 @@
-import { cn } from "@/lib/utils";
-import { CodeExecutionResponse, TestItem } from "@/types/testRunner";
 import {
   CheckCircle2,
   XCircle,
@@ -8,7 +6,13 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { useState } from "react";
+
+import { cn } from "@/lib/utils";
+
 import { MatrixRain } from "./MatrixAnimation";
+
+import type { CodeExecutionResponse, TestItem } from "@/types/testRunner";
+
 
 interface ExecutionResultProps {
   result: CodeExecutionResponse | null;
@@ -25,11 +29,11 @@ const TestItemComponent = ({ item, level = 0 }: TestItemComponentProps) => {
 
   const getIcon = () => {
     if (item.t === "completedin")
-      return <Clock className="h-4 w-4 text-gray-400" />;
+      {return <Clock className="h-4 w-4 text-gray-400" />;}
     if (item.t === "passed")
-      return <CheckCircle2 className="h-4 w-4 text-green-500" />;
+      {return <CheckCircle2 className="h-4 w-4 text-green-500" />;}
     if (item.t === "error")
-      return <AlertCircle className="h-4 w-4 text-yellow-500" />;
+      {return <AlertCircle className="h-4 w-4 text-yellow-500" />;}
     if (item.p) return <CheckCircle2 className="h-4 w-4 text-green-500" />;
     return <XCircle className="h-4 w-4 text-red-500" />;
   };
@@ -40,7 +44,7 @@ const TestItemComponent = ({ item, level = 0 }: TestItemComponentProps) => {
     if (item.t === "failed") return "text-red-400 text-sm";
     if (item.t === "passed") return "text-green-400 text-sm";
     if (item.t === "error")
-      return "text-yellow-400 text-sm font-mono whitespace-pre-wrap";
+      {return "text-yellow-400 text-sm font-mono whitespace-pre-wrap";}
     if (item.t === "completedin") return "text-gray-400 text-sm";
     return "";
   };

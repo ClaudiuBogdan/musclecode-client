@@ -1,6 +1,7 @@
-import React from "react";
 import { X } from "lucide-react";
-import { Command } from "@/types/chat";
+import React from "react";
+
+import type { Command } from "@/types/chat";
 
 interface CommandTagProps {
   command: Command;

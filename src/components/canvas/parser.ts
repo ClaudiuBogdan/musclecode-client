@@ -1,3 +1,5 @@
+import { parse as parsePartialJson, ALL } from "partial-json"; // Import partial JSON parser
+
 import type {
   ServerSentEvent,
   ChatMessage,
@@ -7,7 +9,6 @@ import type {
   ToolResultContentBlock,
 } from "./types"; // Adjust path
 // TODO: have a look at this: https://www.npmjs.com/package/@streamparser/json
-import { parse as parsePartialJson, ALL } from "partial-json"; // Import partial JSON parser
 
 // --- Constants for Types ---
 const SSE_EVENT_TYPES = {
@@ -52,7 +53,7 @@ export interface PartialJsonObject {
 export type PartialJsonArray = PartialJsonValue[];
 
 // Define callbacks provided by the UI component
-export type ReconstructorCallbacks = {
+export interface ReconstructorCallbacks {
   onMessageUpdate?: (
     message: ChatMessage | null,
     buffers?: Map<number, string>,
@@ -62,9 +63,9 @@ export type ReconstructorCallbacks = {
   // onError is now triggered by external connection errors fed into handleSSEError
   // or internal processing errors
   onError?: (error: Error) => void;
-};
+}
 
-export type ReconstructorControls = {
+export interface ReconstructorControls {
   /** Processes a parsed ServerSentEvent from the SSE stream. */
   processSSEEvent: (event: ServerSentEvent) => void;
   /** Signals that the underlying SSE connection was opened. */
@@ -77,7 +78,7 @@ export type ReconstructorControls = {
   resetState: () => void;
   /** Allows updating UI callbacks after initialization. */
   updateCallbacks: (newCallbacks: Partial<ReconstructorCallbacks>) => void;
-};
+}
 
 /**
  * Factory function to create a message reconstructor instance.
@@ -91,14 +92,14 @@ export function createMessageReconstructor(
 ): ReconstructorControls {
   // --- State within Closure ---
   let callbacks = { ...initialCallbacks };
-  let isProcessing: boolean = false;
+  let isProcessing = false;
 
   // --- Type for State Tuple ---
-  type ReconstructorState = {
+  interface ReconstructorState {
     message: ChatMessage | null;
     deltaBuffers: Map<number, string>;
     partialInputStream: Map<number, PartialJsonValue>;
-  };
+  }
 
   // --- Initial State ---
   const getInitialState = (): ReconstructorState => ({
@@ -384,7 +385,7 @@ export function createMessageReconstructor(
 
   const handleMessageStop = (
     currentState: ReconstructorState,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+     
     _event: ServerSentEvent & { type: typeof SSE_EVENT_TYPES.MESSAGE_STOP }
   ): ReconstructorState => {
     if (!currentState.message) return currentState;

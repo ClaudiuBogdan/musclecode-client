@@ -1,5 +1,6 @@
-import React, { useMemo, useCallback } from "react";
 import { Clock, ChevronDown } from "lucide-react";
+import React, { useMemo, useCallback } from "react";
+
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -10,10 +11,13 @@ import {
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { useChatStore } from "../store";
-import { ChatThread, TextBlock } from "../types";
 import { formatRelativeTime } from "@/lib/dateUtils";
 import { cn } from "@/lib/utils";
+
+import { useChatStore } from "../store";
+import { TextBlock } from "../types";
+
+import type { ChatThread} from "../types";
 
 interface ChatHistoryProps {
   className?: string;
@@ -28,7 +32,7 @@ export const ChatHistory: React.FC<ChatHistoryProps> = ({
 }) => {
   const storeData = useChatStore();
   // If threads are provided via props, use them, otherwise get from store
-  const storeThreads = storeData.threads as Record<string, ChatThread>;
+  const storeThreads = storeData.threads;
   const switchThread = storeData.switchThread;
   const currentThreadId = storeData.currentThreadId;
 
@@ -62,7 +66,7 @@ export const ChatHistory: React.FC<ChatHistoryProps> = ({
     if (firstUserMessage) {
       const textContent = firstUserMessage.content
         .filter((item) => item.type === "text")
-        .map((item) => (item as TextBlock).text)
+        .map((item) => (item).text)
         .join(" ");
 
       title = textContent || title;
@@ -78,7 +82,7 @@ export const ChatHistory: React.FC<ChatHistoryProps> = ({
     if (firstAssistantMessage) {
       const textContent = firstAssistantMessage.content
         .filter((item) => item.type === "text")
-        .map((item) => (item as TextBlock).text)
+        .map((item) => (item).text)
         .join(" ");
 
       preview = textContent || "";

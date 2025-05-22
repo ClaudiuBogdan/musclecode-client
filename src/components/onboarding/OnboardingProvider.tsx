@@ -1,12 +1,13 @@
+import { useRouter } from "@tanstack/react-router";
+import { Loader2, WifiOff, AlertCircle } from "lucide-react";
 import { useEffect } from "react";
-import { useOnboardingStore } from "../../lib/onboarding/store";
-import { WelcomeStep } from "./WelcomeStep";
+
 import { GoalsStep } from "./GoalsStep";
+import { OnboardingLayout } from "./OnboardingLayout";
 import { QuizStep } from "./QuizStep";
 import { SummaryStep } from "./SummaryStep";
-import { OnboardingLayout } from "./OnboardingLayout";
-import { Loader2, WifiOff, AlertCircle } from "lucide-react";
-import { useRouter } from "@tanstack/react-router";
+import { WelcomeStep } from "./WelcomeStep";
+import { useOnboardingStore } from "../../lib/onboarding/store";
 import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
 import { Button } from "../ui/button";
 

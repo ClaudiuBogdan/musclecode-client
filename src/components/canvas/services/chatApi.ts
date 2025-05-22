@@ -1,5 +1,6 @@
 import { apiClient } from "@/lib/api/client";
-import { ChatMessage, ContentBlock } from "../types"; // Adjust path as needed
+
+import type { ChatMessage, ContentBlock } from "../types"; // Adjust path as needed
 
 // Define the expected payload structure for sending a message
 // This reflects the 'backendPayload' created in the store's addMessage

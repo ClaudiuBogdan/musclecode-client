@@ -1,8 +1,10 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Collection } from "@/types/collection";
+
 import { apiClient } from "@/lib/api/client";
-import { CollectionFormData } from "@/components/collections/CollectionForm";
 import { createLogger } from "@/lib/logger";
+
+import type { CollectionFormData } from "@/components/collections/CollectionForm";
+import type { Collection } from "@/types/collection";
 
 const logger = createLogger("useUpdateCollection");
 

@@ -1,9 +1,6 @@
-import { useAlgorithmStore } from "@/stores/algorithm";
-import {
-  selectActiveLanguage,
-  selectCodeState,
-} from "@/stores/algorithm/selectors";
 import { Code2, Check } from "lucide-react";
+import { useCallback, useMemo } from "react";
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,8 +8,14 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
-import { CodeLanguage } from "@/types/algorithm";
-import { useCallback, useMemo } from "react";
+import { useAlgorithmStore } from "@/stores/algorithm";
+import {
+  selectActiveLanguage,
+  selectCodeState,
+} from "@/stores/algorithm/selectors";
+
+import type { CodeLanguage } from "@/types/algorithm";
+
 
 interface LanguageSelectorProps {
   algorithmId: string;

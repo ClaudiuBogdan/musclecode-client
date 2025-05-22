@@ -1,12 +1,10 @@
-import { useState, useEffect, useCallback } from "react";
-import { StepProps } from "../../lib/onboarding/types";
-import { Button } from "../ui/button";
-import { Label } from "../ui/label";
-import { useOnboardingStore } from "../../lib/onboarding/store";
 import { Loader2, AlertCircle, WifiOff, ArrowRight } from "lucide-react";
-import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
+import { useState, useEffect, useCallback } from "react";
 import { toast } from "sonner";
-import { Checkbox } from "../ui/checkbox";
+
+import { useOnboardingStore } from "../../lib/onboarding/store";
+import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
+import { Button } from "../ui/button";
 import {
   Card,
   CardContent,
@@ -14,7 +12,11 @@ import {
   CardHeader,
   CardTitle,
 } from "../ui/card";
+import { Checkbox } from "../ui/checkbox";
+import { Label } from "../ui/label";
 import { Slider } from "../ui/slider";
+
+import type { StepProps } from "../../lib/onboarding/types";
 
 const timeCommitments = [
   { value: 15, label: "15 minutes daily" },

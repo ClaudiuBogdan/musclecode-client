@@ -1,6 +1,7 @@
 import { createLazyFileRoute } from '@tanstack/react-router'
-import { AddModelDialog, ModelList } from '@/components/models'
 import { Toaster } from "sonner"
+
+import { AddModelDialog, ModelList } from '@/components/models'
 
 export const Route = createLazyFileRoute('/settings/models')({
   component: ModelsSettings,

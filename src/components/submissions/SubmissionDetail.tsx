@@ -1,11 +1,15 @@
-import { Submission, Rating } from "@/types/algorithm";
-import { Badge } from "@/components/ui/badge";
 import { Calendar, Clock } from "lucide-react";
-import { LanguageBadge } from "./LanguageBadge";
-import { formatTime } from "@/lib/utils/time";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { useState, useEffect } from "react";
+
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { formatTime } from "@/lib/utils/time";
+
+
+import { LanguageBadge } from "./LanguageBadge";
 import { CodeEditor } from "../code/CodeEditor";
+
+import type { Submission, Rating } from "@/types/algorithm";
 
 const difficultyColors: Record<Rating, string> = {
   again: "bg-red-500 text-white",

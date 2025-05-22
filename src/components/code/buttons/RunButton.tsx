@@ -1,9 +1,11 @@
 import { PlayIcon } from "@radix-ui/react-icons";
+import { posthog } from "posthog-js";
+import { useHotkeys } from "react-hotkeys-hook";
+
 import { Button } from "@/components/ui/button";
 import { createLogger } from "@/lib/logger";
-import { posthog } from "posthog-js";
 import { tracingStore } from "@/stores/tracing";
-import { useHotkeys } from "react-hotkeys-hook";
+
 
 const logger = createLogger({ context: "RunButton" });
 

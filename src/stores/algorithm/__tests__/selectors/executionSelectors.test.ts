@@ -1,3 +1,6 @@
+import { createMockTestResponse } from "@/lib/mocks/api/code/utils";
+
+
 import {
   selectExecutionState,
   selectIsExecuting,
@@ -5,9 +8,9 @@ import {
   selectExecutionError,
 } from "../../selectors/executionSelectors";
 import { mockAlgorithmState } from "../utils/testStore";
-import { AlgorithmState, ExecutionState } from "../../types";
-import { CodeExecutionResponse } from "@/types/testRunner";
-import { createMockTestResponse } from "@/lib/mocks/api/code/utils";
+
+import type { AlgorithmState, ExecutionState } from "../../types";
+import type { CodeExecutionResponse } from "@/types/testRunner";
 
 describe("Execution Selectors", () => {
   const algorithmId = "test-algorithm";

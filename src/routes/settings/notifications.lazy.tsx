@@ -1,6 +1,10 @@
-import { useCallback } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import type { UseQueryResult } from "@tanstack/react-query";
+import { createLazyFileRoute } from "@tanstack/react-router";
+import { AlertCircle, Loader2, Mail, Bell } from "lucide-react";
+import { useCallback } from "react";
+import { toast } from "sonner";
+
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
   Card,
   CardContent,
@@ -10,16 +14,14 @@ import {
 } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { createLazyFileRoute } from "@tanstack/react-router";
-import { toast } from "sonner";
-import { AlertCircle, Loader2, Mail, Bell } from "lucide-react";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
   fetchNotificationSettings,
   updateNotificationSettings,
   type NotificationSettings,
 } from "@/lib/api/notifications";
 import { ApiError } from "@/types/api";
+
+import type { UseQueryResult } from "@tanstack/react-query";
 
 export const Route = createLazyFileRoute("/settings/notifications")({
   component: NotificationSettings,
@@ -36,7 +38,7 @@ function NotificationSettings() {
   } = useQuery({
     queryKey: ["notificationSettings"],
     queryFn: fetchNotificationSettings,
-  }) as UseQueryResult<NotificationSettings, Error>;
+  });
 
   // Update notification settings mutation
   const { mutate: updateSettings, isPending: isUpdating } = useMutation({

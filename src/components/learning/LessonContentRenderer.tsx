@@ -1,13 +1,16 @@
-import React from 'react';
-import { LessonContent } from '@/types/lesson';
-// Import the actual renderers
-import { TextRenderer } from './content/TextRenderer';
-import { QuoteRenderer } from './content/QuoteRenderer';
-import { FlashcardRenderer } from './content/FlashcardRenderer';
-import TitleRenderer from './TitleRenderer';
 import { AlertTriangleIcon } from 'lucide-react';
-import { QuizRenderer } from './content/QuizRenderer';
+import React from 'react';
+
+
+// Import the actual renderers
+import { FlashcardRenderer } from './content/FlashcardRenderer';
 import { QuestionRenderer } from './content/QuestionRenderer';
+import { QuizRenderer } from './content/QuizRenderer';
+import { QuoteRenderer } from './content/QuoteRenderer';
+import { TextRenderer } from './content/TextRenderer';
+import TitleRenderer from './TitleRenderer';
+
+import type { LessonContent } from '@/types/lesson';
 
 interface LessonContentRendererProps {
   content: LessonContent[];

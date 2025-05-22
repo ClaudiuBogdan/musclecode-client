@@ -1,12 +1,16 @@
-import { ColumnDef } from "@tanstack/react-table";
-import { Badge } from "@/components/ui/badge";
 import { Link } from "@tanstack/react-router";
+
+
+import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+
 
 import { categories, difficulties } from "./data";
 import { DataTableColumnHeader } from "./data-table-column-header";
 import { DataTableRowActions } from "./data-table-row-actions";
-import { AlgorithmPreview } from "@/types/algorithm";
+
+import type { AlgorithmPreview } from "@/types/algorithm";
+import type { ColumnDef } from "@tanstack/react-table";
 
 export const columns: ColumnDef<AlgorithmPreview>[] = [
   {

@@ -1,4 +1,4 @@
-import { Submission } from "@/types/algorithm";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -8,11 +8,15 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { difficultyColors } from "@/lib/constants/styles";
+import { formatTime } from "@/lib/utils/time";
+
+
 import { LanguageBadge } from "./LanguageBadge";
 import { NotesPopover } from "./NotesPopover";
-import { Badge } from "@/components/ui/badge";
-import { formatTime } from "@/lib/utils/time";
-import { difficultyColors } from "@/lib/constants/styles";
+
+import type { Submission } from "@/types/algorithm";
+
 
 interface SubmissionsTableProps {
   submissions: Submission[];

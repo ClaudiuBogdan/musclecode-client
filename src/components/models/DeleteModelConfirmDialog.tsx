@@ -1,3 +1,6 @@
+import { Trash2 } from "lucide-react"
+import { toast } from "sonner"
+
 import {
   AlertDialog,
   AlertDialogAction,
@@ -11,8 +14,6 @@ import {
 } from "@/components/ui/alert-dialog"
 import { Button } from "@/components/ui/button"
 import { useModelsStore } from "@/stores/models"
-import { Trash2 } from "lucide-react"
-import { toast } from "sonner"
 
 interface DeleteModelConfirmDialogProps {
   modelId: string;

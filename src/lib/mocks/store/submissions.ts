@@ -1,13 +1,12 @@
-import { Submission } from "@/types/algorithm";
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
+
+import type { Submission } from "@/types/algorithm";
 
 type AlgorithmId = string;
 
 interface SubmissionState {
-  submissions: {
-    [key in AlgorithmId]: Submission[];
-  };
+  submissions: Record<AlgorithmId, Submission[]>;
   addSubmission: (algorithmId: AlgorithmId, submission: Submission) => void;
   getSubmission: (algorithmId: AlgorithmId) => Submission[];
   getSubmissions: () => Submission[];

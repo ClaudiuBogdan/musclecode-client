@@ -1,8 +1,20 @@
+import { toast } from "sonner";
+import { v4 as uuidv4 } from "uuid";
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
-import { v4 as uuidv4 } from "uuid";
+
+import { env } from "@/config/env";
+import { listenToSSE } from "@/lib/api/client";
+import { AppError } from "@/lib/errors/types";
+import { logger } from "@/lib/logger";
+import { useModelsStore } from "@/stores/models";
+
 import {
+  createMessageReconstructor
+} from "../parser";
+
+import type {
   ChatMessage,
   ChatThread,
   ServerSentEvent,
@@ -10,18 +22,13 @@ import {
   ContextReference,
   ModelContext,
 } from "../types";
-import { ChatStore, ChatStoreState } from "./types";
-import { listenToSSE, SSEController, SSECallbacks } from "@/lib/api/client";
-import { AppError } from "@/lib/errors/types";
-import {
-  createMessageReconstructor,
+import type { ChatStore, ChatStoreState } from "./types";
+import type {
   PartialJsonValue,
-  ReconstructorControls,
-} from "../parser";
-import { useModelsStore } from "@/stores/models";
-import { toast } from "sonner";
-import { env } from "@/config/env";
-import { logger } from "@/lib/logger";
+  ReconstructorControls} from "../parser";
+import type { SSEController, SSECallbacks } from "@/lib/api/client";
+
+
 
 // --- Define Connection Status Type ---
 type ConnectionStatus =
@@ -534,7 +541,7 @@ export const useChatStore = create<ChatStore>()(
         removeContext: (threadId: string, contextId: string) => {
           set((state) => {
             const thread = state.threads[threadId];
-            if (!thread || !thread.attachedContext) return;
+            if (!thread?.attachedContext) return;
 
             thread.attachedContext = thread.attachedContext.filter(
               (c) => c.id !== contextId

@@ -1,13 +1,16 @@
 import { useRouter } from "@tanstack/react-router";
 import { useState } from "react";
+
+import { HintButton } from "@/components/code/buttons/HintButton";
 import { RunButton } from "@/components/code/buttons/RunButton";
 import { SkipButton } from "@/components/code/buttons/SkipButton";
-import { HintButton } from "@/components/code/buttons/HintButton";
 import { HintDisplay } from "@/components/code/hints/HintDisplay";
-import { DifficultySelector } from "./DifficultySelector";
-import { RatingSchedule } from "@/types/algorithm";
 import { useAlgorithmStore } from "@/stores/algorithm";
 import useChatStore from "@/stores/chat";
+
+import { DifficultySelector } from "./DifficultySelector";
+
+import type { RatingSchedule } from "@/types/algorithm";
 
 interface ButtonBarProps {
   algorithmId: string;

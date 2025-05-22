@@ -1,10 +1,13 @@
-import { StateCreator } from "zustand";
-import { AlgorithmState, HintActions, StoreActions } from "../types";
-import { showToast } from "@/utils/toast";
+import { v4 as uuidv4 } from "uuid";
+
+
 import useChatStore from "@/stores/chat";
 import { getAlgorithmContext } from "@/utils/getAlgorithmContext";
-import { v4 as uuidv4 } from "uuid";
-import { MessageStreamDto } from "@/types/chat";
+import { showToast } from "@/utils/toast";
+
+import type { AlgorithmState, HintActions, StoreActions } from "../types";
+import type { MessageStreamDto } from "@/types/chat";
+import type { StateCreator } from "zustand";
 
 export const createHintSlice: StateCreator<
   AlgorithmState & StoreActions,

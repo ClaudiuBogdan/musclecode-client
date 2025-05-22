@@ -1,7 +1,10 @@
-import React, { createContext, useContext, useCallback, useState } from "react";
-import { AppError, ErrorSource } from "@/lib/errors/types";
-import { logger } from "@/lib/logger";
 import posthog from "posthog-js";
+import React, { createContext, useContext, useCallback, useState } from "react";
+
+import { AppError } from "@/lib/errors/types";
+import { logger } from "@/lib/logger";
+
+import type { ErrorSource } from "@/lib/errors/types";
 
 interface ErrorContextValue {
   error: AppError | null;

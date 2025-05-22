@@ -1,14 +1,18 @@
 import React from "react";
+
+import { Markdown } from "@/components/ui/markdown";
+
 import {
+  ToolResultContent,
+} from "../types";
+
+import type { PartialJsonValue } from "../parser"; // Assuming this is the correct path
+import type {
   ChatMessage,
   ContentBlock,
   TextBlock,
   ToolUseContentBlock,
-  ToolResultContentBlock,
-  ToolResultContent,
-} from "../types";
-import { PartialJsonValue } from "../parser"; // Assuming this is the correct path
-import { Markdown } from "@/components/ui/markdown";
+  ToolResultContentBlock} from "../types";
 
 // Helper function to format JSON for display (similar to demo)
 const formatJson = (value: PartialJsonValue | unknown): string => {
@@ -122,7 +126,7 @@ const RenderContentBlock: React.FC<{
             ? currentBuffer // Fallback to buffer if no parsed result yet
             : toolResult.is_error // If it's a finalized error, content might be a string
               ? String(toolResult.content ?? "")
-              : formatJson(toolResult.content as ToolResultContent | unknown); // Format final content (might be string or structured)
+              : formatJson(toolResult.content); // Format final content (might be string or structured)
 
       const showStreamingIndicator =
         isStreaming &&

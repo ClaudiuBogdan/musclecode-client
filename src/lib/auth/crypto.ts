@@ -1,6 +1,7 @@
 import { env } from "@/config/env";
-import { AuthErrorCode, createAuthError } from "./errors";
 import { createLogger } from "@/lib/logger";
+
+import { AuthErrorCode, createAuthError } from "./errors";
 
 const logger = createLogger({ context: "Crypto" });
 

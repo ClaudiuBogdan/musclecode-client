@@ -1,5 +1,6 @@
-import { OnboardingStep } from "../../lib/onboarding/types";
 import { cn } from "../../lib/utils";
+
+import type { OnboardingStep } from "../../lib/onboarding/types";
 
 interface StepIndicatorProps {
   currentStep: OnboardingStep;

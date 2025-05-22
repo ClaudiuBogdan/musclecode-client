@@ -1,5 +1,6 @@
 import React from 'react';
-import { LessonTitle } from '@/types/lesson';
+
+import type { LessonTitle } from '@/types/lesson';
 
 // interface TitleRendererProps extends LessonTitle {}
 

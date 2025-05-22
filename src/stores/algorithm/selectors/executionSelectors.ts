@@ -1,5 +1,6 @@
-import { AlgorithmState } from "../types";
-import { CodeExecutionResponse } from "@/types/testRunner";
+import type { AlgorithmState } from "../types";
+import type { CodeExecutionResponse } from "@/types/testRunner";
+
 
 export const selectExecutionState = (
   state: AlgorithmState,

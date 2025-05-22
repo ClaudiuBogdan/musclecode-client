@@ -1,13 +1,17 @@
-import React, { useCallback } from "react";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
 import { RotateCcw, Edit2, BotIcon, UserIcon } from "lucide-react";
-import { showToast } from "@/utils/toast";
-import { EditMessage } from "./EditMessage";
-import { Markdown } from "@/components/ui/markdown";
+import React, { useCallback } from "react";
+
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 import { CopyButton } from "@/components/ui/copy-button";
-import { ChatMessage, TextBlock } from "../types";
+import { Markdown } from "@/components/ui/markdown";
+import { cn } from "@/lib/utils";
+import { showToast } from "@/utils/toast";
+
+import { EditMessage } from "./EditMessage";
+
+
+import type { ChatMessage, TextBlock } from "../types";
 
 interface MessageProps {
   message: ChatMessage;

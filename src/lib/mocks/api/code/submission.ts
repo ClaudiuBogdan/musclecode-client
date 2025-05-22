@@ -1,7 +1,9 @@
 import { http, HttpResponse } from "msw";
-import { Submission } from "@/types/algorithm";
+
 import { apiClient } from "@/lib/api/client";
 import { createLogger } from "@/lib/logger";
+
+import type { Submission } from "@/types/algorithm";
 
 const logger = createLogger({ context: "MockSubmissionApi" });
 

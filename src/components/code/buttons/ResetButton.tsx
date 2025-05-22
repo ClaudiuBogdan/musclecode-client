@@ -1,6 +1,7 @@
-import { Button } from "@/components/ui/button";
-import { FC, useState } from "react";
 import { RotateCcw, File } from "lucide-react";
+import { useState } from "react";
+
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -9,11 +10,13 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 
-type Props = {
+import type { FC} from "react";
+
+interface Props {
   onClick?: () => void;
   disabled?: boolean;
   className?: string;
-};
+}
 
 export const ResetButton: FC<Props> = ({ onClick, disabled, className }) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);

@@ -1,11 +1,7 @@
 import { createLazyFileRoute } from "@tanstack/react-router";
-import { CollectionsGrid } from "@/components/collections/CollectionsGrid";
-import { useUserCollections } from "@/hooks/useUserCollections";
-import { usePublicCollections } from "@/hooks/usePublicCollections";
-import { useCopyCollection } from "@/hooks/useCopyCollection";
-import { createLogger } from "@/lib/logger";
-import { showToast } from "@/utils/toast";
 import { useState } from "react";
+
+import { CollectionsGrid } from "@/components/collections/CollectionsGrid";
 import {
   Card,
   CardHeader,
@@ -13,6 +9,11 @@ import {
   CardDescription,
   CardContent,
 } from "@/components/ui/card";
+import { useCopyCollection } from "@/hooks/useCopyCollection";
+import { usePublicCollections } from "@/hooks/usePublicCollections";
+import { useUserCollections } from "@/hooks/useUserCollections";
+import { createLogger } from "@/lib/logger";
+import { showToast } from "@/utils/toast";
 
 const logger = createLogger("CollectionsPage");
 

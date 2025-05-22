@@ -1,6 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
-import { AlgorithmPreview } from "@/types/algorithm";
+
 import { apiClient } from "@/lib/api/client";
+
+import type { AlgorithmPreview } from "@/types/algorithm";
 
 export function useAlgorithms() {
   return useQuery({

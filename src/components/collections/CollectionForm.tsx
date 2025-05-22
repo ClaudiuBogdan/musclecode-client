@@ -1,6 +1,9 @@
-import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Loader2 } from "lucide-react";
+import { useForm } from "react-hook-form";
 import * as z from "zod";
+
+import { AlgorithmSelector } from "@/components/algorithms/AlgorithmSelector";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -12,11 +15,11 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
-import { AlgorithmSelector } from "@/components/algorithms/AlgorithmSelector";
-import { AlgorithmTemplate } from "@/types/algorithm";
-import { Loader2 } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
+
+import type { AlgorithmTemplate } from "@/types/algorithm";
+
 
 const collectionFormSchema = z.object({
   name: z

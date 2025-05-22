@@ -1,7 +1,9 @@
-import React from "react";
-import { Square } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
+import { Square } from "lucide-react";
+import React from "react";
+
+import { Button } from "@/components/ui/button";
+
 
 interface StopButtonProps {
   onStop: () => void;

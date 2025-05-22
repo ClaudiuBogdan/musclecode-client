@@ -1,4 +1,4 @@
-import { Message, Thread } from "../types/chat";
+import type { Message, Thread } from "../types/chat";
 
 export function getConversationThread(
   messages: Record<string, Message>,

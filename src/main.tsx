@@ -1,15 +1,15 @@
-import { StrictMode } from "react";
-import ReactDOM from "react-dom/client";
 import { RouterProvider, createRouter } from "@tanstack/react-router";
 import { PostHogProvider } from "posthog-js/react";
+import { StrictMode } from "react";
+import ReactDOM from "react-dom/client";
 
 import "./index.css";
 
 import "./lib/tracing/tracer";
 
 // Import the generated route tree
-import { routeTree } from "./routeTree.gen";
 import { env } from "./config/env";
+import { routeTree } from "./routeTree.gen";
 
 // Create a new router instance
 const router = createRouter({ routeTree });

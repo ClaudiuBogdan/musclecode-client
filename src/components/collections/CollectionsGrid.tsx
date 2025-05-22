@@ -1,11 +1,16 @@
-import { useState } from "react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Button } from "@/components/ui/button";
-import { Globe, Lock, Plus } from "lucide-react";
-import { CollectionCard } from "./CollectionCard";
-import { Collection } from "@/types/collection";
 import { Link } from "@tanstack/react-router";
+import { Globe, Lock, Plus } from "lucide-react";
+import { useState } from "react";
+
+import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
+import { CollectionCard } from "./CollectionCard";
+
+import type { Collection } from "@/types/collection";
+
+
 
 interface CollectionsGridProps {
   publicCollections: Collection[];

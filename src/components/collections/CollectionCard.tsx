@@ -1,9 +1,13 @@
-import { Card, CardFooter, CardHeader } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Globe, Lock, Copy } from "lucide-react";
-import { Collection } from "@/types/collection";
 import { Link } from "@tanstack/react-router";
+import { Globe, Lock, Copy } from "lucide-react";
+
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardFooter, CardHeader } from "@/components/ui/card";
+
+
+import type { Collection } from "@/types/collection";
+
 
 interface CollectionCardProps {
   collection: Collection;

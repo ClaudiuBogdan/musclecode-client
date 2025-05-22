@@ -1,5 +1,7 @@
-import React, { useState } from "react";
 import { useRouter } from "@tanstack/react-router";
+import { Loader2Icon, NotebookTabsIcon } from "lucide-react";
+import React, { useState } from "react";
+
 import { Button } from "@/components/ui/button";
 import {
   Popover,
@@ -7,7 +9,6 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Textarea } from "@/components/ui/textarea";
-import { Loader2Icon, NotebookTabsIcon } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
@@ -19,8 +20,9 @@ import {
   selectIsSubmitting,
   selectUserProgressNotes,
 } from "@/stores/algorithm/selectors";
-import { Rating, RatingSchedule } from "@/types/algorithm";
 import { showToast } from "@/utils/toast";
+
+import type { Rating, RatingSchedule } from "@/types/algorithm";
 
 interface DifficultySelectorProps {
   algorithmId: string;

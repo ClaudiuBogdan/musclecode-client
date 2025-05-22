@@ -1,10 +1,12 @@
-import React from "react";
 import { Lightbulb } from "lucide-react";
+import { posthog } from "posthog-js";
+import React from "react";
+import { useHotkeys } from "react-hotkeys-hook";
+
 import { Button } from "@/components/ui/button";
 import { createLogger } from "@/lib/logger";
-import { posthog } from "posthog-js";
 import { tracingStore } from "@/stores/tracing";
-import { useHotkeys } from "react-hotkeys-hook";
+
 
 const logger = createLogger({ context: "HintButton" });
 

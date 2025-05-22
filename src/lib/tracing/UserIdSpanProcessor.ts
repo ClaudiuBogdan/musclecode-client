@@ -1,7 +1,9 @@
-import { SpanProcessor } from "@opentelemetry/sdk-trace-base";
-import { Span } from "@opentelemetry/api";
 import { useAuthStore } from "@/stores/auth";
 import { tracingStore } from "@/stores/tracing";
+
+import type { Span } from "@opentelemetry/api";
+import type { SpanProcessor } from "@opentelemetry/sdk-trace-base";
+
 
 export class UserIdSpanProcessor implements SpanProcessor {
   onStart(span: Span): void {

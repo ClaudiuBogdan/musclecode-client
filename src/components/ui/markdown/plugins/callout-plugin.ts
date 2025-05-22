@@ -1,6 +1,7 @@
 import { visit } from "unist-util-visit";
-import { Plugin } from "unified";
-import { Node } from "unist";
+
+import type { Plugin } from "unified";
+import type { Node } from "unist";
 
 // Type definitions for remark AST
 interface TextNode extends Node {
@@ -10,12 +11,12 @@ interface TextNode extends Node {
 
 interface ParagraphNode extends Node {
   type: "paragraph";
-  children: Array<TextNode | Node>;
+  children: (TextNode | Node)[];
 }
 
 interface BlockquoteNode extends Node {
   type: "blockquote";
-  children: Array<ParagraphNode | Node>;
+  children: (ParagraphNode | Node)[];
 }
 
 interface ParentNode extends Node {
@@ -78,7 +79,7 @@ export const remarkCallouts: Plugin = () => {
         const headerRegex = /^\[!(?<type>[^\]]+)\](\s*(?<title>.+))?$/;
         const headerMatch = headerRegex.exec(lines[0]?.trim());
 
-        if (!headerMatch || !headerMatch.groups) return;
+        if (!headerMatch?.groups) return;
         let { type = "", title = "" } = headerMatch.groups;
         type = type.trim().toLowerCase();
         title = title.trim();

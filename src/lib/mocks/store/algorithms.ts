@@ -1,5 +1,6 @@
-import { AlgorithmTemplate } from "@/types/algorithm";
 import { create } from "zustand";
+
+import type { AlgorithmTemplate } from "@/types/algorithm";
 
 interface AlgorithmsStore {
   algorithms: AlgorithmTemplate[];

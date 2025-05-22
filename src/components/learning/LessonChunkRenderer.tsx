@@ -1,8 +1,12 @@
-import React from 'react';
-import { LessonChunk } from '@/types/lesson';
 import { BookTextIcon, HelpCircleIcon, LayersIcon, AlertTriangleIcon, CheckSquareIcon } from 'lucide-react';
+import React from 'react';
+
 import { cn } from '@/lib/utils';
+
 import { LessonContentRenderer } from './LessonContentRenderer';
+
+import type { LessonChunk } from '@/types/lesson';
+
 
 interface LessonChunkRendererProps {
   chunk: LessonChunk;

@@ -1,6 +1,8 @@
-import { PersistStorage, StorageValue } from "zustand/middleware";
-import { AlgorithmState, StoreActions } from "./types";
+
 import { createLogger } from "@/lib/logger";
+
+import type { AlgorithmState, StoreActions } from "./types";
+import type { PersistStorage, StorageValue } from "zustand/middleware";
 
 const logger = createLogger({ context: "AlgorithmStorage" });
 

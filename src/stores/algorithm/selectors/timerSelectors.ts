@@ -1,5 +1,6 @@
-import { AlgorithmState } from "../types";
 import { calculateRunningTime } from "../utils/timerUtils";
+
+import type { AlgorithmState } from "../types";
 
 export const selectTimerState = (
   state: AlgorithmState,

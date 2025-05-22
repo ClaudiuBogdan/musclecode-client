@@ -1,6 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
-import { Collection } from "@/types/collection";
+
 import { apiClient } from "@/lib/api/client";
+
+import type { Collection } from "@/types/collection";
 
 export function useCollection(id: string) {
   return useQuery({

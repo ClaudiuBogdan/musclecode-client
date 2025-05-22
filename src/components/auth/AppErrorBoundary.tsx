@@ -1,12 +1,13 @@
-import { useEffect } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { AlertCircle } from "lucide-react";
+import { useEffect } from "react";
+
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import { useAuthStore } from "@/stores/auth";
+import { useErrorHandler } from "@/contexts/ErrorContext";
 import { AuthError, isAuthErrorRequiringLogout } from "@/lib/auth/errors";
 import { AppError } from "@/lib/errors/types";
-import { useErrorHandler } from "@/contexts/ErrorContext";
+import { useAuthStore } from "@/stores/auth";
 
 interface AppErrorBoundaryProps {
   error: Error;

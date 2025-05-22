@@ -1,16 +1,22 @@
 // lib/api/client.ts
-import axios from "axios";
 import {
-  fetchEventSource,
-  EventSourceMessage,
+  fetchEventSource
 } from "@microsoft/fetch-event-source";
-import { ApiError } from "@/types/api";
-import { getAuthService } from "../auth/auth-service";
+import axios from "axios";
+
+
 import { env } from "@/config/env";
-import { createLogger } from "../logger";
-import { AuthErrorCode, AuthError } from "../auth/errors";
 import { AppError, createAuthError } from "@/lib/errors/types";
-import { ServerSentEvent } from "@/components/canvas/types";
+
+import { getAuthService } from "../auth/auth-service";
+import { AuthErrorCode, AuthError } from "../auth/errors";
+import { createLogger } from "../logger";
+
+
+import type { ServerSentEvent } from "@/components/canvas/types";
+import type { ApiError } from "@/types/api";
+import type {
+  EventSourceMessage} from "@microsoft/fetch-event-source";
 
 const logger = createLogger("ApiClient");
 
@@ -69,7 +75,7 @@ export async function getAuthHeaders(): Promise<Record<string, string>> {
  * Common function to handle 401 unauthorized errors
  */
 export async function handle401Error(
-  context: string = "API Request"
+  context = "API Request"
 ): Promise<never> {
   logger.error(`Authentication Token Invalid - ${context}`, {
     operation: context,

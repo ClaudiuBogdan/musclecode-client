@@ -1,7 +1,8 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+
+import { apiClient } from "@/lib/api/client";
 import { createLogger } from "@/lib/logger";
 import { showToast } from "@/utils/toast";
-import { apiClient } from "@/lib/api/client";
 
 const logger = createLogger("useDeleteCollection");
 

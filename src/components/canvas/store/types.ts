@@ -1,11 +1,11 @@
-import {
+import type { PartialJsonValue } from "../parser";
+import type {
   ChatMessage,
   ChatThread,
   ContentBlock,
   ContextReference,
 } from "../types";
 // Import PartialJsonValue from the parser file
-import { PartialJsonValue } from "../parser";
 
 // Define the connection status type (can be reused from store/index.ts or defined globally)
 // NOTE: If defined globally, import it here instead.

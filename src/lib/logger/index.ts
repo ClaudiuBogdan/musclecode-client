@@ -1,11 +1,9 @@
 import { env } from "@/config/env";
-import { emitLog } from "./otel-config";
 import { useAuthStore } from "@/stores/auth";
 
-interface ExtraInfo {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  [key: string]: any;
-}
+import { emitLog } from "./otel-config";
+
+type ExtraInfo = Record<string, any>;
 
 enum LogLevel {
   VERBOSE = 0,

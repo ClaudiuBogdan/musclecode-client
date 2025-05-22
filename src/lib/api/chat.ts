@@ -1,6 +1,8 @@
+
 import { streamRequest } from "./client";
 import { apiClient } from "./client";
-import {
+
+import type {
   MessageStreamDto,
   SyncThreadsRequest,
   SyncThreadsResponse,

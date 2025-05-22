@@ -1,7 +1,8 @@
-import React, { useEffect, useRef, useState } from "react";
-import { Command } from "@/types/chat";
 import { motion } from "framer-motion";
 import { CommandIcon, HelpCircle } from "lucide-react";
+import React, { useEffect, useRef, useState } from "react";
+
+import type { Command } from "@/types/chat";
 
 interface CommandDropdownProps {
   query: string;

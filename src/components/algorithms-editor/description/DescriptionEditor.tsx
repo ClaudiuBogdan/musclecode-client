@@ -1,10 +1,8 @@
-import CodeMirror from "@uiw/react-codemirror";
-import { useState } from "react";
-import { useTheme } from "@/components/theme/theme-provider";
 import { markdownLanguage } from "@codemirror/lang-markdown";
 import { markdown } from "@codemirror/lang-markdown";
 import { EditorView } from "@codemirror/view";
-import { Button } from "@/components/ui/button";
+import { vscodeDark } from "@uiw/codemirror-theme-vscode";
+import CodeMirror from "@uiw/react-codemirror";
 import {
   Bold,
   Italic,
@@ -15,9 +13,13 @@ import {
   Eye,
   Edit2,
 } from "lucide-react";
+import { useState } from "react";
 import ReactMarkdown from "react-markdown";
+
+import { useTheme } from "@/components/theme/theme-provider";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { vscodeDark } from "@uiw/codemirror-theme-vscode";
+
 
 interface DescriptionEditorProps {
   isPreview?: boolean;
@@ -41,7 +43,7 @@ export const DescriptionEditor = ({
     let insertion = "";
     const textarea = document.querySelector(
       ".cm-content"
-    ) as HTMLTextAreaElement;
+    )!;
     if (!textarea) return;
 
     switch (action) {

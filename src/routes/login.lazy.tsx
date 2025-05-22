@@ -1,8 +1,9 @@
-import { useEffect } from "react";
 import { createLazyFileRoute, useNavigate } from "@tanstack/react-router";
-import { useAuthStore } from "@/stores/auth";
+import { useEffect } from "react";
+
 import { authConfig } from "@/config/auth";
 import { createLogger } from "@/lib/logger";
+import { useAuthStore } from "@/stores/auth";
 
 const logger = createLogger("LoginPage");
 
@@ -17,7 +18,7 @@ interface SearchParams {
 function LoginPage() {
   const navigate = useNavigate();
   const { login, isAuthenticated } = useAuthStore();
-  const { redirect = "/" } = Route.useSearch() as SearchParams;
+  const { redirect = "/" } = Route.useSearch();
 
   useEffect(() => {
     logger.debug("Login Flow Started", {

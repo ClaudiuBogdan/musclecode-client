@@ -1,8 +1,10 @@
 import { env } from "@/config/env";
+import { createLogger } from "@/lib/logger";
+
 import { KeycloakAuthService } from "./keycloak-auth-service";
 import { MockAuthService } from "./mock-auth-service";
+
 import type { AuthService } from "./types";
-import { createLogger } from "@/lib/logger";
 
 const logger = createLogger({ context: "AuthService" });
 let authService: AuthService | null = null;

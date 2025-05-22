@@ -1,7 +1,8 @@
-import React, { useState, useMemo } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { LightbulbIcon, CheckIcon, XIcon, SparklesIcon } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { LightbulbIcon, CheckIcon, XIcon, SparklesIcon } from 'lucide-react';
+import React, { useState, useMemo } from 'react';
+
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 
 // Represents one item in the options array

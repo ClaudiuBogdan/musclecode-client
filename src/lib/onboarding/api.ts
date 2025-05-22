@@ -1,5 +1,6 @@
-import { OnboardingState, UserGoals, QuizAnswer } from "./types";
 import { apiClient } from "../api/client";
+
+import type { OnboardingState, UserGoals, QuizAnswer } from "./types";
 
 const API_BASE = "/api/v1/onboarding";
 

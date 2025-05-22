@@ -1,5 +1,7 @@
 import { redirect } from "@tanstack/react-router";
+
 import { createLogger } from "@/lib/logger";
+
 import { useOnboardingStore } from "./store";
 
 const logger = createLogger("OnboardingGuard");
@@ -38,7 +40,7 @@ export const createOnboardingGuard = () => async (path: string) => {
     }
 
     // If we still don't have onboarding state or it's not completed, redirect to onboarding
-    if (!onboardingState || !onboardingState.isCompleted) {
+    if (!onboardingState?.isCompleted) {
       logger.info("Redirecting to Onboarding", {
         path,
         currentStep: onboardingState?.currentStep || "welcome",

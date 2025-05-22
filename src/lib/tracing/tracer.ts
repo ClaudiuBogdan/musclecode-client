@@ -1,21 +1,24 @@
-import { WebTracerProvider } from "@opentelemetry/sdk-trace-web";
-import { BatchSpanProcessor } from "@opentelemetry/sdk-trace-base";
+import { ZoneContextManager } from "@opentelemetry/context-zone";
+import { W3CTraceContextPropagator } from "@opentelemetry/core";
 import { OTLPTraceExporter } from "@opentelemetry/exporter-trace-otlp-http";
 import { registerInstrumentations } from "@opentelemetry/instrumentation";
-import { FetchInstrumentation } from "@opentelemetry/instrumentation-fetch";
 import { DocumentLoadInstrumentation } from "@opentelemetry/instrumentation-document-load";
+import { FetchInstrumentation } from "@opentelemetry/instrumentation-fetch";
+import { UserInteractionInstrumentation } from "@opentelemetry/instrumentation-user-interaction";
+import { XMLHttpRequestInstrumentation } from "@opentelemetry/instrumentation-xml-http-request";
 import { Resource } from "@opentelemetry/resources";
+import { BatchSpanProcessor } from "@opentelemetry/sdk-trace-base";
+import { WebTracerProvider } from "@opentelemetry/sdk-trace-web";
 import {
   ATTR_SERVICE_NAME,
   ATTR_SERVICE_VERSION,
   ATTR_TELEMETRY_SDK_LANGUAGE,
   ATTR_TELEMETRY_SDK_NAME,
 } from "@opentelemetry/semantic-conventions";
-import { XMLHttpRequestInstrumentation } from "@opentelemetry/instrumentation-xml-http-request";
+
 import { env } from "@/config/env";
-import { UserInteractionInstrumentation } from "@opentelemetry/instrumentation-user-interaction";
-import { W3CTraceContextPropagator } from "@opentelemetry/core";
-import { ZoneContextManager } from "@opentelemetry/context-zone";
+
+
 import { UserIdSpanProcessor } from "./UserIdSpanProcessor";
 import { userInteractionConfig } from "./userInteractionConfig";
 

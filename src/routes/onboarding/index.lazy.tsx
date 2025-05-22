@@ -1,15 +1,20 @@
 import { createLazyFileRoute } from "@tanstack/react-router";
-import { OnboardingLayout } from "../../components/onboarding/OnboardingLayout";
-import { WelcomeStep } from "../../components/onboarding/WelcomeStep";
+import { useRouter } from "@tanstack/react-router";
+import { Loader2 } from "lucide-react";
+import { useEffect } from "react";
+
 import { GoalsStep } from "../../components/onboarding/GoalsStep";
+import { NetworkStatusMonitor } from "../../components/onboarding/NetworkStatusMonitor";
+import { OnboardingLayout } from "../../components/onboarding/OnboardingLayout";
 import { QuizStep } from "../../components/onboarding/QuizStep";
 import { SummaryStep } from "../../components/onboarding/SummaryStep";
-import { Loader2 } from "lucide-react";
+import { WelcomeStep } from "../../components/onboarding/WelcomeStep";
 import { useOnboardingStore } from "../../lib/onboarding/store";
-import { useRouter } from "@tanstack/react-router";
-import { OnboardingStep, StepProps } from "../../lib/onboarding/types";
-import { useEffect } from "react";
-import { NetworkStatusMonitor } from "../../components/onboarding/NetworkStatusMonitor";
+
+
+import type { OnboardingStep, StepProps } from "../../lib/onboarding/types";
+
+
 
 function OnboardingPage() {
   const router = useRouter();

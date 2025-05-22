@@ -1,3 +1,5 @@
+import { describe, expect, it, beforeEach } from "vitest";
+
 import {
   selectUserProgressState,
   selectIsSubmitting,
@@ -5,8 +7,8 @@ import {
   selectUserProgressNotes,
 } from "../../selectors";
 import { mockAlgorithmState } from "../utils/testStore";
-import { AlgorithmState, UserProgressState } from "../../types";
-import { describe, expect, it, beforeEach } from "vitest";
+
+import type { AlgorithmState, UserProgressState } from "../../types";
 
 describe("User Progress Selectors", () => {
   const algorithmId = "test-algorithm";

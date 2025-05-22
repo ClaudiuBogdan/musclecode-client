@@ -1,6 +1,6 @@
 "use client"
 
-import { Row } from "@tanstack/react-table"
+import { Link } from "@tanstack/react-router";
 import { MoreHorizontal } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
@@ -11,8 +11,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-import { AlgorithmPreview } from "@/types/algorithm"
-import { Link } from "@tanstack/react-router";
+import type { AlgorithmPreview } from "@/types/algorithm"
+import type { Row } from "@tanstack/react-table"
 
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>;

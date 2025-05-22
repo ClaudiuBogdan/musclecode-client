@@ -1,8 +1,10 @@
 import { http, HttpResponse } from "msw";
-import { AlgorithmFile } from "@/types/algorithm";
-import { executionApi } from "@/lib/api/code";
+
 import { apiClient } from "@/lib/api/client";
+import { executionApi } from "@/lib/api/code";
 import { createLogger } from "@/lib/logger";
+
+import type { AlgorithmFile } from "@/types/algorithm";
 
 interface RunCodeRequest {
   files: AlgorithmFile[];

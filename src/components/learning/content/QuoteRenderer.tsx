@@ -1,5 +1,3 @@
-import React from 'react';
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { 
   InfoIcon, 
   LightbulbIcon, 
@@ -8,8 +6,11 @@ import {
   HelpCircleIcon, 
   GraduationCapIcon 
 } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import React from 'react';
+
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Markdown } from '@/components/ui/markdown';
+import { cn } from '@/lib/utils';
 
 interface QuoteRendererProps {
   id: string;

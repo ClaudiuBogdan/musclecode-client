@@ -1,6 +1,9 @@
+import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
+import { BoltIcon, CheckIcon } from "lucide-react";
 import { useState } from "react";
+
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
 import {
   Card,
   CardContent,
@@ -16,16 +19,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useModuleGeneration } from "@/services/learning/hooks/useModuleGeneration";
+import { Textarea } from "@/components/ui/textarea";
 import {
-  DifficultyLevel,
-  GenerateModuleResponseDto,
-  Lesson,
+  DifficultyLevel
 } from "@/services/learning/api";
-import { BoltIcon, CheckIcon } from "lucide-react";
-import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
+import { useModuleGeneration } from "@/services/learning/hooks/useModuleGeneration";
+
+import type {
+  GenerateModuleResponseDto,
+  Lesson} from "@/services/learning/api";
 
 export function CourseCreationPage() {
   const [prompt, setPrompt] = useState("");

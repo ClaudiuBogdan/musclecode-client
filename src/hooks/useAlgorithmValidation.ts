@@ -1,5 +1,6 @@
 import { useMemo } from "react";
-import { NewAlgorithm, ValidationError } from "@/types/newAlgorithm";
+
+import type { NewAlgorithm, ValidationError } from "@/types/newAlgorithm";
 
 export function useAlgorithmValidation(algorithm: NewAlgorithm) {
   const errors = useMemo(() => {

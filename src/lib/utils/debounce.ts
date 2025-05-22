@@ -1,10 +1,10 @@
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type AnyFunction = (...args: any[]) => any;
 
-type DebouncedFunction<T extends AnyFunction> = {
+interface DebouncedFunction<T extends AnyFunction> {
   (...args: Parameters<T>): Promise<ReturnType<T>>;
   cancel: () => void;
-};
+}
 
 export function debounce<T extends AnyFunction>(
   fn: T,

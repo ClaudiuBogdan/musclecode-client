@@ -1,10 +1,14 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { BookOpenIcon, BookIcon, CheckIcon } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { ContentStatus, ModuleEntity } from "@/services/content/api";
 import { useNavigate } from "@tanstack/react-router";
 import { motion } from "framer-motion";
+import { BookOpenIcon, BookIcon, CheckIcon } from "lucide-react";
+
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { ContentStatus } from "@/services/content/api";
+
+import type { ModuleEntity } from "@/services/content/api";
+
 
 interface ModuleCardProps {
   module: ModuleEntity;

@@ -1,6 +1,19 @@
 "use client";
 
+import { Link } from "@tanstack/react-router";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  Dumbbell,
+  Brain,
+  Trophy,
+  Calendar,
+  Star,
+  ChevronRight,
+} from "lucide-react";
 import React from "react";
+import { useState } from "react";
+
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -10,20 +23,10 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import {
-  Dumbbell,
-  Brain,
-  Trophy,
-  Calendar,
-  Star,
-  ChevronRight,
-} from "lucide-react";
-import { Link } from "@tanstack/react-router";
-import { useState } from "react";
-import { useDailyAlgorithms } from "@/services/algorithms/hooks/useDailyAlgorithms";
 import { Progress } from "@/components/ui/progress";
-import { motion, AnimatePresence } from "framer-motion";
+import { useDailyAlgorithms } from "@/services/algorithms/hooks/useDailyAlgorithms";
+
+
 import { categories, difficulties } from "../algorithms/data";
 
 export default function AlgorithmGymDashboard() {

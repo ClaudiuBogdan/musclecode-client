@@ -1,5 +1,7 @@
 import { motion } from "framer-motion";
 import { ChevronLeft, ChevronRight, Check, Table } from "lucide-react";
+import { useState } from "react";
+
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -7,7 +9,6 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
-import { useState } from "react";
 import { cn } from "@/lib/utils";
 
 interface ProblemNavigationProps {

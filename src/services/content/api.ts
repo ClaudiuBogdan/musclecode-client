@@ -1,6 +1,7 @@
 import { apiClient } from "@/lib/api/client";
 import { useModelsStore } from "@/stores/models";
-import { LessonQuestion } from "@/types/lesson";
+
+import type { LessonQuestion } from "@/types/lesson";
 
 export interface ContentNode {
   id: string;

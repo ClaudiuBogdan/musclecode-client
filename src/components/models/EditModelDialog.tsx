@@ -1,4 +1,7 @@
+import { Pencil } from 'lucide-react'
 import { useState } from 'react'
+import { toast } from 'sonner'
+
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -8,12 +11,12 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog'
-import { ModelForm } from './ModelForm'
 import { useModelsStore } from '@/stores/models'
-import { type ModelFormValues } from './schema'
 import { type Model } from '@/types/models'
-import { Pencil } from 'lucide-react'
-import { toast } from 'sonner'
+
+import { ModelForm } from './ModelForm'
+import { type ModelFormValues } from './schema'
+
 
 interface EditModelDialogProps {
   model: Model;

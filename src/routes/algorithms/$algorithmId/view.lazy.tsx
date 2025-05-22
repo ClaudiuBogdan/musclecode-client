@@ -3,10 +3,11 @@ import {
   useParams,
   useSearch,
 } from "@tanstack/react-router";
-import { Card, CardContent } from "@/components/ui/card";
+import { useEffect } from "react";
+
 import { InfoPanel } from "@/components/code/InfoPanel";
 import { Notes } from "@/components/notes/Notes";
-import { useEffect } from "react";
+import { Card, CardContent } from "@/components/ui/card";
 import { useAlgorithmStore } from "@/stores/algorithm";
 import { selectIsLoading } from "@/stores/algorithm/selectors";
 

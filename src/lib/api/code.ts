@@ -1,6 +1,10 @@
-import { CodeExecutionResponse } from "@/types/testRunner";
+import axios from "axios";
+
+import { env } from "@/config/env";
+
 import { apiClient, getAuthHeaders } from "./client";
-import {
+
+import type {
   AlgorithmTemplate,
   AlgorithmFile,
   Submission,
@@ -8,8 +12,9 @@ import {
   RatingSchedule,
   DailyAlgorithm,
 } from "@/types/algorithm";
-import axios from "axios";
-import { env } from "@/config/env";
+import type { CodeExecutionResponse } from "@/types/testRunner";
+
+
 
 export interface GetAlgorithmResponse {
   id: string;

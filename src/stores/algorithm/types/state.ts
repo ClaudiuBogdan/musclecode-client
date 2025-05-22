@@ -1,4 +1,4 @@
-import {
+import type {
   AlgorithmFile,
   CodeLanguage,
   AlgorithmTemplate,
@@ -7,7 +7,7 @@ import {
   AlgorithmPreview,
   DailyAlgorithm,
 } from "@/types/algorithm";
-import { CodeExecutionResponse } from "@/types/testRunner";
+import type { CodeExecutionResponse } from "@/types/testRunner";
 
 export type AlgorithmId = string;
 export type FileId = string;

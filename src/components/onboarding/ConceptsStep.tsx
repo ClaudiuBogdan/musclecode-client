@@ -1,7 +1,8 @@
-import { StepProps } from "../../lib/onboarding/types";
+import { useOnboardingStore } from "../../lib/onboarding/store";
 import { Button } from "../ui/button";
 import { Card } from "../ui/card";
-import { useOnboardingStore } from "../../lib/onboarding/store";
+
+import type { StepProps } from "../../lib/onboarding/types";
 
 export function ConceptsStep({ onNext, onBack }: StepProps) {
   const { skipOnboarding } = useOnboardingStore();

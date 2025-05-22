@@ -1,14 +1,7 @@
-import { NewAlgorithm } from "@/types/newAlgorithm";
-import { CodeLanguage } from "@/types/algorithm";
-import { useCallback, useMemo, useState } from "react";
 import { Loader2, RotateCcw, AlertCircle, Plus, Trash2 } from "lucide-react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
-import { DescriptionEditor } from "./description/DescriptionEditor";
-import { FilesEditor } from "./code/FilesEditor";
+import { Code2 } from "lucide-react";
+import { useCallback, useMemo, useState } from "react";
+
 import {
   AlertDialog,
   AlertDialogAction,
@@ -19,16 +12,30 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { CodeLanguage } from "@/types/algorithm";
+import { NewAlgorithm } from "@/types/newAlgorithm";
+
 import { showToast } from "@/utils/toast";
-import { ValidationError } from "@/types/newAlgorithm";
+
+import { FilesEditor } from "./code/FilesEditor";
+import { DescriptionEditor } from "./description/DescriptionEditor";
+
+import { cn } from "@/lib/utils";
+
+import { categories as predefinedCategories } from "../algorithms/data";
+
+import type { ValidationError } from "@/types/newAlgorithm";
+
 import {
   MAX_SUMMARY_LENGTH,
   MAX_TITLE_LENGTH,
   MAX_LESSON_TITLE_LENGTH,
 } from "@/stores/baseAlgorithm";
-import { categories as predefinedCategories } from "../algorithms/data";
-import { Code2 } from "lucide-react";
 import { createLogger } from "@/lib/logger";
 import { MultiSelect } from "@/components/ui/multi-select";
 

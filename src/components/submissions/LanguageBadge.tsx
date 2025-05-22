@@ -1,3 +1,4 @@
+import { FileIcon } from "lucide-react";
 import {
   SiPython,
   SiJavascript,
@@ -13,8 +14,8 @@ import {
   SiScala,
   SiHaskell,
 } from "react-icons/si";
-import { IconType } from "react-icons";
-import { FileIcon } from "lucide-react";
+
+import type { IconType } from "react-icons";
 
 interface LanguageBadgeProps {
   language: string;

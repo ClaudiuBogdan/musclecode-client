@@ -1,9 +1,4 @@
-import { ContentLayout } from "@/components/learning/ContentLayout";
-import { useExercise } from "@/services/content/hooks";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { createLazyFileRoute } from "@tanstack/react-router";
 import { 
   AlertCircleIcon, 
   ArrowLeftIcon, 
@@ -13,9 +8,16 @@ import {
   PlayIcon,
   CheckCircleIcon
 } from "lucide-react";
-import { createLazyFileRoute } from "@tanstack/react-router";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useState } from "react";
+
+import { ContentLayout } from "@/components/learning/ContentLayout";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useExercise } from "@/services/content/hooks";
+
 
 export const Route = createLazyFileRoute("/learning/exercises/$id")({
   component: ExerciseDetailPage,

@@ -1,4 +1,4 @@
-import { AuthErrorCode } from "../auth/errors";
+import type { AuthErrorCode } from "../auth/errors";
 
 export type ErrorSeverity = "fatal" | "error" | "warning";
 export type ErrorSource = "auth" | "api" | "validation" | "runtime" | "network";

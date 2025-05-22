@@ -1,8 +1,11 @@
-import React, { useRef, useCallback, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { ArrowUp, Loader2 } from "lucide-react";
+import React, { useRef, useCallback, useState } from "react";
+
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { motion, AnimatePresence } from "framer-motion";
+
+
 import { StopButton } from "./StopButton";
 import { useChatStore } from "../store";
 
@@ -37,7 +40,7 @@ export const MessageInput: React.FC<MessageInputProps> = ({ className }) => {
                 text: newMessageContent,
               },
             ],
-            threadId: currentThreadId!,
+            threadId: currentThreadId,
           });
 
           // Clear the input

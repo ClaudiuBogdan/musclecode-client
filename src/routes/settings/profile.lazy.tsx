@@ -1,8 +1,14 @@
-import { useCallback, useEffect } from 'react'
-import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import type { UseQueryResult } from '@tanstack/react-query'
+import { createLazyFileRoute } from "@tanstack/react-router";
+import { toast } from 'sonner'
+import { AlertCircle, Loader2 } from 'lucide-react'
+import { useCallback, useEffect } from 'react'
+import { useForm } from 'react-hook-form'
+
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Button } from '@/components/ui/button'
 import {
   Card,
   CardContent,
@@ -12,13 +18,7 @@ import {
 } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Button } from '@/components/ui/button'
-import { createLazyFileRoute } from "@tanstack/react-router";
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Separator } from '@/components/ui/separator'
-import { toast } from 'sonner'
-import { AlertCircle, Loader2 } from 'lucide-react'
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import {
   fetchProfile,
   updateProfile,
@@ -28,6 +28,8 @@ import {
   type Profile,
 } from '@/lib/api/profile'
 import { ApiError } from "@/types/api";
+
+import type { UseQueryResult } from '@tanstack/react-query'
 
 export const Route = createLazyFileRoute("/settings/profile")({
   component: ProfileSettings,
@@ -53,7 +55,7 @@ function ProfileSettings() {
   } = useQuery({
     queryKey: ["profile"],
     queryFn: fetchProfile,
-  }) as UseQueryResult<Profile, Error>;
+  });
 
   // Reset form when profile data changes
   useEffect(() => {

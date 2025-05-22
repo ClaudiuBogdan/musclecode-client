@@ -1,4 +1,4 @@
-import { OnboardingState } from "./types";
+import type { OnboardingState } from "./types";
 
 // In-memory store for the mock API
 let mockOnboardingState: OnboardingState = {

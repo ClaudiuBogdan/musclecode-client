@@ -1,5 +1,4 @@
-import { Button } from "../ui/button";
-import { useOnboardingStore } from "../../lib/onboarding/store";
+import { useRouter } from "@tanstack/react-router";
 import {
   Loader2,
   CheckCircle2,
@@ -7,6 +6,10 @@ import {
   AlertCircle,
   WifiOff,
 } from "lucide-react";
+
+import { useOnboardingStore } from "../../lib/onboarding/store";
+import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
+import { Button } from "../ui/button";
 import {
   Card,
   CardContent,
@@ -14,8 +17,8 @@ import {
   CardHeader,
   CardTitle,
 } from "../ui/card";
-import { useRouter } from "@tanstack/react-router";
-import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
+
+
 
 export function SummaryStep() {
   const router = useRouter();

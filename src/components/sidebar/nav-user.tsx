@@ -1,3 +1,4 @@
+import { Link } from "@tanstack/react-router";
 import {
   BadgeCheck,
   ChevronsUpDown,
@@ -5,8 +6,7 @@ import {
   LogOut,
   Sparkles,
 } from "lucide-react";
-import { Link } from "@tanstack/react-router";
-import { useAuthStore } from "@/stores/auth";
+import posthog from "posthog-js";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -24,9 +24,11 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { ThemeSwitcher } from "./theme-switcher";
 import { createLogger } from "@/lib/logger";
-import posthog from "posthog-js";
+import { useAuthStore } from "@/stores/auth";
+
+import { ThemeSwitcher } from "./theme-switcher";
+
 const logger = createLogger("NavUser");
 
 export function NavUser({

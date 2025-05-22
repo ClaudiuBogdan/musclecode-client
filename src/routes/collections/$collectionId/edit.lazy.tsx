@@ -1,15 +1,19 @@
 import { createLazyFileRoute } from '@tanstack/react-router'
-import { useCollection } from '@/hooks/useCollection'
-import { useAlgorithmTemplates } from '@/hooks/useAlgorithmTemplates'
-import { useUpdateCollection } from '@/hooks/useUpdateCollection'
-import {
-  CollectionForm,
-  CollectionFormData,
-} from '@/components/collections/CollectionForm'
 import { useNavigate } from '@tanstack/react-router'
+import { Loader2, AlertCircle, Search } from "lucide-react";
+
+import {
+  CollectionForm
+} from '@/components/collections/CollectionForm'
+import { useAlgorithmTemplates } from '@/hooks/useAlgorithmTemplates'
+import { useCollection } from '@/hooks/useCollection'
+import { useUpdateCollection } from '@/hooks/useUpdateCollection'
 import { createLogger } from '@/lib/logger'
 import { showToast } from '@/utils/toast'
-import { Loader2, AlertCircle, Search } from "lucide-react";
+
+import type {
+  CollectionFormData} from '@/components/collections/CollectionForm';
+
 
 const logger = createLogger("EditCollectionPage");
 

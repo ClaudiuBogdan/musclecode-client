@@ -1,16 +1,20 @@
-import { FC, useCallback, useState } from "react";
+import { formatDistanceToNow } from "date-fns";
+import { useCallback, useState } from "react";
+
+import { cn } from "@/lib/utils";
+import { useSubmissions } from "@/services/algorithms/hooks/useSubmissions";
+import { useAlgorithmStore } from "@/stores/algorithm";
+
 import { NotesEditor } from "./NotesEditor";
 import { NotesPreview } from "./NotesPreview";
 import { NotesToolbar } from "./NotesToolbar";
-import { useSubmissions } from "@/services/algorithms/hooks/useSubmissions";
-import { Button } from "../ui/button";
-import { ScrollArea } from "../ui/scroll-area";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
 import { SubmissionDetail } from "../submissions/SubmissionDetail";
-import { Submission } from "@/types/algorithm";
-import { formatDistanceToNow } from "date-fns";
-import { useAlgorithmStore } from "@/stores/algorithm";
-import { cn } from "@/lib/utils";
+import { Button } from "../ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
+import { ScrollArea } from "../ui/scroll-area";
+
+import type { Submission } from "@/types/algorithm";
+import type { FC} from "react";
 
 interface NotesProps {
   algorithmId: string;

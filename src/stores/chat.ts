@@ -1,7 +1,12 @@
-import { create } from "zustand";
 import { v4 as uuidv4 } from "uuid";
+import { create } from "zustand";
+import { createJSONStorage, persist } from "zustand/middleware";
+
+import { createLogger } from "@/lib/logger";
+
 import { sendMessage, streamMessage, syncThreads } from "../lib/api/chat";
-import {
+
+import type {
   Message,
   ChatStore,
   Thread,
@@ -11,8 +16,8 @@ import {
   Command,
   MessageContext,
 } from "../types/chat";
-import { createJSONStorage, persist } from "zustand/middleware";
-import { createLogger } from "@/lib/logger";
+
+
 
 const STREAM_TIMEOUT_MS = 5 * 60 * 1000; // 5 minutes
 
@@ -491,7 +496,7 @@ const useChatStore = create<ChatStore>()(
             status: "idle",
             threads: {
               ...state.threads,
-              [activeThreadId as string]: {
+              [activeThreadId]: {
                 ...thread,
                 messages,
               },

@@ -1,8 +1,10 @@
-import { useCallback } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createLazyFileRoute } from "@tanstack/react-router";
-import { toast } from "sonner";
 import { Lock, Shield } from "lucide-react";
+import { useCallback } from "react";
+import { toast } from "sonner";
+
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -10,17 +12,16 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { ApiError } from "@/types/api";
 import {
   updatePassword,
   fetchTwoFactorStatus,
   enableTwoFactor,
   disableTwoFactor,
 } from "@/lib/api/security";
+import { ApiError } from "@/types/api";
 
 export const Route = createLazyFileRoute("/settings/security")({
   component: SecuritySettings,

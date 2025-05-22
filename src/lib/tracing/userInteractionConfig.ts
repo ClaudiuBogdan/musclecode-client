@@ -1,10 +1,12 @@
-import { Span } from "@opentelemetry/api";
-import {
+import { EventCache } from "./EventCache";
+import { getElementText, getXPath } from "./utils";
+
+import type { Span } from "@opentelemetry/api";
+import type {
   UserInteractionInstrumentationConfig,
   ShouldPreventSpanCreation,
 } from "@opentelemetry/instrumentation-user-interaction";
-import { EventCache } from "./EventCache";
-import { getElementText, getXPath } from "./utils";
+
 const eventCache = new EventCache();
 
 interface UserInteractionConfig extends UserInteractionInstrumentationConfig {

@@ -1,4 +1,4 @@
-import { Rating } from "@/types/algorithm";
+import type { Rating } from "@/types/algorithm";
 
 export const difficultyColors: Record<Rating, string> = {
   again: "bg-red-500 text-white",

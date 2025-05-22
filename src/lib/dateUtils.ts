@@ -11,13 +11,13 @@ export const formatRelativeTime = (timestamp: number): string => {
       month: "short",
       day: "numeric",
     });
-  } else if (days > 0) {
+  } if (days > 0) {
     return `${days}d ago`;
-  } else if (hours > 0) {
+  } if (hours > 0) {
     return `${hours}h ago`;
-  } else if (minutes > 0) {
+  } if (minutes > 0) {
     return `${minutes}m ago`;
-  } else {
+  } 
     return "Just now";
-  }
+  
 };

@@ -1,6 +1,7 @@
-import { StepProps } from "../../lib/onboarding/types";
-import { Button } from "../ui/button";
 import { useOnboardingStore } from "../../lib/onboarding/store";
+import { Button } from "../ui/button";
+
+import type { StepProps } from "../../lib/onboarding/types";
 
 export function WelcomeStep({ onNext, onSkip }: StepProps) {
   const { saveStep } = useOnboardingStore();

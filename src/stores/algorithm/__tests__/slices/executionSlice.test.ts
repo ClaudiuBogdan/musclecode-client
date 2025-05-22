@@ -1,16 +1,22 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { create } from "zustand";
-import { createExecutionSlice } from "../../slices/executionSlice";
-import { AlgorithmState, StoreActions } from "../../types";
-import { mockAlgorithmState } from "../utils/testStore";
-import { runCode } from "@/lib/api/code";
-import { CodeExecutionResponse, TestResult } from "@/types/testRunner";
 import { immer } from "zustand/middleware/immer";
+
+import { runCode } from "@/lib/api/code";
+
 import { createAlgorithmSlice, createHintSlice } from "../..";
 import { createCodeSlice } from "../../slices/codeSlice";
-import { createTimerSlice } from "../../slices/timerSlice";
+import { createExecutionSlice } from "../../slices/executionSlice";
 import { createSubmissionSlice } from "../../slices/submissionSlice";
-import { AlgorithmFile } from "@/types/algorithm";
+import { createTimerSlice } from "../../slices/timerSlice";
+import { mockAlgorithmState } from "../utils/testStore";
+
+import type { AlgorithmState, StoreActions } from "../../types";
+import type { AlgorithmFile } from "@/types/algorithm";
+import type { CodeExecutionResponse, TestResult } from "@/types/testRunner";
+
+
+
 
 // Mock the API call
 vi.mock("@/lib/api/code");

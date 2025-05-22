@@ -1,13 +1,15 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
-import { AlgorithmState, StoreActions } from "../../types";
-import { mockAlgorithmState } from "../utils/testStore";
-import { createTimerSlice } from "../../slices/timerSlice";
+
 import { createAlgorithmSlice, createHintSlice } from "../..";
 import { createCodeSlice } from "../../slices/codeSlice";
 import { createExecutionSlice } from "../../slices/executionSlice";
 import { createSubmissionSlice } from "../../slices/submissionSlice";
+import { createTimerSlice } from "../../slices/timerSlice";
+import { mockAlgorithmState } from "../utils/testStore";
+
+import type { AlgorithmState, StoreActions } from "../../types";
 
 type TestStore = AlgorithmState & StoreActions;
 

@@ -1,4 +1,4 @@
-import { Command } from "@/types/chat";
+import type { Command } from "@/types/chat";
 
 export const INPUT_COMMANDS = Object.freeze([
   {

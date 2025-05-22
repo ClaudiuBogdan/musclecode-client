@@ -1,5 +1,6 @@
+import { useLocation } from "@tanstack/react-router";
 import React from "react";
-import { NavUser } from "./nav-user";
+
 import {
   Sidebar,
   SidebarContent,
@@ -8,10 +9,11 @@ import {
   SidebarRail,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
+import { useAuthStore } from "@/stores/auth";
+
 import Logo from "./logo";
 import { NavMain } from "./nav-main";
-import { useLocation } from "@tanstack/react-router";
-import { useAuthStore } from "@/stores/auth";
+import { NavUser } from "./nav-user";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const location = useLocation();

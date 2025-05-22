@@ -1,9 +1,11 @@
-import { useCallback, useEffect, useRef, useState } from "react";
-import CodeMirror, { ReactCodeMirrorRef } from "@uiw/react-codemirror";
-import { javascript } from "@codemirror/lang-javascript";
-import { vscodeDark } from "@uiw/codemirror-theme-vscode";
-import { python } from "@codemirror/lang-python";
 import { go } from "@codemirror/lang-go";
+import { javascript } from "@codemirror/lang-javascript";
+import { python } from "@codemirror/lang-python";
+import { vscodeDark } from "@uiw/codemirror-theme-vscode";
+import CodeMirror from "@uiw/react-codemirror";
+import { useCallback, useEffect, useRef, useState } from "react";
+
+import type { ReactCodeMirrorRef } from "@uiw/react-codemirror";
 
 interface CodeEditorProps {
   initialValue?: string;

@@ -1,5 +1,6 @@
-import { AlgorithmLesson, Submission } from "@/types/algorithm";
-import { AlgorithmState } from "../types";
+import type { AlgorithmState } from "../types";
+import type { AlgorithmLesson, Submission } from "@/types/algorithm";
+
 
 export const selectIsLoading = (state: AlgorithmState): boolean => {
   return state.metadata.isLoading;

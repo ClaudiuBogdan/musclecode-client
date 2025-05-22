@@ -10,19 +10,22 @@
  * - This approach enables end-to-end traceability when combined with our OpenTelemetry tracer.
  */
 
-import {
-  BatchLogRecordProcessor,
-  LoggerProvider,
-  LogRecord,
-} from "@opentelemetry/sdk-logs";
 import { OTLPLogExporter } from "@opentelemetry/exporter-logs-otlp-http";
 import { Resource } from "@opentelemetry/resources";
+import {
+  BatchLogRecordProcessor,
+  LoggerProvider
+} from "@opentelemetry/sdk-logs";
 import {
   ATTR_SERVICE_NAME,
   ATTR_SERVICE_VERSION,
   SEMRESATTRS_DEPLOYMENT_ENVIRONMENT,
 } from "@opentelemetry/semantic-conventions";
+
 import { env } from "@/config/env"; // shared configuration for the React app
+
+import type {
+  LogRecord} from "@opentelemetry/sdk-logs";
 
 // Set service metadata based on environment configuration
 const serviceName = env.VITE_APP_NAME;

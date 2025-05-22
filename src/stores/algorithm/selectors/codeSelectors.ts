@@ -1,5 +1,6 @@
-import { AlgorithmState, FileId, CodeState } from "../types";
-import { CodeLanguage } from "@/types/algorithm";
+import type { AlgorithmState, FileId, CodeState } from "../types";
+import type { CodeLanguage } from "@/types/algorithm";
+
 
 export const selectActiveCode = (
   state: AlgorithmState,
@@ -49,7 +50,7 @@ export const selectAvailableFiles = (
   state: AlgorithmState,
   algorithmId: string,
   language: CodeLanguage
-): Array<{ name: string; readOnly?: boolean }> => {
+): { name: string; readOnly?: boolean }[] => {
   const algorithm = state.algorithms[algorithmId];
   if (!algorithm) return [];
 

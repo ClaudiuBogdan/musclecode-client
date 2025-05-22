@@ -1,6 +1,8 @@
 import { z } from "zod";
-import { apiClient } from "./client";
+
 import { ApiError } from "@/types/api";
+
+import { apiClient } from "./client";
 
 export const notificationSettingsSchema = z.object({
   email: z.object({

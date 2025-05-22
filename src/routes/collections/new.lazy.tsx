@@ -1,15 +1,18 @@
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createLazyFileRoute } from "@tanstack/react-router";
 import { useNavigate } from "@tanstack/react-router";
-import { useAlgorithmTemplates } from "@/hooks/useAlgorithmTemplates";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { apiClient } from "@/lib/api/client";
-import { Collection } from "@/types/collection";
+
 import {
-  CollectionForm,
-  CollectionFormData,
+  CollectionForm
 } from "@/components/collections/CollectionForm";
+import { useAlgorithmTemplates } from "@/hooks/useAlgorithmTemplates";
+import { apiClient } from "@/lib/api/client";
 import { createLogger } from "@/lib/logger";
 import { showToast } from "@/utils/toast";
+
+import type {
+  CollectionFormData} from "@/components/collections/CollectionForm";
+import type { Collection } from "@/types/collection";
 
 const logger = createLogger("NewCollectionPage");
 

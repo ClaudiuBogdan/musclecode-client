@@ -1,4 +1,4 @@
-import { AlgorithmState } from "../types";
+import type { AlgorithmState } from "../types";
 
 export const selectUserProgressState = (
   state: AlgorithmState,

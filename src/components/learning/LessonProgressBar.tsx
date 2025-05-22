@@ -1,8 +1,10 @@
-import React from 'react'
-import { LessonChunk } from '@/types/lesson'
 import { motion } from 'framer-motion'
 import { HelpCircleIcon, LightbulbIcon, CheckSquareIcon } from 'lucide-react'
+import React from 'react'
+
 import { cn } from '@/lib/utils'
+
+import type { LessonChunk } from '@/types/lesson'
 
 interface LessonProgressBarProps {
   chunks: LessonChunk[]

@@ -1,3 +1,4 @@
+
 import {
   selectActiveCode,
   selectActiveLanguage,
@@ -7,8 +8,9 @@ import {
   selectAvailableFiles,
 } from "../../selectors/codeSelectors";
 import { mockAlgorithmState } from "../utils/testStore";
-import { AlgorithmState, CodeState, StoredCode } from "../../types";
-import { CodeLanguage } from "@/types/algorithm";
+
+import type { AlgorithmState, CodeState, StoredCode } from "../../types";
+import type { CodeLanguage } from "@/types/algorithm";
 
 describe("Code Selectors", () => {
   const algorithmId = "test-algorithm";

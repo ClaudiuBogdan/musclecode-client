@@ -1,6 +1,6 @@
-import { useEffect, useState, useMemo, useCallback } from "react";
-import { formatTime } from "@/utils/time";
 import { Timer as TimerIcon, Pause, Play, RotateCcw } from "lucide-react";
+import { useEffect, useState, useMemo, useCallback } from "react";
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,6 +10,7 @@ import {
 import { cn } from "@/lib/utils";
 import { useAlgorithmStore } from "@/stores/algorithm";
 import { selectTimerState, selectIsPaused } from "@/stores/algorithm/selectors";
+import { formatTime } from "@/utils/time";
 
 interface TimerProps {
   algorithmId: string;

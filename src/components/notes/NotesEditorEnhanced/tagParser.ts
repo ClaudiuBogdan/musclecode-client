@@ -1,4 +1,5 @@
 import { tags as t } from '@lezer/highlight'
+
 import type { MarkdownConfig } from '@lezer/markdown';
 
 export default {

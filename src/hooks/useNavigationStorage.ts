@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+
 import useSessionStorage from "./useSessionStorage";
 
 /**
@@ -11,7 +12,7 @@ import useSessionStorage from "./useSessionStorage";
 function useNavigationStorage(
   key: string,
   totalSteps: number,
-  initialStep: number = 0
+  initialStep = 0
 ) {
   // Create a consistent key format
   const storageKey = `navigation_step_${key.replace(/\s+/g, "_").toLowerCase()}`;

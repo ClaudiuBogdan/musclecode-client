@@ -1,9 +1,12 @@
 import { useMutation } from "@tanstack/react-query";
+
 import {
-  learningApi,
-  GenerateModuleRequestDto,
-  GenerateModuleResponseDto,
+  learningApi
 } from "../api";
+
+import type {
+  GenerateModuleRequestDto,
+  GenerateModuleResponseDto} from "../api";
 
 export function useModuleGeneration() {
   return useMutation<

@@ -1,10 +1,10 @@
-import React from "react";
 import clsx from "clsx";
 import { FileIcon } from "lucide-react";
+import React from "react";
 
 interface EditorTabsProps {
   activeTab: string;
-  files: Array<{ id: string; name: string; hidden?: boolean }>;
+  files: { id: string; name: string; hidden?: boolean }[];
   onTabChange: (tab: string) => void;
   className?: string;
   tabClassName?: string;

@@ -1,4 +1,4 @@
-import { AlgorithmPreview } from "./algorithm";
+import type { AlgorithmPreview } from "./algorithm";
 
 export interface Collection {
   id: string;

@@ -1,8 +1,11 @@
-import { StateCreator } from "zustand";
-import { AlgorithmState, ExecutionActions, StoreActions } from "../types";
-import { withAlgorithm } from "../utils/stateUtils";
+
 import { runCode } from "@/lib/api/code";
-import { CodeExecutionResponse } from "@/types/testRunner";
+
+import { withAlgorithm } from "../utils/stateUtils";
+
+import type { AlgorithmState, ExecutionActions, StoreActions } from "../types";
+import type { CodeExecutionResponse } from "@/types/testRunner";
+import type { StateCreator } from "zustand";
 
 const EXECUTION_TIMEOUT_SECONDS = 20; 
 

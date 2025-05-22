@@ -1,4 +1,3 @@
-import { type Model } from '@/types/models'
 import {
   Card,
   CardContent,
@@ -7,12 +6,14 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { Switch } from "@/components/ui/switch"
 import { Label } from "@/components/ui/label"
-import { useModelsStore } from '@/stores/models'
-import { EditModelDialog } from './EditModelDialog'
-import { DeleteModelConfirmDialog } from './DeleteModelConfirmDialog'
 import { Separator } from '@/components/ui/separator'
+import { Switch } from "@/components/ui/switch"
+import { useModelsStore } from '@/stores/models'
+import { type Model } from '@/types/models'
+
+import { DeleteModelConfirmDialog } from './DeleteModelConfirmDialog'
+import { EditModelDialog } from './EditModelDialog'
 
 interface ModelListItemProps {
   model: Model;

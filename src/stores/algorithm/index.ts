@@ -1,23 +1,31 @@
-import { create, StateCreator } from "zustand";
+import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
-import {
+
+import { getAlgorithm } from "@/lib/api/code";
+import { createLogger } from "@/lib/logger";
+
+import useChatStore from "../chat";
+import { createInitialState } from "./__tests__/utils/testStore";
+import { createCodeSlice } from "./slices/codeSlice";
+import { createExecutionSlice } from "./slices/executionSlice";
+import { createHintSlice } from "./slices/hintSlice";
+import { createSubmissionSlice } from "./slices/submissionSlice";
+import { createTimerSlice } from "./slices/timerSlice";
+import { algorithmStorageWithTTL } from "./storage";
+
+
+
+
+
+import type {
   AlgorithmActions,
   AlgorithmState,
   StoreActions,
   StoredCode,
 } from "./types";
-import { createCodeSlice } from "./slices/codeSlice";
-import { createTimerSlice } from "./slices/timerSlice";
-import { createExecutionSlice } from "./slices/executionSlice";
-import { createSubmissionSlice } from "./slices/submissionSlice";
-import { createHintSlice } from "./slices/hintSlice";
-import { getAlgorithm } from "@/lib/api/code";
-import { createInitialState } from "./__tests__/utils/testStore";
-import { CodeLanguage } from "@/types/algorithm";
-import { algorithmStorageWithTTL } from "./storage";
-import { createLogger } from "@/lib/logger";
-import useChatStore from "../chat";
+import type { CodeLanguage } from "@/types/algorithm";
+import type { StateCreator } from "zustand";
 
 const logger = createLogger({ context: "AlgorithmStore" });
 
@@ -98,7 +106,7 @@ export const createAlgorithmSlice: StateCreator<
 
       const codeState = algorithmTemplate.files.reduce<StoredCode>(
         (acc, file) => {
-          const language = file.language as keyof StoredCode;
+          const language = file.language;
           if (!acc[language]) {
             acc[language] = {};
           }

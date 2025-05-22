@@ -1,3 +1,6 @@
+import { useVirtualizer } from "@tanstack/react-virtual";
+import { motion } from "framer-motion";
+import { ChevronDown } from "lucide-react";
 import React, {
   useRef,
   useEffect,
@@ -6,13 +9,12 @@ import React, {
   useMemo,
   useLayoutEffect,
 } from "react";
-import { Message } from "./Message";
-import { cn } from "@/lib/utils";
-import { motion } from "framer-motion";
-import { ChevronDown } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+
 import { EmptyState } from "./EmptyState";
-import { useVirtualizer } from "@tanstack/react-virtual";
+import { Message } from "./Message";
 import {
   useChatStore,
   useCurrentChatMessages,

@@ -1,12 +1,11 @@
-import { Decoration, WidgetType, EditorView } from '@codemirror/view';
-import { RangeSet, StateField } from '@codemirror/state';
 import { syntaxTree } from '@codemirror/language';
-
+import { RangeSet, StateField } from '@codemirror/state';
+import { Decoration, WidgetType, EditorView } from '@codemirror/view';
 import markdoc from '@markdoc/markdoc';
 
-import type { Config } from '@markdoc/markdoc';
-import type { DecorationSet } from '@codemirror/view'
 import type { EditorState, Range } from '@codemirror/state';
+import type { DecorationSet } from '@codemirror/view'
+import type { Config } from '@markdoc/markdoc';
 
 const patternTag = /{%\s*(?<closing>\/)?(?<tag>[a-zA-Z0-9-_]+)(?<attrs>\s+[^]+)?\s*(?<self>\/)?%}\s*$/m;
 
@@ -53,11 +52,11 @@ function replaceBlocks(state: EditorState, config: Config, from?: number, to?: n
       }
       
       if (!['Table', 'Blockquote', 'MarkdocTag'].includes(node.name))
-        return;
+        {return;}
 
       if (node.name === 'MarkdocTag') {
         const text = state.doc.sliceString(node.from, node.to);
-        const match = text.match(patternTag);
+        const match = patternTag.exec(text);
 
         if (match?.groups?.self) {
           tags.push([node.from, node.to]);
@@ -75,7 +74,7 @@ function replaceBlocks(state: EditorState, config: Config, from?: number, to?: n
       }
 
       if (cursor.from >= node.from && cursor.to <= node.to)
-        return false;
+        {return false;}
 
       const text = state.doc.sliceString(node.from, node.to);
       const decoration = Decoration.replace({

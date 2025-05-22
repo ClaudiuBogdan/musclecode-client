@@ -1,8 +1,11 @@
-import { AuthService, AuthUser } from "./types";
+import { createLogger } from "@/lib/logger";
+
 import { AuthErrorCode, createAuthError } from "./errors";
 import { TokenStorage } from "./token-storage";
+
+import type { AuthService, AuthUser } from "./types";
 import type Keycloak from "keycloak-js";
-import { createLogger } from "@/lib/logger";
+
 
 const logger = createLogger({ context: "MockAuthService" });
 

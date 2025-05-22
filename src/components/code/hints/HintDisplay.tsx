@@ -1,8 +1,10 @@
-import React from "react";
 import { X } from "lucide-react";
-import { Card, CardContent, CardFooter } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Lightbulb } from "lucide-react";
+import React from "react";
+
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
+
 
 interface HintDisplayProps {
   content: string | null;

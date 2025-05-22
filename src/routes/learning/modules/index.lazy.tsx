@@ -1,11 +1,12 @@
+import { createLazyFileRoute } from "@tanstack/react-router";
+import { AlertCircleIcon } from "lucide-react";
+
 import { ContentLayout } from "@/components/learning/ContentLayout";
 import { ModuleCard } from "@/components/learning/ModuleCard";
-import { useModules } from "@/services/content/hooks";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { AlertCircleIcon } from "lucide-react";
-import { createLazyFileRoute } from "@tanstack/react-router";
 import { NoModulesAvailable } from "@/components/learning/NoModulesAvailable";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useModules } from "@/services/content/hooks";
 
 export const Route = createLazyFileRoute("/learning/modules/")({
   component: ModulesPage,

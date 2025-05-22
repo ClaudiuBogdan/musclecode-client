@@ -1,5 +1,6 @@
-import React, { useMemo, useCallback } from "react";
 import { Clock, ChevronDown } from "lucide-react";
+import React, { useMemo, useCallback } from "react";
+
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -10,8 +11,9 @@ import {
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Thread } from "@/types/chat";
 import { formatRelativeTime } from "@/lib/dateUtils";
+
+import type { Thread } from "@/types/chat";
 
 interface ChatHistoryProps {
   threads: Thread[];

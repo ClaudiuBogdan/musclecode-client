@@ -1,8 +1,11 @@
-import { FC } from "react";
-import CodeMirror from "@uiw/react-codemirror";
 import { markdown, markdownLanguage } from "@codemirror/lang-markdown";
 import { EditorView } from "@codemirror/view";
+import CodeMirror from "@uiw/react-codemirror";
+
 import { useTheme } from "../theme/theme-provider";
+
+import type { FC } from "react";
+
 
 interface NotesEditorProps {
   value: string;

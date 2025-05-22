@@ -1,18 +1,21 @@
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useNavigate } from "@tanstack/react-router";
+import { useMemo, useEffect } from "react";
+
 import { ProblemDescription } from "@/components/code/ProblemDescription";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { createLogger } from "@/lib/logger";
+import { cn } from "@/lib/utils";
 import { useAlgorithmStore } from "@/stores/algorithm";
 import {
   selectAlgorithmLessons,
   selectAlgorithmSubmissions,
 } from "@/stores/algorithm/selectors";
-import { cn } from "@/lib/utils";
+import useChatStore from "@/stores/chat";
+
+import { Chat } from "../chat/Chat";
 import { Notes } from "../notes/Notes";
 import Submissions from "../submissions/Submissions";
-import { Chat } from "../chat/Chat";
-import { useNavigate } from "@tanstack/react-router";
-import { useMemo, useEffect } from "react";
-import useChatStore from "@/stores/chat";
-import { createLogger } from "@/lib/logger";
+
 
 const logger = createLogger({ context: "InfoPanel" });
 

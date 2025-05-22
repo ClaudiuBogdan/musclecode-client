@@ -1,8 +1,12 @@
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { AlgorithmPreview } from "@/types/algorithm";
 import { Link } from "@tanstack/react-router";
+
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
+
+import type { AlgorithmPreview } from "@/types/algorithm";
+
+
 
 interface AlgorithmCardProps {
   algorithm: AlgorithmPreview;

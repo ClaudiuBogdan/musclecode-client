@@ -1,7 +1,10 @@
-import { StateCreator } from "zustand";
-import { AlgorithmState, CodeActions, StoreActions } from "../types";
-import { withAlgorithm } from "../utils/stateUtils";
+
 import { createLogger } from "@/lib/logger";
+
+import { withAlgorithm } from "../utils/stateUtils";
+
+import type { AlgorithmState, CodeActions, StoreActions } from "../types";
+import type { StateCreator } from "zustand";
 
 const logger = createLogger({
   context: "CodeSlice",

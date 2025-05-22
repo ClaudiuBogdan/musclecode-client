@@ -1,4 +1,4 @@
-import { CodeExecutionResponse, TestItem } from "@/types/testRunner";
+import type { CodeExecutionResponse, TestItem } from "@/types/testRunner";
 
 // Existing test running code for other languages
 export function createMockTestResponse(code: string): CodeExecutionResponse {

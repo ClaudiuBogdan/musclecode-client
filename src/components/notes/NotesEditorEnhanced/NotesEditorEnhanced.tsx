@@ -1,13 +1,6 @@
-import { FC } from "react";
+import type { FC } from "react";
+
 import CodeMirror from "@uiw/react-codemirror";
-import { useTheme } from "../../theme/theme-provider";
-import {
-  keymap,
-  EditorView,
-  drawSelection,
-  rectangularSelection,
-  highlightActiveLine,
-} from "@codemirror/view";
 import {
   defaultKeymap,
   history,
@@ -16,12 +9,22 @@ import {
 } from "@codemirror/commands";
 import { syntaxHighlighting, indentOnInput } from "@codemirror/language";
 import { languages } from "@codemirror/language-data";
+import {
+  keymap,
+  EditorView,
+  drawSelection,
+  rectangularSelection,
+  highlightActiveLine,
+} from "@codemirror/view";
 import { Table } from "@lezer/markdown";
-import richEditor from ".";
-import config from "./markdoc";
+
 import "./src/style.css";
 import { vscodeDark } from "@uiw/codemirror-theme-vscode";
+
+import richEditor from ".";
 import highlightStyle from "./highlightStyle";
+import config from "./markdoc";
+import { useTheme } from "../../theme/theme-provider";
 
 interface NotesEditorProps {
   value: string;

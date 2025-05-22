@@ -1,4 +1,4 @@
-import { AlgorithmState, AlgorithmId } from "../types";
+import type { AlgorithmState, AlgorithmId } from "../types";
 
 export const getAlgorithmById = (
   state: AlgorithmState,

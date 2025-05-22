@@ -1,5 +1,6 @@
-import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useForm } from 'react-hook-form'
+
 import { Button } from '@/components/ui/button'
 import {
   Form,
@@ -17,8 +18,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { type ModelFormValues, modelFormSchema } from './schema'
 import { MODEL_PROVIDERS } from '@/types/models'
+
+import { type ModelFormValues, modelFormSchema } from './schema'
 
 interface ModelFormProps {
   onSubmit: (values: ModelFormValues) => void;

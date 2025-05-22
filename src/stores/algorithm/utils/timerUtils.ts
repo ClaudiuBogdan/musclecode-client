@@ -1,4 +1,4 @@
-import { TimerState } from "../types";
+import type { TimerState } from "../types";
 
 export const calculateRunningTime = (timerState: TimerState): number => {
   const { initialStartTime, pausedAt, totalPausedTime } = timerState;

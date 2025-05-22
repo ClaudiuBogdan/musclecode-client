@@ -1,5 +1,4 @@
-import { ReactNode } from "react";
-import { OnboardingStep } from "../../lib/onboarding/types";
+
 import { StepIndicator } from "./StepIndicator";
 import { Button } from "../ui/button";
 import {
@@ -9,6 +8,9 @@ import {
   CardDescription,
   CardContent,
 } from "../ui/card";
+
+import type { OnboardingStep } from "../../lib/onboarding/types";
+import type { ReactNode } from "react";
 
 interface OnboardingLayoutProps {
   children: ReactNode;

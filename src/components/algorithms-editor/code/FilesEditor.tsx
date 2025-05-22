@@ -1,22 +1,7 @@
-import { CodeEditor } from "@/components/code/CodeEditor";
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
 import { FileCode, TestTube2, Plus, Trash2 } from "lucide-react";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { useState } from "react";
+
+import { CodeEditor } from "@/components/code/CodeEditor";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -27,8 +12,25 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { AlgorithmFile, CodeLanguage } from "@/types/algorithm";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { cn } from "@/lib/utils";
+
+import type { AlgorithmFile, CodeLanguage } from "@/types/algorithm";
 
 interface FilesEditorProps {
   isPreview?: boolean;

@@ -1,6 +1,8 @@
-import { apiClient } from "@/lib/api/client";
-import { DailyAlgorithm } from "@/types/algorithm";
 import { useQuery } from "@tanstack/react-query";
+
+import { apiClient } from "@/lib/api/client";
+
+import type { DailyAlgorithm } from "@/types/algorithm";
 
 export function useDailyAlgorithms() {
   return useQuery({

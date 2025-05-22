@@ -1,13 +1,17 @@
-import { Message as MessageType } from "@/types/chat";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
 import { RotateCcw, Edit2, BotIcon } from "lucide-react";
-import useChatStore from "@/stores/chat";
-import { EditMessage } from "./EditMessage";
-import { Markdown } from "@/components/ui/markdown";
 import React, { useCallback } from "react";
+
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { Markdown } from "@/components/ui/markdown";
+import { cn } from "@/lib/utils";
+import useChatStore from "@/stores/chat";
+
+
+import { EditMessage } from "./EditMessage";
 import { CopyButton } from "../ui/copy-button";
+
+import type { Message as MessageType } from "@/types/chat";
 
 interface MessageProps {
   message: MessageType;

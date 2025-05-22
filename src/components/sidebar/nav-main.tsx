@@ -1,5 +1,6 @@
 "use client";
 
+import { Link, useMatches } from "@tanstack/react-router";
 import {
   Settings,
   CreditCard,
@@ -10,8 +11,7 @@ import {
   BookOpen,
   Cross,
 } from "lucide-react";
-import { Link, useMatches } from "@tanstack/react-router";
-import { cn } from "@/lib/utils";
+
 import { buttonVariants } from "@/components/ui/button";
 import {
   SidebarGroup,
@@ -21,6 +21,7 @@ import {
   SidebarMenuButton,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { cn } from "@/lib/utils";
 
 interface SettingsItem {
   title: string;

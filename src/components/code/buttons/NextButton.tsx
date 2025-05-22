@@ -1,12 +1,15 @@
-import { Button } from "@/components/ui/button";
-import { FC } from "react";
 import { ArrowRight } from "lucide-react";
 
-type Props = {
+import { Button } from "@/components/ui/button";
+
+import type { FC } from "react";
+
+
+interface Props {
   onClick?: () => void;
   disabled?: boolean;
   className?: string;
-};
+}
 
 const NextButton: FC<Props> = ({ onClick, disabled, className }) => {
   return (

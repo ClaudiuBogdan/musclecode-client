@@ -1,7 +1,8 @@
 import { z } from "zod";
-import { ApiError } from "@/types/api";
+
 import { getAuthService } from "@/lib/auth/auth-service";
 import { createLogger } from "@/lib/logger";
+import { ApiError } from "@/types/api";
 
 const logger = createLogger("ProfileApi");
 

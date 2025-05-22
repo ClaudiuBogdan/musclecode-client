@@ -1,8 +1,8 @@
-import { Decoration, PluginValue } from '@codemirror/view';
 import { syntaxTree } from '@codemirror/language';
+import { Decoration } from '@codemirror/view';
 
-import type { DecorationSet, EditorView, ViewUpdate } from '@codemirror/view'
 import type { Range } from '@codemirror/state';
+import type { DecorationSet, EditorView, ViewUpdate , PluginValue } from '@codemirror/view'
 
 const tokenElement = [
   "InlineCode",
@@ -36,7 +36,7 @@ export default class RichEditPlugin implements PluginValue {
 
   update(update: ViewUpdate): void {
     if (update.docChanged || update.viewportChanged || update.selectionSet)
-      this.decorations = this.process(update.view);
+      {this.decorations = this.process(update.view);}
   }
 
   process(view: EditorView): DecorationSet {
@@ -53,10 +53,10 @@ export default class RichEditPlugin implements PluginValue {
           }
 
           if (node.name === "MarkdocTag")
-            widgets.push(decorationTag.range(node.from, node.to));
+            {widgets.push(decorationTag.range(node.from, node.to));}
 
           if (node.name === "FencedCode")
-            widgets.push(decorationCode.range(node.from, node.to));
+            {widgets.push(decorationCode.range(node.from, node.to));}
 
           if (
             (node.name.startsWith("ATXHeading") ||
@@ -64,7 +64,7 @@ export default class RichEditPlugin implements PluginValue {
             cursor.from >= node.from &&
             cursor.to <= node.to
           )
-            return false;
+            {return false;}
 
           if (
             node.name === "ListMark" &&
@@ -72,13 +72,13 @@ export default class RichEditPlugin implements PluginValue {
             cursor.from != node.from &&
             cursor.from != node.from + 1
           )
-            widgets.push(decorationBullet.range(node.from, node.to));
+            {widgets.push(decorationBullet.range(node.from, node.to));}
 
           if (node.name === "HeaderMark")
-            widgets.push(decorationHidden.range(node.from, node.to + 1));
+            {widgets.push(decorationHidden.range(node.from, node.to + 1));}
 
           if (tokenHidden.includes(node.name))
-            widgets.push(decorationHidden.range(node.from, node.to));
+            {widgets.push(decorationHidden.range(node.from, node.to));}
         },
       });
     }

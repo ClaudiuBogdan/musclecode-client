@@ -1,5 +1,6 @@
-import { AlgorithmsTable } from '@/components/algorithms'
 import { createLazyFileRoute } from '@tanstack/react-router'
+
+import { AlgorithmsTable } from '@/components/algorithms'
 
 export const Route = createLazyFileRoute('/algorithms/')({
   component: RouteComponent,

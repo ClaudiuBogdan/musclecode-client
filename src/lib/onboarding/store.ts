@@ -1,6 +1,9 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import {
+
+import { onboardingApi } from "./api";
+
+import type {
   OnboardingState,
   OnboardingStep,
   UserGoals,
@@ -8,17 +11,16 @@ import {
   Collection,
   QuizGroup,
 } from "./types";
-import { onboardingApi } from "./api";
 
 // Define the steps sequence once
 const STEPS: OnboardingStep[] = ["welcome", "goals", "quiz", "summary"];
 
 // Define step types and their corresponding data types
-type StepDataMap = {
+interface StepDataMap {
   welcome: null;
   goals: UserGoals;
   quiz: QuizAnswer[];
-};
+}
 
 interface OnboardingStore {
   // State
@@ -138,7 +140,7 @@ export const useOnboardingStore = create<OnboardingStore>()(
               const goalsData = stepData as UserGoals;
               success = await onboardingApi.saveUserGoals(goalsData);
               if (success)
-                get().updateState({ goals: goalsData, currentStep: "quiz" });
+                {get().updateState({ goals: goalsData, currentStep: "quiz" });}
               break;
             }
 

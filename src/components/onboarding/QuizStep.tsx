@@ -1,7 +1,5 @@
-import { useState } from "react";
-import type { QuizAnswer, StepProps } from "../../lib/onboarding/types";
-import { Button } from "../ui/button";
-import { useOnboardingStore } from "../../lib/onboarding/store";
+import confetti from "canvas-confetti";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Loader2,
   AlertCircle,
@@ -15,11 +13,15 @@ import {
   Flame,
   Star,
 } from "lucide-react";
+import { useState } from "react";
+
+import { useOnboardingStore } from "../../lib/onboarding/store";
 import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
-import { Progress } from "../ui/progress";
-import { motion, AnimatePresence } from "framer-motion";
-import confetti from "canvas-confetti";
 import { Badge } from "../ui/badge";
+import { Button } from "../ui/button";
+import { Progress } from "../ui/progress";
+
+import type { QuizAnswer, StepProps } from "../../lib/onboarding/types";
 
 export function QuizStep({ onBack, onNext }: StepProps) {
   const { saveStep, isLoading, filteredQuizQuestions, error, clearError } =
@@ -178,40 +180,40 @@ export function QuizStep({ onBack, onNext }: StepProps) {
             "That's " + consecutiveCorrect + " correct answers in a row!",
           icon: Flame,
         };
-      } else if (consecutiveCorrect === 2) {
+      } if (consecutiveCorrect === 2) {
         return {
           title: "Fantastic! You're on a roll!",
           message: "Keep up the great work!",
           icon: Trophy,
         };
-      } else {
+      } 
         return {
           title: "Great job! That's correct!",
           message: "You're making excellent progress!",
           icon: CheckCircle2,
         };
-      }
-    } else {
+      
+    } 
       if (consecutiveIncorrect >= 3) {
         return {
           title: "Don't worry, learning takes time!",
           message: "Take a moment to review the correct answer carefully.",
           icon: Lightbulb,
         };
-      } else if (consecutiveIncorrect === 2) {
+      } if (consecutiveIncorrect === 2) {
         return {
           title: "Keep going! You've got this!",
           message: "Learning from mistakes is part of the process.",
           icon: Star,
         };
-      } else {
+      } 
         return {
           title: "Not quite, but that's how we learn!",
           message: "Let's see what the correct answer is.",
           icon: Lightbulb,
         };
-      }
-    }
+      
+    
   };
 
   // Error states

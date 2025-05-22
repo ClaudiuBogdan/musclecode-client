@@ -1,8 +1,10 @@
 import Keycloak from "keycloak-js";
+
 import { authConfig } from "@/config/auth";
+import { createLogger } from "@/lib/logger";
+
 import { AuthErrorCode, createAuthError } from "./errors";
 import { mockUser } from "./mock-user";
-import { createLogger } from "@/lib/logger";
 
 const logger = createLogger({ context: "KeycloakService" });
 

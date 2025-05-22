@@ -5,7 +5,8 @@ import {
   selectIsPaused,
 } from "../../selectors/timerSelectors";
 import { mockAlgorithmState } from "../utils/testStore";
-import { AlgorithmState, TimerState } from "../../types";
+
+import type { AlgorithmState, TimerState } from "../../types";
 
 describe("Timer Selectors", () => {
   const algorithmId = "test-algorithm";

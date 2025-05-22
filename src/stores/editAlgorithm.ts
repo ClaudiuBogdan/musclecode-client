@@ -1,13 +1,18 @@
 import { create } from "zustand";
-import { immer } from "zustand/middleware/immer";
 import { persist, createJSONStorage } from "zustand/middleware";
+import { immer } from "zustand/middleware/immer";
+
 import { updateAlgorithmTemplate } from "@/lib/api/algorithm";
-import { CreateAlgorithmPayload } from "@/types/newAlgorithm";
+
 import {
-  BaseAlgorithmState,
-  BaseAlgorithmActions,
   createBaseAlgorithmSlice,
 } from "./baseAlgorithm";
+
+import type {
+  BaseAlgorithmState,
+  BaseAlgorithmActions} from "./baseAlgorithm";
+import type { CreateAlgorithmPayload } from "@/types/newAlgorithm";
+
 
 interface EditAlgorithmState extends BaseAlgorithmState {
   algorithmId: string | null;
