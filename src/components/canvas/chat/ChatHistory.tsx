@@ -15,7 +15,6 @@ import { formatRelativeTime } from "@/lib/dateUtils";
 import { cn } from "@/lib/utils";
 
 import { useChatStore } from "../store";
-import { TextBlock } from "../types";
 
 import type { ChatThread} from "../types";
 

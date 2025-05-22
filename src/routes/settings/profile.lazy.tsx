@@ -29,8 +29,6 @@ import {
 } from '@/lib/api/profile'
 import { ApiError } from "@/types/api";
 
-import type { UseQueryResult } from '@tanstack/react-query'
-
 export const Route = createLazyFileRoute("/settings/profile")({
   component: ProfileSettings,
 });

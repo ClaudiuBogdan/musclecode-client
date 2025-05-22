@@ -28,8 +28,6 @@ import {
 } from "@/lib/api/preferences";
 import { ApiError } from "@/types/api";
 
-import type { UseQueryResult } from "@tanstack/react-query";
-
 export const Route = createLazyFileRoute("/settings/preferences")({
   component: PreferencesSettings,
 });

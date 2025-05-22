@@ -99,6 +99,7 @@ export default tseslint.config(
       ...jsxA11yPlugin.configs.recommended.rules,
 
       // --- Imports & circular deps ---
+      'import/no-unused-modules': ['warn'],
       'import/no-cycle': ['error', { maxDepth: 5, ignoreExternal: true }],
       'import/order': [
         'warn',

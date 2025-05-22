@@ -21,13 +21,10 @@ import {
   cancelSubscription,
   resumeSubscription,
   availablePlans,
-  type BillingInfo,
 } from "@/lib/api/billing";
 import { cn } from "@/lib/utils";
 import { ApiError } from "@/types/api";
 
-
-import type { UseQueryResult } from "@tanstack/react-query";
 
 export const Route = createLazyFileRoute("/settings/billing")({
   component: BillingSettings,

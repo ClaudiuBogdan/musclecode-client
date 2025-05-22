@@ -11,10 +11,6 @@ export const Route = createLazyFileRoute("/login")({
   component: LoginPage,
 });
 
-interface SearchParams {
-  redirect: string;
-}
-
 function LoginPage() {
   const navigate = useNavigate();
   const { login, isAuthenticated } = useAuthStore();

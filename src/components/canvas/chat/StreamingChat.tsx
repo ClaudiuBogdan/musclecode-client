@@ -11,14 +11,12 @@ import {
 
 import type {
   PartialJsonValue,
-  ReconstructorControls} from "../parser";
+  ReconstructorControls
+} from "../parser";
 import type {
   ChatMessage,
   ContentBlock,
-  ToolUseContentBlock,
-  ToolResultContentBlock,
   ServerSentEvent, // Ensure this is imported if used directly (e.g., in types)
-  TextBlock,
 } from "../types"; // Adjust path if needed
 
 // **** Import the SSE listener ****
@@ -558,9 +556,9 @@ function StreamingChatDisplay() {
           {message.content?.length > 0
             ? message.content.map(renderContentBlock) // Render the blocks using the updated message state
             : // Show streaming text only if connection is open/streaming AND content is empty
-              (status === "open" || status === "streaming") && (
-                <em>(Content streaming...)</em>
-              )}
+            (status === "open" || status === "streaming") && (
+              <em>(Content streaming...)</em>
+            )}
         </div>
       ) : (
         // Show waiting text if connection is open/streaming but message hasn't started

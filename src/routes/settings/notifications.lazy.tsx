@@ -21,8 +21,6 @@ import {
 } from "@/lib/api/notifications";
 import { ApiError } from "@/types/api";
 
-import type { UseQueryResult } from "@tanstack/react-query";
-
 export const Route = createLazyFileRoute("/settings/notifications")({
   component: NotificationSettings,
 });

@@ -2,10 +2,6 @@ import React from "react";
 
 import { Markdown } from "@/components/ui/markdown";
 
-import {
-  ToolResultContent,
-} from "../types";
-
 import type { PartialJsonValue } from "../parser"; // Assuming this is the correct path
 import type {
   ChatMessage,
