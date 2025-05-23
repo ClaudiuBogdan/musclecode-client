@@ -83,6 +83,8 @@ export default tseslint.config(
       '@typescript-eslint/no-explicit-any': 'warn',
       '@typescript-eslint/no-floating-promises': 'warn',
       '@typescript-eslint/consistent-type-imports': 'warn',
+      '@typescript-eslint/no-unsafe-assignment': 'off',
+      '@typescript-eslint/no-unsafe-return': 'off',
 
       // --- React & Hooks & Refresh ---
       ...reactPlugin.configs.recommended.rules,

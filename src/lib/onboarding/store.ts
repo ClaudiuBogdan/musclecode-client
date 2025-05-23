@@ -105,7 +105,7 @@ export const useOnboardingStore = create<OnboardingStore>()(
           const state = await onboardingApi.getOnboardingState();
           set({
             onboardingState: state,
-            filteredQuizQuestions: state.quizQuestions || [],
+            filteredQuizQuestions: state.quizQuestions ?? [],
             isLoading: false,
             initialized: true,
           });
@@ -171,13 +171,13 @@ export const useOnboardingStore = create<OnboardingStore>()(
         const { onboardingState } = get();
         if (!onboardingState?.collections) return [];
 
-        const selectedIds = onboardingState.goals?.selectedCollections || [];
+        const selectedIds = onboardingState.goals?.selectedCollections ?? [];
         return onboardingState.collections.filter((c) =>
           selectedIds.includes(c.id)
         );
       },
 
-      getAvailableCollections: () => get().onboardingState?.collections || [],
+      getAvailableCollections: () => get().onboardingState?.collections ?? [],
 
       // Quiz filtering
       filterQuizQuestionsByCollections: (collectionIds: string[]) => {

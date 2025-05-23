@@ -239,3 +239,7 @@ export class KeycloakAuthService implements AuthService {
     return this.keycloak;
   }
 }
+
+export function getAuthService(): AuthService {
+  return KeycloakAuthService.getInstance();
+}

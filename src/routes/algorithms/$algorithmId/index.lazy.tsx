@@ -174,7 +174,7 @@ function Algorithm() {
           </div>
           <div className="text-sm text-gray-500">{error}</div>
           <button
-            onClick={() => initializeAlgorithm(algorithmId)}
+            onClick={() => void initializeAlgorithm(algorithmId)}
             className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
           >
             Retry
@@ -202,7 +202,8 @@ function Algorithm() {
         <ResizablePanelGroup
           direction="horizontal"
           onLayout={(sizes) => {
-            setSizes([sizes[0], sizes[1]]);
+            const args = sizes as [number, number];
+            setSizes(args);
           }}
         >
           <ResizablePanel defaultSize={sizes[0]} minSize={25}>
@@ -228,7 +229,8 @@ function Algorithm() {
               <ResizablePanelGroup
                 direction="vertical"
                 onLayout={(sizes) => {
-                  setEditorSizes([sizes[0], sizes[1]]);
+                  const args = sizes as [number, number];
+                  setEditorSizes(args);
                 }}
                 className="flex-1"
               >

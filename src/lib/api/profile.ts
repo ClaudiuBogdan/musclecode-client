@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { getAuthService } from "@/lib/auth/auth-service";
+import { getAuthService } from "@/lib/auth/keycloak-auth-service";
 import { createLogger } from "@/lib/logger";
 import { ApiError } from "@/types/api";
 

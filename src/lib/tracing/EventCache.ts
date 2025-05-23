@@ -40,7 +40,7 @@ export class EventCache {
 
     // Maintain cache size as LRU: Remove the oldest entry if over capacity
     if (this.cache.size > this.maxSize) {
-      const firstKey = this.cache.keys().next().value;
+      const firstKey = this.cache.keys().next().value as string;
       if (firstKey !== undefined) {
         this.cache.delete(firstKey);
       }

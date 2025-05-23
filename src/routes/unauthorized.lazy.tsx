@@ -9,7 +9,7 @@ function UnauthorizedPage() {
     <div className="flex h-screen w-screen flex-col items-center justify-center gap-4">
       <h1 className="text-2xl font-semibold">Unauthorized Access</h1>
       <p className="text-gray-600">
-        You don't have permission to access this resource.
+        You don&apos;t have permission to access this resource.
       </p>
       <Link
         to="/"

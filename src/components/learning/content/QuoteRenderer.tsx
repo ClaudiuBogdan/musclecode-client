@@ -14,7 +14,7 @@ import { cn } from '@/lib/utils';
 
 interface QuoteRendererProps {
   id: string;
-  quoteType: 'analogy' | 'note' | 'example' | 'tip' | 'warning' | 'question';
+  quoteType: keyof typeof quoteStyles;
   title: string;
   quote: string;
 }
@@ -64,7 +64,7 @@ export const QuoteRenderer: React.FC<QuoteRendererProps> = ({
   title, 
   quote 
 }) => {
-  const styles = quoteStyles[quoteType] || quoteStyles.note; // Default to note style
+  const styles = quoteStyles[quoteType as keyof typeof quoteStyles] ?? quoteStyles.note; // Default to note style
   const IconComponent = styles.icon;
 
   return (

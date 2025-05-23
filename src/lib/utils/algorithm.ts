@@ -15,6 +15,6 @@ export function getLanguageExtension(language: CodeLanguage): string {
     case "go":
       return "go";
     default:
-      throw new Error(`Unsupported language: ${language}`);
+      throw new Error(`Unsupported language: ${language as string}`);
   }
 }

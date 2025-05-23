@@ -39,7 +39,7 @@ export const createExecutionSlice: StateCreator<
           (file) => !file.hidden
         );
 
-        const timeoutPromise = new Promise((_, reject) => {
+        const timeoutPromise = new Promise((_resolve, reject) => {
           setTimeout(
             () =>
               reject(

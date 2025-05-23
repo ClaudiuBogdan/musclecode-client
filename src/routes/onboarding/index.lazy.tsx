@@ -66,7 +66,7 @@ function OnboardingPage() {
           Failed to load onboarding: {error}
         </p>
         <button
-          onClick={() => fetchOnboardingState()}
+          onClick={() => void fetchOnboardingState()}
           className="text-primary hover:underline"
         >
           Try again
@@ -98,12 +98,12 @@ function OnboardingPage() {
       <NetworkStatusMonitor />
       <OnboardingLayout
         currentStep={onboardingState.currentStep}
-        onSkip={handleSkip}
+        onSkip={() => void handleSkip()}
       >
         <CurrentStep
           onNext={handleGoToNextStep}
           onBack={handleGoToPreviousStep}
-          onSkip={handleSkip}
+          onSkip={() => void handleSkip()}
         />
       </OnboardingLayout>
     </>

@@ -1,4 +1,3 @@
-
 import { createLogger } from "@/lib/logger";
 
 import type { AlgorithmState, StoreActions } from "./types";
@@ -19,7 +18,7 @@ export const algorithmStorageWithTTL: PersistStorage<StoreState> = {
         return null;
       }
 
-      const state = JSON.parse(itemStr);
+      const state = JSON.parse(itemStr) as StorageValue<StoreState>;
       if (!state?.state?.algorithms) {
         logger.debug("No Algorithms In State", { key: name });
         return state;

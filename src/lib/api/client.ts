@@ -1,4 +1,3 @@
-// lib/api/client.ts
 import {
   fetchEventSource
 } from "@microsoft/fetch-event-source";
@@ -8,15 +7,16 @@ import axios from "axios";
 import { env } from "@/config/env";
 import { AppError, createAuthError } from "@/lib/errors/types";
 
-import { getAuthService } from "../auth/auth-service";
 import { AuthErrorCode, AuthError } from "../auth/errors";
+import { getAuthService } from "../auth/keycloak-auth-service";
 import { createLogger } from "../logger";
 
 
 import type { ServerSentEvent } from "@/components/canvas/types";
 import type { ApiError } from "@/types/api";
 import type {
-  EventSourceMessage} from "@microsoft/fetch-event-source";
+  EventSourceMessage
+} from "@microsoft/fetch-event-source";
 
 const logger = createLogger("ApiClient");
 
@@ -50,7 +50,7 @@ export async function getAuthHeaders(): Promise<Record<string, string>> {
 
     return {
       Authorization: `Bearer ${token}`,
-      "X-User-Id": user?.id || "",
+      "X-User-Id": user?.id ?? "",
     };
   } catch (error) {
     // Log the error for diagnostics
@@ -192,8 +192,8 @@ export async function streamRequest(
     const requestUrl =
       method === "GET" && data
         ? `${fullUrl}?${new URLSearchParams(
-            Object.entries(data).map(([k, v]) => [k, String(v)])
-          ).toString()}`
+          Object.entries(data).map(([k, v]) => [k, String(v)])
+        ).toString()}`
         : fullUrl;
 
     // Prepare the request options with improved organization
@@ -298,7 +298,7 @@ async function processStream(
 
     // Process complete SSE messages
     const messages = buffer.split("\n\n");
-    buffer = messages.pop() || ""; // The last item might be incomplete
+    buffer = messages.pop() ?? ""; // The last item might be incomplete
 
     for (const message of messages) {
       processMessage(message, controller);
@@ -319,7 +319,7 @@ function processMessage(
     const jsonStr = message.substring(6).trim();
     if (!jsonStr) return;
 
-    const data = JSON.parse(jsonStr);
+    const data = JSON.parse(jsonStr) as { content?: string; error?: string; done?: boolean };
 
     // Handle different event types
     if (data.content) {
@@ -431,9 +431,8 @@ export function listenToSSE(
               .text()
               .catch(() => `Status: ${response.status}`);
             throw new AppError(
-              `SSE connection failed: ${response.status} ${
-                response.statusText || ""
-              }`.trim(),
+              `SSE connection failed: ${response.status} ${response.statusText || ""
+                }`.trim(),
               {
                 type: "api",
                 code: `SSE_ERROR_${response.status}`,
@@ -460,7 +459,7 @@ export function listenToSSE(
             return;
           }
           try {
-            const jsonData = JSON.parse(event.data);
+            const jsonData = JSON.parse(event.data) as ServerSentEvent;
             onMessage(jsonData); // Pass parsed data to user's callback
           } catch (parseError) {
             logger.error("Failed to parse SSE message data as JSON", {

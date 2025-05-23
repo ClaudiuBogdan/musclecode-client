@@ -14,5 +14,5 @@ export interface AuthService {
   getToken(): Promise<string>;
   getUser(): Promise<AuthUser | null>;
   hasRole(role: string): Promise<boolean>;
-  getKeycloakInstance(): Keycloak | null;
+  getKeycloakInstance(): Keycloak;
 }

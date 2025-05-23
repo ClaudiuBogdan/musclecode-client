@@ -2,12 +2,28 @@ import posthog from "posthog-js";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
-import { getAuthService } from "@/lib/auth/auth-service";
+// eslint-disable-next-line import/no-cycle
+import { getAuthService } from "@/lib/auth/keycloak-auth-service";
 import { createLogger } from "@/lib/logger";
 
 import type { AuthUser } from "@/lib/auth/types";
 
 const logger = createLogger("AuthStore");
+
+// Define a minimal interface for Keycloak
+interface MinimalKeycloakInstance {
+  updateToken: (minValidity: number) => Promise<boolean>;
+  // Add other Keycloak properties/methods you might use here for better type safety
+}
+
+// Type guard for the Keycloak instance
+function isKeycloakInstance(obj: unknown): obj is MinimalKeycloakInstance {
+  if (typeof obj !== 'object' || obj === null) {
+    return false;
+  }
+  const potentialKeycloak = obj as { updateToken?: unknown };
+  return typeof potentialKeycloak.updateToken === 'function';
+}
 
 interface AuthState {
   isAuthenticated: boolean;
@@ -175,7 +191,7 @@ export const useAuthStore = create<AuthState>()(
           const authService = getAuthService();
           const keycloak = authService.getKeycloakInstance();
 
-          if (keycloak) {
+          if (isKeycloakInstance(keycloak)) {
             const refreshed = await keycloak.updateToken(70);
             logger.debug("Token Refresh Progress", { refreshed });
 
@@ -192,6 +208,8 @@ export const useAuthStore = create<AuthState>()(
                 isAuthenticated: true,
               });
             }
+          } else {
+            logger.warn("Keycloak instance not available or invalid for token refresh.");
           }
         } catch (error) {
           logger.error("Token Refresh Failed", error as Error);

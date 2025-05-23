@@ -93,7 +93,7 @@ function EditCollectionPage() {
             Collection Not Found
           </h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-            The collection you're trying to edit doesn't exist or you don't have
+            The collection you&apos;re trying to edit doesn&apos;t exist or you don&apos;t have
             permission
           </p>
         </div>
@@ -148,7 +148,7 @@ function EditCollectionPage() {
           <h1 className="text-4xl font-bold tracking-tight">Edit Collection</h1>
         </div>
         <p className="text-lg text-muted-foreground max-w-3xl leading-relaxed">
-          Update your collection's details and curate algorithms
+          Update your collection&apos;s details and curate algorithms
         </p>
       </div>
 
@@ -156,7 +156,7 @@ function EditCollectionPage() {
       <div className="mx-auto max-w-3xl rounded-xl border bg-background/95 backdrop-blur-xs supports-backdrop-filter:bg-background/60 p-6 md:p-8">
         <CollectionForm
           initialData={initialData}
-          onSubmit={handleSubmit}
+          onSubmit={(data) => void handleSubmit(data)}
           isLoading={isLoading}
           availableAlgorithms={algorithmTemplates}
         />

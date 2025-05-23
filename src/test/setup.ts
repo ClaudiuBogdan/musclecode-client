@@ -16,7 +16,7 @@ Object.defineProperty(window, "matchMedia", {
   writable: true,
   value: vi.fn().mockImplementation((query) => ({
     matches: false,
-    media: query,
+    media: query as string,
     onchange: null,
     addListener: vi.fn(),
     removeListener: vi.fn(),

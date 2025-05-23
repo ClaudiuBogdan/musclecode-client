@@ -23,26 +23,27 @@ export function debounce<T extends AnyFunction>(
     return new Promise((resolve, reject) => {
       timeout = setTimeout(() => {
         try {
-          const result = fn(...args);
+          const result = fn(...args) as Promise<ReturnType<T>> | ReturnType<T>;
           // If the function returns a promise, wait for it
           if (result instanceof Promise) {
             promise = result;
             result
               .then((value) => {
                 if (promise === result) {
-                  resolve(value);
+                  return resolve(value);
                 }
+                return;
               })
               .catch((error) => {
                 if (promise === result) {
-                  reject(error);
+                  reject(error as Error);
                 }
               });
           } else {
             resolve(result);
           }
         } catch (error) {
-          reject(error);
+          reject(error as Error);
         }
       }, wait);
     });

@@ -25,7 +25,7 @@ function LessonDetailPage() {
   const lessonBody = lesson?.body as LessonBody | undefined;
   
   // Get chunks safely
-  const chunks = lessonBody?.chunks || [];
+  const chunks = lessonBody?.chunks ?? [];
   
   // Handler for completing a chunk
   const handleCompleteChunk = () => {
@@ -100,7 +100,7 @@ function LessonDetailPage() {
         <div className="flex flex-col items-center justify-center h-screen p-6 text-center">
           <BookOpenIcon className="h-12 w-12 text-gray-400 mb-4" />
           <h2 className="text-xl font-semibold mb-2">No content found</h2>
-          <p className="text-gray-600 dark:text-gray-400 mb-6">This lesson doesn't have any content yet.</p>
+          <p className="text-gray-600 dark:text-gray-400 mb-6">This lesson doesn&apos;t have any content yet.</p>
           <Button 
             variant="outline" 
             className="gap-2"

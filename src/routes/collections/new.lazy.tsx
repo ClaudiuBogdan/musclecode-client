@@ -74,7 +74,7 @@ function NewCollectionPage() {
 
       <div className="mx-auto max-w-2xl">
         <CollectionForm
-          onSubmit={handleSubmit}
+          onSubmit={(data) => void handleSubmit(data)}
           isLoading={isLoadingTemplates || createCollectionMutation.isPending}
           availableAlgorithms={algorithmTemplates}
         />

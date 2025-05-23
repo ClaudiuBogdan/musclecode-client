@@ -19,7 +19,9 @@ export class UserIdSpanProcessor implements SpanProcessor {
     });
   }
 
-  onEnd(): void {}
+  onEnd(): void {
+    // no-op
+  }
 
   shutdown(): Promise<void> {
     return Promise.resolve();

@@ -6,7 +6,6 @@ import { getAlgorithm } from "@/lib/api/code";
 import { createLogger } from "@/lib/logger";
 
 import useChatStore from "../chat";
-import { createInitialState } from "./__tests__/utils/testStore";
 import { createCodeSlice } from "./slices/codeSlice";
 import { createExecutionSlice } from "./slices/executionSlice";
 import { createHintSlice } from "./slices/hintSlice";
@@ -347,6 +346,15 @@ export const createAlgorithmSlice: StateCreator<
       state.algorithms = {};
     });
   },
+});
+
+export const createInitialState = (): AlgorithmState => ({
+  metadata: {
+    isLoading: false,
+    activeAlgorithmId: null,
+    error: null,
+  },
+  algorithms: {},
 });
 
 export const useAlgorithmStore = create<AlgorithmState & StoreActions>()(

@@ -1,10 +1,9 @@
 import { RouterProvider, createRouter } from "@tanstack/react-router";
 import { PostHogProvider } from "posthog-js/react";
 import { StrictMode } from "react";
-import ReactDOM from "react-dom/client";
+import * as ReactDOM from "react-dom/client";
 
 import "./index.css";
-
 import "./lib/tracing/tracer";
 
 // Import the generated route tree
@@ -22,16 +21,21 @@ declare module "@tanstack/react-router" {
 }
 
 // Initialize MSW and then render the app
-ReactDOM.createRoot(document.getElementById("root")!).render(
+const root = document.getElementById("root")!;
+if (!root) {
+  throw new Error("Root element not found");
+}
+
+ReactDOM.createRoot(root).render(
   <StrictMode>
     <PostHogProvider
-      apiKey={env.VITE_POSTHOG_API_KEY || ""}
+      apiKey={env.VITE_POSTHOG_API_KEY ?? ""}
       options={
         env.VITE_POSTHOG_ENABLED
           ? {
-              api_host: env.VITE_POSTHOG_HOST,
-              person_profiles: env.VITE_POSTHOG_PERSON_PROFILES,
-            }
+            api_host: env.VITE_POSTHOG_HOST,
+            person_profiles: env.VITE_POSTHOG_PERSON_PROFILES,
+          }
           : undefined
       }
     >

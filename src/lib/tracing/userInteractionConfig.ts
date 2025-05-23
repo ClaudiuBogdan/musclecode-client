@@ -66,7 +66,7 @@ export const userInteractionConfig: UserInteractionConfig = {
     const form = element.closest("form");
     if (form) {
       span.setAttribute("ui.form.id", form.id || "");
-      span.setAttribute("ui.form.name", form.getAttribute("name") || "");
+      span.setAttribute("ui.form.name", form.getAttribute("name") ?? "");
     }
 
     // Add XPath for unique identification

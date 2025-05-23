@@ -105,10 +105,8 @@ const useChatStore = create<ChatStore>()(
           throw new Error("No active thread");
         }
 
-        if (!args.parentId) {
-          args.parentId =
-            activeThread.messages[activeThread.messages.length - 1]?.id || null;
-        }
+        args.parentId ??=
+          activeThread.messages[activeThread.messages.length - 1]?.id ?? null;
 
         try {
           const abortController = new AbortController();
@@ -185,7 +183,7 @@ const useChatStore = create<ChatStore>()(
           const reader = stream.getReader();
 
           // Create an abortable Promise
-          const abortPromise = new Promise<never>((_, reject) => {
+          const abortPromise = new Promise<never>((_resolve, reject) => {
             const onAbort = () => {
               reject(new Error("Stream aborted"));
               abortController.signal.removeEventListener("abort", onAbort);
@@ -193,7 +191,7 @@ const useChatStore = create<ChatStore>()(
             abortController.signal.addEventListener("abort", onAbort);
           });
 
-          const streamTimeout = new Promise<never>((_, reject) => {
+          const streamTimeout = new Promise<never>((_resolve, reject) => {
             setTimeout(() => {
               reject(new Error("Stream timeout"));
             }, STREAM_TIMEOUT_MS);
@@ -304,19 +302,19 @@ const useChatStore = create<ChatStore>()(
           // TODO: find a better way to update the thread
           const updatedThread = existingHintThread
             ? ({
-                ...existingHintThread,
-                messages: [
-                  ...existingHintThread.messages,
-                  hintMsg,
-                  assistantMsg,
-                ],
-                updatedAt: Date.now(),
-              } as Thread)
+              ...existingHintThread,
+              messages: [
+                ...existingHintThread.messages,
+                hintMsg,
+                assistantMsg,
+              ],
+              updatedAt: Date.now(),
+            } as Thread)
             : ({
-                ...thread,
-                messages: [hintMsg, assistantMsg],
-                updatedAt: Date.now(),
-              } as Thread);
+              ...thread,
+              messages: [hintMsg, assistantMsg],
+              updatedAt: Date.now(),
+            } as Thread);
           return {
             threads: {
               ...state.threads,
@@ -337,7 +335,7 @@ const useChatStore = create<ChatStore>()(
         }
       },
 
-      startNewChat: async () => {
+      startNewChat: () => {
         const activeAlgorithmId = get().activeAlgorithmId;
         if (!activeAlgorithmId) {
           throw new Error("algorithmId is required to start a new chat");
@@ -508,7 +506,7 @@ const useChatStore = create<ChatStore>()(
       // TODO: this is a temporary solution to retry a message
       // TODO: we should refactor this to be more robust and handle edge cases
       // I need to update the message data structure and add the context and prompt to the retry.
-      retryMessage: async (messageId: string) => {
+      retryMessage: (messageId: string) => {
         const { threads, activeThreadId } = get();
         if (!activeThreadId) return;
 
@@ -626,7 +624,7 @@ const useChatStore = create<ChatStore>()(
           // Call the sync API
           const response = await syncThreads({
             threads: clientThreadUpdates,
-            algorithmId: state.activeAlgorithmId || undefined,
+            algorithmId: state.activeAlgorithmId ?? undefined,
           });
 
           // Process the server response

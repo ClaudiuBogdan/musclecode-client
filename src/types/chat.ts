@@ -103,13 +103,13 @@ export interface ChatStore extends ChatState {
     context?: MessageContext;
   }) => Promise<void>;
   stopStreaming: () => void;
-  startNewChat: () => Promise<void>;
+  startNewChat: () => void;
   setEditMessageId: (messageId: string | null) => void;
   editMessage: (messageId: string, newContent: string) => Promise<void>;
   switchBranch: (messageId: string) => void;
   streamToken: (messageId: string, token: string) => void;
   completeStream: (messageId: string) => void;
-  retryMessage: (messageId: string) => Promise<void>;
+  retryMessage: (messageId: string) => void;
   getConversationThread: (threadId: string) => Message[];
   getActiveThread: () => Thread | null;
   setActiveAlgorithmId: (algorithmId: string) => void;
