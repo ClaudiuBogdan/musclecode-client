@@ -4,6 +4,7 @@ import { AlertCircleIcon } from "lucide-react";
 import { ContentLayout } from "@/components/learning/ContentLayout";
 import { ExerciseCard } from "@/components/learning/ExerciseCard";
 import { LessonCard } from "@/components/learning/LessonCard";
+import { ShareDialog } from "@/components/learning/ShareDialog";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
@@ -29,6 +30,7 @@ function ModuleDetailPage() {
     <ContentLayout 
       title={isLoading ? "Loading..." : title}
       backLink="/learning/modules/"
+      action={<ShareDialog title={title} resourceType="module" resourceId={moduleId} />}
     >
       {isLoading ? (
         <div className="space-y-6">
@@ -107,7 +109,7 @@ function ModuleDetailPage() {
               ) : (
                 <div className="text-center py-8">
                   <p className="text-gray-500 dark:text-gray-400">
-                    This module doesn't have any lessons yet.
+                    This module doesn&apos;t have any lessons yet.
                   </p>
                 </div>
               )}
@@ -127,7 +129,7 @@ function ModuleDetailPage() {
               ) : (
                 <div className="text-center py-8">
                   <p className="text-gray-500 dark:text-gray-400">
-                    This module doesn't have any exercises yet.
+                    This module doesn&apos;t have any exercises yet.
                   </p>
                 </div>
               )}

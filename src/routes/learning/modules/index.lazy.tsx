@@ -4,6 +4,7 @@ import { AlertCircleIcon } from "lucide-react";
 import { ContentLayout } from "@/components/learning/ContentLayout";
 import { ModuleCard } from "@/components/learning/ModuleCard";
 import { NoModulesAvailable } from "@/components/learning/NoModulesAvailable";
+import { ShareDialog } from "@/components/learning/ShareDialog";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useModules } from "@/services/content/hooks";
@@ -16,7 +17,9 @@ function ModulesPage() {
   const { data: modules, isLoading, error } = useModules();
 
   return (
-    <ContentLayout title="Learning Modules">
+    <ContentLayout 
+      title="Learning Modules"
+    >
       {isLoading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {Array.from({ length: 6 }).map((_, i) => (

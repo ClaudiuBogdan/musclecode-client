@@ -11,12 +11,14 @@ interface ContentLayoutProps {
   children: React.ReactNode;
   title: string;
   backLink?: string;
+  action?: React.ReactNode;
 }
 
 export const ContentLayout: React.FC<ContentLayoutProps> = ({
   children,
   title,
   backLink,
+  action,
 }) => {
   const navigate = useNavigate();
 
@@ -40,13 +42,16 @@ export const ContentLayout: React.FC<ContentLayoutProps> = ({
           <h1 className="text-xl font-semibold">{title}</h1>
         </div>
         
-        <Button
-          variant="outline"
-          onClick={() => setIsChatVisible(!isChatVisible)}
-          className="mr-2"
-        >
-          {isChatVisible ? "Hide Chat" : "Show Chat"}
-        </Button>
+        <div className="flex items-center gap-2">
+          {action}
+          <Button
+            variant="outline"
+            onClick={() => setIsChatVisible(!isChatVisible)}
+            className="mr-2"
+          >
+            {isChatVisible ? "Hide Chat" : "Show Chat"}
+          </Button>
+        </div>
       </header>
       
       <Separator />

@@ -32,7 +32,7 @@ export const CopyButton = ({ onCopy, className }: CopyButtonProps) => {
       variant="ghost"
       size="sm"
       className={cn(
-        "text-muted-foreground hover:bg-background relative h-9 w-9 p-2",
+        "text-muted-foreground relative h-9 w-9 p-2",
         className
       )}
       onClick={handleCopy}
