@@ -30,7 +30,7 @@ function ModuleDetailPage() {
     <ContentLayout 
       title={isLoading ? "Loading..." : title}
       backLink="/learning/modules/"
-      action={<ShareDialog title={title} resourceType="module" resourceId={moduleId} />}
+      action={<ShareDialog title={title} contentNodeId={moduleId} />}
     >
       {isLoading ? (
         <div className="space-y-6">

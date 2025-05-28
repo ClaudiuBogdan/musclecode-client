@@ -4,7 +4,6 @@ import { toast } from "sonner";
 import {
   fetchShareSettings,
   updateShareSettings,
-  generateNewShareLink,
   updateUserAccess,
   removeUserAccess,
 } from "@/lib/api/sharing";
@@ -20,45 +19,43 @@ const logger = createLogger("useSharing");
 // Query keys for caching
 export const sharingKeys = {
   all: ["sharing"] as const,
-  settings: (resourceType: string, resourceId: string) => 
-    [...sharingKeys.all, "settings", resourceType, resourceId] as const,
+  settings: (contentNodeId: string) =>
+    [...sharingKeys.all, "settings", contentNodeId] as const,
 };
 
 // Hook to fetch share settings
-export function useShareSettings(resourceType: string, resourceId: string) {
+export function useShareSettings(contentNodeId: string) {
   return useQuery({
-    queryKey: sharingKeys.settings(resourceType, resourceId),
-    queryFn: () => fetchShareSettings(resourceType, resourceId),
+    queryKey: sharingKeys.settings(contentNodeId),
+    queryFn: () => fetchShareSettings(contentNodeId),
     staleTime: 1000 * 60 * 5, // Consider data fresh for 5 minutes
     retry: 2,
   });
 }
 
 // Hook to update share settings
-export function useUpdateShareSettings(resourceType: string, resourceId: string) {
+export function useUpdateShareSettings(contentNodeId: string) {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: (updates: UpdateShareSettingsRequest) =>
-      updateShareSettings(resourceType, resourceId, updates),
+      updateShareSettings(contentNodeId, updates),
     onSuccess: (updatedSettings) => {
       // Update the cache with the new settings
       queryClient.setQueryData(
-        sharingKeys.settings(resourceType, resourceId),
+        sharingKeys.settings(contentNodeId),
         updatedSettings
       );
-      
+
       logger.info("Share settings updated successfully", {
-        resourceType,
-        resourceId,
+        contentNodeId,
         updates: updatedSettings,
       });
     },
     onError: (error) => {
       logger.error("Failed to update share settings", {
         error: error instanceof Error ? error.message : String(error),
-        resourceType,
-        resourceId,
+        contentNodeId,
       });
       toast.error("Failed to update share settings");
     },
@@ -66,33 +63,32 @@ export function useUpdateShareSettings(resourceType: string, resourceId: string)
 }
 
 // Hook to update user access level
-export function useUpdateUserAccess(resourceType: string, resourceId: string) {
+export function useUpdateUserAccess(contentNodeId: string) {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: ({ userId, accessLevel }: { userId: string; accessLevel: "view" | "edit" | "admin" }) =>
-      updateUserAccess(resourceType, resourceId, userId, accessLevel),
+      updateUserAccess(contentNodeId, userId, accessLevel),
     onSuccess: (updatedUser) => {
       // Update the cached settings with the updated user
       queryClient.setQueryData<ShareSettings>(
-        sharingKeys.settings(resourceType, resourceId),
+        sharingKeys.settings(contentNodeId),
         (oldData) => {
           if (!oldData) return oldData;
           return {
             ...oldData,
-            users: oldData.users.map(user => 
+            users: oldData.users.map(user =>
               user.id === updatedUser.id ? updatedUser : user
             ),
             updatedAt: new Date().toISOString(),
           };
         }
       );
-      
+
       toast.success(`${updatedUser.name}'s access updated to ${updatedUser.accessLevel}`);
-      
+
       logger.info("User access updated", {
-        resourceType,
-        resourceId,
+        contentNodeId,
         userId: updatedUser.id,
         newAccessLevel: updatedUser.accessLevel,
       });
@@ -100,8 +96,7 @@ export function useUpdateUserAccess(resourceType: string, resourceId: string) {
     onError: (error) => {
       logger.error("Failed to update user access", {
         error: error instanceof Error ? error.message : String(error),
-        resourceType,
-        resourceId,
+        contentNodeId,
       });
       toast.error("Failed to update user access");
     },
@@ -109,21 +104,21 @@ export function useUpdateUserAccess(resourceType: string, resourceId: string) {
 }
 
 // Hook to remove user access
-export function useRemoveUserAccess(resourceType: string, resourceId: string) {
+export function useRemoveUserAccess(contentNodeId: string) {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (userId: string) => removeUserAccess(resourceType, resourceId, userId),
+    mutationFn: (userId: string) => removeUserAccess(contentNodeId, userId),
     onSuccess: (_, userId) => {
       // Get the current data to find the user name for the toast
       const currentData = queryClient.getQueryData<ShareSettings>(
-        sharingKeys.settings(resourceType, resourceId)
+        sharingKeys.settings(contentNodeId)
       );
       const removedUser = currentData?.users.find(u => u.id === userId);
-      
+
       // Update the cached settings by removing the user
       queryClient.setQueryData<ShareSettings>(
-        sharingKeys.settings(resourceType, resourceId),
+        sharingKeys.settings(contentNodeId),
         (oldData) => {
           if (!oldData) return oldData;
           return {
@@ -133,12 +128,11 @@ export function useRemoveUserAccess(resourceType: string, resourceId: string) {
           };
         }
       );
-      
+
       toast.success(`${removedUser?.name ?? 'User'} removed from access`);
-      
+
       logger.info("User access removed", {
-        resourceType,
-        resourceId,
+        contentNodeId,
         userId,
         userName: removedUser?.name,
       });
@@ -146,8 +140,7 @@ export function useRemoveUserAccess(resourceType: string, resourceId: string) {
     onError: (error) => {
       logger.error("Failed to remove user access", {
         error: error instanceof Error ? error.message : String(error),
-        resourceType,
-        resourceId,
+        contentNodeId,
       });
       toast.error("Failed to remove user access");
     },

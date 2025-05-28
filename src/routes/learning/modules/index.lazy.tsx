@@ -4,7 +4,6 @@ import { AlertCircleIcon } from "lucide-react";
 import { ContentLayout } from "@/components/learning/ContentLayout";
 import { ModuleCard } from "@/components/learning/ModuleCard";
 import { NoModulesAvailable } from "@/components/learning/NoModulesAvailable";
-import { ShareDialog } from "@/components/learning/ShareDialog";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useModules } from "@/services/content/hooks";

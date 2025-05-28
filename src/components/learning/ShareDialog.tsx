@@ -36,8 +36,7 @@ import { useAuthStore } from "@/stores/auth";
 interface ShareDialogProps {
   trigger?: React.ReactNode;
   title?: string;
-  resourceType?: string;
-  resourceId?: string;
+  contentNodeId: string;
 }
 
 const accessLevelOptions = [
@@ -49,18 +48,17 @@ const accessLevelOptions = [
 export function ShareDialog({
   trigger,
   title = "Learning Modules",
-  resourceType = "modules",
-  resourceId = "main"
+  contentNodeId
 }: ShareDialogProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [userToRemove, setUserToRemove] = useState<string | null>(null);
   const [openAccessDropdown, setOpenAccessDropdown] = useState<string | null>(null);
 
   // API hooks
-  const { data: shareSettings, isLoading, error } = useShareSettings(resourceType, resourceId);
-  const updateSettingsMutation = useUpdateShareSettings(resourceType, resourceId);
-  const updateUserAccessMutation = useUpdateUserAccess(resourceType, resourceId);
-  const removeUserMutation = useRemoveUserAccess(resourceType, resourceId);
+  const { data: shareSettings, isLoading, error } = useShareSettings(contentNodeId);
+  const updateSettingsMutation = useUpdateShareSettings(contentNodeId);
+  const updateUserAccessMutation = useUpdateUserAccess(contentNodeId);
+  const removeUserMutation = useRemoveUserAccess(contentNodeId);
   const { user: currentUser } = useAuthStore();
   const shareLink = window.location.href;
 
@@ -71,7 +69,7 @@ export function ShareDialog({
   };
 
   const handleLinkSharingToggle = (enabled: boolean) => {
-    updateSettingsMutation.mutate({ linkSharingEnabled: enabled });
+    updateSettingsMutation.mutate({ isPublic: enabled });
   };
 
   const handleDefaultAccessChange = (newLevel: "view" | "edit") => {
@@ -178,14 +176,14 @@ export function ShareDialog({
                   </div>
                 </div>
                 <Switch
-                  checked={shareSettings.linkSharingEnabled}
+                  checked={shareSettings.isPublic}
                   onCheckedChange={handleLinkSharingToggle}
                   disabled={updateSettingsMutation.isPending}
                 />
               </div>
 
               <AnimatePresence>
-                {shareSettings.linkSharingEnabled && (
+                {shareSettings.isPublic && (
                   <motion.div
                     initial={{ opacity: 0, height: 0 }}
                     animate={{ opacity: 1, height: "auto" }}
@@ -374,7 +372,7 @@ export function ShareDialog({
                               <div className="space-y-1">
                                 <div className="font-medium text-sm">Remove access?</div>
                                 <div className="text-xs text-muted-foreground">
-                                  {user.name} will no longer be able to access this {resourceType.slice(0, -1)}.
+                                  {user.name} will no longer be able to access this {title}.
                                 </div>
                               </div>
                               <div className="flex gap-2">

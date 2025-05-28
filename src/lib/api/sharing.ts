@@ -14,10 +14,9 @@ export const shareUserSchema = z.object({
 
 export const shareSettingsSchema = z.object({
     id: z.string(),
-    resourceType: z.string(),
-    resourceId: z.string(),
     title: z.string(),
-    linkSharingEnabled: z.boolean(),
+    contentNodeId: z.string(),
+    isPublic: z.boolean(),
     defaultAccessLevel: z.enum(["view", "edit"]),
     users: z.array(shareUserSchema),
     createdAt: z.string(),
@@ -25,7 +24,7 @@ export const shareSettingsSchema = z.object({
 });
 
 export const updateShareSettingsSchema = z.object({
-    linkSharingEnabled: z.boolean().optional(),
+    isPublic: z.boolean().optional(),
     defaultAccessLevel: z.enum(["view", "edit"]).optional(),
 });
 
@@ -42,10 +41,9 @@ export type UpdateUserAccessRequest = z.infer<typeof updateUserAccessSchema>;
 // Mock data for demonstration
 const mockShareSettings: ShareSettings = {
     id: "share-settings-1",
-    resourceType: "modules",
-    resourceId: "modules-main",
+    contentNodeId: "modules-main",
     title: "Learning Modules",
-    linkSharingEnabled: true,
+    isPublic: true,
     defaultAccessLevel: "view",
     users: [
         {
@@ -113,8 +111,7 @@ const handleApiError = (error: unknown): never => {
 
 // API functions with mock implementation
 export async function fetchShareSettings(
-    resourceType: string,
-    resourceId: string
+    contentNodeId: string
 ): Promise<ShareSettings> {
     try {
         // Mock API call - in real implementation, this would be:
@@ -126,9 +123,7 @@ export async function fetchShareSettings(
         // Return mock data with updated resource info
         const settings = {
             ...mockShareSettings,
-            resourceType,
-            resourceId,
-            shareLink: `${typeof window !== 'undefined' ? window.location.origin : 'https://example.com'}/shared/${resourceType}/${Math.random().toString(36).substring(2, 15)}`,
+            contentNodeId,
         };
 
         return shareSettingsSchema.parse(settings);
@@ -138,8 +133,7 @@ export async function fetchShareSettings(
 }
 
 export async function updateShareSettings(
-    resourceType: string,
-    resourceId: string,
+    contentNodeId: string,
     updates: UpdateShareSettingsRequest
 ): Promise<ShareSettings> {
     try {
@@ -153,8 +147,7 @@ export async function updateShareSettings(
         const updatedSettings = {
             ...mockShareSettings,
             ...updates,
-            resourceType,
-            resourceId,
+            contentNodeId,
             updatedAt: new Date().toISOString(),
         };
 
@@ -171,12 +164,12 @@ export async function generateNewShareLink(
     try {
         // Mock API call - in real implementation, this would be:
         // const response = await apiClient.post<{shareLink: string}>(`/api/v1/sharing/${resourceType}/${resourceId}/regenerate-link`);
-        
+
         // Simulate network delay
         await new Promise(resolve => setTimeout(resolve, 250));
-        
+
         const newLink = `${typeof window !== 'undefined' ? window.location.origin : 'https://example.com'}/shared/${resourceType}/${Math.random().toString(36).substring(2, 15)}`;
-        
+
         return { shareLink: newLink };
     } catch (error) {
         return handleApiError(error);
@@ -184,23 +177,22 @@ export async function generateNewShareLink(
 }
 
 export async function updateUserAccess(
-    _resourceType: string,
-    _resourceId: string,
+    _contentNodeId: string,
     userId: string,
     accessLevel: "view" | "edit" | "admin"
 ): Promise<ShareUser> {
     try {
         // Mock API call - in real implementation, this would be:
         // const response = await apiClient.patch<ShareUser>(`/api/v1/sharing/${resourceType}/${resourceId}/users/${userId}`, { accessLevel });
-        
+
         // Simulate network delay
         await new Promise(resolve => setTimeout(resolve, 150));
-        
+
         const user = mockShareSettings.users.find(u => u.id === userId);
         if (!user) {
             throw new ApiError("User not found", 404);
         }
-        
+
         const updatedUser = { ...user, accessLevel };
         return shareUserSchema.parse(updatedUser);
     } catch (error) {
@@ -209,22 +201,21 @@ export async function updateUserAccess(
 }
 
 export async function removeUserAccess(
-    _resourceType: string,
-    _resourceId: string,
+    _contentNodeId: string,
     userId: string
 ): Promise<void> {
     try {
         // Mock API call - in real implementation, this would be:
         // await apiClient.delete(`/api/v1/sharing/${resourceType}/${resourceId}/users/${userId}`);
-        
+
         // Simulate network delay
         await new Promise(resolve => setTimeout(resolve, 100));
-        
+
         const user = mockShareSettings.users.find(u => u.id === userId);
         if (!user) {
             throw new ApiError("User not found", 404);
         }
-        
+
         // In mock, we just simulate success
         return;
     } catch (error) {
