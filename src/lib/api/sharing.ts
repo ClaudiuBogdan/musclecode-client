@@ -2,97 +2,50 @@ import { z } from "zod";
 
 import { ApiError } from "@/types/api";
 
+import { apiClient } from "./client";
+
+import type { PermissionLevel } from "@/types/permissions";
+
 // Types for sharing functionality
 export const shareUserSchema = z.object({
     id: z.string(),
     name: z.string(),
     email: z.string(),
-    avatar: z.string().optional(),
-    accessLevel: z.enum(["view", "edit", "admin"]),
-    status: z.enum(["active", "pending"]),
+    permissionId: z.string(),
+    permissionLevel: z.enum(["VIEW", "INTERACT", "EDIT", "MANAGE", "OWNER"]),
 });
 
 export const shareSettingsSchema = z.object({
-    id: z.string(),
-    title: z.string(),
     contentNodeId: z.string(),
     isPublic: z.boolean(),
-    defaultAccessLevel: z.enum(["view", "edit"]),
+    defaultPermission: z.enum(["VIEW", "INTERACT", "EDIT", "MANAGE", "OWNER"]),
+});
+
+export const shareSettingsWithUsersSchema = shareSettingsSchema.extend({
     users: z.array(shareUserSchema),
-    createdAt: z.string(),
-    updatedAt: z.string(),
 });
 
 export const updateShareSettingsSchema = z.object({
     isPublic: z.boolean().optional(),
-    defaultAccessLevel: z.enum(["view", "edit"]).optional(),
+    defaultPermission: z.enum(["VIEW", "INTERACT", "EDIT", "MANAGE", "OWNER"]).optional(),
 });
 
 export const updateUserAccessSchema = z.object({
     userId: z.string(),
-    accessLevel: z.enum(["view", "edit", "admin"]),
+    permissionLevel: z.enum(["view", "edit", "admin"]),
 });
 
-export type ShareUser = z.infer<typeof shareUserSchema>;
-export type ShareSettings = z.infer<typeof shareSettingsSchema>;
-export type UpdateShareSettingsRequest = z.infer<typeof updateShareSettingsSchema>;
-export type UpdateUserAccessRequest = z.infer<typeof updateUserAccessSchema>;
+export const updateUserAccessResponseSchema = z.object({
+    id: z.string(),
+    userId: z.string(),
+    permissionLevel: z.enum(["VIEW", "INTERACT", "EDIT", "MANAGE", "OWNER"]),
+});
 
-// Mock data for demonstration
-const mockShareSettings: ShareSettings = {
-    id: "share-settings-1",
-    contentNodeId: "modules-main",
-    title: "Learning Modules",
-    isPublic: true,
-    defaultAccessLevel: "view",
-    users: [
-        {
-            id: "3d965525-3dff-440d-bca8-a468c3b30ead",
-            name: "Claudiu C. Bogdan",
-            email: "clabog@alum.us.es",
-            avatar: "/avatars/claudiu.jpg",
-            accessLevel: "admin",
-            status: "active",
-        },
-        {
-            id: "2",
-            name: "Adrian Dragan",
-            email: "adrian.dragan@clujstartups.com",
-            accessLevel: "edit",
-            status: "active",
-        },
-        {
-            id: "3",
-            name: "Claudiu Constantin Bogdan",
-            email: "claudiu.bogdan@example.com",
-            accessLevel: "view",
-            status: "active",
-        },
-        {
-            id: "4",
-            name: "Daniel Ferecatu",
-            email: "ferecatu.daniel@gmail.com",
-            accessLevel: "view",
-            status: "active",
-        },
-        {
-            id: "5",
-            name: "Dutu Calin",
-            email: "dutu.calin@example.com",
-            accessLevel: "edit",
-            status: "active",
-        },
-        {
-            id: "6",
-            name: "MarianVilau",
-            email: "m.vilau12@gmail.com",
-            accessLevel: "view",
-            status: "active",
-        },
-    ],
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-};
+export type ShareSettings = z.infer<typeof shareSettingsSchema>;
+export type ShareSettingsWithUsers = z.infer<typeof shareSettingsWithUsersSchema>;
+export type UpdateShareSettingsRequest = z.infer<typeof updateShareSettingsSchema>;
+export type UpdateUserAccessResponse = z.infer<typeof updateUserAccessResponseSchema>;
+export type UpdateUserAccessRequest = z.infer<typeof updateUserAccessSchema>;
 
 // Helper function to handle API errors
 const handleApiError = (error: unknown): never => {
@@ -112,21 +65,15 @@ const handleApiError = (error: unknown): never => {
 // API functions with mock implementation
 export async function fetchShareSettings(
     contentNodeId: string
-): Promise<ShareSettings> {
+): Promise<ShareSettingsWithUsers> {
     try {
         // Mock API call - in real implementation, this would be:
-        // const response = await apiClient.get<ShareSettings>(`/api/v1/sharing/${resourceType}/${resourceId}`);
-
-        // Simulate network delay
-        await new Promise(resolve => setTimeout(resolve, 300));
+        const response = await apiClient.get<{ sharing: ShareSettingsWithUsers }>(`/api/v1/permissions/content-node/${contentNodeId}/all`);
 
         // Return mock data with updated resource info
-        const settings = {
-            ...mockShareSettings,
-            contentNodeId,
-        };
+        const settings = response.data.sharing;
 
-        return shareSettingsSchema.parse(settings);
+        return settings;
     } catch (error) {
         return handleApiError(error);
     }
@@ -137,87 +84,34 @@ export async function updateShareSettings(
     updates: UpdateShareSettingsRequest
 ): Promise<ShareSettings> {
     try {
-        // Mock API call - in real implementation, this would be:
-        // const response = await apiClient.patch<ShareSettings>(`/api/v1/sharing/${resourceType}/${resourceId}`, updates);
+        const response = await apiClient.patch<ShareSettings>(`/api/v1/permissions/content-node/${contentNodeId}/sharing`, updates);
 
-        // Simulate network delay
-        await new Promise(resolve => setTimeout(resolve, 200));
+        return response.data;
 
-        // Update mock data
-        const updatedSettings = {
-            ...mockShareSettings,
-            ...updates,
-            contentNodeId,
-            updatedAt: new Date().toISOString(),
-        };
-
-        return shareSettingsSchema.parse(updatedSettings);
     } catch (error) {
         return handleApiError(error);
     }
 }
 
-export async function generateNewShareLink(
-    resourceType: string,
-    _resourceId: string
-): Promise<{ shareLink: string }> {
+export async function updatePermission(
+    permissionId: string,
+    permissionLevel: PermissionLevel
+): Promise<UpdateUserAccessResponse> {
     try {
-        // Mock API call - in real implementation, this would be:
-        // const response = await apiClient.post<{shareLink: string}>(`/api/v1/sharing/${resourceType}/${resourceId}/regenerate-link`);
+        const response = await apiClient.put<UpdateUserAccessResponse>(`/api/v1/permissions/${permissionId}`, { permissionLevel });
 
-        // Simulate network delay
-        await new Promise(resolve => setTimeout(resolve, 250));
-
-        const newLink = `${typeof window !== 'undefined' ? window.location.origin : 'https://example.com'}/shared/${resourceType}/${Math.random().toString(36).substring(2, 15)}`;
-
-        return { shareLink: newLink };
-    } catch (error) {
-        return handleApiError(error);
-    }
-}
-
-export async function updateUserAccess(
-    _contentNodeId: string,
-    userId: string,
-    accessLevel: "view" | "edit" | "admin"
-): Promise<ShareUser> {
-    try {
-        // Mock API call - in real implementation, this would be:
-        // const response = await apiClient.patch<ShareUser>(`/api/v1/sharing/${resourceType}/${resourceId}/users/${userId}`, { accessLevel });
-
-        // Simulate network delay
-        await new Promise(resolve => setTimeout(resolve, 150));
-
-        const user = mockShareSettings.users.find(u => u.id === userId);
-        if (!user) {
-            throw new ApiError("User not found", 404);
-        }
-
-        const updatedUser = { ...user, accessLevel };
-        return shareUserSchema.parse(updatedUser);
+        return response.data;
     } catch (error) {
         return handleApiError(error);
     }
 }
 
 export async function removeUserAccess(
-    _contentNodeId: string,
+    contentNodeId: string,
     userId: string
 ): Promise<void> {
     try {
-        // Mock API call - in real implementation, this would be:
-        // await apiClient.delete(`/api/v1/sharing/${resourceType}/${resourceId}/users/${userId}`);
-
-        // Simulate network delay
-        await new Promise(resolve => setTimeout(resolve, 100));
-
-        const user = mockShareSettings.users.find(u => u.id === userId);
-        if (!user) {
-            throw new ApiError("User not found", 404);
-        }
-
-        // In mock, we just simulate success
-        return;
+        await apiClient.delete(`/api/v1/permissions/revoke`, { data: { contentNodeId, userId } });
     } catch (error) {
         return handleApiError(error);
     }

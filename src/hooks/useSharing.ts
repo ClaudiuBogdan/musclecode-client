@@ -4,15 +4,17 @@ import { toast } from "sonner";
 import {
   fetchShareSettings,
   updateShareSettings,
-  updateUserAccess,
+  updatePermission,
   removeUserAccess,
 } from "@/lib/api/sharing";
 import { createLogger } from "@/lib/logger";
 
 import type {
-  ShareSettings,
+  ShareSettingsWithUsers,
   UpdateShareSettingsRequest,
 } from "@/lib/api/sharing";
+import type { PermissionLevel } from "@/types/permissions";
+
 
 const logger = createLogger("useSharing");
 
@@ -42,9 +44,15 @@ export function useUpdateShareSettings(contentNodeId: string) {
       updateShareSettings(contentNodeId, updates),
     onSuccess: (updatedSettings) => {
       // Update the cache with the new settings
-      queryClient.setQueryData(
+      queryClient.setQueryData<ShareSettingsWithUsers>(
         sharingKeys.settings(contentNodeId),
-        updatedSettings
+        (oldData) => {
+          if (!oldData) return oldData;
+          return {
+            ...oldData,
+            ...updatedSettings,
+          };
+        }
       );
 
       logger.info("Share settings updated successfully", {
@@ -67,30 +75,36 @@ export function useUpdateUserAccess(contentNodeId: string) {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ userId, accessLevel }: { userId: string; accessLevel: "view" | "edit" | "admin" }) =>
-      updateUserAccess(contentNodeId, userId, accessLevel),
-    onSuccess: (updatedUser) => {
+    mutationFn: ({ permissionId, permissionLevel }: { permissionId: string; permissionLevel: PermissionLevel }) =>
+      updatePermission(permissionId, permissionLevel),
+    onSuccess: (updatePermission) => {
       // Update the cached settings with the updated user
-      queryClient.setQueryData<ShareSettings>(
+      queryClient.setQueryData<ShareSettingsWithUsers>(
         sharingKeys.settings(contentNodeId),
         (oldData) => {
           if (!oldData) return oldData;
           return {
             ...oldData,
-            users: oldData.users.map(user =>
-              user.id === updatedUser.id ? updatedUser : user
-            ),
+            users: oldData.users.map(user => {
+              if (user.permissionId === updatePermission.id) {
+                return {
+                  ...user,
+                  permissionLevel: updatePermission.permissionLevel,
+                };
+              }
+              return user;
+            }),
             updatedAt: new Date().toISOString(),
           };
         }
       );
 
-      toast.success(`${updatedUser.name}'s access updated to ${updatedUser.accessLevel}`);
+      toast.success(`${updatePermission.userId}'s access updated to ${updatePermission.permissionLevel}`);
 
       logger.info("User access updated", {
         contentNodeId,
-        userId: updatedUser.id,
-        newAccessLevel: updatedUser.accessLevel,
+        userId: updatePermission.id,
+        newPermissionLevel: updatePermission.permissionLevel,
       });
     },
     onError: (error) => {
@@ -111,13 +125,13 @@ export function useRemoveUserAccess(contentNodeId: string) {
     mutationFn: (userId: string) => removeUserAccess(contentNodeId, userId),
     onSuccess: (_, userId) => {
       // Get the current data to find the user name for the toast
-      const currentData = queryClient.getQueryData<ShareSettings>(
+      const currentData = queryClient.getQueryData<ShareSettingsWithUsers>(
         sharingKeys.settings(contentNodeId)
       );
       const removedUser = currentData?.users.find(u => u.id === userId);
 
       // Update the cached settings by removing the user
-      queryClient.setQueryData<ShareSettings>(
+      queryClient.setQueryData<ShareSettingsWithUsers>(
         sharingKeys.settings(contentNodeId),
         (oldData) => {
           if (!oldData) return oldData;

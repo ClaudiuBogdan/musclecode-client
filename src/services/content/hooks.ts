@@ -17,7 +17,7 @@ export function useModules() {
   return useQuery({
     queryKey: ["content", "modules"],
     queryFn: () => fetchModules(),
-    refetchInterval: 1000, // Refetch every 1 second
+    // refetchInterval: 1000, // Refetch every 1 second
   });
 }
 
@@ -34,7 +34,7 @@ export function useLesson(id: string) {
     queryKey: ["content", "lesson", id],
     queryFn: () => fetchLesson(id),
     enabled: !!id,
-    refetchInterval: 1000, // Refetch every 1 second
+    // refetchInterval: 1000, // Refetch every 1 second
   });
 }
 

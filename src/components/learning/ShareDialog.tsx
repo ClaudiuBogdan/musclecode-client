@@ -33,16 +33,20 @@ import {
 } from "@/hooks/useSharing";
 import { useAuthStore } from "@/stores/auth";
 
+import type { PermissionLevel } from "@/types/permissions";
+
 interface ShareDialogProps {
   trigger?: React.ReactNode;
   title?: string;
   contentNodeId: string;
 }
 
-const accessLevelOptions = [
-  { value: "view", label: "Can View", description: "Can view content" },
-  { value: "edit", label: "Can Edit", description: "Can view and edit content" },
-  { value: "admin", label: "Full Access", description: "Can view, edit, and manage sharing" },
+const permissionLevelOptions: { value: string; label: string; description: string }[] = [
+  { value: "VIEW", label: "Can View", description: "Can view content" },
+  { value: "INTERACT", label: "Can Interact", description: "Can view and interact with content" },
+  { value: "EDIT", label: "Can Edit", description: "Can view and edit content" },
+  { value: "MANAGE", label: "Can Manage", description: "Can view, edit, and manage sharing" },
+  { value: "OWNER", label: "Can Own", description: "Can view, edit, and manage sharing" },
 ];
 
 export function ShareDialog({
@@ -72,12 +76,12 @@ export function ShareDialog({
     updateSettingsMutation.mutate({ isPublic: enabled });
   };
 
-  const handleDefaultAccessChange = (newLevel: "view" | "edit") => {
-    updateSettingsMutation.mutate({ defaultAccessLevel: newLevel });
+  const handleDefaultAccessChange = (newLevel: PermissionLevel["VIEW"] | PermissionLevel["EDIT"]) => {
+    updateSettingsMutation.mutate({ defaultPermission: newLevel });
   };
 
-  const handleUpdateUserAccess = (userId: string, accessLevel: "view" | "edit" | "admin") => {
-    updateUserAccessMutation.mutate({ userId, accessLevel });
+  const handleUpdateUserAccess = (permissionId: string, permissionLevel: PermissionLevel) => {
+    updateUserAccessMutation.mutate({ permissionId, permissionLevel });
     setOpenAccessDropdown(null);
   };
 
@@ -95,12 +99,14 @@ export function ShareDialog({
     setUserToRemove(null);
   };
 
-  const getAccessLevelLabel = (level: string) => {
+  const getPermissionLevelLabel = (level: string) => {
     switch (level) {
-      case "admin": return "Can Edit";
-      case "edit": return "Can Edit";
-      case "view": return "Can View";
-      default: return "Can View";
+      case "OWNER": return "Can Manage";
+      case "MANAGE": return "Can Manage";
+      case "EDIT": return "Can Edit";
+      case "INTERACT": return "Can Interact";
+      case "VIEW": return "Can View";
+      default: return "Unknown";
     }
   };
 
@@ -171,7 +177,7 @@ export function ShareDialog({
                   <div>
                     <span className="font-medium">Share with link</span>
                     <p className="text-sm text-muted-foreground">
-                      Anyone with the link can {shareSettings.defaultAccessLevel === "view" ? "view" : "edit"}
+                      Anyone with the link can {shareSettings.defaultPermission}
                     </p>
                   </div>
                 </div>
@@ -215,17 +221,17 @@ export function ShareDialog({
                             className="h-auto gap-2 font-medium p-2"
                             disabled={updateSettingsMutation.isPending}
                           >
-                            {accessLevelOptions.find(opt => opt.value === shareSettings.defaultAccessLevel)?.label}
+                            {permissionLevelOptions.find(opt => opt.value === shareSettings.defaultPermission)?.label}
                             <Settings className="h-3 w-3" />
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end" className="w-64">
-                          {accessLevelOptions
-                            .filter(option => option.value !== "admin")
+                          {permissionLevelOptions
+                            .filter(option => option.value !== "OWNER")
                             .map((option) => (
                               <DropdownMenuItem
                                 key={option.value}
-                                onClick={() => handleDefaultAccessChange(option.value as "view" | "edit")}
+                                onClick={() => handleDefaultAccessChange(option.value as PermissionLevel["VIEW"] | PermissionLevel["EDIT"])}
                                 className="flex items-center justify-between p-3"
                               >
                                 <div className="flex items-center gap-3">
@@ -234,7 +240,7 @@ export function ShareDialog({
                                     <div className="text-xs text-muted-foreground">{option.description}</div>
                                   </div>
                                 </div>
-                                {shareSettings.defaultAccessLevel === option.value && (
+                                {shareSettings.defaultPermission === option.value && (
                                   <Check className="h-4 w-4 text-green-600" />
                                 )}
                               </DropdownMenuItem>
@@ -278,7 +284,7 @@ export function ShareDialog({
                     className="group relative flex items-center gap-4 p-3 rounded-lg border hover:shadow-sm transition-all bg-background"
                   >
                     <Avatar className="h-10 w-10 ring-2 ring-muted">
-                      <AvatarImage src={user.avatar} alt={user.name} />
+                      <AvatarImage alt={user.name} />
                       <AvatarFallback className="text-sm font-semibold">
                         {user.name.split(' ').map(n => n[0]).join('').toUpperCase()}
                       </AvatarFallback>
@@ -287,7 +293,7 @@ export function ShareDialog({
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
                         <div className="font-medium truncate">{user.name}</div>
-                        {user.accessLevel === "admin" && (
+                        {user.permissionLevel === "OWNER" && (
                           <Badge variant="outline" className="text-xs">Owner</Badge>
                         )}
                       </div>
@@ -303,7 +309,7 @@ export function ShareDialog({
                           variant={"outline"}
                           className="gap-1 font-medium"
                         >
-                          {getAccessLevelLabel(user.accessLevel)}
+                          {getPermissionLevelLabel(user.permissionLevel)}
                         </Badge>
                       ) : (
                         <DropdownMenu
@@ -320,18 +326,18 @@ export function ShareDialog({
                                 variant={"outline"}
                                 className="gap-1 font-medium cursor-pointer hover:bg-opacity-80 transition-all"
                               >
-                                {getAccessLevelLabel(user.accessLevel)}
+                                {getPermissionLevelLabel(user.permissionLevel)}
                                 <ChevronDown className="h-3 w-3" />
                               </Badge>
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end" className="w-64">
-                            {accessLevelOptions
-                              .filter(option => option.value !== "admin")
+                            {permissionLevelOptions
+                              .filter(option => option.value !== "OWNER")
                               .map((option) => (
                                 <DropdownMenuItem
                                   key={option.value}
-                                  onClick={() => handleUpdateUserAccess(user.id, option.value as "view" | "edit")}
+                                  onClick={() => handleUpdateUserAccess(user.permissionId, option.value as unknown as PermissionLevel)}
                                   className="flex items-center justify-between p-3"
                                 >
                                   <div className="flex items-center gap-3">
@@ -340,7 +346,7 @@ export function ShareDialog({
                                       <div className="text-xs text-muted-foreground">{option.description}</div>
                                     </div>
                                   </div>
-                                  {user.accessLevel === option.value && (
+                                  {user.permissionLevel === option.value && (
                                     <Check className="h-4 w-4 text-green-600" />
                                   )}
                                 </DropdownMenuItem>
