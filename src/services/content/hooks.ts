@@ -1,9 +1,11 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
 
-import { 
-  fetchModule, 
-  fetchModules, 
-  fetchLesson, 
+import { AuthErrorCode } from "@/lib/auth/errors";
+
+import {
+  fetchModule,
+  fetchModules,
+  fetchLesson,
   fetchExercise,
   checkQuestionAnswer
 } from "./api";
@@ -12,12 +14,13 @@ import type {
   CheckAnswerPayload,
   CheckAnswerResponse
 } from "./api";
+import type { AuthError } from "@/lib/auth/errors";
 
 export function useModules() {
   return useQuery({
     queryKey: ["content", "modules"],
     queryFn: () => fetchModules(),
-    // refetchInterval: 1000, // Refetch every 1 second
+    retry: false,
   });
 }
 
@@ -26,6 +29,16 @@ export function useModule(id: string) {
     queryKey: ["content", "module", id],
     queryFn: () => fetchModule(id),
     enabled: !!id,
+    retry: (count, error) => {
+      const errorCode = (error as AuthError).code;
+      if (errorCode === AuthErrorCode.INSUFFICIENT_PERMISSIONS) {
+        return false;
+      }
+      if (count > 3) {
+        return false;
+      }
+      return true;
+    },
   });
 }
 

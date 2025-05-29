@@ -1,9 +1,10 @@
-import { CheckCircle2, XCircle, ChevronRight, Lightbulb, Loader2, AlertCircle } from 'lucide-react';
+import { CheckCircle2, XCircle, ChevronRight, Lightbulb, Loader2 } from 'lucide-react';
 import React, { useState, useEffect } from 'react';
 
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { ErrorDisplay } from '@/components/ui/ErrorDisplay';
 import { Textarea } from '@/components/ui/textarea';
 import { useCheckQuestionAnswer } from '@/services/content/hooks';
 
@@ -57,8 +58,11 @@ export const QuestionRenderer: React.FC<QuestionRendererProps> = ({
     setShowHint(!showHint);
   };
 
-  // Combine points and answers for markscheme display
-  const markschemeItems = correctionCriteria.map(c => (
+  // Type guard to ensure correctionCriteria is properly typed
+  const criteria = Array.isArray(correctionCriteria) ? correctionCriteria as { answer: string; points: number; explanation: string }[] : [];
+
+  // Combine points and answers for markscheme display with proper typing
+  const markschemeItems = criteria.map((c) => (
     <li key={c.answer} className="mb-1 last:mb-0">
       <span className="font-semibold">[{c.points} mark]</span>: {c.answer} ({c.explanation})
     </li>
@@ -114,7 +118,7 @@ export const QuestionRenderer: React.FC<QuestionRendererProps> = ({
                <AlertTitle className="text-yellow-800 dark:text-yellow-300">Hint</AlertTitle>
                <AlertDescription className="text-yellow-700 dark:text-yellow-400">
                  {/* Simple hint: show first criterion explanation. Enhance as needed */}
-                 {correctionCriteria.length > 0 ? correctionCriteria[0].explanation : 'No hint available.'}
+                 {criteria.length > 0 ? criteria[0]?.explanation : 'No hint available.'}
                </AlertDescription>
              </Alert>
            )}
@@ -193,13 +197,16 @@ export const QuestionRenderer: React.FC<QuestionRendererProps> = ({
 
         {/* API Error Message */} 
         {isError && (
-           <Alert variant="destructive" className="mt-4">
-              <AlertCircle className="h-4 w-4" />
-              <AlertTitle>Error</AlertTitle>
-              <AlertDescription>
-                {error?.message || 'Failed to check answer. Please try again.'}
-              </AlertDescription>
-           </Alert>
+           <ErrorDisplay 
+             error={error}
+             title="Failed to Check Answer"
+             className="mt-4"
+             showRetry={true}
+             onRetry={() => {
+               reset();
+               handleSubmit();
+             }}
+           />
         )}
     </div>
   );

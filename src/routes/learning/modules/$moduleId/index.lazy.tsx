@@ -1,10 +1,9 @@
 import { createLazyFileRoute } from "@tanstack/react-router";
-import { AlertCircleIcon } from "lucide-react";
 
 import { ContentLayout } from "@/components/learning/ContentLayout";
 import { LessonCard } from "@/components/learning/LessonCard";
 import { ShareDialog } from "@/components/learning/ShareDialog";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { ErrorDisplay } from "@/components/ui/ErrorDisplay";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { hasManagePermission } from "@/lib/permissions";
@@ -16,7 +15,7 @@ export const Route = createLazyFileRoute("/learning/modules/$moduleId/")({
 
 function ModuleDetailPage() {
   const { moduleId } = Route.useParams();
-  const { data, isLoading, error } = useModule(moduleId);
+  const { data, isLoading, error, refetch } = useModule(moduleId);
   const module = data?.module;
   const permission = data?.permission;
   const lessons = data?.lessons;
@@ -48,13 +47,12 @@ function ModuleDetailPage() {
           </div>
         </div>
       ) : error ? (
-        <Alert variant="destructive">
-          <AlertCircleIcon className="h-4 w-4" />
-          <AlertTitle>Error</AlertTitle>
-          <AlertDescription>
-            Failed to load module details. Please try again later.
-          </AlertDescription>
-        </Alert>
+        <ErrorDisplay 
+          error={error}
+          title="Failed to Load Module"
+          showRetry={true}
+          onRetry={() => void refetch()}
+        />
       ) : module ? (
         <div className="space-y-6">
           {/* Module description */}

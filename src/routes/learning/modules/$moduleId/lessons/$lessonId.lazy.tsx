@@ -1,10 +1,10 @@
 import { createLazyFileRoute } from "@tanstack/react-router";
-import { AlertCircleIcon, ArrowLeftIcon, ArrowRightIcon, BookOpenIcon, XIcon, ZapIcon } from "lucide-react";
+import {  ArrowLeftIcon, ArrowRightIcon, BookOpenIcon, XIcon, ZapIcon } from "lucide-react";
 
 import { LessonChunkRenderer } from "@/components/learning/LessonChunkRenderer";
 import { LessonProgressBar } from "@/components/learning/LessonProgressBar";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
+import { ErrorDisplay } from "@/components/ui/ErrorDisplay";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useLesson } from "@/services/content/hooks";
 import { useChunkNavigation } from "@/services/learning/hooks/useChunkNavigation";
@@ -18,7 +18,7 @@ export const Route = createLazyFileRoute("/learning/modules/$moduleId/lessons/$l
 function LessonDetailPage() {
   const { moduleId, lessonId } = Route.useParams();
   const navigate = Route.useNavigate();
-  const { data: lesson, isLoading, error } = useLesson(lessonId);
+  const { data: lesson, isLoading, error, refetch } = useLesson(lessonId);
   const [currentChunkIndex, setCurrentChunkIndex] = useChunkNavigation();
 
   // Get lesson body with proper typing
@@ -83,13 +83,13 @@ function LessonDetailPage() {
   if (error) {
     return (
       <div className="flex items-center justify-center h-screen p-6">
-        <Alert variant="destructive" className="max-w-md">
-          <AlertCircleIcon className="h-4 w-4" />
-          <AlertTitle>Error</AlertTitle>
-          <AlertDescription>
-            Failed to load lesson details. Please try again later.
-          </AlertDescription>
-        </Alert>
+        <ErrorDisplay 
+          error={error}
+          title="Failed to Load Lesson"
+          className="max-w-md"
+          showRetry={true}
+          onRetry={() => void refetch()}
+        />
       </div>
     );
   }

@@ -1,10 +1,9 @@
 import { createLazyFileRoute } from "@tanstack/react-router";
-import { AlertCircleIcon } from "lucide-react";
 
 import { ContentLayout } from "@/components/learning/ContentLayout";
 import { ModuleCard } from "@/components/learning/ModuleCard";
 import { NoModulesAvailable } from "@/components/learning/NoModulesAvailable";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { ErrorDisplay } from "@/components/ui/ErrorDisplay";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useModules } from "@/services/content/hooks";
 
@@ -13,7 +12,7 @@ export const Route = createLazyFileRoute("/learning/modules/")({
 });
 
 function ModulesPage() {
-  const { data: modules, isLoading, error } = useModules();
+  const { data: modules, isLoading, error, refetch } = useModules();
 
   return (
     <ContentLayout 
@@ -29,13 +28,12 @@ function ModulesPage() {
           ))}
         </div>
       ) : error ? (
-        <Alert variant="destructive">
-          <AlertCircleIcon className="h-4 w-4" />
-          <AlertTitle>Error</AlertTitle>
-          <AlertDescription>
-            Failed to load modules. Please try again later.
-          </AlertDescription>
-        </Alert>
+        <ErrorDisplay 
+          error={error}
+          title="Failed to Load Modules"
+          showRetry={true}
+          onRetry={() => void refetch()}
+        />
       ) : modules?.length ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {modules.map((module) => (
