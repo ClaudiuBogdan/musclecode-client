@@ -43,9 +43,6 @@ const CollectionsCollectionIdIndexLazyImport = createFileRoute(
 const AlgorithmsAlgorithmIdIndexLazyImport = createFileRoute(
   '/algorithms/$algorithmId/',
 )()
-const LearningExercisesIdLazyImport = createFileRoute(
-  '/learning/exercises/$id',
-)()
 const CollectionsCollectionIdEditLazyImport = createFileRoute(
   '/collections/$collectionId/edit',
 )()
@@ -227,14 +224,6 @@ const AlgorithmsAlgorithmIdIndexLazyRoute =
   } as any).lazy(() =>
     import('./routes/algorithms/$algorithmId/index.lazy').then((d) => d.Route),
   )
-
-const LearningExercisesIdLazyRoute = LearningExercisesIdLazyImport.update({
-  id: '/learning/exercises/$id',
-  path: '/learning/exercises/$id',
-  getParentRoute: () => rootRoute,
-} as any).lazy(() =>
-  import('./routes/learning/exercises/$id.lazy').then((d) => d.Route),
-)
 
 const CollectionsCollectionIdEditLazyRoute =
   CollectionsCollectionIdEditLazyImport.update({
@@ -436,13 +425,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CollectionsCollectionIdEditLazyImport
       parentRoute: typeof rootRoute
     }
-    '/learning/exercises/$id': {
-      id: '/learning/exercises/$id'
-      path: '/learning/exercises/$id'
-      fullPath: '/learning/exercises/$id'
-      preLoaderRoute: typeof LearningExercisesIdLazyImport
-      parentRoute: typeof rootRoute
-    }
     '/algorithms/$algorithmId/': {
       id: '/algorithms/$algorithmId/'
       path: '/algorithms/$algorithmId'
@@ -505,7 +487,6 @@ export interface FileRoutesByFullPath {
   '/algorithms/$algorithmId/edit': typeof AlgorithmsAlgorithmIdEditLazyRoute
   '/algorithms/$algorithmId/view': typeof AlgorithmsAlgorithmIdViewLazyRoute
   '/collections/$collectionId/edit': typeof CollectionsCollectionIdEditLazyRoute
-  '/learning/exercises/$id': typeof LearningExercisesIdLazyRoute
   '/algorithms/$algorithmId': typeof AlgorithmsAlgorithmIdIndexLazyRoute
   '/collections/$collectionId': typeof CollectionsCollectionIdIndexLazyRoute
   '/learning/modules': typeof LearningModulesIndexLazyRoute
@@ -535,7 +516,6 @@ export interface FileRoutesByTo {
   '/algorithms/$algorithmId/edit': typeof AlgorithmsAlgorithmIdEditLazyRoute
   '/algorithms/$algorithmId/view': typeof AlgorithmsAlgorithmIdViewLazyRoute
   '/collections/$collectionId/edit': typeof CollectionsCollectionIdEditLazyRoute
-  '/learning/exercises/$id': typeof LearningExercisesIdLazyRoute
   '/algorithms/$algorithmId': typeof AlgorithmsAlgorithmIdIndexLazyRoute
   '/collections/$collectionId': typeof CollectionsCollectionIdIndexLazyRoute
   '/learning/modules': typeof LearningModulesIndexLazyRoute
@@ -566,7 +546,6 @@ export interface FileRoutesById {
   '/algorithms/$algorithmId/edit': typeof AlgorithmsAlgorithmIdEditLazyRoute
   '/algorithms/$algorithmId/view': typeof AlgorithmsAlgorithmIdViewLazyRoute
   '/collections/$collectionId/edit': typeof CollectionsCollectionIdEditLazyRoute
-  '/learning/exercises/$id': typeof LearningExercisesIdLazyRoute
   '/algorithms/$algorithmId/': typeof AlgorithmsAlgorithmIdIndexLazyRoute
   '/collections/$collectionId/': typeof CollectionsCollectionIdIndexLazyRoute
   '/learning/modules/': typeof LearningModulesIndexLazyRoute
@@ -598,7 +577,6 @@ export interface FileRouteTypes {
     | '/algorithms/$algorithmId/edit'
     | '/algorithms/$algorithmId/view'
     | '/collections/$collectionId/edit'
-    | '/learning/exercises/$id'
     | '/algorithms/$algorithmId'
     | '/collections/$collectionId'
     | '/learning/modules'
@@ -627,7 +605,6 @@ export interface FileRouteTypes {
     | '/algorithms/$algorithmId/edit'
     | '/algorithms/$algorithmId/view'
     | '/collections/$collectionId/edit'
-    | '/learning/exercises/$id'
     | '/algorithms/$algorithmId'
     | '/collections/$collectionId'
     | '/learning/modules'
@@ -656,7 +633,6 @@ export interface FileRouteTypes {
     | '/algorithms/$algorithmId/edit'
     | '/algorithms/$algorithmId/view'
     | '/collections/$collectionId/edit'
-    | '/learning/exercises/$id'
     | '/algorithms/$algorithmId/'
     | '/collections/$collectionId/'
     | '/learning/modules/'
@@ -687,7 +663,6 @@ export interface RootRouteChildren {
   AlgorithmsAlgorithmIdEditLazyRoute: typeof AlgorithmsAlgorithmIdEditLazyRoute
   AlgorithmsAlgorithmIdViewLazyRoute: typeof AlgorithmsAlgorithmIdViewLazyRoute
   CollectionsCollectionIdEditLazyRoute: typeof CollectionsCollectionIdEditLazyRoute
-  LearningExercisesIdLazyRoute: typeof LearningExercisesIdLazyRoute
   AlgorithmsAlgorithmIdIndexLazyRoute: typeof AlgorithmsAlgorithmIdIndexLazyRoute
   CollectionsCollectionIdIndexLazyRoute: typeof CollectionsCollectionIdIndexLazyRoute
   LearningModulesIndexLazyRoute: typeof LearningModulesIndexLazyRoute
@@ -717,7 +692,6 @@ const rootRouteChildren: RootRouteChildren = {
   AlgorithmsAlgorithmIdEditLazyRoute: AlgorithmsAlgorithmIdEditLazyRoute,
   AlgorithmsAlgorithmIdViewLazyRoute: AlgorithmsAlgorithmIdViewLazyRoute,
   CollectionsCollectionIdEditLazyRoute: CollectionsCollectionIdEditLazyRoute,
-  LearningExercisesIdLazyRoute: LearningExercisesIdLazyRoute,
   AlgorithmsAlgorithmIdIndexLazyRoute: AlgorithmsAlgorithmIdIndexLazyRoute,
   CollectionsCollectionIdIndexLazyRoute: CollectionsCollectionIdIndexLazyRoute,
   LearningModulesIndexLazyRoute: LearningModulesIndexLazyRoute,
@@ -757,7 +731,6 @@ export const routeTree = rootRoute
         "/algorithms/$algorithmId/edit",
         "/algorithms/$algorithmId/view",
         "/collections/$collectionId/edit",
-        "/learning/exercises/$id",
         "/algorithms/$algorithmId/",
         "/collections/$collectionId/",
         "/learning/modules/",
@@ -827,9 +800,6 @@ export const routeTree = rootRoute
     },
     "/collections/$collectionId/edit": {
       "filePath": "collections/$collectionId/edit.lazy.tsx"
-    },
-    "/learning/exercises/$id": {
-      "filePath": "learning/exercises/$id.lazy.tsx"
     },
     "/algorithms/$algorithmId/": {
       "filePath": "algorithms/$algorithmId/index.lazy.tsx"

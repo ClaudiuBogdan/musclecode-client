@@ -2,6 +2,8 @@ import { apiClient } from "@/lib/api/client";
 import { useModelsStore } from "@/stores/models";
 
 import type { LessonQuestion } from "@/types/lesson";
+import type { Permission } from "@/types/permissions";
+
 
 export interface ContentNode {
   id: string;
@@ -27,20 +29,14 @@ export enum ContentStatus {
 
 export interface ModuleEntity extends ContentNode {
   type: ContentType.MODULE;
-  lessons?: LessonEntity[];
-  exercises?: ExerciseEntity[];
 }
 
 export interface LessonEntity extends ContentNode {
   type: ContentType.LESSON;
-  moduleId: string;
-  exercises?: ExerciseEntity[];
 }
 
 export interface ExerciseEntity extends ContentNode {
   type: ContentType.EXERCISE;
-  moduleId: string;
-  lessonId?: string;
 }
 
 export async function fetchModules(): Promise<ModuleEntity[]> {
@@ -48,8 +44,8 @@ export async function fetchModules(): Promise<ModuleEntity[]> {
   return response.data;
 }
 
-export async function fetchModule(id: string): Promise<ModuleEntity> {
-  const response = await apiClient.get<ModuleEntity>(`/api/v1/content/modules/${id}`);
+export async function fetchModule(id: string): Promise<{ module: ModuleEntity, permission: Permission, lessons: LessonEntity[] }> {
+  const response = await apiClient.get<{ module: ModuleEntity, permission: Permission, lessons: LessonEntity[] }>(`/api/v1/content/modules/${id}`);
   return response.data;
 }
 
@@ -61,7 +57,7 @@ export async function fetchLesson(id: string): Promise<LessonEntity> {
 export async function fetchExercise(id: string): Promise<ExerciseEntity> {
   const response = await apiClient.get<ExerciseEntity>(`/api/v1/content/exercises/${id}`);
   return response.data;
-} 
+}
 
 
 export interface CheckAnswerPayload {

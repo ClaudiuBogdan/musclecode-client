@@ -33,12 +33,13 @@ import {
 } from "@/hooks/useSharing";
 import { useAuthStore } from "@/stores/auth";
 
-import type { PermissionLevel } from "@/types/permissions";
+import type { Permission, PermissionLevel } from "@/types/permissions";
 
 interface ShareDialogProps {
   trigger?: React.ReactNode;
   title?: string;
   contentNodeId: string;
+  permission?: Permission;
 }
 
 const permissionLevelOptions: { value: string; label: string; description: string }[] = [
@@ -51,8 +52,8 @@ const permissionLevelOptions: { value: string; label: string; description: strin
 
 export function ShareDialog({
   trigger,
-  title = "Learning Modules",
-  contentNodeId
+  title,
+  contentNodeId,
 }: ShareDialogProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [userToRemove, setUserToRemove] = useState<string | null>(null);
@@ -76,7 +77,7 @@ export function ShareDialog({
     updateSettingsMutation.mutate({ isPublic: enabled });
   };
 
-  const handleDefaultAccessChange = (newLevel: PermissionLevel["VIEW"] | PermissionLevel["EDIT"]) => {
+  const handleDefaultAccessChange = (newLevel: PermissionLevel.VIEW | PermissionLevel.EDIT) => {
     updateSettingsMutation.mutate({ defaultPermission: newLevel });
   };
 
@@ -231,7 +232,7 @@ export function ShareDialog({
                             .map((option) => (
                               <DropdownMenuItem
                                 key={option.value}
-                                onClick={() => handleDefaultAccessChange(option.value as PermissionLevel["VIEW"] | PermissionLevel["EDIT"])}
+                                onClick={() => handleDefaultAccessChange(option.value as unknown as PermissionLevel.VIEW | PermissionLevel.EDIT)}
                                 className="flex items-center justify-between p-3"
                               >
                                 <div className="flex items-center gap-3">

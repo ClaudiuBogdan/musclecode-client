@@ -1,6 +1,6 @@
 import { useNavigate } from "@tanstack/react-router";
 import { motion } from "framer-motion";
-import { BookOpenIcon, BookIcon, CheckIcon } from "lucide-react";
+import { BookOpenIcon, CheckIcon } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -16,10 +16,9 @@ interface ModuleCardProps {
 
 export const ModuleCard: React.FC<ModuleCardProps> = ({ module }) => {
   const navigate = useNavigate();
-  const lessonCount = module.lessons?.length ?? 0;
-  const exerciseCount = (module.exercises?.length ?? 0) + 
-    (module.lessons?.reduce((acc, lesson) => acc + (lesson.exercises?.length ?? 0), 0) ?? 0);
-  
+  const lessons = module.body?.lessons as { id: string }[];
+  const lessonCount = lessons.length;
+
   // Access body properties safely with optional chaining and defaults
   const title = module.body?.title as string || "Untitled Module";
   const description = module.body?.description as string || "No description available";
@@ -52,13 +51,9 @@ export const ModuleCard: React.FC<ModuleCardProps> = ({ module }) => {
               <BookOpenIcon className="h-4 w-4" />
               <span>{lessonCount} {lessonCount === 1 ? "Lesson" : "Lessons"}</span>
             </div>
-            <div className="flex items-center gap-1">
-              <BookIcon className="h-4 w-4" />
-              <span>{exerciseCount} {exerciseCount === 1 ? "Exercise" : "Exercises"}</span>
-            </div>
           </div>
-          <Button 
-            variant="default" 
+          <Button
+            variant="default"
             className="w-full mt-4"
             onClick={(e) => {
               e.stopPropagation();

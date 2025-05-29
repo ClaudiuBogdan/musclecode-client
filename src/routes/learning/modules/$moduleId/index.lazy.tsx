@@ -2,12 +2,12 @@ import { createLazyFileRoute } from "@tanstack/react-router";
 import { AlertCircleIcon } from "lucide-react";
 
 import { ContentLayout } from "@/components/learning/ContentLayout";
-import { ExerciseCard } from "@/components/learning/ExerciseCard";
 import { LessonCard } from "@/components/learning/LessonCard";
 import { ShareDialog } from "@/components/learning/ShareDialog";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
+import { hasManagePermission } from "@/lib/permissions";
 import { useModule } from "@/services/content/hooks";
 
 export const Route = createLazyFileRoute("/learning/modules/$moduleId/")({
@@ -16,8 +16,11 @@ export const Route = createLazyFileRoute("/learning/modules/$moduleId/")({
 
 function ModuleDetailPage() {
   const { moduleId } = Route.useParams();
-  const { data: module, isLoading, error } = useModule(moduleId);
-  
+  const { data, isLoading, error } = useModule(moduleId);
+  const module = data?.module;
+  const permission = data?.permission;
+  const lessons = data?.lessons;
+
   // Mock progress for now - in a real app this would come from the user's progress data
   // const progress = 25;
 
@@ -26,11 +29,12 @@ function ModuleDetailPage() {
   // Get a safe description with a fallback
   const description = module?.body?.description as string || "";
 
+  const canShare = permission && hasManagePermission(permission);
   return (
-    <ContentLayout 
+    <ContentLayout
       title={isLoading ? "Loading..." : title}
       backLink="/learning/modules/"
-      action={<ShareDialog title={title} contentNodeId={moduleId} />}
+      action={canShare ? <ShareDialog title={title} contentNodeId={moduleId} /> : null}
     >
       {isLoading ? (
         <div className="space-y-6">
@@ -93,16 +97,16 @@ function ModuleDetailPage() {
                 <span>Exercises</span>
               </TabsTrigger>
             </TabsList> */}
-            
+
             <TabsContent value="lessons" className="mt-0">
-              {module.lessons && module.lessons.length > 0 ? (
+              {lessons && lessons.length > 0 ? (
                 <div className="grid grid-cols-1 gap-4">
-                  {module.lessons.map((lesson, index) => (
-                    <LessonCard 
-                      key={lesson.id} 
+                  {lessons.map((lesson, index) => (
+                    <LessonCard
+                      key={lesson.id}
                       moduleId={moduleId}
-                      lesson={lesson} 
-                      index={index + 1} 
+                      lesson={lesson}
+                      index={index + 1}
                     />
                   ))}
                 </div>
@@ -110,26 +114,6 @@ function ModuleDetailPage() {
                 <div className="text-center py-8">
                   <p className="text-gray-500 dark:text-gray-400">
                     This module doesn&apos;t have any lessons yet.
-                  </p>
-                </div>
-              )}
-            </TabsContent>
-            
-            <TabsContent value="exercises" className="mt-0">
-              {module.exercises && module.exercises.length > 0 ? (
-                <div className="grid grid-cols-1 gap-4">
-                  {module.exercises.map((exercise, index) => (
-                    <ExerciseCard 
-                      key={exercise.id} 
-                      exercise={exercise} 
-                      index={index + 1} 
-                    />
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center py-8">
-                  <p className="text-gray-500 dark:text-gray-400">
-                    This module doesn&apos;t have any exercises yet.
                   </p>
                 </div>
               )}
