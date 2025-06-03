@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { useState, useMemo } from "react";
 
+
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -29,147 +30,10 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
+import { useModuleUsers } from "@/services/learning/hooks";
 
 
-// Mock data types
-interface UserAnswer {
-  questionId: string;
-  questionText: string;
-  userAnswer: string;
-  correctAnswer: string;
-  isCorrect: boolean;
-  timeSpent: number; // in seconds
-  attempts: number;
-  submittedAt: string;
-  feedback?: string;
-}
 
-interface LessonProgress {
-  lessonId: string;
-  lessonTitle: string;
-  completed: boolean;
-  score: number; // 0-100
-  timeSpent: number; // in minutes
-  completedAt?: string;
-  answers: UserAnswer[];
-  totalQuestions: number;
-  correctAnswers: number;
-}
-
-interface UserProgress {
-  userId: string;
-  userName: string;
-  userEmail: string;
-  userAvatar?: string;
-  overallProgress: number; // 0-100
-  completedLessons: number;
-  totalLessons: number;
-  totalTimeSpent: number; // in minutes
-  averageScore: number;
-  lastActiveAt: string;
-  startedAt: string;
-  lessons: LessonProgress[];
-  streak: number;
-  badges: string[];
-  status: 'active' | 'completed' | 'inactive';
-}
-
-// Mock data
-const mockUserProgress: UserProgress[] = [
-  {
-    userId: "1",
-    userName: "Alice Johnson",
-    userEmail: "alice.johnson@example.com",
-    overallProgress: 85,
-    completedLessons: 17,
-    totalLessons: 20,
-    totalTimeSpent: 480,
-    averageScore: 88,
-    lastActiveAt: "2024-01-15T10:30:00Z",
-    startedAt: "2024-01-01T09:00:00Z",
-    streak: 12,
-    badges: ["Quick Learner", "Perfect Score", "Consistent"],
-    status: 'active',
-    lessons: [
-      {
-        lessonId: "1",
-        lessonTitle: "Introduction to Variables",
-        completed: true,
-        score: 95,
-        timeSpent: 25,
-        completedAt: "2024-01-02T14:30:00Z",
-        totalQuestions: 10,
-        correctAnswers: 9,
-        answers: [
-          {
-            questionId: "q1",
-            questionText: "What is a variable in programming?",
-            userAnswer: "A variable is a container that stores data values.",
-            correctAnswer: "A variable is a container that stores data values.",
-            isCorrect: true,
-            timeSpent: 45,
-            attempts: 1,
-            submittedAt: "2024-01-02T14:15:00Z",
-            feedback: "Excellent! You understand the basic concept of variables."
-          },
-          {
-            questionId: "q2",
-            questionText: "Which of the following is a valid variable name?",
-            userAnswer: "myVariable",
-            correctAnswer: "myVariable",
-            isCorrect: true,
-            timeSpent: 30,
-            attempts: 1,
-            submittedAt: "2024-01-02T14:16:00Z"
-          }
-        ]
-      },
-      {
-        lessonId: "2",
-        lessonTitle: "Data Types and Operations",
-        completed: true,
-        score: 78,
-        timeSpent: 35,
-        completedAt: "2024-01-03T16:45:00Z",
-        totalQuestions: 15,
-        correctAnswers: 12,
-        answers: []
-      }
-    ]
-  },
-  {
-    userId: "2",
-    userName: "Bob Smith",
-    userEmail: "bob.smith@example.com",
-    overallProgress: 45,
-    completedLessons: 9,
-    totalLessons: 20,
-    totalTimeSpent: 280,
-    averageScore: 72,
-    lastActiveAt: "2024-01-10T15:20:00Z",
-    startedAt: "2024-01-05T11:00:00Z",
-    streak: 5,
-    badges: ["Getting Started"],
-    status: 'active',
-    lessons: []
-  },
-  {
-    userId: "3",
-    userName: "Carol Davis",
-    userEmail: "carol.davis@example.com",
-    overallProgress: 100,
-    completedLessons: 20,
-    totalLessons: 20,
-    totalTimeSpent: 520,
-    averageScore: 94,
-    lastActiveAt: "2024-01-12T12:00:00Z",
-    startedAt: "2023-12-20T10:00:00Z",
-    streak: 25,
-    badges: ["Master", "Perfect Score", "Speed Demon", "Consistent"],
-    status: 'completed',
-    lessons: []
-  }
-];
 
 interface UserProgressTrackerProps {
   moduleId: string;
@@ -181,9 +45,13 @@ export function UserProgressTracker({ moduleId }: UserProgressTrackerProps) {
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [sortBy, setSortBy] = useState<string>("progress");
 
+  // Fetch users data
+  const { data: usersData, isLoading, error } = useModuleUsers(moduleId);
+  const users = usersData?.users ?? [];
+
   // Filter and sort users
   const filteredUsers = useMemo(() => {
-    const filtered = mockUserProgress.filter(user => {
+    const filtered = users.filter(user => {
       const matchesSearch = user.userName.toLowerCase().includes(searchQuery.toLowerCase()) ||
         user.userEmail.toLowerCase().includes(searchQuery.toLowerCase());
       const matchesStatus = statusFilter === "all" || user.status === statusFilter;
@@ -233,17 +101,70 @@ export function UserProgressTracker({ moduleId }: UserProgressTrackerProps) {
     });
   };
 
+  if (isLoading) {
+    return (
+      <div className="space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          {[...Array(4)].map((_, i) => (
+            <Card key={i}>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <div className="h-4 w-24 bg-muted animate-pulse rounded" />
+                <div className="h-4 w-4 bg-muted animate-pulse rounded" />
+              </CardHeader>
+              <CardContent>
+                <div className="h-8 w-16 bg-muted animate-pulse rounded mb-2" />
+                <div className="h-3 w-20 bg-muted animate-pulse rounded" />
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+        <Card>
+          <CardHeader>
+            <div className="h-6 w-48 bg-muted animate-pulse rounded" />
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {[...Array(3)].map((_, i) => (
+                <div key={i} className="flex items-center gap-4 p-4 rounded-lg border">
+                  <div className="h-12 w-12 bg-muted animate-pulse rounded-full" />
+                  <div className="flex-1 space-y-2">
+                    <div className="h-4 w-32 bg-muted animate-pulse rounded" />
+                    <div className="h-3 w-48 bg-muted animate-pulse rounded" />
+                    <div className="h-2 w-full bg-muted animate-pulse rounded" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <Card>
+        <CardContent className="p-6">
+          <div className="text-center space-y-2">
+            <p className="text-destructive">Failed to load user progress data</p>
+            <p className="text-sm text-muted-foreground">{error.message}</p>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
     <div className="space-y-6">
       {/* Header Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Users (Not implemented)</CardTitle>
+            <CardTitle className="text-sm font-medium">Total Users</CardTitle>
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{mockUserProgress.length}</div>
+            <div className="text-2xl font-bold">{usersData?.totalUsers ?? 0}</div>
             <p className="text-xs text-muted-foreground">
               Enrolled in module
             </p>
@@ -252,12 +173,12 @@ export function UserProgressTracker({ moduleId }: UserProgressTrackerProps) {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Average Progress (Not implemented)</CardTitle>
+            <CardTitle className="text-sm font-medium">Average Progress</CardTitle>
             <BarChart3 className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {Math.round(mockUserProgress.reduce((acc, user) => acc + user.overallProgress, 0) / mockUserProgress.length)}%
+              {users.length > 0 ? Math.round(users.reduce((acc, user) => acc + user.overallProgress, 0) / users.length) : 0}%
             </div>
             <p className="text-xs text-muted-foreground">
               Across all users
@@ -267,12 +188,12 @@ export function UserProgressTracker({ moduleId }: UserProgressTrackerProps) {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Completed (Not implemented)</CardTitle>
+            <CardTitle className="text-sm font-medium">Completed</CardTitle>
             <Trophy className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {mockUserProgress.filter(user => user.status === 'completed').length}
+              {usersData?.completedUsers ?? 0}
             </div>
             <p className="text-xs text-muted-foreground">
               Users finished
@@ -282,12 +203,12 @@ export function UserProgressTracker({ moduleId }: UserProgressTrackerProps) {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Avg Score (Not implemented)</CardTitle>
+            <CardTitle className="text-sm font-medium">Avg Score</CardTitle>
             <Target className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {Math.round(mockUserProgress.reduce((acc, user) => acc + user.averageScore, 0) / mockUserProgress.length)}%
+              {users.length > 0 ? Math.round(users.reduce((acc, user) => acc + user.averageScore, 0) / users.length) : 0}%
             </div>
             <p className="text-xs text-muted-foreground">
               Average test score
@@ -301,7 +222,7 @@ export function UserProgressTracker({ moduleId }: UserProgressTrackerProps) {
         <CardHeader>
           <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
             <div className="space-y-1">
-              <CardTitle className="text-lg">User Progress Overview (Not implemented)</CardTitle>
+              <CardTitle className="text-lg">User Progress Overview</CardTitle>
               <p className="text-sm text-muted-foreground">
                 Monitor individual user progress and performance
               </p>

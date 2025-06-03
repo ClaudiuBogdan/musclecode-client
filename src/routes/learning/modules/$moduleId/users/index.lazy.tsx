@@ -2,7 +2,6 @@ import { createLazyFileRoute } from '@tanstack/react-router'
 
 import { ContentLayout } from '@/components/learning/ContentLayout'
 import { UserProgressTracker } from '@/components/learning/UserProgressTracker'
-// import { UserProgressTracker } from '@/components/learning/UserProgressTracker'
 
 export const Route = createLazyFileRoute('/learning/modules/$moduleId/users/')({
     component: RouteComponent,

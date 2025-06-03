@@ -27,6 +27,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 
+
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -42,156 +43,9 @@ import {
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useUserDetail } from "@/services/learning/hooks";
 
-// Mock data types (extending from the previous component)
-interface UserAnswer {
-  questionId: string;
-  questionText: string;
-  userAnswer: string;
-  correctAnswer: string;
-  isCorrect: boolean;
-  timeSpent: number;
-  attempts: number;
-  submittedAt: string;
-  feedback?: string;
-  difficulty: 'easy' | 'medium' | 'hard';
-  topic: string;
-}
 
-interface LessonProgress {
-  lessonId: string;
-  lessonTitle: string;
-  completed: boolean;
-  score: number;
-  timeSpent: number;
-  completedAt?: string;
-  answers: UserAnswer[];
-  totalQuestions: number;
-  correctAnswers: number;
-  attempts: number;
-  strugglingTopics: string[];
-  strongTopics: string[];
-}
-
-interface UserProgress {
-  userId: string;
-  userName: string;
-  userEmail: string;
-  userAvatar?: string;
-  overallProgress: number;
-  completedLessons: number;
-  totalLessons: number;
-  totalTimeSpent: number;
-  averageScore: number;
-  lastActiveAt: string;
-  startedAt: string;
-  lessons: LessonProgress[];
-  streak: number;
-  badges: string[];
-  status: 'active' | 'completed' | 'inactive' | 'struggling';
-  strugglingAreas: string[];
-  strengths: string[];
-  recommendedActions: string[];
-  engagementLevel: 'high' | 'medium' | 'low';
-  learningVelocity: 'fast' | 'normal' | 'slow';
-}
-
-// Enhanced mock data
-const mockDetailedUser: UserProgress = {
-  userId: "1",
-  userName: "Alice Johnson",
-  userEmail: "alice.johnson@example.com",
-  userAvatar: undefined,
-  overallProgress: 85,
-  completedLessons: 17,
-  totalLessons: 20,
-  totalTimeSpent: 480,
-  averageScore: 88,
-  lastActiveAt: "2024-01-15T10:30:00Z",
-  startedAt: "2024-01-01T09:00:00Z",
-  streak: 12,
-  badges: ["Quick Learner", "Perfect Score", "Consistent", "Problem Solver"],
-  status: 'active',
-  strugglingAreas: ["Advanced Algorithms", "Complex Data Structures"],
-  strengths: ["Basic Programming", "Problem Analysis", "Code Debugging"],
-  recommendedActions: [
-    "Schedule 1-on-1 session for advanced algorithms",
-    "Provide additional practice problems for data structures",
-    "Consider peer mentoring for complex topics"
-  ],
-  engagementLevel: 'high',
-  learningVelocity: 'normal',
-  lessons: [
-    {
-      lessonId: "1",
-      lessonTitle: "Introduction to Variables",
-      completed: true,
-      score: 95,
-      timeSpent: 25,
-      completedAt: "2024-01-02T14:30:00Z",
-      totalQuestions: 10,
-      correctAnswers: 9,
-      attempts: 1,
-      strugglingTopics: [],
-      strongTopics: ["Variable Declaration", "Basic Syntax"],
-      answers: [
-        {
-          questionId: "q1",
-          questionText: "What is a variable in programming?",
-          userAnswer: "A variable is a container that stores data values.",
-          correctAnswer: "A variable is a container that stores data values.",
-          isCorrect: true,
-          timeSpent: 45,
-          attempts: 1,
-          submittedAt: "2024-01-02T14:15:00Z",
-          feedback: "Excellent! You understand the basic concept of variables.",
-          difficulty: 'easy',
-          topic: "Variables"
-        },
-        {
-          questionId: "q2",
-          questionText: "Which of the following is a valid variable name?",
-          userAnswer: "myVariable",
-          correctAnswer: "myVariable",
-          isCorrect: true,
-          timeSpent: 30,
-          attempts: 1,
-          submittedAt: "2024-01-02T14:16:00Z",
-          difficulty: 'easy',
-          topic: "Naming Conventions"
-        }
-      ]
-    },
-    {
-      lessonId: "2",
-      lessonTitle: "Advanced Algorithms",
-      completed: true,
-      score: 65,
-      timeSpent: 85,
-      completedAt: "2024-01-10T16:45:00Z",
-      totalQuestions: 15,
-      correctAnswers: 10,
-      attempts: 3,
-      strugglingTopics: ["Dynamic Programming", "Graph Algorithms"],
-      strongTopics: ["Sorting", "Basic Recursion"],
-      answers: [
-        {
-          questionId: "q10",
-          questionText: "Implement a dynamic programming solution for the fibonacci sequence",
-          userAnswer: "function fib(n) { return n <= 1 ? n : fib(n-1) + fib(n-2); }",
-          correctAnswer: "function fib(n) { const dp = [0, 1]; for(let i = 2; i <= n; i++) dp[i] = dp[i-1] + dp[i-2]; return dp[n]; }",
-          isCorrect: false,
-          timeSpent: 420,
-          attempts: 3,
-          submittedAt: "2024-01-10T16:30:00Z",
-          feedback: "This is a recursive solution, not dynamic programming. Consider using memoization or bottom-up approach.",
-          difficulty: 'hard',
-          topic: "Dynamic Programming"
-        }
-      ]
-    }
-  ]
-};
 
 interface UserDetailedProgressProps {
   moduleId: string;
@@ -199,11 +53,47 @@ interface UserDetailedProgressProps {
 }
 
 export function UserDetailedProgress({ moduleId, userId }: UserDetailedProgressProps) {
-  console.log("moduleId", moduleId, userId);
   const [activeTab, setActiveTab] = useState("analytics");
 
-  // In real implementation, this would be fetched based on moduleId and userId
-  const user = mockDetailedUser;
+  // Fetch user detail data
+  const { data: user, isLoading, error } = useUserDetail(moduleId, userId);
+
+  if (isLoading) {
+    return (
+      <div className="container mx-auto px-4 py-6">
+        <div className="space-y-6">
+          <div className="flex items-center gap-4 p-6 rounded-lg border">
+            <div className="h-16 w-16 bg-muted animate-pulse rounded-full" />
+            <div className="flex-1 space-y-2">
+              <div className="h-6 w-48 bg-muted animate-pulse rounded" />
+              <div className="h-4 w-32 bg-muted animate-pulse rounded" />
+            </div>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            {[...Array(4)].map((_, i) => (
+              <div key={i} className="p-6 rounded-lg border">
+                <div className="h-4 w-24 bg-muted animate-pulse rounded mb-2" />
+                <div className="h-8 w-16 bg-muted animate-pulse rounded" />
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !user) {
+    return (
+      <div className="container mx-auto px-4 py-6">
+        <Alert>
+          <AlertTriangle className="h-4 w-4" />
+          <AlertDescription>
+            {error ? `Failed to load user details: ${error.message}` : 'User not found'}
+          </AlertDescription>
+        </Alert>
+      </div>
+    );
+  }
 
   const formatTime = (minutes: number) => {
     const hours = Math.floor(minutes / 60);
@@ -624,7 +514,7 @@ export function UserDetailedProgress({ moduleId, userId }: UserDetailedProgressP
 
           <TabsContent value="answers" className="space-y-4">
             {user.lessons
-              .filter(lesson => lesson.answers.length > 0)
+              .filter(lesson => lesson.answers && lesson.answers.length > 0)
               .map((lesson) => (
                 <Card key={lesson.lessonId}>
                   <CardHeader>
@@ -632,7 +522,7 @@ export function UserDetailedProgress({ moduleId, userId }: UserDetailedProgressP
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-6">
-                      {lesson.answers.map((answer, index) => (
+                      {lesson.answers?.map((answer, index) => (
                         <div key={answer.questionId} className="space-y-4 p-4 rounded-lg border">
                           <div className="flex items-start justify-between">
                             <div className="space-y-2 flex-1">
