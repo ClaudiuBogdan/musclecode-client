@@ -11,7 +11,7 @@
  */
 
 import { OTLPLogExporter } from "@opentelemetry/exporter-logs-otlp-http";
-import { Resource } from "@opentelemetry/resources";
+import { resourceFromAttributes } from "@opentelemetry/resources";
 import {
   BatchLogRecordProcessor,
   LoggerProvider
@@ -32,7 +32,7 @@ const serviceName = env.VITE_APP_NAME;
 const serviceVersion = env.VITE_APP_VERSION;
 
 // Create a Resource to describe this service
-const resource = new Resource({
+const resource = resourceFromAttributes({
   [ATTR_SERVICE_NAME]: serviceName,
   [ATTR_SERVICE_VERSION]: serviceVersion,
   [SEMRESATTRS_DEPLOYMENT_ENVIRONMENT]: env.VITE_APP_ENVIRONMENT,

@@ -6,7 +6,7 @@ import { DocumentLoadInstrumentation } from "@opentelemetry/instrumentation-docu
 import { FetchInstrumentation } from "@opentelemetry/instrumentation-fetch";
 import { UserInteractionInstrumentation } from "@opentelemetry/instrumentation-user-interaction";
 import { XMLHttpRequestInstrumentation } from "@opentelemetry/instrumentation-xml-http-request";
-import { Resource } from "@opentelemetry/resources";
+import { resourceFromAttributes } from "@opentelemetry/resources";
 import { BatchSpanProcessor } from "@opentelemetry/sdk-trace-base";
 import { WebTracerProvider } from "@opentelemetry/sdk-trace-web";
 import {
@@ -23,7 +23,7 @@ import { UserIdSpanProcessor } from "./UserIdSpanProcessor";
 import { userInteractionConfig } from "./userInteractionConfig";
 
 // Create a Resource describing this service
-const resource = new Resource({
+const resource = resourceFromAttributes({
   [ATTR_SERVICE_NAME]: env.VITE_APP_NAME || "musclecode-client",
   [ATTR_SERVICE_VERSION]: env.VITE_APP_VERSION,
   environment: env.VITE_APP_ENVIRONMENT,
