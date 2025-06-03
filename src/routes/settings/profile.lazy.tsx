@@ -41,7 +41,7 @@ function ProfileSettings() {
     handleSubmit,
     formState: { errors },
     reset,
-  } = useForm<Profile>({
+  } = useForm({
     resolver: zodResolver(profileSchema),
   });
 

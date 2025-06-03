@@ -61,7 +61,7 @@ export function CollectionForm({
   isLoading,
   availableAlgorithms = [],
 }: CollectionFormProps) {
-  const form = useForm<CollectionFormData>({
+  const form = useForm({
     resolver: zodResolver(collectionFormSchema),
     defaultValues: {
       name: initialData?.name || "",
