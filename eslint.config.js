@@ -77,8 +77,8 @@ export default tseslint.config(
     rules: {
       // --- TypeScript core ---
       '@typescript-eslint/no-unused-vars': [
-        'warn',
-        { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
+        'error',
+        { argsIgnorePattern: '^_', varsIgnorePattern: '^_'},
       ],
       '@typescript-eslint/no-explicit-any': 'warn',
       '@typescript-eslint/no-floating-promises': 'warn',
@@ -101,7 +101,7 @@ export default tseslint.config(
       ...jsxA11yPlugin.configs.recommended.rules,
 
       // --- Imports & circular deps ---
-      'import/no-unused-modules': ['warn'],
+      'import/no-unused-modules': ['error'],
       'import/no-cycle': ['error', { maxDepth: 5, ignoreExternal: true }],
       'import/order': [
         'warn',

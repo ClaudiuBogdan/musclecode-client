@@ -1,8 +1,10 @@
-import { createLazyFileRoute } from "@tanstack/react-router";
+import { createLazyFileRoute, Link } from "@tanstack/react-router";
+import { Users } from "lucide-react";
 
 import { ContentLayout } from "@/components/learning/ContentLayout";
 import { LessonCard } from "@/components/learning/LessonCard";
 import { ShareDialog } from "@/components/learning/ShareDialog";
+import { Button } from "@/components/ui/button";
 import { ErrorDisplay } from "@/components/ui/ErrorDisplay";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
@@ -33,7 +35,15 @@ function ModuleDetailPage() {
     <ContentLayout
       title={isLoading ? "Loading..." : title}
       backLink="/learning/modules/"
-      action={canShare ? <ShareDialog title={title} contentNodeId={moduleId} /> : null}
+      action={canShare ? (<>
+        <Link to="/learning/modules/$moduleId/users" params={{ moduleId }}>
+          <Button variant="outline">
+            <Users className="h-4 w-4" />
+            Users
+          </Button>
+        </Link>
+        <ShareDialog title={title} contentNodeId={moduleId} />
+      </>) : null}
     >
       {isLoading ? (
         <div className="space-y-6">
@@ -47,7 +57,7 @@ function ModuleDetailPage() {
           </div>
         </div>
       ) : error ? (
-        <ErrorDisplay 
+        <ErrorDisplay
           error={error}
           title="Failed to Load Module"
           showRetry={true}

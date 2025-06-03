@@ -55,8 +55,14 @@ const AlgorithmsAlgorithmIdEditLazyImport = createFileRoute(
 const LearningModulesModuleIdIndexLazyImport = createFileRoute(
   '/learning/modules/$moduleId/',
 )()
+const LearningModulesModuleIdUsersIndexLazyImport = createFileRoute(
+  '/learning/modules/$moduleId/users/',
+)()
 const LearningModulesModuleIdLessonsLessonIdLazyImport = createFileRoute(
   '/learning/modules/$moduleId/lessons/$lessonId',
+)()
+const LearningModulesModuleIdUsersUserIdIndexLazyImport = createFileRoute(
+  '/learning/modules/$moduleId/users/$userId/',
 )()
 
 // Create/Update Routes
@@ -263,6 +269,17 @@ const LearningModulesModuleIdIndexLazyRoute =
     ),
   )
 
+const LearningModulesModuleIdUsersIndexLazyRoute =
+  LearningModulesModuleIdUsersIndexLazyImport.update({
+    id: '/learning/modules/$moduleId/users/',
+    path: '/learning/modules/$moduleId/users/',
+    getParentRoute: () => rootRoute,
+  } as any).lazy(() =>
+    import('./routes/learning/modules/$moduleId/users/index.lazy').then(
+      (d) => d.Route,
+    ),
+  )
+
 const LearningModulesModuleIdLessonsLessonIdLazyRoute =
   LearningModulesModuleIdLessonsLessonIdLazyImport.update({
     id: '/learning/modules/$moduleId/lessons/$lessonId',
@@ -270,6 +287,17 @@ const LearningModulesModuleIdLessonsLessonIdLazyRoute =
     getParentRoute: () => rootRoute,
   } as any).lazy(() =>
     import('./routes/learning/modules/$moduleId/lessons/$lessonId.lazy').then(
+      (d) => d.Route,
+    ),
+  )
+
+const LearningModulesModuleIdUsersUserIdIndexLazyRoute =
+  LearningModulesModuleIdUsersUserIdIndexLazyImport.update({
+    id: '/learning/modules/$moduleId/users/$userId/',
+    path: '/learning/modules/$moduleId/users/$userId/',
+    getParentRoute: () => rootRoute,
+  } as any).lazy(() =>
+    import('./routes/learning/modules/$moduleId/users/$userId/index.lazy').then(
       (d) => d.Route,
     ),
   )
@@ -460,6 +488,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LearningModulesModuleIdLessonsLessonIdLazyImport
       parentRoute: typeof rootRoute
     }
+    '/learning/modules/$moduleId/users/': {
+      id: '/learning/modules/$moduleId/users/'
+      path: '/learning/modules/$moduleId/users'
+      fullPath: '/learning/modules/$moduleId/users'
+      preLoaderRoute: typeof LearningModulesModuleIdUsersIndexLazyImport
+      parentRoute: typeof rootRoute
+    }
+    '/learning/modules/$moduleId/users/$userId/': {
+      id: '/learning/modules/$moduleId/users/$userId/'
+      path: '/learning/modules/$moduleId/users/$userId'
+      fullPath: '/learning/modules/$moduleId/users/$userId'
+      preLoaderRoute: typeof LearningModulesModuleIdUsersUserIdIndexLazyImport
+      parentRoute: typeof rootRoute
+    }
   }
 }
 
@@ -492,6 +534,8 @@ export interface FileRoutesByFullPath {
   '/learning/modules': typeof LearningModulesIndexLazyRoute
   '/learning/modules/$moduleId': typeof LearningModulesModuleIdIndexLazyRoute
   '/learning/modules/$moduleId/lessons/$lessonId': typeof LearningModulesModuleIdLessonsLessonIdLazyRoute
+  '/learning/modules/$moduleId/users': typeof LearningModulesModuleIdUsersIndexLazyRoute
+  '/learning/modules/$moduleId/users/$userId': typeof LearningModulesModuleIdUsersUserIdIndexLazyRoute
 }
 
 export interface FileRoutesByTo {
@@ -521,6 +565,8 @@ export interface FileRoutesByTo {
   '/learning/modules': typeof LearningModulesIndexLazyRoute
   '/learning/modules/$moduleId': typeof LearningModulesModuleIdIndexLazyRoute
   '/learning/modules/$moduleId/lessons/$lessonId': typeof LearningModulesModuleIdLessonsLessonIdLazyRoute
+  '/learning/modules/$moduleId/users': typeof LearningModulesModuleIdUsersIndexLazyRoute
+  '/learning/modules/$moduleId/users/$userId': typeof LearningModulesModuleIdUsersUserIdIndexLazyRoute
 }
 
 export interface FileRoutesById {
@@ -551,6 +597,8 @@ export interface FileRoutesById {
   '/learning/modules/': typeof LearningModulesIndexLazyRoute
   '/learning/modules/$moduleId/': typeof LearningModulesModuleIdIndexLazyRoute
   '/learning/modules/$moduleId/lessons/$lessonId': typeof LearningModulesModuleIdLessonsLessonIdLazyRoute
+  '/learning/modules/$moduleId/users/': typeof LearningModulesModuleIdUsersIndexLazyRoute
+  '/learning/modules/$moduleId/users/$userId/': typeof LearningModulesModuleIdUsersUserIdIndexLazyRoute
 }
 
 export interface FileRouteTypes {
@@ -582,6 +630,8 @@ export interface FileRouteTypes {
     | '/learning/modules'
     | '/learning/modules/$moduleId'
     | '/learning/modules/$moduleId/lessons/$lessonId'
+    | '/learning/modules/$moduleId/users'
+    | '/learning/modules/$moduleId/users/$userId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -610,6 +660,8 @@ export interface FileRouteTypes {
     | '/learning/modules'
     | '/learning/modules/$moduleId'
     | '/learning/modules/$moduleId/lessons/$lessonId'
+    | '/learning/modules/$moduleId/users'
+    | '/learning/modules/$moduleId/users/$userId'
   id:
     | '__root__'
     | '/'
@@ -638,6 +690,8 @@ export interface FileRouteTypes {
     | '/learning/modules/'
     | '/learning/modules/$moduleId/'
     | '/learning/modules/$moduleId/lessons/$lessonId'
+    | '/learning/modules/$moduleId/users/'
+    | '/learning/modules/$moduleId/users/$userId/'
   fileRoutesById: FileRoutesById
 }
 
@@ -668,6 +722,8 @@ export interface RootRouteChildren {
   LearningModulesIndexLazyRoute: typeof LearningModulesIndexLazyRoute
   LearningModulesModuleIdIndexLazyRoute: typeof LearningModulesModuleIdIndexLazyRoute
   LearningModulesModuleIdLessonsLessonIdLazyRoute: typeof LearningModulesModuleIdLessonsLessonIdLazyRoute
+  LearningModulesModuleIdUsersIndexLazyRoute: typeof LearningModulesModuleIdUsersIndexLazyRoute
+  LearningModulesModuleIdUsersUserIdIndexLazyRoute: typeof LearningModulesModuleIdUsersUserIdIndexLazyRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
@@ -698,6 +754,10 @@ const rootRouteChildren: RootRouteChildren = {
   LearningModulesModuleIdIndexLazyRoute: LearningModulesModuleIdIndexLazyRoute,
   LearningModulesModuleIdLessonsLessonIdLazyRoute:
     LearningModulesModuleIdLessonsLessonIdLazyRoute,
+  LearningModulesModuleIdUsersIndexLazyRoute:
+    LearningModulesModuleIdUsersIndexLazyRoute,
+  LearningModulesModuleIdUsersUserIdIndexLazyRoute:
+    LearningModulesModuleIdUsersUserIdIndexLazyRoute,
 }
 
 export const routeTree = rootRoute
@@ -735,7 +795,9 @@ export const routeTree = rootRoute
         "/collections/$collectionId/",
         "/learning/modules/",
         "/learning/modules/$moduleId/",
-        "/learning/modules/$moduleId/lessons/$lessonId"
+        "/learning/modules/$moduleId/lessons/$lessonId",
+        "/learning/modules/$moduleId/users/",
+        "/learning/modules/$moduleId/users/$userId/"
       ]
     },
     "/": {
@@ -815,6 +877,12 @@ export const routeTree = rootRoute
     },
     "/learning/modules/$moduleId/lessons/$lessonId": {
       "filePath": "learning/modules/$moduleId/lessons/$lessonId.lazy.tsx"
+    },
+    "/learning/modules/$moduleId/users/": {
+      "filePath": "learning/modules/$moduleId/users/index.lazy.tsx"
+    },
+    "/learning/modules/$moduleId/users/$userId/": {
+      "filePath": "learning/modules/$moduleId/users/$userId/index.lazy.tsx"
     }
   }
 }
