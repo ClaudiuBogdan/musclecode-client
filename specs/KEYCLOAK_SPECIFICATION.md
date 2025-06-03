@@ -82,7 +82,6 @@ interface AuthConfig {
 ### Development Guidelines
 1. Local Development:
    - Mock auth provider for development
-   - MSW integration for auth endpoints
    - Environment configuration examples
 
 2. Testing Strategy:

@@ -119,7 +119,6 @@ export enum AuthErrorCode {
 - Configure user attribute mapping
 
 ### Testing Requirements
-- Test with MSW for mocking social provider responses
 - Unit tests for new auth service methods
 - Integration tests for login flows
 - E2E tests for complete social login journey
@@ -142,4 +141,3 @@ export enum AuthErrorCode {
 - Zustand for client-side auth state
 - TypeScript 5.6 for type safety
 - Tailwind CSS for styling social buttons
-- MSW for testing social login flows 

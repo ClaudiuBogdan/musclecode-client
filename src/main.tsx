@@ -20,7 +20,6 @@ declare module "@tanstack/react-router" {
   }
 }
 
-// Initialize MSW and then render the app
 const root = document.getElementById("root")!;
 if (!root) {
   throw new Error("Root element not found");

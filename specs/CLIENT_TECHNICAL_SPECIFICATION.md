@@ -13,7 +13,6 @@
 - **State Management**: TanStack Query (server state) & Zustand (client state)
 - **Code Editor**: CodeMirror 6
 - **Styling**: Tailwind CSS with CSS Modules
-- **Testing**: MSW for API Mocking
 - **Charts**: Recharts
 - **Date Handling**: date-fns
 - **State Updates**: Immer
@@ -100,7 +99,6 @@ The application uses TanStack Router with lazy-loaded routes:
 
 - ESLint with TypeScript support
 - SWC for fast compilation
-- MSW for API mocking
 - Faker.js for generating test data
 - TanStack Router DevTools
 
@@ -118,20 +116,6 @@ The application uses TanStack Router with lazy-loaded routes:
 - Lazy loading of components
 - SWC-based compilation
 - Vite for fast development and optimized builds
-
-### Testing Strategy
-
-MSW (Mock Service Worker) is used for API mocking:
-```typescript
-// MSW configuration
-{
-  "msw": {
-    "workerDirectory": [
-      "public"
-    ]
-  }
-}
-```
 
 ### Build & Deployment
 
