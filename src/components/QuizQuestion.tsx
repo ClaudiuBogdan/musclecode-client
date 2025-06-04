@@ -75,7 +75,7 @@ const QuizQuestion: React.FC<QuizQuestionProps> = React.memo(({ children }) => {
   }, [content]);
 
   const { selectedOptions, isCorrect, saveSelectedOption } =
-    useQuizSessionStorage(quizData?.question || "unknown-question");
+    useQuizSessionStorage(quizData?.question ?? "unknown-question");
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     setPointer({
@@ -220,5 +220,7 @@ const QuizQuestion: React.FC<QuizQuestionProps> = React.memo(({ children }) => {
     </motion.div>
   );
 });
+
+QuizQuestion.displayName = "QuizQuestion";
 
 export default QuizQuestion;

@@ -166,3 +166,5 @@ export const Message: React.FC<MessageProps> = React.memo(({ message }) => {
     </div>
   );
 });
+
+Message.displayName = "Message";
