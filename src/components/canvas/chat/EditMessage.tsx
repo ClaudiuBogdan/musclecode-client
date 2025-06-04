@@ -89,3 +89,5 @@ export const EditMessage: React.FC<EditMessageProps> = React.memo(
   }
 );
 
+EditMessage.displayName = "EditMessage";
+
