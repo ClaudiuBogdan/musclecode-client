@@ -4,7 +4,9 @@ import { env } from "@/config/env";
 import { listenToSSE } from "@/lib/api/client"; // Adjust path if needed
 import { AuthError } from "@/lib/auth/errors"; // Adjust path if needed
 import { AppError } from "@/lib/errors/types"; // Adjust path if needed
+
 import { createMessageReconstructor } from "../parser";
+
 import type {
   PartialJsonValue,
   ReconstructorControls,
@@ -105,13 +107,11 @@ function StreamingChatDisplay() {
   // --- Initialize Reconstructor on Mount ---
   useEffect(() => {
     // Ensure it only runs once
-    if (!reconstructorRef.current) {
-      reconstructorRef.current = createMessageReconstructor({
+    reconstructorRef.current ??= createMessageReconstructor({
         onMessageUpdate: handleMessageUpdate,
         onMessageComplete: handleMessageComplete,
         onError: handleReconstructorError,
-      });
-    }
+    });
     // No cleanup needed specifically for the reconstructor instance itself here
   }, [handleMessageUpdate, handleMessageComplete, handleReconstructorError]); // Stable callbacks
 
@@ -359,7 +359,7 @@ function StreamingChatDisplay() {
               ? currentBuffer // Fallback to buffer if no parsed result
               : typeof toolResult.content === "object" && toolResult.content
                 ? JSON.stringify(toolResult.content, null, 2) // Show formatted final JSON
-                : String(toolResult.content ?? ""); // Handle null/undefined/non-object final content
+                : JSON.stringify(toolResult.content ?? {}, null, 2); // Handle null/undefined/non-object final content
 
         // Determine if we should show the "(streaming...)" indicator
         const showStreamingIndicator =

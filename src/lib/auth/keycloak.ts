@@ -10,6 +10,7 @@ const logger = createLogger({ context: "KeycloakService" });
 
 export class KeycloakService {
   private static instance: KeycloakService;
+  // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
   private keycloak: Keycloak | null = null;
   private mockAuthenticated = false;
 
@@ -152,13 +153,10 @@ export class KeycloakService {
       throw createAuthError(AuthErrorCode.UNAUTHORIZED);
     }
 
-    if (!authConfig.enabled) {
-      return mockUser.roles.includes(role);
-    }
-
     return Promise.resolve(this.keycloak?.hasRealmRole(role) ?? false);
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
   public getKeycloakInstance(): Keycloak | null {
     return this.keycloak;
   }
