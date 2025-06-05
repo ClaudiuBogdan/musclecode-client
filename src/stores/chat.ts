@@ -73,7 +73,7 @@ const useChatStore = create<ChatStore>()(
         });
 
         // Trigger a sync when algorithm ID changes
-        get().syncThreads();
+        void get().syncThreads();
       },
 
       sendMessage: async (args: {
@@ -547,7 +547,7 @@ const useChatStore = create<ChatStore>()(
           };
         });
 
-        get().sendMessage({
+        void get().sendMessage({
           message: parentMessage.content,
           parentId: parentMessage.parentId,
           commands: parentMessage.commands,

@@ -132,17 +132,17 @@ export function UserDetailedProgress({ moduleId, userId }: UserDetailedProgressP
 
   const handleSendMessage = () => {
     // In real implementation, this would open a messaging interface
-    console.log("Send message to", user.userName);
+    console.info("Send message to", user.userName);
   };
 
   const handleScheduleMeeting = () => {
     // In real implementation, this would open a scheduling interface
-    console.log("Schedule meeting with", user.userName);
+    console.info("Schedule meeting with", user.userName);
   };
 
   const handleExportReport = () => {
     // In real implementation, this would generate and download a report
-    console.log("Export report for", user.userName);
+    console.info("Export report for", user.userName);
   };
 
   const strugglingLessons = user.lessons.filter(lesson => lesson.score < 70);

@@ -92,7 +92,7 @@ export const useAuthStore = create<AuthState>()(
               user: null,
               token: null,
             });
-            get().login();
+            void get().login();
           }
         } catch (error) {
           logger.error("Auth Initialize Failed", error as Error);

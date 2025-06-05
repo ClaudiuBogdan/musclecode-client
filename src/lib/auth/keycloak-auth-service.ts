@@ -226,13 +226,13 @@ export class KeycloakAuthService implements AuthService {
     return user;
   }
 
-  async hasRole(role: string): Promise<boolean> {
+  hasRole(role: string): Promise<boolean> {
     const hasRole = this.keycloak.hasRealmRole(role);
     logger.verbose("Role Check", {
       role,
       hasRole,
     });
-    return hasRole;
+    return Promise.resolve(hasRole);
   }
 
   getKeycloakInstance(): Keycloak {

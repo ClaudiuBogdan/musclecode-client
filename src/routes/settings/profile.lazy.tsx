@@ -167,7 +167,7 @@ function ProfileSettings() {
             <div className="flex flex-col sm:flex-row items-center gap-6 sm:gap-8">
               <Avatar className="h-24 w-24 sm:h-32 sm:w-32">
                 <AvatarImage
-                  src={profile?.avatar || undefined}
+                  src={profile?.avatar ?? undefined}
                   alt={`${profile?.firstName} ${profile?.lastName}`}
                 />
                 <AvatarFallback className="text-2xl">
@@ -197,7 +197,7 @@ function ProfileSettings() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+            <form onSubmit={(e) => void handleSubmit(onSubmit)(e)} className="space-y-6">
               <div className="space-y-4">
                 <div className="grid gap-6 sm:grid-cols-2">
                   <div className="space-y-2">

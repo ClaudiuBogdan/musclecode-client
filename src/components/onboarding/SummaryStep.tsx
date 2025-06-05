@@ -34,7 +34,7 @@ export function SummaryStep() {
   const selectedCollections = getSelectedCollections();
 
   // Handle completion
-  const handleComplete = async () => {
+  const handleComplete = () => {
     clearError();
     try {
       void router.navigate({ to: "/" });

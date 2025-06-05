@@ -187,7 +187,7 @@ function SecuritySettings() {
             <Switch
               checked={twoFactorStatus?.enabled ?? false}
               onCheckedChange={(checked) =>
-                checked ? handleEnable2FA() : handleDisable2FA()
+                checked ? void handleEnable2FA() : void handleDisable2FA()
               }
               disabled={isLoading || isToggling2FA}
             />
@@ -210,7 +210,7 @@ function SecuritySettings() {
                 {twoFactorStatus.secret && (
                   <div className="text-center">
                     <p className="text-sm text-muted-foreground">
-                      Can't scan the QR code? Enter this code manually:
+                      Can&apos;t scan the QR code? Enter this code manually:
                     </p>
                     <code className="mt-1 block rounded bg-muted px-2 py-1 font-mono text-sm">
                       {twoFactorStatus.secret}

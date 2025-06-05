@@ -23,7 +23,7 @@ export const ErrorStreamTest: React.FC = () => {
         if (updatedParsedJson) setPartialInputStream(new Map(updatedParsedJson));
       },
       onMessageComplete: (finalMessage) => {
-        console.log("Message complete:", finalMessage);
+        console.info("Message complete:", finalMessage);
       },
       onError: (error) => {
         console.error("Reconstructor error:", error);

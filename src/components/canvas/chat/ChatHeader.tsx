@@ -16,12 +16,12 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({ className }) => {
 
   const threads = useMemo(() => Object.values(threadsMap), [threadsMap]);
   const handleStartNewChat = useCallback(() => {
-    createThread();
+    void createThread();
   }, [createThread]);
 
   const handleSelectThread = useCallback(
     (threadId: string) => {
-      switchThread(threadId);
+        void switchThread(threadId);
     },
     [switchThread]
   );
@@ -30,7 +30,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({ className }) => {
     <header
       className={cn(
         "bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 p-1 flex justify-between items-center",
-        className
+        className ?? ""
       )}
     >
       <ChatHistory threads={threads} onSelectThread={handleSelectThread} />
