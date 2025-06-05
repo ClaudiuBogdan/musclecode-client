@@ -10,6 +10,7 @@ import type { LessonChunk } from '@/types/lesson';
 
 interface LessonChunkRendererProps {
   chunk: LessonChunk;
+  lessonId: string;
 }
 
 const chunkTypeDetails = {
@@ -21,6 +22,7 @@ const chunkTypeDetails = {
 
 export const LessonChunkRenderer: React.FC<LessonChunkRendererProps> = ({
   chunk,
+  lessonId,
 }) => {
   const details = chunkTypeDetails[chunk.type as keyof typeof chunkTypeDetails] || {
     icon: AlertTriangleIcon,
@@ -35,7 +37,7 @@ export const LessonChunkRenderer: React.FC<LessonChunkRendererProps> = ({
           <IconComponent className="h-6 w-6" />
           <h2 className="text-xl font-semibold tracking-tight">{details.title}</h2>
        </div>
-       <LessonContentRenderer content={chunk.content} />
+       <LessonContentRenderer content={chunk.content} lessonId={lessonId} />
     </div>
   );
 }; 

@@ -49,8 +49,18 @@ export async function fetchModule(id: string): Promise<{ module: ModuleEntity, p
   return response.data;
 }
 
-export async function fetchLesson(id: string): Promise<LessonEntity> {
-  const response = await apiClient.get<LessonEntity>(`/api/v1/content/lessons/${id}`);
+export async function fetchLesson(id: string): Promise<{
+  data: {
+    lesson: LessonEntity,
+    permission: Permission,
+    interactions: InteractionDataDto[]
+  }
+}> {
+  const response = await apiClient.get<{data: {
+    lesson: LessonEntity,
+    permission: Permission,
+    interactions: InteractionDataDto[]
+  }}>(`/api/v1/content/lessons/${id}`);
   return response.data;
 }
 
@@ -84,5 +94,26 @@ export async function checkQuestionAnswer(questionId: string, payload: CheckAnsw
     ...payload,
     model
   });
+  return response.data;
+}
+
+// Interaction tracking types and API
+export interface InteractionDataDto {
+  id: string; // UUID, generated client-side for the interaction
+  type: string; // Describes the type of interaction
+  data: Record<string, any>; // Flexible object for interaction-specific data
+}
+
+export interface InteractionRequestDto {
+  nodeId: string; // UUID of the content node (lesson, quiz, etc.)
+  interaction: InteractionDataDto;
+}
+
+/**
+ * Sends user interaction data to the backend API
+ * This function is designed to be called asynchronously without blocking the UI
+ */
+export async function sendInteraction(payload: InteractionRequestDto): Promise<void> {
+  const response = await apiClient.post<void>('/api/v1/content/interactions', payload);
   return response.data;
 }

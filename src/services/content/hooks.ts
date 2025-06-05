@@ -7,12 +7,14 @@ import {
   fetchModules,
   fetchLesson,
   fetchExercise,
-  checkQuestionAnswer
+  checkQuestionAnswer,
+  sendInteraction
 } from "./api";
 
 import type {
   CheckAnswerPayload,
-  CheckAnswerResponse
+  CheckAnswerResponse,
+  InteractionRequestDto
 } from "./api";
 import type { AuthError } from "@/lib/auth/errors";
 
@@ -69,5 +71,18 @@ export function useCheckQuestionAnswer() {
     { questionId: string; payload: CheckAnswerPayload }
   >({
     mutationFn: ({ questionId, payload }) => checkQuestionAnswer(questionId, payload),
+  });
+}
+
+/**
+ * Hook for sending user interactions to the backend
+ * This mutation is designed to be fire-and-forget for background tracking
+ */
+export function useSendInteraction() {
+  return useMutation<void, Error, InteractionRequestDto>({
+    mutationFn: sendInteraction,
+    // Don't retry on failure - interactions are fire-and-forget
+    retry: false,
+    // We'll handle errors externally with toast notifications
   });
 }
