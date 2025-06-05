@@ -1,7 +1,6 @@
 /* This is a placeholder to check if the file exists */ 
 
-@import "tailwindcss/preflight";
-@tailwind utilities;
+@import "tailwindcss";
 
 @layer utilities {
   /* 3D Transform Utilities */
