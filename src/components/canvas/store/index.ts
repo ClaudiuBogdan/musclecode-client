@@ -248,6 +248,7 @@ export const useChatStore = create<ChatStore>()(
         },
 
         createThread: async (title?: string, context?: ContextReference[]) => {
+          await Promise.resolve();
           // --- Disconnect stream before creating a new thread and switching ---
           if (sseController) {
             logger.info(
@@ -319,6 +320,7 @@ export const useChatStore = create<ChatStore>()(
         },
 
         deleteThread: async (threadId: string) => {
+          await Promise.resolve();
           const { threads } = get();
           const threadToDelete = threads[threadId];
           const currentId = get().currentThreadId;
@@ -362,6 +364,7 @@ export const useChatStore = create<ChatStore>()(
           parentId?: string;
           metadata?: Record<string, unknown>;
         }) => {
+          await Promise.resolve();
           const { threadId, content, parentId, metadata } = messageData;
           const currentConnectionStatus = get().connectionStatus;
 

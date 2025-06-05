@@ -4,14 +4,10 @@ import { env } from "@/config/env";
 import { listenToSSE } from "@/lib/api/client"; // Adjust path if needed
 import { AuthError } from "@/lib/auth/errors"; // Adjust path if needed
 import { AppError } from "@/lib/errors/types"; // Adjust path if needed
-
-import {
-  createMessageReconstructor
-} from "../parser";
-
+import { createMessageReconstructor } from "../parser";
 import type {
   PartialJsonValue,
-  ReconstructorControls
+  ReconstructorControls,
 } from "../parser";
 import type {
   ChatMessage,
@@ -283,7 +279,7 @@ function StreamingChatDisplay() {
         const textBlock = block;
         return (
           <div
-            key={textBlock.id || index}
+            key={textBlock.id ?? index}
             style={{
               whiteSpace: "pre-wrap",
               borderBottom: "1px dashed #eee",
@@ -291,7 +287,7 @@ function StreamingChatDisplay() {
               marginBottom: "5px",
             }}
           >
-            <strong>Text:</strong> {textBlock.text || <em>(empty)</em>}
+            <strong>Text:</strong> {textBlock.text ?? <em>(empty)</em>}
             <small style={{ display: "block", color: "grey" }}>
               ID: {textBlock.id}
             </small>
@@ -319,7 +315,7 @@ function StreamingChatDisplay() {
 
         return (
           <div
-            key={toolUse.id || index}
+            key={toolUse.id ?? index}
             style={{
               borderBottom: "1px dashed #eee",
               paddingBottom: "5px",
@@ -375,7 +371,6 @@ function StreamingChatDisplay() {
 
         // Custom rendering for text type tool results
         const textJsonArr = parsedJson as { type?: string; text?: string }[];
-        console.log("textJson", textJsonArr);
         if (
           Array.isArray(textJsonArr) &&
           textJsonArr.length > 0 &&
@@ -383,7 +378,7 @@ function StreamingChatDisplay() {
         ) {
           return textJsonArr.map((textBlock) => (
             <div
-              key={textBlock.text || index}
+              key={textBlock.text ?? index}
               style={{
                 borderBottom: "1px dashed #eee",
                 paddingBottom: "5px",
@@ -426,7 +421,7 @@ function StreamingChatDisplay() {
         // Default rendering for other tool result types
         return (
           <div
-            key={toolResult.id || index}
+            key={toolResult.id ?? index}
             style={{
               borderBottom: "1px dashed #eee",
               paddingBottom: "5px",

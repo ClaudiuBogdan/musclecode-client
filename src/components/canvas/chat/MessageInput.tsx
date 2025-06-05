@@ -77,7 +77,7 @@ export const MessageInput: React.FC<MessageInputProps> = ({ className }) => {
 
   const handleStopStreaming = useCallback(() => {
     // Would need to implement stop streaming functionality with the new chat store
-    console.log("Stop streaming not implemented yet");
+    console.info("Stop streaming not implemented yet");
     setIsLoading(false);
   }, []);
 

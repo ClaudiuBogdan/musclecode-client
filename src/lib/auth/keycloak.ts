@@ -147,7 +147,7 @@ export class KeycloakService {
     return this.keycloak?.realmAccess?.roles ?? [];
   }
 
-  public async hasRole(role: string): Promise<boolean> {
+  public hasRole(role: string): Promise<boolean> {
     if (!this.isAuthenticated()) {
       throw createAuthError(AuthErrorCode.UNAUTHORIZED);
     }
@@ -156,7 +156,7 @@ export class KeycloakService {
       return mockUser.roles.includes(role);
     }
 
-    return this.keycloak?.hasRealmRole(role) ?? false;
+    return Promise.resolve(this.keycloak?.hasRealmRole(role) ?? false);
   }
 
   public getKeycloakInstance(): Keycloak | null {

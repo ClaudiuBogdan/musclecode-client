@@ -66,7 +66,9 @@ const QuizQuestion: FC<QuizQuestionProps> = memo(({ children }) => {
   });
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const content = children.trim();
+  const content = Array.isArray(children)
+    ? children.join("").trim()
+    : String(children).trim();
 
   const quizData: QuizData | null = useMemo(() => {
     try {

@@ -116,7 +116,7 @@ export const ChatHistory: React.FC<ChatHistoryProps> = ({
           size="sm"
           className={cn(
             "text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white",
-            className
+            className ?? ""
           )}
         >
           <Clock className="h-5 w-5 mr-1" />

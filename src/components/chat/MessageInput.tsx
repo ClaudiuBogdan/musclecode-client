@@ -176,7 +176,7 @@ export const MessageInput: React.FC<MessageInputProps> = ({ className }) => {
         }
       }
     },
-    [canSend, activeCommands, newMessageContent, sendMessage]
+    [canSend, activeCommands, newMessageContent, sendMessage, activeAlgorithmId]
   );
 
   // Handle keyboard events

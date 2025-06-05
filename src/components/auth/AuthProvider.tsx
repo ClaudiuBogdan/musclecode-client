@@ -26,7 +26,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         useAuthStore.setState({ error: null });
         // Retry initialization
         if (authConfig.enabled) {
-          initialize();
+          void initialize();
         }
       }}
     >

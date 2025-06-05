@@ -40,7 +40,7 @@ export function CourseCreationPage() {
 
   const moduleGeneration = useModuleGeneration();
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!prompt.trim()) return;

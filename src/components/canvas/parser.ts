@@ -182,7 +182,7 @@ export function createMessageReconstructor(
       const parsedResult = parsePartialJson(newBuffer, ALL);
       nextParsedJson.set(blockIndex, parsedResult);
     } catch (parseError) {
-      console.log(
+      console.info(
         `updateJsonBufferAndParse: Partial JSON parsing failed for block ${blockIndex}:`,
         parseError
       );
@@ -497,13 +497,13 @@ export function createMessageReconstructor(
 
   /** Processes a parsed ServerSentEvent received from the SSE connection. */
   const processSSEEvent = (event: ServerSentEvent): void => {
-    // console.log("Reconstructor received event:", event.type, event); // Enhanced debug log
+    // console.info("Reconstructor received event:", event.type, event); // Enhanced debug log
     processEventAndUpdate(event);
   };
 
   /** Signals that the underlying SSE connection was successfully opened. */
   const handleSSEOpen = (): void => {
-    console.log("SSE Connection Opened. Resetting reconstructor state.");
+    console.info("SSE Connection Opened. Resetting reconstructor state.");
     resetStateInternal(); // Explicitly reset state on new connection
     // isProcessing is already reset by resetStateInternal
   };
@@ -518,7 +518,7 @@ export function createMessageReconstructor(
 
   /** Signals that the underlying SSE connection was closed. */
   const handleSSEClose = (): void => {
-    console.log("SSE Connection Closed.");
+    console.info("SSE Connection Closed.");
     // If processing was ongoing and didn't complete via message_stop,
     // consider it incomplete or errored.
     if (isProcessing) {

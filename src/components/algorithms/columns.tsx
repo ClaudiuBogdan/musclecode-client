@@ -61,7 +61,7 @@ export const columns: ColumnDef<AlgorithmPreview>[] = [
       );
     },
     filterFn: (row, id, value) => {
-      return value.includes(row.getValue(id));
+      return Array.isArray(value) && value.includes(row.getValue(id));
     },
   },
   {
@@ -87,7 +87,10 @@ export const columns: ColumnDef<AlgorithmPreview>[] = [
       });
     },
     filterFn: (row, _, value) => {
-      return value.some((v: string) => row.original.categories.includes(v));
+      return (
+        Array.isArray(value) &&
+        value.some((v: string) => row.original.categories.includes(v))
+      );
     },
   },
   {
