@@ -1,10 +1,12 @@
 import confetti from "canvas-confetti";
 import { motion } from "framer-motion";
 import { CheckCircle2, Loader2, XCircle } from "lucide-react";
-import React, { useMemo, useRef, useState } from "react";
+import { memo, useMemo, useRef, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import useQuizSessionStorage from "@/hooks/useQuizSessionStorage";
+
+import type { FC, MouseEventHandler } from "react";
 
 const ENCOURAGEMENTS = [
   "Keep trying! You're getting closer.",
@@ -52,10 +54,10 @@ interface QuizData {
 }
 
 interface QuizQuestionProps {
-  children: React.ReactNode;
+  children: string;
 }
 
-const QuizQuestion: React.FC<QuizQuestionProps> = React.memo(({ children }) => {
+const QuizQuestion: FC<QuizQuestionProps> = memo(({ children }) => {
   const [encouragement, setEncouragement] = useState<string | null>(null);
   const [showHint, setShowHint] = useState(false);
   const [pointer, setPointer] = useState<{ x: number; y: number }>({
@@ -64,7 +66,7 @@ const QuizQuestion: React.FC<QuizQuestionProps> = React.memo(({ children }) => {
   });
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const content = React.Children.toArray(children).join("").trim();
+  const content = children.trim();
 
   const quizData: QuizData | null = useMemo(() => {
     try {
@@ -77,7 +79,7 @@ const QuizQuestion: React.FC<QuizQuestionProps> = React.memo(({ children }) => {
   const { selectedOptions, isCorrect, saveSelectedOption } =
     useQuizSessionStorage(quizData?.question ?? "unknown-question");
 
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+  const handleMouseMove: MouseEventHandler<HTMLDivElement> = (e) => {
     setPointer({
       x: e.clientX / window.innerWidth,
       y: e.clientY / window.innerHeight,

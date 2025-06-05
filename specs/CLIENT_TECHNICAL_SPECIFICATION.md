@@ -4,12 +4,12 @@
 
 ### Core Technologies
 
-- **Framework**: React 18.3
-- **Build Tool**: Vite 5
+- **Framework**: React 19
+- **Build Tool**: Vite 6
 - **UI**: Shadcn/ui with Radix UI primitives
 - **Package Manager**: yarn
 - **Routing**: @tanstack/react-router
-- **Language**: TypeScript 5.6
+- **Language**: TypeScript 5.8
 - **State Management**: TanStack Query (server state) & Zustand (client state)
 - **Code Editor**: CodeMirror 6
 - **Styling**: Tailwind CSS with CSS Modules
