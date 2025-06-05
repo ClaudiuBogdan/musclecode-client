@@ -26,23 +26,27 @@ interface InteractionConfig {
  * @param interactionData - Flexible data object for interaction-specific information
  * @param config - Optional configuration for behavior customization
  */
-export async function trackInteraction(
+async function trackQuizAnswer(
     nodeId: string,
-    interactionId: string,
-    interactionType: string,
-    interactionData: Record<string, any>,
+    itemId: string,
+    selectedOption: number,
+    isCorrect: boolean,
     config: InteractionConfig = {}
 ): Promise<void> {
     const {
-        errorMessage = 'Failed to save your interaction. Your progress may not be recorded.',
+        errorMessage = 'Failed to save your quiz answer. Your progress may not be recorded.',
         showErrorToast = true
     } = config;
 
     try {
         const interaction: InteractionDataDto = {
-            id: interactionId,
-            type: interactionType,
-            data: interactionData
+            id: itemId,
+            type: 'quiz_answer',
+            data: {
+                selectedOption,
+                isCorrect,
+                timestamp: new Date().toISOString()
+            }
         };
 
         const payload: InteractionRequestDto = {
@@ -52,20 +56,77 @@ export async function trackInteraction(
 
         await sendInteraction(payload);
 
-        logger.debug('Interaction tracked successfully', {
+        logger.debug('Quiz interaction tracked successfully', {
             nodeId,
-            interactionType,
-            interactionId: interaction.id
+            itemId,
+            selectedOption,
+            isCorrect
         });
 
     } catch (error) {
-        logger.error('Failed to track interaction', {
+        logger.error('Failed to track quiz interaction', {
             nodeId,
-            interactionType,
+            itemId,
             error: error instanceof Error ? error.message : String(error)
         });
 
-        // Show error toast unless explicitly disabled
+        if (showErrorToast) {
+            showToast.error(errorMessage);
+        }
+    }
+}
+
+async function trackQuestionAnswer(
+    nodeId: string,
+    questionId: string,
+    userAnswer: string,
+    score: number,
+    maxScore: number,
+    isCorrect: boolean,
+    feedbackItems?: { isCorrect: boolean; explanation: string; points: number; }[],
+    config: InteractionConfig = {}
+): Promise<void> {
+    const {
+        errorMessage = 'Failed to save your question answer. Your progress may not be recorded.',
+        showErrorToast = true
+    } = config;
+
+    try {
+        const interaction: InteractionDataDto = {
+            id: questionId,
+            type: 'question_submit',
+            data: {
+                userAnswer: userAnswer.substring(0, 1000),
+                score,
+                maxScore,
+                isCorrect,
+                timestamp: new Date().toISOString(),
+                feedbackItems
+            }
+        };
+
+        const payload: InteractionRequestDto = {
+            nodeId,
+            interaction
+        };
+
+        await sendInteraction(payload);
+
+        logger.debug('Question interaction tracked successfully', {
+            nodeId,
+            questionId,
+            score,
+            maxScore,
+            isCorrect
+        });
+
+    } catch (error) {
+        logger.error('Failed to track question interaction', {
+            nodeId,
+            questionId,
+            error: error instanceof Error ? error.message : String(error)
+        });
+
         if (showErrorToast) {
             showToast.error(errorMessage);
         }
@@ -86,17 +147,7 @@ export function trackQuizInteraction(
     selectedOption: number,
     isCorrect: boolean,
 ): Promise<void> {
-    const interactionId = itemId;
-    return trackInteraction(
-        nodeId,
-        interactionId,
-        'quiz_answer',
-        {
-            selectedOption,
-            isCorrect,
-            timestamp: new Date().toISOString()
-        }
-    );
+    return trackQuizAnswer(nodeId, itemId, selectedOption, isCorrect);
 }
 
 /**
@@ -113,19 +164,18 @@ export function trackQuestionInteraction(
     questionId: string,
     userAnswer: string,
     score?: number,
-    maxScore?: number
+    maxScore?: number,
+    feedbackItems?: { isCorrect: boolean; explanation: string; points: number; }[]
 ): Promise<void> {
-    const interactionId = questionId;
-    return trackInteraction(
-        nodeId,
-        interactionId,
-        'question_submit',
-        {
-            userAnswer: userAnswer.substring(0, 1000), // Limit length for storage
-            score,
-            maxScore,
-            timestamp: new Date().toISOString()
-        }
+    const isCorrect = score === maxScore && score !== undefined && maxScore !== undefined;
+    return trackQuestionAnswer(
+        nodeId, 
+        questionId, 
+        userAnswer, 
+        score ?? 0, 
+        maxScore ?? 0, 
+        isCorrect,
+        feedbackItems
     );
 }
 
@@ -134,44 +184,35 @@ export function trackQuestionInteraction(
  * This provides more React-friendly state management if needed
  */
 export function useInteractionTracker() {
-    const trackAsync = (
-        nodeId: string,
-        interactionId: string,
-        interactionType: string,
-        interactionData: Record<string, any> = {},
-        config: InteractionConfig = {}
-    ) => {
-        // Run in background without blocking
-        void trackInteraction(nodeId, interactionId, interactionType, interactionData, config);
-    };
-
     return {
-        track: trackAsync,
         trackQuiz: (
             nodeId: string,
             interactionId: string,
             selectedOption: number,
             isCorrect: boolean,
         ) => {
-            trackAsync(nodeId, interactionId, 'quiz_answer', {
-                selectedOption,
-                isCorrect,
-                timestamp: new Date().toISOString()
-            });
+            // Run in background without blocking
+            void trackQuizAnswer(nodeId, interactionId, selectedOption, isCorrect);
         },
         trackQuestion: (
             nodeId: string,
             questionId: string,
             userAnswer: string,
             score?: number,
-            maxScore?: number
+            maxScore?: number,
+            feedbackItems?: { isCorrect: boolean; explanation: string; points: number; }[]
         ) => {
-            trackAsync(nodeId, questionId, 'question_submit', {
-                userAnswer: userAnswer.substring(0, 1000),
-                score,
-                maxScore,
-                timestamp: new Date().toISOString()
-            });
+            const isCorrect = score === maxScore && score !== undefined && maxScore !== undefined;
+            // Run in background without blocking
+            void trackQuestionAnswer(
+                nodeId, 
+                questionId, 
+                userAnswer, 
+                score ?? 0, 
+                maxScore ?? 0, 
+                isCorrect,
+                feedbackItems
+            );
         }
     };
 } 

@@ -5,12 +5,13 @@ import { cn } from '@/lib/utils';
 
 import { LessonContentRenderer } from './LessonContentRenderer';
 
+import type { InteractionData } from '@/types/interactions';
 import type { LessonChunk } from '@/types/lesson';
-
 
 interface LessonChunkRendererProps {
   chunk: LessonChunk;
   lessonId: string;
+  interactionData?: InteractionData;
 }
 
 const chunkTypeDetails = {
@@ -23,6 +24,7 @@ const chunkTypeDetails = {
 export const LessonChunkRenderer: React.FC<LessonChunkRendererProps> = ({
   chunk,
   lessonId,
+  interactionData,
 }) => {
   const details = chunkTypeDetails[chunk.type as keyof typeof chunkTypeDetails] || {
     icon: AlertTriangleIcon,
@@ -37,7 +39,7 @@ export const LessonChunkRenderer: React.FC<LessonChunkRendererProps> = ({
           <IconComponent className="h-6 w-6" />
           <h2 className="text-xl font-semibold tracking-tight">{details.title}</h2>
        </div>
-       <LessonContentRenderer content={chunk.content} lessonId={lessonId} />
+       <LessonContentRenderer content={chunk.content} lessonId={lessonId} interactionData={interactionData} />
     </div>
   );
 }; 

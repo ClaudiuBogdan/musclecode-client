@@ -21,9 +21,9 @@ function LessonDetailPage() {
   const { data, isLoading, error, refetch } = useLesson(lessonId);
   const [currentChunkIndex, setCurrentChunkIndex] = useChunkNavigation();
 
-  const { lesson, permission, interactions } = data?.data ?? {};
+  const { lesson, permission, interaction } = data?.data ?? {};
 
-  console.log({ lesson, permission, interactions });
+  console.log({ lesson, permission, interaction });
 
   // Get lesson body with proper typing
   const lessonBody = lesson?.body as LessonBody | undefined;
@@ -142,6 +142,7 @@ function LessonDetailPage() {
           <LessonChunkRenderer
             chunk={chunks[currentChunkIndex]}
             lessonId={lessonId}
+            interactionData={interaction}
           />
         </div>
       </div>

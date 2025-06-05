@@ -6,6 +6,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import { useInteractionTracker } from '@/lib/utils/interactions';
 
+import type { InteractionData } from '@/types/interactions';
+
 // Represents one item in the options array
 interface QuizOptionItem {
   option: string;
@@ -20,6 +22,7 @@ interface QuizRendererProps {
   options: QuizOptionItem[]; // The array of sub-questions/statements
   onComplete?: () => void; // Optional: Callback when correct answer is selected
   lessonId: string; // Lesson ID for interaction tracking
+  interactionData?: InteractionData; // Previous interaction data to set initial state
 }
 
 export const QuizRenderer: React.FC<QuizRendererProps> = ({
@@ -27,13 +30,63 @@ export const QuizRenderer: React.FC<QuizRendererProps> = ({
   question, // Main question/title
   options,  // Array of sub-questions
   onComplete,
-  lessonId
+  lessonId,
+  interactionData
 }) => {
-  const [hasSubmitted, setHasSubmitted] = useState(false); // Renamed from isSubmitted
-  const [isCorrectAnswerSelected, setIsCorrectAnswerSelected] = useState(false); // Tracks if the correct answer was ever selected
-  const [selectedIndices, setSelectedIndices] = useState<Set<number>>(new Set()); // Track all selected indices
-  const [lastSelectedHint, setLastSelectedHint] = useState<string | undefined>(undefined); // Hint for the last incorrect selection
-  const [attemptCount, setAttemptCount] = useState(0); // Track number of attempts
+  // Initialize state based on interaction data
+  const getInitialState = () => {
+    if (!interactionData?.items?.[id]) {
+      return {
+        hasSubmitted: false,
+        isCorrectAnswerSelected: false,
+        selectedIndices: new Set<number>(),
+        lastSelectedHint: undefined,
+        attemptCount: 0
+      };
+    }
+
+    const quizData = interactionData.items[id];
+    const events = quizData.events;
+    const selectedIndices = new Set<number>();
+    let hasSubmitted = false;
+    let isCorrectAnswerSelected = false;
+    let lastSelectedHint: string | undefined;
+    let attemptCount = 0;
+
+    events.forEach(event => {
+      if (event.type === 'quiz_answer') {
+        const selectedOption = Number(event.payload.selectedOption);
+        selectedIndices.add(selectedOption);
+        hasSubmitted = true;
+        attemptCount++;
+        
+        if (event.payload.isCorrect) {
+          isCorrectAnswerSelected = true;
+        } else {
+          // Set hint for incorrect answer
+          const option = options[selectedOption];
+          if (option?.hint) {
+            lastSelectedHint = option.hint;
+          }
+        }
+      }
+    });
+
+    return {
+      hasSubmitted,
+      isCorrectAnswerSelected,
+      selectedIndices,
+      lastSelectedHint,
+      attemptCount
+    };
+  };
+
+  const initialState = getInitialState();
+  const [hasSubmitted, setHasSubmitted] = useState(initialState.hasSubmitted);
+  const [isCorrectAnswerSelected, setIsCorrectAnswerSelected] = useState(initialState.isCorrectAnswerSelected);
+  const [selectedIndices, setSelectedIndices] = useState<Set<number>>(initialState.selectedIndices);
+  const [lastSelectedHint, setLastSelectedHint] = useState<string | undefined>(initialState.lastSelectedHint);
+  const [attemptCount, setAttemptCount] = useState(initialState.attemptCount);
 
   // Hook for tracking interactions
   const { trackQuiz } = useInteractionTracker();

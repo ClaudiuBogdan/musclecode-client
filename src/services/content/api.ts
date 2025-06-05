@@ -1,6 +1,7 @@
 import { apiClient } from "@/lib/api/client";
 import { useModelsStore } from "@/stores/models";
 
+import type { InteractionData } from "@/types/interactions";
 import type { LessonQuestion } from "@/types/lesson";
 import type { Permission } from "@/types/permissions";
 
@@ -53,13 +54,13 @@ export async function fetchLesson(id: string): Promise<{
   data: {
     lesson: LessonEntity,
     permission: Permission,
-    interactions: InteractionDataDto[]
+    interaction: InteractionData
   }
 }> {
   const response = await apiClient.get<{data: {
     lesson: LessonEntity,
     permission: Permission,
-    interactions: InteractionDataDto[]
+    interaction: InteractionData
   }}>(`/api/v1/content/lessons/${id}`);
   return response.data;
 }
@@ -97,7 +98,6 @@ export async function checkQuestionAnswer(questionId: string, payload: CheckAnsw
   return response.data;
 }
 
-// Interaction tracking types and API
 export interface InteractionDataDto {
   id: string; // UUID, generated client-side for the interaction
   type: string; // Describes the type of interaction

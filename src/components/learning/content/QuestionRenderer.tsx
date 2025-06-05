@@ -1,5 +1,5 @@
 import { CheckCircle2, XCircle, ChevronRight, Lightbulb, Loader2 } from 'lucide-react';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
@@ -10,6 +10,7 @@ import { useInteractionTracker } from '@/lib/utils/interactions';
 import { useCheckQuestionAnswer } from '@/services/content/hooks';
 
 import type { CheckAnswerResponse } from '@/services/content/api';
+import type { InteractionData } from '@/types/interactions';
 import type { LessonQuestion } from '@/types/lesson';
 
 
@@ -17,6 +18,7 @@ import type { LessonQuestion } from '@/types/lesson';
 interface QuestionRendererProps {
   lessonQuestion: LessonQuestion & { id: string };
   lessonId: string;
+  interactionData?: InteractionData;
 }
 
 // Use CheckAnswerResponse as the type for evaluationResult
@@ -25,12 +27,68 @@ type EvaluationResult = CheckAnswerResponse;
 export const QuestionRenderer: React.FC<QuestionRendererProps> = ({
   lessonQuestion,
   lessonId,
+  interactionData
 }) => {
   const { id: questionId, question, correctionCriteria } = lessonQuestion;
-  const [userAnswer, setUserAnswer] = useState('');
-  const [isSubmitted, setIsSubmitted] = useState(false);
-  const [evaluationResult, setEvaluationResult] = useState<EvaluationResult | null>(null);
-  const [showHint, setShowHint] = useState(false);
+
+  // Initialize state based on interaction data
+  const getInitialState = () => {
+    if (!interactionData?.items?.[questionId]) {
+      return {
+        userAnswer: '',
+        isSubmitted: false,
+        evaluationResult: null,
+        showHint: false
+      };
+    }
+
+    const questionData = interactionData.items[questionId];
+    const questionEvents = questionData.events.filter(event => event.type === 'question_submit');
+
+    if (questionEvents.length === 0) {
+      return {
+        userAnswer: '',
+        isSubmitted: false,
+        evaluationResult: null,
+        showHint: false
+      };
+    }
+
+    // Get the most recent question event
+    const latestEvent = questionEvents[questionEvents.length - 1];
+    if (latestEvent.type === 'question_submit') {
+      const data = latestEvent.payload;
+
+      // Reconstruct evaluation result from interaction data
+      const evaluationResult: EvaluationResult = {
+        score: data.score ?? 0,
+        maxScore: data.maxScore ?? 0,
+        isCorrect: data.isCorrect,
+        feedbackItems: data.feedbackItems ?? [] // Use stored feedback items or empty array
+      };
+
+      return {
+        userAnswer: data.userAnswer,
+        isSubmitted: true,
+        evaluationResult,
+        showHint: false
+      };
+    }
+
+    return {
+      userAnswer: '',
+      isSubmitted: false,
+      evaluationResult: null,
+      showHint: false
+    };
+  };
+
+  const initialState = getInitialState();
+  const [userAnswer, setUserAnswer] = useState(initialState.userAnswer);
+  const [isSubmitted, setIsSubmitted] = useState(initialState.isSubmitted);
+  const [evaluationResult, setEvaluationResult] = useState<EvaluationResult | null>(initialState.evaluationResult);
+  const [showHint, setShowHint] = useState(initialState.showHint);
+  const prevEvaluationResult = useRef<EvaluationResult | null>(initialState.evaluationResult);
 
   // Use the mutation hook
   const { mutate: checkAnswer, isPending, isError, error, data: apiResult, reset } = useCheckQuestionAnswer();
@@ -44,22 +102,25 @@ export const QuestionRenderer: React.FC<QuestionRendererProps> = ({
       setEvaluationResult(apiResult);
       setIsSubmitted(true);
 
-      // Track the interaction
-      trackQuestion(
-        lessonId as string,
-        questionId as string,
-        userAnswer,
-        apiResult.score,
-        apiResult.maxScore
-      );
-
+      // Only track the interaction for NEW submissions, not when loading from initial state
+      if (prevEvaluationResult.current !== apiResult) {
+        trackQuestion(
+          lessonId as string,
+          questionId as string,
+          userAnswer as string,
+          apiResult.score,
+          apiResult.maxScore,
+          apiResult.feedbackItems
+        );
+        prevEvaluationResult.current = apiResult;
+      }
     }
-  }, [apiResult, lessonId, questionId, userAnswer, trackQuestion]);
+  }, [apiResult, lessonId, questionId, userAnswer, trackQuestion, initialState.isSubmitted]);
 
   const handleSubmit = () => {
     if (!userAnswer.trim()) return;
     // Call the mutation
-    checkAnswer({ questionId, payload: { userAnswer, lessonQuestion } });
+    checkAnswer({ questionId: questionId as string, payload: { userAnswer, lessonQuestion } });
   };
 
   const handleRedo = () => {

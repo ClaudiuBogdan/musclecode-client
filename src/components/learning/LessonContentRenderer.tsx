@@ -10,16 +10,19 @@ import { QuoteRenderer } from './content/QuoteRenderer';
 import { TextRenderer } from './content/TextRenderer';
 import TitleRenderer from './TitleRenderer';
 
+import type { InteractionData } from '@/types/interactions';
 import type { LessonContent } from '@/types/lesson';
 
 interface LessonContentRendererProps {
   content: LessonContent[];
   lessonId: string;
+  interactionData?: InteractionData;
 }
 
 export const LessonContentRenderer: React.FC<LessonContentRendererProps> = ({
   content,
-  lessonId
+  lessonId,
+  interactionData
 }) => {
   if (!content || content.length === 0) {
     return null; // Or some placeholder if needed
@@ -46,13 +49,14 @@ export const LessonContentRenderer: React.FC<LessonContentRendererProps> = ({
             return <FlashcardRenderer key={item.id ?? index} {...contentItem} />;
           case 'quiz':
             // Use QuizRenderer with lessonId for interaction tracking
-            return <QuizRenderer key={item.id ?? index} {...contentItem} lessonId={lessonId} />;
+            return <QuizRenderer key={item.id ?? index} {...contentItem} lessonId={lessonId} interactionData={interactionData} />;
           case 'question':
             // Pass the entire content item as lessonQuestion and lessonId for interaction tracking
             return <QuestionRenderer
               key={item.id ?? index}
               lessonQuestion={contentItem}
               lessonId={lessonId}
+              interactionData={interactionData}
             />;
           default:
             return (
