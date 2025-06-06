@@ -89,7 +89,7 @@ export const QuizRenderer: React.FC<QuizRendererProps> = ({
   const [attemptCount, setAttemptCount] = useState(initialState.attemptCount);
 
   // Hook for tracking interactions
-  const { trackQuiz } = useInteractionTracker();
+  const { trackQuiz } = useInteractionTracker(lessonId as string);
 
   // Renamed from hintContent - Stores the explanation/hint for the CORRECT answer
   const correctAnswerHint = useMemo(() => {
@@ -119,7 +119,7 @@ export const QuizRenderer: React.FC<QuizRendererProps> = ({
     setAttemptCount(newAttemptCount);
 
     // Track the interaction
-    trackQuiz(lessonId as string, id as string, index, currentSelectionCorrect);
+    void trackQuiz(lessonId as string, id as string, index, currentSelectionCorrect);
 
     // Store hint if incorrect, clear if correct
     setLastSelectedHint(currentSelectionCorrect ? undefined : selectedOption.hint);

@@ -1,10 +1,9 @@
 import { apiClient } from "@/lib/api/client";
 import { useModelsStore } from "@/stores/models";
 
-import type { InteractionData } from "@/types/interactions";
+import type { InteractionData, InteractionItem, InteractionEvent_Legacy } from "@/types/interactions";
 import type { LessonQuestion } from "@/types/lesson";
 import type { Permission } from "@/types/permissions";
-
 
 export interface ContentNode {
   id: string;
@@ -54,13 +53,13 @@ export async function fetchLesson(id: string): Promise<{
   data: {
     lesson: LessonEntity,
     permission: Permission,
-    interaction: InteractionData
+    interaction: InteractionBody
   }
 }> {
   const response = await apiClient.get<{data: {
     lesson: LessonEntity,
     permission: Permission,
-    interaction: InteractionData
+    interaction: InteractionBody
   }}>(`/api/v1/content/lessons/${id}`);
   return response.data;
 }
@@ -69,7 +68,6 @@ export async function fetchExercise(id: string): Promise<ExerciseEntity> {
   const response = await apiClient.get<ExerciseEntity>(`/api/v1/content/exercises/${id}`);
   return response.data;
 }
-
 
 export interface CheckAnswerPayload {
   userAnswer: string;
@@ -98,22 +96,117 @@ export async function checkQuestionAnswer(questionId: string, payload: CheckAnsw
   return response.data;
 }
 
-export interface InteractionDataDto {
-  id: string; // UUID, generated client-side for the interaction
-  type: string; // Describes the type of interaction
-  data: Record<string, any>; // Flexible object for interaction-specific data
+// New event-based interaction structures
+export enum EventType {
+  QUIZ_ANSWER = 'quiz_answer',
+  QUESTION_SUBMIT = 'question_submit',
+}
+
+export interface QuizAnswerPayload {
+  quizId: string;
+  selectedOption: number;
+  isCorrect: boolean;
+  timestamp: string;
+}
+
+export interface QuestionSubmitPayload {
+  questionId: string;
+  userAnswer: string;
+  score: number;
+  maxScore: number;
+  isCorrect: boolean;
+  timestamp: string;
+  feedbackItems: {
+    isCorrect: boolean;
+    explanation: string;
+    points: number;
+  }[];
+}
+
+export interface EventDto {
+  type: EventType;
+  payload: QuizAnswerPayload | QuestionSubmitPayload;
 }
 
 export interface InteractionRequestDto {
-  nodeId: string; // UUID of the content node (lesson, quiz, etc.)
-  interaction: InteractionDataDto;
+  nodeId: string;
+  event: EventDto;
+}
+
+export interface InteractionEvent {
+  id: string;
+  type: string;
+  timestamp: string;
+  payload: Record<string, any>;
+  version: '1.0';
+}
+
+export interface InteractionBody {
+  version: '1.0';
+  events: InteractionEvent[];
+}
+
+export interface InteractionResponseDto {
+  data: {
+    interaction: InteractionBody;
+  };
 }
 
 /**
- * Sends user interaction data to the backend API
- * This function is designed to be called asynchronously without blocking the UI
+ * Sends user interaction event to the backend API
  */
-export async function sendInteraction(payload: InteractionRequestDto): Promise<void> {
-  const response = await apiClient.post<void>('/api/v1/content/interactions', payload);
+export async function sendInteraction(payload: InteractionRequestDto): Promise<InteractionResponseDto> {
+  const response = await apiClient.post<InteractionResponseDto>('/api/v1/content/interactions', payload);
   return response.data;
+}
+
+// Helper function to convert InteractionBody to InteractionData format for backward compatibility
+export function convertInteractionBodyToData(interactionBody: InteractionBody): InteractionData {
+  const items: Record<string, InteractionItem> = {};
+
+  for (const event of interactionBody.events) {
+    let itemId: string;
+    let legacyEvent: InteractionEvent_Legacy;
+
+    if (event.type === 'quiz_answer') {
+      itemId = event.payload.quizId;
+      legacyEvent = {
+        type: 'quiz_answer',
+        eventId: event.id,
+        payload: {
+          selectedOption: event.payload.selectedOption,
+          isCorrect: event.payload.isCorrect,
+          timestamp: event.payload.timestamp
+        },
+        timestamp: event.timestamp // Already a string
+      };
+    } else if (event.type === 'question_submit') {
+      itemId = event.payload.questionId;
+      legacyEvent = {
+        type: 'question_submit',
+        eventId: event.id,
+        payload: {
+          userAnswer: event.payload.userAnswer,
+          score: event.payload.score,
+          maxScore: event.payload.maxScore,
+          isCorrect: event.payload.isCorrect,
+          timestamp: event.payload.timestamp,
+          feedbackItems: event.payload.feedbackItems
+        },
+        timestamp: event.timestamp // Already a string
+      };
+    } else {
+      continue; // Skip unknown event types
+    }
+
+    if (!items[itemId]) {
+      items[itemId] = { events: [] };
+    }
+    items[itemId].events.push(legacyEvent);
+  }
+
+  return {
+    items,
+    version: interactionBody.version
+  };
 }

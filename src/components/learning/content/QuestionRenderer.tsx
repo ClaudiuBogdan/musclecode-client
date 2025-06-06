@@ -94,7 +94,7 @@ export const QuestionRenderer: React.FC<QuestionRendererProps> = ({
   const { mutate: checkAnswer, isPending, isError, error, data: apiResult, reset } = useCheckQuestionAnswer();
 
   // Hook for tracking interactions
-  const { trackQuestion } = useInteractionTracker();
+  const { trackQuestion } = useInteractionTracker(lessonId as string);
 
   // Effect to update state when API call succeeds
   useEffect(() => {
@@ -104,7 +104,7 @@ export const QuestionRenderer: React.FC<QuestionRendererProps> = ({
 
       // Only track the interaction for NEW submissions, not when loading from initial state
       if (prevEvaluationResult.current !== apiResult) {
-        trackQuestion(
+        void trackQuestion(
           lessonId as string,
           questionId as string,
           userAnswer as string,

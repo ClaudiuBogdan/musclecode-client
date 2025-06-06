@@ -1,4 +1,4 @@
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { AuthErrorCode } from "@/lib/auth/errors";
 
@@ -14,7 +14,8 @@ import {
 import type {
   CheckAnswerPayload,
   CheckAnswerResponse,
-  InteractionRequestDto
+  InteractionRequestDto,
+  InteractionResponseDto
 } from "./api";
 import type { AuthError } from "@/lib/auth/errors";
 
@@ -76,13 +77,34 @@ export function useCheckQuestionAnswer() {
 
 /**
  * Hook for sending user interactions to the backend
- * This mutation is designed to be fire-and-forget for background tracking
+ * This mutation updates the lesson cache with the new interaction data
  */
-export function useSendInteraction() {
-  return useMutation<void, Error, InteractionRequestDto>({
+export function useSendInteraction(lessonId?: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation<InteractionResponseDto, Error, InteractionRequestDto>({
     mutationFn: sendInteraction,
     // Don't retry on failure - interactions are fire-and-forget
     retry: false,
+    onSuccess: (response, _variables) => {
+      // Update the lesson cache with the new interaction data
+      if (lessonId) {
+        queryClient.setQueryData(
+          ["content", "lesson", lessonId],
+          (oldData: any) => {
+            if (!oldData?.data) return oldData;
+            
+            return {
+              ...oldData,
+              data: {
+                ...oldData.data,
+                interaction: response.data.interaction
+              }
+            };
+          }
+        );
+      }
+    },
     // We'll handle errors externally with toast notifications
   });
 }

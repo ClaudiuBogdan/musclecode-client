@@ -6,6 +6,7 @@ import { LessonProgressBar } from "@/components/learning/LessonProgressBar";
 import { Button } from "@/components/ui/button";
 import { ErrorDisplay } from "@/components/ui/ErrorDisplay";
 import { Skeleton } from "@/components/ui/skeleton";
+import { convertInteractionBodyToData } from "@/services/content/api";
 import { useLesson } from "@/services/content/hooks";
 import { useChunkNavigation } from "@/services/learning/hooks/useChunkNavigation";
 
@@ -24,6 +25,9 @@ function LessonDetailPage() {
   const { lesson, permission, interaction } = data?.data ?? {};
 
   console.log({ lesson, permission, interaction });
+
+  // Convert interaction data from new format to legacy format for backward compatibility
+  const legacyInteractionData = interaction ? convertInteractionBodyToData(interaction) : undefined;
 
   // Get lesson body with proper typing
   const lessonBody = lesson?.body as LessonBody | undefined;
@@ -142,7 +146,7 @@ function LessonDetailPage() {
           <LessonChunkRenderer
             chunk={chunks[currentChunkIndex]}
             lessonId={lessonId}
-            interactionData={interaction}
+            interactionData={legacyInteractionData}
           />
         </div>
       </div>

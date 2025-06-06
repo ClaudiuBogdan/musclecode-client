@@ -1,9 +1,14 @@
-
-
 import { createLogger } from '@/lib/logger';
-import { type InteractionRequestDto, type InteractionDataDto, sendInteraction } from '@/services/content/api';
+import { 
+  type InteractionRequestDto, 
+  type EventDto, 
+  type QuizAnswerPayload,
+  type QuestionSubmitPayload,
+  EventType,
+  sendInteraction
+} from '@/services/content/api';
+import { useSendInteraction } from '@/services/content/hooks';
 import { showToast } from '@/utils/toast';
-
 
 const logger = createLogger('InteractionTracker');
 
@@ -22,13 +27,14 @@ interface InteractionConfig {
  * This function is non-blocking and handles errors gracefully with toast notifications.
  * 
  * @param nodeId - UUID of the content node (lesson, quiz, etc.)
- * @param interactionType - Type of interaction (e.g., 'quiz_answer', 'question_submit')
- * @param interactionData - Flexible data object for interaction-specific information
+ * @param quizId - ID of the quiz item
+ * @param selectedOption - Selected option index
+ * @param isCorrect - Whether the answer was correct
  * @param config - Optional configuration for behavior customization
  */
 async function trackQuizAnswer(
     nodeId: string,
-    itemId: string,
+    quizId: string,
     selectedOption: number,
     isCorrect: boolean,
     config: InteractionConfig = {}
@@ -39,26 +45,28 @@ async function trackQuizAnswer(
     } = config;
 
     try {
-        const interaction: InteractionDataDto = {
-            id: itemId,
-            type: 'quiz_answer',
-            data: {
-                selectedOption,
-                isCorrect,
-                timestamp: new Date().toISOString()
-            }
+        const payload: QuizAnswerPayload = {
+            quizId,
+            selectedOption,
+            isCorrect,
+            timestamp: new Date().toISOString()
         };
 
-        const payload: InteractionRequestDto = {
+        const event: EventDto = {
+            type: EventType.QUIZ_ANSWER,
+            payload
+        };
+
+        const requestPayload: InteractionRequestDto = {
             nodeId,
-            interaction
+            event
         };
 
-        await sendInteraction(payload);
+        await sendInteraction(requestPayload);
 
         logger.debug('Quiz interaction tracked successfully', {
             nodeId,
-            itemId,
+            quizId,
             selectedOption,
             isCorrect
         });
@@ -66,7 +74,7 @@ async function trackQuizAnswer(
     } catch (error) {
         logger.error('Failed to track quiz interaction', {
             nodeId,
-            itemId,
+            quizId,
             error: error instanceof Error ? error.message : String(error)
         });
 
@@ -83,7 +91,7 @@ async function trackQuestionAnswer(
     score: number,
     maxScore: number,
     isCorrect: boolean,
-    feedbackItems?: { isCorrect: boolean; explanation: string; points: number; }[],
+    feedbackItems: { isCorrect: boolean; explanation: string; points: number; }[] = [],
     config: InteractionConfig = {}
 ): Promise<void> {
     const {
@@ -92,25 +100,27 @@ async function trackQuestionAnswer(
     } = config;
 
     try {
-        const interaction: InteractionDataDto = {
-            id: questionId,
-            type: 'question_submit',
-            data: {
-                userAnswer: userAnswer.substring(0, 1000),
-                score,
-                maxScore,
-                isCorrect,
-                timestamp: new Date().toISOString(),
-                feedbackItems
-            }
+        const payload: QuestionSubmitPayload = {
+            questionId,
+            userAnswer: userAnswer.substring(0, 1000),
+            score,
+            maxScore,
+            isCorrect,
+            timestamp: new Date().toISOString(),
+            feedbackItems
         };
 
-        const payload: InteractionRequestDto = {
+        const event: EventDto = {
+            type: EventType.QUESTION_SUBMIT,
+            payload
+        };
+
+        const requestPayload: InteractionRequestDto = {
             nodeId,
-            interaction
+            event
         };
 
-        await sendInteraction(payload);
+        await sendInteraction(requestPayload);
 
         logger.debug('Question interaction tracked successfully', {
             nodeId,
@@ -137,17 +147,17 @@ async function trackQuestionAnswer(
  * Utility function specifically for quiz interactions
  * 
  * @param nodeId - Quiz/lesson node ID
- * @param itemId - Unique ID for the quiz item/question
+ * @param quizId - Unique ID for the quiz item/question
  * @param selectedOption - Selected option index
  * @param isCorrect - Whether the answer was correct
  */
 export function trackQuizInteraction(
     nodeId: string,
-    itemId: string,
+    quizId: string,
     selectedOption: number,
     isCorrect: boolean,
 ): Promise<void> {
-    return trackQuizAnswer(nodeId, itemId, selectedOption, isCorrect);
+    return trackQuizAnswer(nodeId, quizId, selectedOption, isCorrect);
 }
 
 /**
@@ -158,6 +168,7 @@ export function trackQuizInteraction(
  * @param userAnswer - User's text answer
  * @param score - Score received (if available)
  * @param maxScore - Maximum possible score (if available)
+ * @param feedbackItems - Feedback items from the response
  */
 export function trackQuestionInteraction(
     nodeId: string,
@@ -175,26 +186,61 @@ export function trackQuestionInteraction(
         score ?? 0, 
         maxScore ?? 0, 
         isCorrect,
-        feedbackItems
+        feedbackItems ?? []
     );
 }
 
 /**
  * Hook-based version that uses React Query mutation for component integration
- * This provides more React-friendly state management if needed
+ * This provides more React-friendly state management and automatic cache updates
  */
-export function useInteractionTracker() {
+export function useInteractionTracker(lessonId?: string) {
+    const mutation = useSendInteraction(lessonId);
+
     return {
-        trackQuiz: (
+        trackQuiz: async (
             nodeId: string,
-            interactionId: string,
+            quizId: string,
             selectedOption: number,
             isCorrect: boolean,
         ) => {
-            // Run in background without blocking
-            void trackQuizAnswer(nodeId, interactionId, selectedOption, isCorrect);
+            try {
+                const payload: QuizAnswerPayload = {
+                    quizId,
+                    selectedOption,
+                    isCorrect,
+                    timestamp: new Date().toISOString()
+                };
+
+                const event: EventDto = {
+                    type: EventType.QUIZ_ANSWER,
+                    payload
+                };
+
+                const requestPayload: InteractionRequestDto = {
+                    nodeId,
+                    event
+                };
+
+                await mutation.mutateAsync(requestPayload);
+
+                logger.debug('Quiz interaction tracked successfully', {
+                    nodeId,
+                    quizId,
+                    selectedOption,
+                    isCorrect
+                });
+            } catch (error) {
+                logger.error('Failed to track quiz interaction', {
+                    nodeId,
+                    quizId,
+                    error: error instanceof Error ? error.message : String(error)
+                });
+
+                showToast.error('Failed to save your quiz answer. Your progress may not be recorded.');
+            }
         },
-        trackQuestion: (
+        trackQuestion: async (
             nodeId: string,
             questionId: string,
             userAnswer: string,
@@ -202,17 +248,47 @@ export function useInteractionTracker() {
             maxScore?: number,
             feedbackItems?: { isCorrect: boolean; explanation: string; points: number; }[]
         ) => {
-            const isCorrect = score === maxScore && score !== undefined && maxScore !== undefined;
-            // Run in background without blocking
-            void trackQuestionAnswer(
-                nodeId, 
-                questionId, 
-                userAnswer, 
-                score ?? 0, 
-                maxScore ?? 0, 
-                isCorrect,
-                feedbackItems
-            );
+            try {
+                const isCorrect = score === maxScore && score !== undefined && maxScore !== undefined;
+                
+                const payload: QuestionSubmitPayload = {
+                    questionId,
+                    userAnswer: userAnswer.substring(0, 1000),
+                    score: score ?? 0,
+                    maxScore: maxScore ?? 0,
+                    isCorrect,
+                    timestamp: new Date().toISOString(),
+                    feedbackItems: feedbackItems ?? []
+                };
+
+                const event: EventDto = {
+                    type: EventType.QUESTION_SUBMIT,
+                    payload
+                };
+
+                const requestPayload: InteractionRequestDto = {
+                    nodeId,
+                    event
+                };
+
+                await mutation.mutateAsync(requestPayload);
+
+                logger.debug('Question interaction tracked successfully', {
+                    nodeId,
+                    questionId,
+                    score: score ?? 0,
+                    maxScore: maxScore ?? 0,
+                    isCorrect
+                });
+            } catch (error) {
+                logger.error('Failed to track question interaction', {
+                    nodeId,
+                    questionId,
+                    error: error instanceof Error ? error.message : String(error)
+                });
+
+                showToast.error('Failed to save your question answer. Your progress may not be recorded.');
+            }
         }
     };
 } 
