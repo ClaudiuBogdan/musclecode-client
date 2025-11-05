@@ -72,7 +72,7 @@ export function CollectionForm({
     },
   });
 
-  const handleSubmit = async (data: CollectionFormData) => {
+  const handleSubmit = (data: CollectionFormData) => {
     // Clean the data before submitting
     const cleanedData = {
       ...data,
@@ -80,7 +80,7 @@ export function CollectionForm({
       description: data.description.trim(),
       tags: data.tags.map((tag) => tag.trim()).filter((tag) => tag.length > 0),
     };
-    await onSubmit(cleanedData);
+    onSubmit(cleanedData);
   };
 
   return (

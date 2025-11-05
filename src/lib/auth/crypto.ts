@@ -25,11 +25,16 @@ async function getKey(password: string, salt: Uint8Array): Promise<CryptoKey> {
     ["deriveBits", "deriveKey"]
   );
 
+  // Ensure salt is provided as an ArrayBuffer (not ArrayBufferLike)
+  const saltCopy = new Uint8Array(salt.byteLength);
+  saltCopy.set(salt);
+  const saltBuffer: ArrayBuffer = saltCopy.buffer;
+
   // Derive the actual key using PBKDF2
   return crypto.subtle.deriveKey(
     {
       name: "PBKDF2",
-      salt,
+      salt: saltBuffer,
       iterations: 100000,
       hash: "SHA-256",
     },

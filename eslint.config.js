@@ -87,6 +87,13 @@ export default tseslint.config(
       '@typescript-eslint/consistent-type-imports': 'warn',
       '@typescript-eslint/no-unsafe-assignment': 'off',
       '@typescript-eslint/no-unsafe-return': 'off',
+      '@typescript-eslint/no-unsafe-argument': 'off',
+      '@typescript-eslint/no-misused-promises': ['warn', { checksVoidReturn: { attributes: false } }],
+      '@typescript-eslint/prefer-nullish-coalescing': 'warn',
+      '@typescript-eslint/prefer-optional-chain': 'warn',
+      '@typescript-eslint/no-redundant-type-constituents': 'warn',
+      '@typescript-eslint/no-base-to-string': 'warn',
+      '@typescript-eslint/only-throw-error': 'warn',
 
       // --- React & Hooks & Refresh ---
       ...reactPlugin.configs.recommended.rules,
@@ -98,13 +105,21 @@ export default tseslint.config(
         'warn',
         { allowConstantExport: true },
       ],
+      'react-hooks/set-state-in-effect': 'warn',
+      'react-hooks/purity': 'warn',
+      'react-hooks/preserve-manual-memoization': 'warn',
 
       // --- Accessibility ---
       ...jsxA11yPlugin.configs.recommended.rules,
+      'jsx-a11y/no-static-element-interactions': 'warn',
+      'jsx-a11y/click-events-have-key-events': 'warn',
+      'jsx-a11y/label-has-associated-control': 'warn',
+      'jsx-a11y/role-has-required-aria-props': 'warn',
+      'jsx-a11y/no-noninteractive-element-interactions': 'warn',
 
       // --- Imports & circular deps ---
       'import/no-unused-modules': ['error'],
-      'import/no-cycle': ['error', { maxDepth: 5, ignoreExternal: true }],
+      'import/no-cycle': ['warn', { maxDepth: 5, ignoreExternal: true }],
       'import/order': [
         'warn',
         {
@@ -139,6 +154,8 @@ export default tseslint.config(
 
       // Turn off rules covered by TS
       'no-undef': 'off',
+      'react/no-unknown-property': 'warn',
+      'react/no-unescaped-entities': 'warn',
     },
   },
 

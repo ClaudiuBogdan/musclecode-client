@@ -10,502 +10,269 @@
 
 import { createFileRoute } from '@tanstack/react-router'
 
-// Import Routes
+import { Route as rootRouteImport } from './routes/__root'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as SettingsProfileRouteImport } from './routes/settings/profile'
 
-import { Route as rootRoute } from './routes/__root'
-import { Route as LoginImport } from './routes/login'
-import { Route as SettingsProfileImport } from './routes/settings/profile'
-
-// Create Virtual Routes
-
-const UnauthorizedLazyImport = createFileRoute('/unauthorized')()
-const ErrorTestLazyImport = createFileRoute('/error-test')()
-const IndexLazyImport = createFileRoute('/')()
-const SettingsIndexLazyImport = createFileRoute('/settings/')()
-const OnboardingIndexLazyImport = createFileRoute('/onboarding/')()
-const LearningIndexLazyImport = createFileRoute('/learning/')()
-const CollectionsIndexLazyImport = createFileRoute('/collections/')()
-const AlgorithmsIndexLazyImport = createFileRoute('/algorithms/')()
-const SettingsSecurityLazyImport = createFileRoute('/settings/security')()
-const SettingsPreferencesLazyImport = createFileRoute('/settings/preferences')()
-const SettingsNotificationsLazyImport = createFileRoute(
+const UnauthorizedLazyRouteImport = createFileRoute('/unauthorized')()
+const ErrorTestLazyRouteImport = createFileRoute('/error-test')()
+const IndexLazyRouteImport = createFileRoute('/')()
+const SettingsIndexLazyRouteImport = createFileRoute('/settings/')()
+const OnboardingIndexLazyRouteImport = createFileRoute('/onboarding/')()
+const LearningIndexLazyRouteImport = createFileRoute('/learning/')()
+const CollectionsIndexLazyRouteImport = createFileRoute('/collections/')()
+const AlgorithmsIndexLazyRouteImport = createFileRoute('/algorithms/')()
+const SettingsSecurityLazyRouteImport = createFileRoute('/settings/security')()
+const SettingsPreferencesLazyRouteImport = createFileRoute(
+  '/settings/preferences',
+)()
+const SettingsNotificationsLazyRouteImport = createFileRoute(
   '/settings/notifications',
 )()
-const SettingsModelsLazyImport = createFileRoute('/settings/models')()
-const SettingsBillingLazyImport = createFileRoute('/settings/billing')()
-const LearningCreateLazyImport = createFileRoute('/learning/create')()
-const CollectionsNewLazyImport = createFileRoute('/collections/new')()
-const AlgorithmsNewLazyImport = createFileRoute('/algorithms/new')()
-const LearningModulesIndexLazyImport = createFileRoute('/learning/modules/')()
-const CollectionsCollectionIdIndexLazyImport = createFileRoute(
+const SettingsModelsLazyRouteImport = createFileRoute('/settings/models')()
+const SettingsBillingLazyRouteImport = createFileRoute('/settings/billing')()
+const LearningCreateLazyRouteImport = createFileRoute('/learning/create')()
+const CollectionsNewLazyRouteImport = createFileRoute('/collections/new')()
+const AlgorithmsNewLazyRouteImport = createFileRoute('/algorithms/new')()
+const LearningModulesIndexLazyRouteImport =
+  createFileRoute('/learning/modules/')()
+const CollectionsCollectionIdIndexLazyRouteImport = createFileRoute(
   '/collections/$collectionId/',
 )()
-const AlgorithmsAlgorithmIdIndexLazyImport = createFileRoute(
+const AlgorithmsAlgorithmIdIndexLazyRouteImport = createFileRoute(
   '/algorithms/$algorithmId/',
 )()
-const CollectionsCollectionIdEditLazyImport = createFileRoute(
+const CollectionsCollectionIdEditLazyRouteImport = createFileRoute(
   '/collections/$collectionId/edit',
 )()
-const AlgorithmsAlgorithmIdViewLazyImport = createFileRoute(
+const AlgorithmsAlgorithmIdViewLazyRouteImport = createFileRoute(
   '/algorithms/$algorithmId/view',
 )()
-const AlgorithmsAlgorithmIdEditLazyImport = createFileRoute(
+const AlgorithmsAlgorithmIdEditLazyRouteImport = createFileRoute(
   '/algorithms/$algorithmId/edit',
 )()
-const LearningModulesModuleIdIndexLazyImport = createFileRoute(
+const LearningModulesModuleIdIndexLazyRouteImport = createFileRoute(
   '/learning/modules/$moduleId/',
 )()
-const LearningModulesModuleIdUsersIndexLazyImport = createFileRoute(
+const LearningModulesModuleIdUsersIndexLazyRouteImport = createFileRoute(
   '/learning/modules/$moduleId/users/',
 )()
-const LearningModulesModuleIdLessonsLessonIdLazyImport = createFileRoute(
+const LearningModulesModuleIdLessonsLessonIdLazyRouteImport = createFileRoute(
   '/learning/modules/$moduleId/lessons/$lessonId',
 )()
-const LearningModulesModuleIdUsersUserIdIndexLazyImport = createFileRoute(
+const LearningModulesModuleIdUsersUserIdIndexLazyRouteImport = createFileRoute(
   '/learning/modules/$moduleId/users/$userId/',
 )()
 
-// Create/Update Routes
-
-const UnauthorizedLazyRoute = UnauthorizedLazyImport.update({
+const UnauthorizedLazyRoute = UnauthorizedLazyRouteImport.update({
   id: '/unauthorized',
   path: '/unauthorized',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any).lazy(() => import('./routes/unauthorized.lazy').then((d) => d.Route))
-
-const ErrorTestLazyRoute = ErrorTestLazyImport.update({
+const ErrorTestLazyRoute = ErrorTestLazyRouteImport.update({
   id: '/error-test',
   path: '/error-test',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any).lazy(() => import('./routes/error-test.lazy').then((d) => d.Route))
-
-const LoginRoute = LoginImport.update({
+const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any).lazy(() => import('./routes/login.lazy').then((d) => d.Route))
-
-const IndexLazyRoute = IndexLazyImport.update({
+const IndexLazyRoute = IndexLazyRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any).lazy(() => import('./routes/index.lazy').then((d) => d.Route))
-
-const SettingsIndexLazyRoute = SettingsIndexLazyImport.update({
+const SettingsIndexLazyRoute = SettingsIndexLazyRouteImport.update({
   id: '/settings/',
   path: '/settings/',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any).lazy(() =>
   import('./routes/settings/index.lazy').then((d) => d.Route),
 )
-
-const OnboardingIndexLazyRoute = OnboardingIndexLazyImport.update({
+const OnboardingIndexLazyRoute = OnboardingIndexLazyRouteImport.update({
   id: '/onboarding/',
   path: '/onboarding/',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any).lazy(() =>
   import('./routes/onboarding/index.lazy').then((d) => d.Route),
 )
-
-const LearningIndexLazyRoute = LearningIndexLazyImport.update({
+const LearningIndexLazyRoute = LearningIndexLazyRouteImport.update({
   id: '/learning/',
   path: '/learning/',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any).lazy(() =>
   import('./routes/learning/index.lazy').then((d) => d.Route),
 )
-
-const CollectionsIndexLazyRoute = CollectionsIndexLazyImport.update({
+const CollectionsIndexLazyRoute = CollectionsIndexLazyRouteImport.update({
   id: '/collections/',
   path: '/collections/',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any).lazy(() =>
   import('./routes/collections/index.lazy').then((d) => d.Route),
 )
-
-const AlgorithmsIndexLazyRoute = AlgorithmsIndexLazyImport.update({
+const AlgorithmsIndexLazyRoute = AlgorithmsIndexLazyRouteImport.update({
   id: '/algorithms/',
   path: '/algorithms/',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any).lazy(() =>
   import('./routes/algorithms/index.lazy').then((d) => d.Route),
 )
-
-const SettingsSecurityLazyRoute = SettingsSecurityLazyImport.update({
+const SettingsSecurityLazyRoute = SettingsSecurityLazyRouteImport.update({
   id: '/settings/security',
   path: '/settings/security',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any).lazy(() =>
   import('./routes/settings/security.lazy').then((d) => d.Route),
 )
-
-const SettingsPreferencesLazyRoute = SettingsPreferencesLazyImport.update({
+const SettingsPreferencesLazyRoute = SettingsPreferencesLazyRouteImport.update({
   id: '/settings/preferences',
   path: '/settings/preferences',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any).lazy(() =>
   import('./routes/settings/preferences.lazy').then((d) => d.Route),
 )
-
-const SettingsNotificationsLazyRoute = SettingsNotificationsLazyImport.update({
-  id: '/settings/notifications',
-  path: '/settings/notifications',
-  getParentRoute: () => rootRoute,
-} as any).lazy(() =>
-  import('./routes/settings/notifications.lazy').then((d) => d.Route),
-)
-
-const SettingsModelsLazyRoute = SettingsModelsLazyImport.update({
+const SettingsNotificationsLazyRoute =
+  SettingsNotificationsLazyRouteImport.update({
+    id: '/settings/notifications',
+    path: '/settings/notifications',
+    getParentRoute: () => rootRouteImport,
+  } as any).lazy(() =>
+    import('./routes/settings/notifications.lazy').then((d) => d.Route),
+  )
+const SettingsModelsLazyRoute = SettingsModelsLazyRouteImport.update({
   id: '/settings/models',
   path: '/settings/models',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any).lazy(() =>
   import('./routes/settings/models.lazy').then((d) => d.Route),
 )
-
-const SettingsBillingLazyRoute = SettingsBillingLazyImport.update({
+const SettingsBillingLazyRoute = SettingsBillingLazyRouteImport.update({
   id: '/settings/billing',
   path: '/settings/billing',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any).lazy(() =>
   import('./routes/settings/billing.lazy').then((d) => d.Route),
 )
-
-const LearningCreateLazyRoute = LearningCreateLazyImport.update({
+const LearningCreateLazyRoute = LearningCreateLazyRouteImport.update({
   id: '/learning/create',
   path: '/learning/create',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any).lazy(() =>
   import('./routes/learning/create.lazy').then((d) => d.Route),
 )
-
-const CollectionsNewLazyRoute = CollectionsNewLazyImport.update({
+const CollectionsNewLazyRoute = CollectionsNewLazyRouteImport.update({
   id: '/collections/new',
   path: '/collections/new',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any).lazy(() =>
   import('./routes/collections/new.lazy').then((d) => d.Route),
 )
-
-const AlgorithmsNewLazyRoute = AlgorithmsNewLazyImport.update({
+const AlgorithmsNewLazyRoute = AlgorithmsNewLazyRouteImport.update({
   id: '/algorithms/new',
   path: '/algorithms/new',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any).lazy(() =>
   import('./routes/algorithms/new.lazy').then((d) => d.Route),
 )
-
-const SettingsProfileRoute = SettingsProfileImport.update({
+const SettingsProfileRoute = SettingsProfileRouteImport.update({
   id: '/settings/profile',
   path: '/settings/profile',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any).lazy(() =>
   import('./routes/settings/profile.lazy').then((d) => d.Route),
 )
-
-const LearningModulesIndexLazyRoute = LearningModulesIndexLazyImport.update({
-  id: '/learning/modules/',
-  path: '/learning/modules/',
-  getParentRoute: () => rootRoute,
-} as any).lazy(() =>
-  import('./routes/learning/modules/index.lazy').then((d) => d.Route),
-)
-
+const LearningModulesIndexLazyRoute =
+  LearningModulesIndexLazyRouteImport.update({
+    id: '/learning/modules/',
+    path: '/learning/modules/',
+    getParentRoute: () => rootRouteImport,
+  } as any).lazy(() =>
+    import('./routes/learning/modules/index.lazy').then((d) => d.Route),
+  )
 const CollectionsCollectionIdIndexLazyRoute =
-  CollectionsCollectionIdIndexLazyImport.update({
+  CollectionsCollectionIdIndexLazyRouteImport.update({
     id: '/collections/$collectionId/',
     path: '/collections/$collectionId/',
-    getParentRoute: () => rootRoute,
+    getParentRoute: () => rootRouteImport,
   } as any).lazy(() =>
     import('./routes/collections/$collectionId/index.lazy').then(
       (d) => d.Route,
     ),
   )
-
 const AlgorithmsAlgorithmIdIndexLazyRoute =
-  AlgorithmsAlgorithmIdIndexLazyImport.update({
+  AlgorithmsAlgorithmIdIndexLazyRouteImport.update({
     id: '/algorithms/$algorithmId/',
     path: '/algorithms/$algorithmId/',
-    getParentRoute: () => rootRoute,
+    getParentRoute: () => rootRouteImport,
   } as any).lazy(() =>
     import('./routes/algorithms/$algorithmId/index.lazy').then((d) => d.Route),
   )
-
 const CollectionsCollectionIdEditLazyRoute =
-  CollectionsCollectionIdEditLazyImport.update({
+  CollectionsCollectionIdEditLazyRouteImport.update({
     id: '/collections/$collectionId/edit',
     path: '/collections/$collectionId/edit',
-    getParentRoute: () => rootRoute,
+    getParentRoute: () => rootRouteImport,
   } as any).lazy(() =>
     import('./routes/collections/$collectionId/edit.lazy').then((d) => d.Route),
   )
-
 const AlgorithmsAlgorithmIdViewLazyRoute =
-  AlgorithmsAlgorithmIdViewLazyImport.update({
+  AlgorithmsAlgorithmIdViewLazyRouteImport.update({
     id: '/algorithms/$algorithmId/view',
     path: '/algorithms/$algorithmId/view',
-    getParentRoute: () => rootRoute,
+    getParentRoute: () => rootRouteImport,
   } as any).lazy(() =>
     import('./routes/algorithms/$algorithmId/view.lazy').then((d) => d.Route),
   )
-
 const AlgorithmsAlgorithmIdEditLazyRoute =
-  AlgorithmsAlgorithmIdEditLazyImport.update({
+  AlgorithmsAlgorithmIdEditLazyRouteImport.update({
     id: '/algorithms/$algorithmId/edit',
     path: '/algorithms/$algorithmId/edit',
-    getParentRoute: () => rootRoute,
+    getParentRoute: () => rootRouteImport,
   } as any).lazy(() =>
     import('./routes/algorithms/$algorithmId/edit.lazy').then((d) => d.Route),
   )
-
 const LearningModulesModuleIdIndexLazyRoute =
-  LearningModulesModuleIdIndexLazyImport.update({
+  LearningModulesModuleIdIndexLazyRouteImport.update({
     id: '/learning/modules/$moduleId/',
     path: '/learning/modules/$moduleId/',
-    getParentRoute: () => rootRoute,
+    getParentRoute: () => rootRouteImport,
   } as any).lazy(() =>
     import('./routes/learning/modules/$moduleId/index.lazy').then(
       (d) => d.Route,
     ),
   )
-
 const LearningModulesModuleIdUsersIndexLazyRoute =
-  LearningModulesModuleIdUsersIndexLazyImport.update({
+  LearningModulesModuleIdUsersIndexLazyRouteImport.update({
     id: '/learning/modules/$moduleId/users/',
     path: '/learning/modules/$moduleId/users/',
-    getParentRoute: () => rootRoute,
+    getParentRoute: () => rootRouteImport,
   } as any).lazy(() =>
     import('./routes/learning/modules/$moduleId/users/index.lazy').then(
       (d) => d.Route,
     ),
   )
-
 const LearningModulesModuleIdLessonsLessonIdLazyRoute =
-  LearningModulesModuleIdLessonsLessonIdLazyImport.update({
+  LearningModulesModuleIdLessonsLessonIdLazyRouteImport.update({
     id: '/learning/modules/$moduleId/lessons/$lessonId',
     path: '/learning/modules/$moduleId/lessons/$lessonId',
-    getParentRoute: () => rootRoute,
+    getParentRoute: () => rootRouteImport,
   } as any).lazy(() =>
     import('./routes/learning/modules/$moduleId/lessons/$lessonId.lazy').then(
       (d) => d.Route,
     ),
   )
-
 const LearningModulesModuleIdUsersUserIdIndexLazyRoute =
-  LearningModulesModuleIdUsersUserIdIndexLazyImport.update({
+  LearningModulesModuleIdUsersUserIdIndexLazyRouteImport.update({
     id: '/learning/modules/$moduleId/users/$userId/',
     path: '/learning/modules/$moduleId/users/$userId/',
-    getParentRoute: () => rootRoute,
+    getParentRoute: () => rootRouteImport,
   } as any).lazy(() =>
     import('./routes/learning/modules/$moduleId/users/$userId/index.lazy').then(
       (d) => d.Route,
     ),
   )
-
-// Populate the FileRoutesByPath interface
-
-declare module '@tanstack/react-router' {
-  interface FileRoutesByPath {
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexLazyImport
-      parentRoute: typeof rootRoute
-    }
-    '/login': {
-      id: '/login'
-      path: '/login'
-      fullPath: '/login'
-      preLoaderRoute: typeof LoginImport
-      parentRoute: typeof rootRoute
-    }
-    '/error-test': {
-      id: '/error-test'
-      path: '/error-test'
-      fullPath: '/error-test'
-      preLoaderRoute: typeof ErrorTestLazyImport
-      parentRoute: typeof rootRoute
-    }
-    '/unauthorized': {
-      id: '/unauthorized'
-      path: '/unauthorized'
-      fullPath: '/unauthorized'
-      preLoaderRoute: typeof UnauthorizedLazyImport
-      parentRoute: typeof rootRoute
-    }
-    '/settings/profile': {
-      id: '/settings/profile'
-      path: '/settings/profile'
-      fullPath: '/settings/profile'
-      preLoaderRoute: typeof SettingsProfileImport
-      parentRoute: typeof rootRoute
-    }
-    '/algorithms/new': {
-      id: '/algorithms/new'
-      path: '/algorithms/new'
-      fullPath: '/algorithms/new'
-      preLoaderRoute: typeof AlgorithmsNewLazyImport
-      parentRoute: typeof rootRoute
-    }
-    '/collections/new': {
-      id: '/collections/new'
-      path: '/collections/new'
-      fullPath: '/collections/new'
-      preLoaderRoute: typeof CollectionsNewLazyImport
-      parentRoute: typeof rootRoute
-    }
-    '/learning/create': {
-      id: '/learning/create'
-      path: '/learning/create'
-      fullPath: '/learning/create'
-      preLoaderRoute: typeof LearningCreateLazyImport
-      parentRoute: typeof rootRoute
-    }
-    '/settings/billing': {
-      id: '/settings/billing'
-      path: '/settings/billing'
-      fullPath: '/settings/billing'
-      preLoaderRoute: typeof SettingsBillingLazyImport
-      parentRoute: typeof rootRoute
-    }
-    '/settings/models': {
-      id: '/settings/models'
-      path: '/settings/models'
-      fullPath: '/settings/models'
-      preLoaderRoute: typeof SettingsModelsLazyImport
-      parentRoute: typeof rootRoute
-    }
-    '/settings/notifications': {
-      id: '/settings/notifications'
-      path: '/settings/notifications'
-      fullPath: '/settings/notifications'
-      preLoaderRoute: typeof SettingsNotificationsLazyImport
-      parentRoute: typeof rootRoute
-    }
-    '/settings/preferences': {
-      id: '/settings/preferences'
-      path: '/settings/preferences'
-      fullPath: '/settings/preferences'
-      preLoaderRoute: typeof SettingsPreferencesLazyImport
-      parentRoute: typeof rootRoute
-    }
-    '/settings/security': {
-      id: '/settings/security'
-      path: '/settings/security'
-      fullPath: '/settings/security'
-      preLoaderRoute: typeof SettingsSecurityLazyImport
-      parentRoute: typeof rootRoute
-    }
-    '/algorithms/': {
-      id: '/algorithms/'
-      path: '/algorithms'
-      fullPath: '/algorithms'
-      preLoaderRoute: typeof AlgorithmsIndexLazyImport
-      parentRoute: typeof rootRoute
-    }
-    '/collections/': {
-      id: '/collections/'
-      path: '/collections'
-      fullPath: '/collections'
-      preLoaderRoute: typeof CollectionsIndexLazyImport
-      parentRoute: typeof rootRoute
-    }
-    '/learning/': {
-      id: '/learning/'
-      path: '/learning'
-      fullPath: '/learning'
-      preLoaderRoute: typeof LearningIndexLazyImport
-      parentRoute: typeof rootRoute
-    }
-    '/onboarding/': {
-      id: '/onboarding/'
-      path: '/onboarding'
-      fullPath: '/onboarding'
-      preLoaderRoute: typeof OnboardingIndexLazyImport
-      parentRoute: typeof rootRoute
-    }
-    '/settings/': {
-      id: '/settings/'
-      path: '/settings'
-      fullPath: '/settings'
-      preLoaderRoute: typeof SettingsIndexLazyImport
-      parentRoute: typeof rootRoute
-    }
-    '/algorithms/$algorithmId/edit': {
-      id: '/algorithms/$algorithmId/edit'
-      path: '/algorithms/$algorithmId/edit'
-      fullPath: '/algorithms/$algorithmId/edit'
-      preLoaderRoute: typeof AlgorithmsAlgorithmIdEditLazyImport
-      parentRoute: typeof rootRoute
-    }
-    '/algorithms/$algorithmId/view': {
-      id: '/algorithms/$algorithmId/view'
-      path: '/algorithms/$algorithmId/view'
-      fullPath: '/algorithms/$algorithmId/view'
-      preLoaderRoute: typeof AlgorithmsAlgorithmIdViewLazyImport
-      parentRoute: typeof rootRoute
-    }
-    '/collections/$collectionId/edit': {
-      id: '/collections/$collectionId/edit'
-      path: '/collections/$collectionId/edit'
-      fullPath: '/collections/$collectionId/edit'
-      preLoaderRoute: typeof CollectionsCollectionIdEditLazyImport
-      parentRoute: typeof rootRoute
-    }
-    '/algorithms/$algorithmId/': {
-      id: '/algorithms/$algorithmId/'
-      path: '/algorithms/$algorithmId'
-      fullPath: '/algorithms/$algorithmId'
-      preLoaderRoute: typeof AlgorithmsAlgorithmIdIndexLazyImport
-      parentRoute: typeof rootRoute
-    }
-    '/collections/$collectionId/': {
-      id: '/collections/$collectionId/'
-      path: '/collections/$collectionId'
-      fullPath: '/collections/$collectionId'
-      preLoaderRoute: typeof CollectionsCollectionIdIndexLazyImport
-      parentRoute: typeof rootRoute
-    }
-    '/learning/modules/': {
-      id: '/learning/modules/'
-      path: '/learning/modules'
-      fullPath: '/learning/modules'
-      preLoaderRoute: typeof LearningModulesIndexLazyImport
-      parentRoute: typeof rootRoute
-    }
-    '/learning/modules/$moduleId/': {
-      id: '/learning/modules/$moduleId/'
-      path: '/learning/modules/$moduleId'
-      fullPath: '/learning/modules/$moduleId'
-      preLoaderRoute: typeof LearningModulesModuleIdIndexLazyImport
-      parentRoute: typeof rootRoute
-    }
-    '/learning/modules/$moduleId/lessons/$lessonId': {
-      id: '/learning/modules/$moduleId/lessons/$lessonId'
-      path: '/learning/modules/$moduleId/lessons/$lessonId'
-      fullPath: '/learning/modules/$moduleId/lessons/$lessonId'
-      preLoaderRoute: typeof LearningModulesModuleIdLessonsLessonIdLazyImport
-      parentRoute: typeof rootRoute
-    }
-    '/learning/modules/$moduleId/users/': {
-      id: '/learning/modules/$moduleId/users/'
-      path: '/learning/modules/$moduleId/users'
-      fullPath: '/learning/modules/$moduleId/users'
-      preLoaderRoute: typeof LearningModulesModuleIdUsersIndexLazyImport
-      parentRoute: typeof rootRoute
-    }
-    '/learning/modules/$moduleId/users/$userId/': {
-      id: '/learning/modules/$moduleId/users/$userId/'
-      path: '/learning/modules/$moduleId/users/$userId'
-      fullPath: '/learning/modules/$moduleId/users/$userId'
-      preLoaderRoute: typeof LearningModulesModuleIdUsersUserIdIndexLazyImport
-      parentRoute: typeof rootRoute
-    }
-  }
-}
-
-// Create and export the route tree
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexLazyRoute
@@ -537,7 +304,6 @@ export interface FileRoutesByFullPath {
   '/learning/modules/$moduleId/users': typeof LearningModulesModuleIdUsersIndexLazyRoute
   '/learning/modules/$moduleId/users/$userId': typeof LearningModulesModuleIdUsersUserIdIndexLazyRoute
 }
-
 export interface FileRoutesByTo {
   '/': typeof IndexLazyRoute
   '/login': typeof LoginRoute
@@ -568,9 +334,8 @@ export interface FileRoutesByTo {
   '/learning/modules/$moduleId/users': typeof LearningModulesModuleIdUsersIndexLazyRoute
   '/learning/modules/$moduleId/users/$userId': typeof LearningModulesModuleIdUsersUserIdIndexLazyRoute
 }
-
 export interface FileRoutesById {
-  __root__: typeof rootRoute
+  __root__: typeof rootRouteImport
   '/': typeof IndexLazyRoute
   '/login': typeof LoginRoute
   '/error-test': typeof ErrorTestLazyRoute
@@ -600,7 +365,6 @@ export interface FileRoutesById {
   '/learning/modules/$moduleId/users/': typeof LearningModulesModuleIdUsersIndexLazyRoute
   '/learning/modules/$moduleId/users/$userId/': typeof LearningModulesModuleIdUsersUserIdIndexLazyRoute
 }
-
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
@@ -694,7 +458,6 @@ export interface FileRouteTypes {
     | '/learning/modules/$moduleId/users/$userId/'
   fileRoutesById: FileRoutesById
 }
-
 export interface RootRouteChildren {
   IndexLazyRoute: typeof IndexLazyRoute
   LoginRoute: typeof LoginRoute
@@ -724,6 +487,207 @@ export interface RootRouteChildren {
   LearningModulesModuleIdLessonsLessonIdLazyRoute: typeof LearningModulesModuleIdLessonsLessonIdLazyRoute
   LearningModulesModuleIdUsersIndexLazyRoute: typeof LearningModulesModuleIdUsersIndexLazyRoute
   LearningModulesModuleIdUsersUserIdIndexLazyRoute: typeof LearningModulesModuleIdUsersUserIdIndexLazyRoute
+}
+
+declare module '@tanstack/react-router' {
+  interface FileRoutesByPath {
+    '/unauthorized': {
+      id: '/unauthorized'
+      path: '/unauthorized'
+      fullPath: '/unauthorized'
+      preLoaderRoute: typeof UnauthorizedLazyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/error-test': {
+      id: '/error-test'
+      path: '/error-test'
+      fullPath: '/error-test'
+      preLoaderRoute: typeof ErrorTestLazyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexLazyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/settings/': {
+      id: '/settings/'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsIndexLazyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/onboarding/': {
+      id: '/onboarding/'
+      path: '/onboarding'
+      fullPath: '/onboarding'
+      preLoaderRoute: typeof OnboardingIndexLazyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/learning/': {
+      id: '/learning/'
+      path: '/learning'
+      fullPath: '/learning'
+      preLoaderRoute: typeof LearningIndexLazyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/collections/': {
+      id: '/collections/'
+      path: '/collections'
+      fullPath: '/collections'
+      preLoaderRoute: typeof CollectionsIndexLazyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/algorithms/': {
+      id: '/algorithms/'
+      path: '/algorithms'
+      fullPath: '/algorithms'
+      preLoaderRoute: typeof AlgorithmsIndexLazyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/settings/security': {
+      id: '/settings/security'
+      path: '/settings/security'
+      fullPath: '/settings/security'
+      preLoaderRoute: typeof SettingsSecurityLazyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/settings/preferences': {
+      id: '/settings/preferences'
+      path: '/settings/preferences'
+      fullPath: '/settings/preferences'
+      preLoaderRoute: typeof SettingsPreferencesLazyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/settings/notifications': {
+      id: '/settings/notifications'
+      path: '/settings/notifications'
+      fullPath: '/settings/notifications'
+      preLoaderRoute: typeof SettingsNotificationsLazyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/settings/models': {
+      id: '/settings/models'
+      path: '/settings/models'
+      fullPath: '/settings/models'
+      preLoaderRoute: typeof SettingsModelsLazyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/settings/billing': {
+      id: '/settings/billing'
+      path: '/settings/billing'
+      fullPath: '/settings/billing'
+      preLoaderRoute: typeof SettingsBillingLazyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/learning/create': {
+      id: '/learning/create'
+      path: '/learning/create'
+      fullPath: '/learning/create'
+      preLoaderRoute: typeof LearningCreateLazyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/collections/new': {
+      id: '/collections/new'
+      path: '/collections/new'
+      fullPath: '/collections/new'
+      preLoaderRoute: typeof CollectionsNewLazyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/algorithms/new': {
+      id: '/algorithms/new'
+      path: '/algorithms/new'
+      fullPath: '/algorithms/new'
+      preLoaderRoute: typeof AlgorithmsNewLazyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/settings/profile': {
+      id: '/settings/profile'
+      path: '/settings/profile'
+      fullPath: '/settings/profile'
+      preLoaderRoute: typeof SettingsProfileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/learning/modules/': {
+      id: '/learning/modules/'
+      path: '/learning/modules'
+      fullPath: '/learning/modules'
+      preLoaderRoute: typeof LearningModulesIndexLazyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/collections/$collectionId/': {
+      id: '/collections/$collectionId/'
+      path: '/collections/$collectionId'
+      fullPath: '/collections/$collectionId'
+      preLoaderRoute: typeof CollectionsCollectionIdIndexLazyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/algorithms/$algorithmId/': {
+      id: '/algorithms/$algorithmId/'
+      path: '/algorithms/$algorithmId'
+      fullPath: '/algorithms/$algorithmId'
+      preLoaderRoute: typeof AlgorithmsAlgorithmIdIndexLazyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/collections/$collectionId/edit': {
+      id: '/collections/$collectionId/edit'
+      path: '/collections/$collectionId/edit'
+      fullPath: '/collections/$collectionId/edit'
+      preLoaderRoute: typeof CollectionsCollectionIdEditLazyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/algorithms/$algorithmId/view': {
+      id: '/algorithms/$algorithmId/view'
+      path: '/algorithms/$algorithmId/view'
+      fullPath: '/algorithms/$algorithmId/view'
+      preLoaderRoute: typeof AlgorithmsAlgorithmIdViewLazyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/algorithms/$algorithmId/edit': {
+      id: '/algorithms/$algorithmId/edit'
+      path: '/algorithms/$algorithmId/edit'
+      fullPath: '/algorithms/$algorithmId/edit'
+      preLoaderRoute: typeof AlgorithmsAlgorithmIdEditLazyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/learning/modules/$moduleId/': {
+      id: '/learning/modules/$moduleId/'
+      path: '/learning/modules/$moduleId'
+      fullPath: '/learning/modules/$moduleId'
+      preLoaderRoute: typeof LearningModulesModuleIdIndexLazyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/learning/modules/$moduleId/users/': {
+      id: '/learning/modules/$moduleId/users/'
+      path: '/learning/modules/$moduleId/users'
+      fullPath: '/learning/modules/$moduleId/users'
+      preLoaderRoute: typeof LearningModulesModuleIdUsersIndexLazyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/learning/modules/$moduleId/lessons/$lessonId': {
+      id: '/learning/modules/$moduleId/lessons/$lessonId'
+      path: '/learning/modules/$moduleId/lessons/$lessonId'
+      fullPath: '/learning/modules/$moduleId/lessons/$lessonId'
+      preLoaderRoute: typeof LearningModulesModuleIdLessonsLessonIdLazyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/learning/modules/$moduleId/users/$userId/': {
+      id: '/learning/modules/$moduleId/users/$userId/'
+      path: '/learning/modules/$moduleId/users/$userId'
+      fullPath: '/learning/modules/$moduleId/users/$userId'
+      preLoaderRoute: typeof LearningModulesModuleIdUsersUserIdIndexLazyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+  }
 }
 
 const rootRouteChildren: RootRouteChildren = {
@@ -759,131 +723,6 @@ const rootRouteChildren: RootRouteChildren = {
   LearningModulesModuleIdUsersUserIdIndexLazyRoute:
     LearningModulesModuleIdUsersUserIdIndexLazyRoute,
 }
-
-export const routeTree = rootRoute
+export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-/* ROUTE_MANIFEST_START
-{
-  "routes": {
-    "__root__": {
-      "filePath": "__root.tsx",
-      "children": [
-        "/",
-        "/login",
-        "/error-test",
-        "/unauthorized",
-        "/settings/profile",
-        "/algorithms/new",
-        "/collections/new",
-        "/learning/create",
-        "/settings/billing",
-        "/settings/models",
-        "/settings/notifications",
-        "/settings/preferences",
-        "/settings/security",
-        "/algorithms/",
-        "/collections/",
-        "/learning/",
-        "/onboarding/",
-        "/settings/",
-        "/algorithms/$algorithmId/edit",
-        "/algorithms/$algorithmId/view",
-        "/collections/$collectionId/edit",
-        "/algorithms/$algorithmId/",
-        "/collections/$collectionId/",
-        "/learning/modules/",
-        "/learning/modules/$moduleId/",
-        "/learning/modules/$moduleId/lessons/$lessonId",
-        "/learning/modules/$moduleId/users/",
-        "/learning/modules/$moduleId/users/$userId/"
-      ]
-    },
-    "/": {
-      "filePath": "index.lazy.tsx"
-    },
-    "/login": {
-      "filePath": "login.tsx"
-    },
-    "/error-test": {
-      "filePath": "error-test.lazy.tsx"
-    },
-    "/unauthorized": {
-      "filePath": "unauthorized.lazy.tsx"
-    },
-    "/settings/profile": {
-      "filePath": "settings/profile.tsx"
-    },
-    "/algorithms/new": {
-      "filePath": "algorithms/new.lazy.tsx"
-    },
-    "/collections/new": {
-      "filePath": "collections/new.lazy.tsx"
-    },
-    "/learning/create": {
-      "filePath": "learning/create.lazy.tsx"
-    },
-    "/settings/billing": {
-      "filePath": "settings/billing.lazy.tsx"
-    },
-    "/settings/models": {
-      "filePath": "settings/models.lazy.tsx"
-    },
-    "/settings/notifications": {
-      "filePath": "settings/notifications.lazy.tsx"
-    },
-    "/settings/preferences": {
-      "filePath": "settings/preferences.lazy.tsx"
-    },
-    "/settings/security": {
-      "filePath": "settings/security.lazy.tsx"
-    },
-    "/algorithms/": {
-      "filePath": "algorithms/index.lazy.tsx"
-    },
-    "/collections/": {
-      "filePath": "collections/index.lazy.tsx"
-    },
-    "/learning/": {
-      "filePath": "learning/index.lazy.tsx"
-    },
-    "/onboarding/": {
-      "filePath": "onboarding/index.lazy.tsx"
-    },
-    "/settings/": {
-      "filePath": "settings/index.lazy.tsx"
-    },
-    "/algorithms/$algorithmId/edit": {
-      "filePath": "algorithms/$algorithmId/edit.lazy.tsx"
-    },
-    "/algorithms/$algorithmId/view": {
-      "filePath": "algorithms/$algorithmId/view.lazy.tsx"
-    },
-    "/collections/$collectionId/edit": {
-      "filePath": "collections/$collectionId/edit.lazy.tsx"
-    },
-    "/algorithms/$algorithmId/": {
-      "filePath": "algorithms/$algorithmId/index.lazy.tsx"
-    },
-    "/collections/$collectionId/": {
-      "filePath": "collections/$collectionId/index.lazy.tsx"
-    },
-    "/learning/modules/": {
-      "filePath": "learning/modules/index.lazy.tsx"
-    },
-    "/learning/modules/$moduleId/": {
-      "filePath": "learning/modules/$moduleId/index.lazy.tsx"
-    },
-    "/learning/modules/$moduleId/lessons/$lessonId": {
-      "filePath": "learning/modules/$moduleId/lessons/$lessonId.lazy.tsx"
-    },
-    "/learning/modules/$moduleId/users/": {
-      "filePath": "learning/modules/$moduleId/users/index.lazy.tsx"
-    },
-    "/learning/modules/$moduleId/users/$userId/": {
-      "filePath": "learning/modules/$moduleId/users/$userId/index.lazy.tsx"
-    }
-  }
-}
-ROUTE_MANIFEST_END */

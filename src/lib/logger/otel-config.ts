@@ -25,7 +25,8 @@ import {
 import { env } from "@/config/env"; // shared configuration for the React app
 
 import type {
-  LogRecord} from "@opentelemetry/sdk-logs";
+  LogRecord
+} from "@opentelemetry/api-logs";
 
 // Set service metadata based on environment configuration
 const serviceName = env.VITE_APP_NAME;
@@ -65,8 +66,8 @@ const batchProcessor = new BatchLogRecordProcessor(otlpLogExporter, {
 // Instantiate the LoggerProvider and register the exporter with a simple log record processor.
 const loggerProvider = new LoggerProvider({
   resource,
+  processors: [batchProcessor],
 });
-loggerProvider.addLogRecordProcessor(batchProcessor);
 
 
 // Retrieve the OpenTelemetry logger for our service.
